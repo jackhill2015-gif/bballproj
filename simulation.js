@@ -7,7 +7,7 @@
 
 import { COM, DIFF_MOD } from './constants.js';
 import { ri, clamp, gn, getOvr, getTOvr, pick, freshS } from './utils.js';
-import { G } from './state.js';
+import { G, LS } from './state.js';
 
 // ── Player Generation ────────────────────────────────────
 export function genPlayer(base, pos, cls) {
