@@ -490,3 +490,56 @@ export const STATE_NAMES = {
   TN:"Tennessee",TX:"Texas",UT:"Utah",VT:"Vermont",VA:"Virginia",WA:"Washington",
   WV:"West Virginia",WI:"Wisconsin",WY:"Wyoming"
 };
+
+// ═══════════════════════════════════════════════════════════
+//  COACHING SYSTEM
+// ═══════════════════════════════════════════════════════════
+
+// Coach first/last names for NPC generation
+export const COACH_FN = ['Mike','John','Rick','Bill','Tom','Mark','Jim','Greg','Kevin','Steve',
+  'Chris','Dan','Tony','Dave','Scott','Matt','Jeff','Brian','Bob','Pat','Jay','Ed','Frank',
+  'Dennis','Nate','Will','Dusty','Sean','Kelvin','Buzz','Hubert','Jerome','Andy','Thad','Shaka',
+  'Mick','Bruce','Brad','Craig','Eric','Kenny','Mick','Wes','Leonard','Dino','Lamont','Fran'];
+export const COACH_LN = ['Williams','Smith','Johnson','Brown','Davis','Jones','Miller','Wilson',
+  'Anderson','Thomas','Taylor','Jackson','Martin','Harris','Clark','Lewis','Robinson','Walker',
+  'Young','Allen','King','Wright','Hill','Green','Adams','Baker','Nelson','Carter','Mitchell',
+  'Pitino','Calipari','Self','Few','Izzo','Krzyzewski','Boeheim','Hamilton','Oats','Pearl',
+  'Forbes','Gates','Dixon','Cooley','Willard','Sampson','Kelsey','Musselman','Pope','Grant'];
+
+// Derive school prestige from baseOvr: (ovr - 50) * 2.2, clamped 10-95
+export function calcSchoolPrestige(baseOvr) {
+  return Math.min(95, Math.max(10, Math.round((baseOvr - 50) * 2.2)));
+}
+
+// Recruiting star gates by SCHOOL prestige (0-100 scale)
+export const SCHOOL_RECRUIT_GATES = {
+  5: 80,   // need 80+ school prestige to recruit 5-stars
+  4: 60,   // need 60+ for 4-stars
+  3: 35,   // need 35+ for 3-stars
+  2: 10,   // basically anyone
+  1: 0     // anyone
+};
+
+// Skill points earned per season
+export const SKILL_POINT_TABLE = [
+  { check: function(t) { return t.wins >= 16; }, pts: 1, label: 'Winning season' },
+  { check: function(t) { return t.wins >= 20; }, pts: 1, label: '20+ wins' },
+  { check: function(t) { return t.wins >= 25; }, pts: 1, label: '25+ wins' },
+  { check: function(t, g) { return g.confTitleThisYear; }, pts: 1, label: 'Conf champion' },
+  { check: function(t, g) { return g.madeNCAA; }, pts: 1, label: 'NCAA tournament' },
+  { check: function(t, g) { return g.sweet16; }, pts: 1, label: 'Sweet 16+' },
+  { check: function(t, g) { return g.finalFour; }, pts: 1, label: 'Final Four+' },
+  { check: function(t, g) { return g.champGame; }, pts: 1, label: 'Championship game' },
+  { check: function(t, g) { return g.natChamp; }, pts: 1, label: 'National Champion' }
+];
+
+// Season expectations based on roster OVR vs conference average
+export function calcExpectations(teamOvr, confAvgOvr) {
+  var diff = teamOvr - confAvgOvr;
+  // Base wins expectation
+  var base = 15 + Math.round(diff * 0.5);
+  var low = Math.max(5, base - 3);
+  var high = Math.min(30, base + 3);
+  var danger = Math.max(3, low - 5); // below this = hot seat
+  return { low: low, high: high, danger: danger, base: base };
+}

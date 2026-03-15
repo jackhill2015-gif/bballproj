@@ -39,6 +39,7 @@ import {
   showHomeScreen, loadAndPlay, startNewDynasty, deleteFromHome, newDynasty,
   buildPicker, togglePicker, selectTeam, pickRandom, setDiff,
   goToStep2, goToStep1, startDynasty, renderNCAutoList, swapNC,
+  submitCoachName, submitDifficulty, selectJob, goBackToJobs,
   registerSetupCallbacks
 } from './views/setup.js';
 
@@ -141,6 +142,10 @@ window.goToStep2 = goToStep2;
 window.goToStep1 = goToStep1;
 window.startDynasty = startDynasty;
 window.swapNC = swapNC;
+window.submitCoachName = submitCoachName;
+window.submitDifficulty = submitDifficulty;
+window.selectJob = selectJob;
+window.goBackToJobs = goBackToJobs;
 
 // Roster
 window.updateMins = updateMins;

@@ -4,7 +4,7 @@
 //  week advancement, game launching, auto-sim, offseason.
 // ═══════════════════════════════════════════════════════════
 
-import { ALL_TEAMS, POS, CLS, RECRUIT_STATE_POOL } from './constants.js';
+import { ALL_TEAMS, POS, CLS, RECRUIT_STATE_POOL, COACH_FN, COACH_LN, calcSchoolPrestige, SKILL_POINT_TABLE, calcExpectations } from './constants.js';
 import {
   ri, clamp, getTOvr, fixMins, freshS, getTeamStyle, getOvr, ge, txt
 } from './utils.js';
@@ -53,13 +53,31 @@ export function buildUniverse() {
     }
     fixMins(rost);
     var strat = getTeamStyle(td.c, td.o);
+    var sp = calcSchoolPrestige(td.o);
+
+    // Generate NPC coach
+    var npcCoach = {
+      firstName: COACH_FN[ri(0, COACH_FN.length - 1)],
+      lastName: COACH_LN[ri(0, COACH_LN.length - 1)],
+      age: ri(35, 65),
+      off: clamp(sp + ri(-15, 15), 40, 99),
+      def: clamp(sp + ri(-15, 15), 40, 99),
+      dev: clamp(sp + ri(-15, 15), 40, 99),
+      rec: clamp(sp + ri(-15, 15), 40, 99),
+      tenure: ri(1, 12),
+      wins: 0, loss: 0
+    };
+
     G.teams.push({
       id: i, name: td.n, conf: td.c, baseOvr: td.o, rost: rost,
       wins: 0, loss: 0, cWins: 0, cLoss: 0,
       pts: td.o * 10 + ri(-30, 30),
       sched: [], streak: 0,
       ts: { pts: 0, opp: 0, fgm: 0, fga: 0, games: 0 },
-      strat: strat
+      strat: strat,
+      schoolPrestige: sp,
+      coach: npcCoach,
+      coachHistory: []
     });
   });
 }
@@ -539,13 +557,15 @@ export function doOffseason() {
 
   var commits = G.recruits.filter(function(r) { return r.signed === G.tid; });
 
-  // Age up / develop returning players
+  // Age up / develop returning players (coach DEV rating affects growth)
+  var devBonus = Math.round((G.coach.dev - 70) / 15); // -2 to +2 based on DEV rating
   t.rost.forEach(function(p) {
     if (p.cls === 'SR') return;
     ['sht', 'fin', 'def', 'reb', 'ply'].forEach(function(a) {
-      p[a] = clamp(p[a] + ri(-1, 4), 38, 99);
+      p[a] = clamp(p[a] + ri(-1, 4) + devBonus, 38, 99);
     });
     p.ovr = getOvr(p);
+    if (p.pot && p.ovr > p.pot) p.pot = p.ovr; // pot can't be below ovr
     var idx = CLS.indexOf(p.cls);
     if (idx < 3) p.cls = CLS[idx + 1];
   });

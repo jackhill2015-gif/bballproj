@@ -233,6 +233,15 @@ export function simGame(home, away, userIsHome) {
   hScore += upset > 0 ? upset : 0;
   aScore += upset < 0 ? -upset : 0;
 
+  // Coach OFF/DEF bonuses (applied to user team only)
+  var userTeam = userIsHome ? home : away;
+  if (userTeam && G.coach) {
+    var offBonus = Math.round((G.coach.off - 70) * 0.15);
+    var defPenalty = Math.round((G.coach.def - 70) * 0.15);
+    if (userIsHome) { hScore += offBonus; aScore -= defPenalty; }
+    else { aScore += offBonus; hScore -= defPenalty; }
+  }
+
   // Restore player stats
   userTeamPlayers.forEach(function(obj) {
     obj.p.sht = obj.sht; obj.p.fin = obj.fin; obj.p.def = obj.def;

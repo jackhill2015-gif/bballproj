@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { ge, clamp } from '../utils.js';
-import { TEAM_STATES, STATE_TO_REGION, STATE_NAMES, RECRUIT_PRESTIGE_GATES } from '../constants.js';
+import { TEAM_STATES, STATE_TO_REGION, STATE_NAMES, SCHOOL_RECRUIT_GATES } from '../constants.js';
 import { G, SetupState, saveState, calcRecruitingBudget } from '../state.js';
 
 var _ext = { toast: null, addLog: null, updateAll: null };
@@ -37,12 +37,16 @@ function getGeoBonus(ts,rs){if(!ts||!rs||ts==='XX')return 0;if(ts===rs)return 0.
 function getGeoLabel(ts,rs){if(!ts||!rs||ts==='XX')return'';if(ts===rs)return'HOME';var tr=STATE_TO_REGION[ts],rr=STATE_TO_REGION[rs];if(tr&&tr===rr)return'REGION';return'';}
 
 function calcUserBid(r) {
-  var mod = 0.6+(G.prestige/5)*0.8;
+  var sp = (G.teams[G.tid] && G.teams[G.tid].schoolPrestige) || 50;
+  var recMod = 0.7 + ((G.coach ? G.coach.rec : 70) / 100) * 0.6;
   var us = getTeamState(G.teams[G.tid]);
   var geo = getGeoBonus(us, r.homeState);
-  var base = ((r.points||0)*mod*1.5 + r.interest*0.4)*(1+geo);
-  var gate = RECRUIT_PRESTIGE_GATES[r.stars]||{minPrestige:1,penalty:1.0};
-  if(G.prestige<gate.minPrestige) base *= gate.penalty;
+  var base = ((r.points||0) * recMod * 1.5 + r.interest * 0.4) * (1 + geo);
+  var gatePrestige = SCHOOL_RECRUIT_GATES[r.stars] || 0;
+  if (sp < gatePrestige) {
+    var deficit = gatePrestige - sp;
+    base *= Math.max(0.1, 1 - (deficit / 50));
+  }
   return base;
 }
 
@@ -248,7 +252,7 @@ export function renderOffseason(){
   // ── Stats bar ──
   h+='<div style="display:flex;gap:16px;margin-bottom:12px;padding:10px 14px;background:var(--s1);border:1px solid var(--bdr);border-radius:6px;">'
     +'<div style="text-align:center;"><div style="font-size:18px;font-weight:900;color:'+(left>30?'var(--grn2)':left>0?'var(--gld2)':'#fc8181')+';">'+left+'</div><div style="font-size:9px;color:var(--txt3);">BUDGET</div></div>'
-    +'<div style="text-align:center;"><div style="font-size:18px;font-weight:900;">'+G.prestige+'</div><div style="font-size:9px;color:var(--txt3);">PRESTIGE</div></div>'
+    +'<div style="text-align:center;"><div style="font-size:18px;font-weight:900;">'+((G.teams[G.tid]&&G.teams[G.tid].schoolPrestige)||50)+'</div><div style="font-size:9px;color:var(--txt3);">PRESTIGE</div></div>'
     +'<div style="text-align:center;"><div style="font-size:18px;font-weight:900;">'+Math.max(0,13-G.teams[G.tid].rost.length)+'</div><div style="font-size:9px;color:var(--txt3);">OPEN SPOTS</div></div>'
     +'<div style="text-align:center;"><div style="font-size:18px;font-weight:900;color:var(--grn2);">'+commits.length+'</div><div style="font-size:9px;color:var(--txt3);">COMMITS</div></div>'
     +'<div style="flex:1;"></div>'
@@ -422,8 +426,9 @@ function renderBoard(open,left){
     var userGeo=getGeoLabel(getTeamState(G.teams[G.tid]),r.homeState);
     var geoBadge=userGeo==='HOME'?'<span style="font-size:8px;font-weight:900;color:var(--grn2);background:rgba(56,161,105,.15);padding:1px 5px;border-radius:2px;margin-left:4px;">HOME</span>'
       :userGeo==='REGION'?'<span style="font-size:8px;font-weight:900;color:#63b3ed;background:rgba(49,130,206,.12);padding:1px 5px;border-radius:2px;margin-left:4px;">REGION</span>':'';
-    var gate=RECRUIT_PRESTIGE_GATES[r.stars]||{minPrestige:1};
-    var gated=G.prestige<gate.minPrestige;
+    var sp=(G.teams[G.tid]&&G.teams[G.tid].schoolPrestige)||50;
+    var gatePrestige=SCHOOL_RECRUIT_GATES[r.stars]||0;
+    var gated=sp<gatePrestige;
     var gateBadge=gated?'<span style="font-size:8px;font-weight:900;color:#fc8181;background:rgba(229,62,62,.12);padding:1px 5px;border-radius:2px;margin-left:4px;">LONG SHOT</span>':'';
 
     h+='<div onclick="showDetail('+r.id+')" style="display:flex;align-items:center;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.03);cursor:pointer;'+(isTarget?'background:rgba(49,130,206,.06);border-left:3px solid var(--blu);':'')+(r.id===_detailId?'background:rgba(229,62,62,.06);':'')+'transition:background .1s;" onmouseover="this.style.background=\'rgba(255,255,255,.03)\'" onmouseout="this.style.background=\''+(isTarget?'rgba(49,130,206,.06)':'')+'\'">'
