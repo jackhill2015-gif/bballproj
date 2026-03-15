@@ -29,11 +29,8 @@ export function renderRoster() {
     + '<div style="font-size:20px;font-weight:900;">Depth Chart</div>'
     + '<div style="font-size:11px;color:var(--txt2);margin-top:3px;">Drag to reorder \u00b7 Top 5 = Starters \u00b7 Sliders control minutes</div>'
     + '</div>'
-    + '<div style="display:flex;align-items:center;gap:14px;">'
-    + '<div style="font-family:\'JetBrains Mono\',monospace;font-size:15px;font-weight:800;color:' + (totalOk ? 'var(--grn2)' : '#fc8181') + ';">'
-    + total + '/200' + (totalOk ? ' \u2713' : ' \u26a0') + '</div>'
     + '<div class="btn btn-red" onclick="autoOptimizeRoster()" style="font-size:11px;padding:8px 20px;font-weight:800;">AUTO SET</div>'
-    + '</div></div>';
+    + '</div>';
 
   // Player rows
   t.rost.forEach(function(p, i) {
@@ -63,19 +60,18 @@ export function renderRoster() {
     var sliderTrackCol = tier === 'starter' ? 'var(--red)' : tier === 'rotation' ? '#718096' : '#4a5568';
     var sliderBg = 'linear-gradient(90deg,' + sliderTrackCol + ' 0%,' + sliderTrackCol + ' ' + fillPct + '%,var(--bdr2) ' + fillPct + '%)';
 
-    h += '<div draggable="true" data-idx="' + i + '" '
-      + 'ondragstart="rosterDragStart(event,' + i + ')" '
+    h += '<div data-idx="' + i + '" '
       + 'ondragover="rosterDragOver(event)" '
       + 'ondrop="rosterDrop(event,' + i + ')" '
       + 'style="display:grid;grid-template-columns:24px 38px 1fr 42px 42px 130px;align-items:center;gap:4px;'
       + 'padding:9px 12px;border-left:3px solid ' + stripe + ';border-bottom:1px solid rgba(255,255,255,.025);'
-      + 'cursor:grab;transition:opacity .12s,background .1s;'
+      + 'transition:opacity .12s,background .1s;'
       + (isBenched ? 'opacity:.35;' : '') + '" '
       + 'onmouseover="this.style.background=\'rgba(255,255,255,.025)\'" '
       + 'onmouseout="this.style.background=\'\'">';
 
-    // Col 1: Drag handle
-    h += '<div style="color:var(--txt3);font-size:12px;cursor:grab;user-select:none;text-align:center;">\u2630</div>';
+    // Col 1: Drag handle — THIS is the only draggable element
+    h += '<div draggable="true" ondragstart="rosterDragStart(event,' + i + ')" style="color:var(--txt3);font-size:12px;cursor:grab;user-select:none;text-align:center;">\u2630</div>';
 
     // Col 2: Position chip
     h += '<div><span style="display:inline-block;font-size:9px;font-weight:800;background:var(--s3);color:var(--txt);padding:3px 7px;border-radius:4px;text-align:center;min-width:28px;">' + p.pos + '</span></div>';
