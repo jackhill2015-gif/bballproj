@@ -85,89 +85,146 @@ export function updateMomentum(scoringTeamId, pts) {
   return null;
 }
 
-// ── Single Possession ────────────────────────────────────
-// Simulates one offensive possession. Returns:
-//   { pts, time, pbp, big, type, run? }
-// Mutates player stat objects (fga, fgm, pts, reb, ast).
+// ── Single Possession (Live Sim) ─────────────────────────
+// Play types, defensive schemes, clutch, fouls, steals, blocks.
+// Returns: { pts, time, pbp, big, type, run }
 export function simPoss(offT, defT) {
-  var off = getFloor(offT), def = getFloor(defT);
   var time = ri(12, 22);
+  var pts = 0;
+  var pbp = '';
+  var big = false;
+  var type = 'miss';
+  var run = null;
 
-  // Turnover — playmaking vs defense
-  var toChance = clamp(0.13 - (off.ply - def.def) * 0.0015, 0.06, 0.24);
-  if (Math.random() < toChance) {
-    return {
-      pts: 0, time: time,
-      pbp: '<span class="p-to">' + pick(COM.turn, off.name, def.name) + '</span>',
-      big: false, type: 'turn'
-    };
-  }
+  var possCount = (typeof LS.possCount === 'number') ? LS.possCount : 0;
+  var tiredness = Math.min(possCount / 160, 0.12);
+  var isClutch = (LS.clock <= 120 && LS.half === 2);
 
-  // Shot type — strategy-based 3pt rate
-  var strat = getEngineStrat(offT);
-  var use3 = strat === 'Pace & Space' ? 0.42 : strat === 'Grit & Grind' ? 0.23 : 0.32;
-  var is3 = Math.random() < use3;
-  var isDunk = !is3 && off.fin > 82 && Math.random() < 0.28;
+  var off = getFloor(offT);
+  var def = getFloor(defT);
+  var defScheme = (defT.strat && defT.strat.def) ? defT.strat.def : 'man';
 
-  // Block chance — based on rim protection (reb attribute)
-  var blkChance = is3 ? 0.02 : clamp((def.reb - 65) * 0.0025, 0.01, 0.13);
-  if (Math.random() < blkChance) {
-    return {
-      pts: 0, time: time,
-      pbp: '<span class="p-bl">' + pick(COM.block, off.name, def.name) + '</span>',
-      big: true, type: 'block'
-    };
-  }
+  // Play type
+  var playRoll = ri(1, 100);
+  var playType = 'standard';
+  if (playRoll <= 15) playType = 'iso';
+  else if (playRoll <= 40) playType = 'pnr';
+  else if (playRoll <= 50) playType = 'fastbreak';
+  else if (playRoll <= 65) playType = 'post';
+  if (isClutch && playType === 'fastbreak') playType = 'standard';
 
-  // Shot make chance — shooter vs defender
-  var shotAttr = is3 ? off.sht : off.fin;
-  var makeChance = clamp(0.39 + (shotAttr - def.def) * 0.0028, 0.22, 0.74);
-  off.s.fga++;
+  var isThree = false, isRim = false, makePct = 0, assistPct = 58, foulExtra = 0;
 
-  if (Math.random() < makeChance) {
-    var pts = is3 ? 3 : 2;
-    off.s.fgm++;
-    off.s.pts += pts;
-
-    // Assist
-    var asst = Math.random() < 0.58 ? getFloor(offT) : null;
-    if (asst && asst.name !== off.name) asst.s.ast = (asst.s.ast || 0) + 1;
-
-    // And-1
-    var andOne = !is3 && Math.random() < 0.08;
-    if (andOne) { pts += 1; off.s.pts += 1; }
-
-    var pbpTxt = isDunk ? pick(COM.dunk, off.name, def.name) :
-                 is3    ? pick(COM.make3, off.name, def.name) :
-                          pick(COM.make2, off.name, def.name);
-
-    var _run = updateMomentum(offT.id !== undefined ? offT.id : -1, pts);
-
-    return {
-      pts: pts, time: time,
-      pbp: '<span class="p-mk">' + pbpTxt + '</span>' +
-           (andOne ? ' <span style="color:#63b3ed">(and-1!)</span>' : ''),
-      big: isDunk || andOne, type: 'make', run: _run
-    };
+  if (playType === 'iso') {
+    var bestOvr = 0;
+    offT.rost.forEach(function(p) { if (p.mins > 0 && p.ovr > bestOvr) bestOvr = p.ovr; });
+    var tr = 0;
+    do { off = getFloor(offT); tr++; } while (off.ovr < bestOvr - 5 && tr < 3);
+    isRim = off.fin > off.sht + 8; isThree = !isRim && ri(1, 100) <= 45;
+    makePct = isRim ? 60 : 45; assistPct = 25;
+  } else if (playType === 'pnr') {
+    var tg = 0;
+    do { off = getFloor(offT); tg++; } while ((off.pos !== 'PG' && off.pos !== 'SG') && tg < 3);
+    var scr = getFloor(offT); var tb = 0;
+    while ((scr.pos !== 'PF' && scr.pos !== 'C') && tb < 3) { scr = getFloor(offT); tb++; }
+    var pr = ri(1, 100);
+    if (pr <= 50) { isThree = ri(1, 100) <= 50; isRim = !isThree; }
+    else if (pr <= 80) { off = scr; isRim = true; }
+    else { off = getFloor(offT); isThree = true; makePct += 5; }
+    assistPct = 78;
+  } else if (playType === 'fastbreak') {
+    isRim = true; makePct += 9; assistPct = 68;
+  } else if (playType === 'post') {
+    var tp = 0;
+    do { off = getFloor(offT); tp++; } while ((off.pos !== 'PF' && off.pos !== 'C') && tp < 3);
+    isRim = true; foulExtra = 4;
   } else {
-    // Off rebound putback
-    if (Math.random() < 0.22) {
-      off.s.reb++;
-      off.s.pts += 2;
-      off.s.fgm++;
-      var _run2 = updateMomentum(offT.id !== undefined ? offT.id : -1, 2);
-      return {
-        pts: 2, time: time + 4,
-        pbp: '<span class="p-mk">' + pick(COM.putback, off.name) + '</span>',
-        big: false, type: 'make', run: _run2
-      };
+    var sB = (getEngineStrat(offT) === 'Pace & Space') ? 7 : (getEngineStrat(offT) === 'Grit & Grind') ? -7 : 0;
+    isThree = ri(1, 100) <= (33 + sB); isRim = !isThree && ri(1, 100) <= 26;
+  }
+
+  // Foul
+  var foulChance = 8 + foulExtra;
+  if (def.def < 60) foulChance += 3;
+  if (isRim) foulChance += 5;
+  if (isClutch) foulChance += 5;
+  foulChance = clamp(foulChance, 6, 24);
+  if (ri(1, 100) <= foulChance) {
+    var ftPct = clamp(55 + Math.round(off.sht * 0.22), 65, 88);
+    ftPct = Math.round(ftPct * (1 - tiredness * 0.6));
+    var made = 0;
+    for (var f = 0; f < 2; f++) { if (ri(1, 100) <= ftPct) made++; }
+    off.s.pts += made;
+    return { pts: made, time: time, pbp: '<span class="p-foul">Foul on ' + def.name + '. ' + off.name + ' to the line \u2014 ' + made + ' of 2.</span>', big: made === 2, type: 'foul', run: null };
+  }
+
+  // Turnover
+  var toChance = clamp(13 + Math.round((def.def - off.ply) * 0.13), 8, 25);
+  if (defScheme === 'press') toChance += 6;
+  if (defScheme === 'zone') toChance -= 3;
+  if (isClutch) toChance += 3;
+  if (ri(1, 100) <= toChance) {
+    if (ri(1, 100) <= 62) {
+      if (typeof def.s.stl !== 'number') def.s.stl = 0;
+      def.s.stl++;
+      return { pts: 0, time: time, pbp: '<span class="p-to">' + pick(COM.steal, off.name, def.name) + '</span>', big: false, type: 'turn', run: null };
+    }
+    return { pts: 0, time: time, pbp: '<span class="p-to">' + pick(COM.turn, off.name, def.name) + '</span>', big: false, type: 'turn', run: null };
+  }
+
+  // Block
+  if (playType !== 'fastbreak') {
+    var bc = isThree ? 2 : (isRim ? 10 : 7);
+    bc = clamp(bc + Math.round((def.reb - 50) * 0.09), 1, 19);
+    if (ri(1, 100) <= bc) {
+      if (typeof def.s.blk !== 'number') def.s.blk = 0;
+      def.s.blk++;
+      return { pts: 0, time: time, pbp: '<span class="p-bl">' + pick(COM.block, off.name, def.name) + '</span>', big: true, type: 'block', run: null };
+    }
+  }
+
+  // Shot make %
+  if (makePct === 0) {
+    if (isThree) {
+      makePct = clamp(38 + Math.round((off.sht - def.def) * 0.22), 28, 46);
+      if (defScheme === 'zone') makePct -= 5; if (defScheme === 'press') makePct += 3;
+    } else if (isRim) {
+      makePct = clamp(62 + Math.round((off.fin - def.def) * 0.32), 48, 78);
+      if (defScheme === 'zone') makePct -= 7; if (defScheme === 'press') makePct += 3;
+    } else {
+      makePct = clamp(46 + Math.round((off.sht - def.def) * 0.26), 36, 56);
+      if (defScheme === 'zone') makePct += 4; if (defScheme === 'press') makePct += 3;
+    }
+  }
+  if (isClutch) makePct -= 4;
+  makePct = Math.round(makePct * (1 - tiredness));
+  makePct = clamp(makePct, 26, 78);
+
+  off.s.fga++;
+  if (ri(1, 100) <= makePct) {
+    pts = isThree ? 3 : 2;
+    off.s.fgm++; off.s.pts += pts;
+    if (ri(1, 100) <= assistPct) {
+      var at = 0; var asst = getFloor(offT);
+      while (asst === off && at < 4) { asst = getFloor(offT); at++; }
+      if (asst !== off) asst.s.ast++;
+    }
+    if (!isThree && ri(1, 100) <= 9) { pts += 1; off.s.pts++; big = true; }
+    var txt;
+    if (isClutch && ri(1, 100) <= 40) txt = pick(COM.clutch, off.name);
+    else if (playType === 'fastbreak' || (isRim && off.fin > 84)) txt = pick(COM.dunk, off.name, def.name);
+    else if (isThree) txt = pick(COM.make3, off.name, def.name);
+    else txt = pick(COM.make2, off.name, def.name);
+    run = updateMomentum(offT.id !== undefined ? offT.id : -1, pts);
+    return { pts: pts, time: time, pbp: '<span class="p-mk">' + txt + '</span>', big: big || playType === 'fastbreak', type: 'make', run: run };
+  } else {
+    if (ri(1, 100) <= 23) {
+      off.s.reb++; off.s.pts += 2; off.s.fgm++;
+      run = updateMomentum(offT.id !== undefined ? offT.id : -1, 2);
+      return { pts: 2, time: time + 4, pbp: '<span class="p-mk">' + pick(COM.putback, off.name) + '</span>', big: false, type: 'make', run: run };
     }
     def.s.reb = (def.s.reb || 0) + 1;
-    return {
-      pts: 0, time: time,
-      pbp: '<span class="p-ms">' + pick(is3 ? COM.miss3 : COM.miss2, off.name, def.name) + '</span>',
-      big: false, type: 'miss'
-    };
+    return { pts: 0, time: time, pbp: '<span class="p-ms">' + pick(isThree ? COM.miss3 : COM.miss2, off.name, def.name) + '</span>', big: false, type: 'miss', run: null };
   }
 }
 
