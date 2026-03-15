@@ -1,13 +1,97 @@
 // ═══════════════════════════════════════════════════════════
 //  HOOPS OS — views/recap.js
-//  End-of-season recap screen.
+//  Season Recap + Awards — renders in main view, not popup.
 // ═══════════════════════════════════════════════════════════
 
 import { G } from '../state.js';
+import { SKILL_POINT_TABLE } from '../constants.js';
+
+// ═══════════════════════════════════════════════════════════
+//  AWARDS CALCULATION
+// ═══════════════════════════════════════════════════════════
+
+function calcAwards() {
+  var allPlayers = [];
+  G.teams.forEach(function(t) {
+    t.rost.forEach(function(p) {
+      var gp = p.s.gp || 0;
+      if (gp < 10) return;
+      allPlayers.push({
+        name: p.name, pos: p.pos, cls: p.cls, ovr: p.ovr,
+        team: t.name, tid: t.id, conf: t.conf,
+        ppg: +(p.s.pts / gp).toFixed(1),
+        rpg: +(p.s.reb / gp).toFixed(1),
+        apg: +(p.s.ast / gp).toFixed(1),
+        fgp: p.s.fga > 0 ? +(p.s.fgm / p.s.fga * 100).toFixed(1) : 0,
+        per: +(((p.s.pts + p.s.reb + p.s.ast) / gp)).toFixed(1)
+      });
+    });
+  });
+
+  // Player of the Year — highest PER
+  allPlayers.sort(function(a, b) { return b.per - a.per; });
+  var poy = allPlayers[0] || null;
+
+  // All-American (best 5 nationally by PER)
+  var allAmerican = allPlayers.slice(0, 5);
+
+  // Freshman of the Year
+  var freshmen = allPlayers.filter(function(p) { return p.cls === 'FR'; });
+  freshmen.sort(function(a, b) { return b.per - a.per; });
+  var foy = freshmen[0] || null;
+
+  // All-Conference teams (best 5 per conference)
+  var confTeams = {};
+  var confs = {};
+  allPlayers.forEach(function(p) {
+    if (!confs[p.conf]) confs[p.conf] = [];
+    confs[p.conf].push(p);
+  });
+  Object.keys(confs).forEach(function(conf) {
+    confs[conf].sort(function(a, b) { return b.per - a.per; });
+    confTeams[conf] = confs[conf].slice(0, 5);
+  });
+
+  // Coach of the Year — team that most exceeded expectations (win% vs baseOvr)
+  var coachCandidates = G.teams.map(function(t) {
+    var totalGames = t.wins + t.loss;
+    var expectedWinPct = (t.baseOvr - 50) / 50;
+    var actualWinPct = totalGames > 0 ? t.wins / totalGames : 0;
+    return { team: t, overperform: actualWinPct - expectedWinPct };
+  });
+  coachCandidates.sort(function(a, b) { return b.overperform - a.overperform; });
+  var coy = coachCandidates[0] ? coachCandidates[0].team : null;
+
+  // User's conference All-Conference team
+  var userConf = G.teams[G.tid].conf;
+  var userAllConf = confTeams[userConf] || [];
+
+  return { poy: poy, allAmerican: allAmerican, foy: foy, confTeams: confTeams, coy: coy, userAllConf: userAllConf, userConf: userConf };
+}
+
+// ═══════════════════════════════════════════════════════════
+//  SKILL POINTS
+// ═══════════════════════════════════════════════════════════
+
+function calcSkillPoints() {
+  var t = G.teams[G.tid];
+  var sa = G.seasonAchievements || {};
+  var earned = [];
+  SKILL_POINT_TABLE.forEach(function(row) {
+    if (row.check(t, sa)) earned.push(row.label);
+  });
+  return earned;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════════════════════════════
 
 export function renderSeasonRecap() {
   var t = G.teams[G.tid];
   var year = G.yr;
+  var awards = calcAwards();
+  var skillPts = calcSkillPoints();
 
   var natChamp = { name: 'TBD' };
   if (G.bracket && G.bracket.length) {
@@ -15,104 +99,130 @@ export function renderSeasonRecap() {
     if (still.length === 1) natChamp = still[0].team;
   }
 
-  var topTeams = G.teams.slice().sort(function(a, b) { return (b.wins - b.loss) - (a.wins - a.loss); }).slice(0, 5);
+  var topTeams = G.teams.slice().sort(function(a, b) { return (b.wins - b.loss) - (a.wins - a.loss); }).slice(0, 10);
   var sorted = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; });
   var rank = sorted.findIndex(function(x) { return x.id === G.tid; }) + 1;
 
   var lastHistory = G.history && G.history.length ? G.history[G.history.length - 1] : null;
   var tf = lastHistory ? lastHistory.tourneyFinish : 'N/A';
 
-  var withGP = t.rost.filter(function(p) { return p.s.gp > 0; });
-  if (!withGP.length) withGP = t.rost;
-  var ppgL = withGP.slice().sort(function(a, b) { return (b.s.pts / (b.s.gp || 1)) - (a.s.pts / (a.s.gp || 1)); })[0];
-  var rpgL = withGP.slice().sort(function(a, b) { return (b.s.reb / (b.s.gp || 1)) - (a.s.reb / (a.s.gp || 1)); })[0];
-  var apgL = withGP.slice().sort(function(a, b) { return (b.s.ast / (b.s.gp || 1)) - (a.s.ast / (a.s.gp || 1)); })[0];
+  var h = '';
 
-  var biggestUpset = null, biggestGap = 0;
-  G.teams.forEach(function(tm) {
-    tm.sched.forEach(function(s) {
-      if (!s || !s.played) return;
-      var opp = G.teams[s.opp]; if (!opp) return;
-      var winner = s.uScore > s.oScore ? tm : opp;
-      var loser = s.uScore > s.oScore ? opp : tm;
-      var gap = loser.pts - winner.pts;
-      if (gap > biggestGap && winner.id !== G.tid) { biggestGap = gap; biggestUpset = { winner: winner, loser: loser }; }
-    });
-  });
-
-  var narrative = 'A foundation was laid this year. The boosters are watching closely.';
-  if (t.wins >= 25) narrative = 'A historic run that put the nation on notice. The program has reached a new tier.';
-  else if (t.wins < 10) narrative = 'A difficult campaign. The program must rebuild and refocus.';
-  else if (tf === 'CHAMP') narrative = 'Immortalized. The rafters will hold a new banner forever.';
-  else if (tf === 'F4') narrative = 'Final Four. The program is knocking on the door. Next year is the year.';
-  else if (t.wins >= 20) narrative = 'A statement season. Respect has been earned across the country.';
-
-  var commits = G.recruits ? G.recruits.filter(function(r) { return r.signed === G.tid; }).length : 0;
-  var classRank = Math.max(1, Math.min(100, Math.round(150 - commits * 8 - G.prestige * 10)));
-
-  return '<div style="max-width:900px;margin:0 auto;padding:20px;color:var(--txt);">'
-    + '<div style="text-align:center;margin-bottom:36px;">'
+  // ── Header ──
+  h += '<div style="text-align:center;margin-bottom:28px;">'
     + '<div style="font-size:11px;color:var(--gld2);letter-spacing:4px;font-weight:800;text-transform:uppercase;margin-bottom:6px;">OFFICIAL RECAP</div>'
-    + '<div style="font-size:44px;font-weight:900;line-height:1;letter-spacing:-2px;">SEASON ' + year + '</div>'
-    + '<div style="height:2px;width:60px;background:var(--red);margin:16px auto;"></div>'
-    + '</div>'
-    + '<div style="display:grid;grid-template-columns:1fr 1.2fr;gap:24px;">'
-    + '<div style="display:flex;flex-direction:column;gap:16px;">'
-    + '<div class="card" style="padding:18px;border-left:4px solid var(--gld2);">'
-    + '<div style="font-size:10px;color:var(--txt2);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;">National Champion</div>'
-    + '<div style="font-size:20px;font-weight:900;">' + natChamp.name + '</div>'
-    + '<div style="font-size:11px;color:var(--gld2);margin-top:3px;">' + G.yr + ' NCAA Champion</div>'
-    + '</div>'
-    + '<div class="card" style="padding:18px;">'
-    + '<div style="font-size:10px;color:var(--txt2);margin-bottom:12px;text-transform:uppercase;letter-spacing:1px;">Top of the Class</div>'
-    + topTeams.map(function(tm, i) {
-        var isU = tm.id === G.tid;
-        return '<div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:13px;">'
-          + '<span><span style="color:var(--txt3);margin-right:8px;">#' + (i + 1) + '</span>'
-          + '<span style="color:' + (isU ? 'var(--red)' : '#fff') + ';font-weight:' + (isU ? '800' : '500') + ';">' + tm.name + (isU ? ' \u25c0' : '') + '</span></span>'
-          + '<span style="font-family:monospace;font-weight:700;color:' + (tm.wins > tm.loss ? 'var(--grn2)' : 'var(--txt)') + ';">' + tm.wins + '-' + tm.loss + '</span>'
-          + '</div>';
-      }).join('')
-    + '</div>'
-    + (biggestUpset
-      ? '<div class="card" style="padding:18px;">'
-      + '<div style="font-size:10px;color:var(--txt2);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;">Season Shocker</div>'
-      + '<div style="font-size:14px;font-weight:800;color:#fc8181;">' + biggestUpset.winner.name.toUpperCase() + '</div>'
-      + '<div style="font-size:11px;color:var(--txt2);margin-top:3px;">Toppled ' + biggestUpset.loser.name + ' in the upset of the year.</div>'
-      + '</div>'
-      : '')
-    + '</div>'
-    + '<div style="display:flex;flex-direction:column;gap:16px;">'
-    + '<div class="card" style="padding:22px;background:linear-gradient(145deg,var(--s2),var(--s1));border:1px solid var(--bdr);">'
-    + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;">'
-    + '<div>'
-    + '<div style="font-size:26px;font-weight:900;letter-spacing:-.5px;">' + t.name + '</div>'
-    + '<div style="font-size:13px;color:var(--red);font-weight:700;margin-top:2px;">' + t.wins + '-' + t.loss + ' (' + t.cWins + '-' + t.cLoss + ' ' + t.conf + ')</div>'
-    + '</div>'
-    + '<div style="text-align:right;">'
-    + '<div style="font-size:10px;color:var(--txt2);text-transform:uppercase;">NET</div>'
-    + '<div style="font-size:24px;font-weight:900;">#' + rank + '</div>'
-    + '</div></div>'
-    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">'
-    + '<div style="background:rgba(255,255,255,.04);padding:10px;border-radius:4px;">'
-    + '<div style="font-size:9px;color:var(--txt3);text-transform:uppercase;margin-bottom:3px;">Tournament</div>'
-    + '<div style="font-size:13px;font-weight:700;">' + tf + '</div></div>'
-    + '<div style="background:rgba(255,255,255,.04);padding:10px;border-radius:4px;">'
-    + '<div style="font-size:9px;color:var(--txt3);text-transform:uppercase;margin-bottom:3px;">Class Rank</div>'
-    + '<div style="font-size:13px;font-weight:700;">#' + classRank + '</div></div>'
-    + '</div></div>'
-    + '<div class="card" style="padding:18px;">'
-    + '<div style="font-size:10px;color:var(--txt2);margin-bottom:12px;text-transform:uppercase;letter-spacing:1px;">Statistical Leaders</div>'
-    + (ppgL ? '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04);"><span style="color:var(--txt2);">Points</span><span style="font-size:13px;font-weight:700;">' + (ppgL.s.pts / (ppgL.s.gp || 1)).toFixed(1) + ' <span style="font-size:10px;color:var(--txt3);font-weight:400;">' + ppgL.name + '</span></span></div>' : '')
-    + (rpgL ? '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04);"><span style="color:var(--txt2);">Rebounds</span><span style="font-size:13px;font-weight:700;">' + (rpgL.s.reb / (rpgL.s.gp || 1)).toFixed(1) + ' <span style="font-size:10px;color:var(--txt3);font-weight:400;">' + rpgL.name + '</span></span></div>' : '')
-    + (apgL ? '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;"><span style="color:var(--txt2);">Assists</span><span style="font-size:13px;font-weight:700;">' + (apgL.s.ast / (apgL.s.gp || 1)).toFixed(1) + ' <span style="font-size:10px;color:var(--txt3);font-weight:400;">' + apgL.name + '</span></span></div>' : '')
-    + '</div>'
-    + '<div style="padding:18px;font-style:italic;color:var(--txt2);font-size:13px;text-align:center;line-height:1.7;background:rgba(255,255,255,.02);border:1px solid var(--bdr);border-radius:7px;">'
-    + '&ldquo;' + narrative + '&rdquo;'
-    + '</div>'
-    + '</div></div>'
-    + '<div style="margin-top:36px;text-align:center;">'
-    + '<div class="btn btn-red" onclick="beginOffseason()" style="display:inline-block;padding:14px 40px;font-size:13px;font-weight:800;letter-spacing:1px;">BEGIN OFFSEASON \u25b6</div>'
-    + '</div>'
-    + '</div>';
+    + '<div style="font-size:40px;font-weight:900;line-height:1;letter-spacing:-2px;">SEASON ' + year + '</div>'
+    + '<div style="height:2px;width:60px;background:var(--red);margin:14px auto;"></div></div>';
+
+  // ── Two columns ──
+  h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">';
+
+  // LEFT — League
+  h += '<div style="display:flex;flex-direction:column;gap:14px;">';
+
+  // National Champion
+  h += '<div class="card" style="padding:18px;border-left:4px solid var(--gld2);">'
+    + '<div style="font-size:10px;color:var(--txt2);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;">National Champion</div>'
+    + '<div style="font-size:22px;font-weight:900;">' + natChamp.name + '</div></div>';
+
+  // Top 10
+  h += '<div class="card" style="padding:18px;">'
+    + '<div style="font-size:10px;color:var(--txt2);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;">Final Top 10</div>';
+  topTeams.forEach(function(tm, i) {
+    var isU = tm.id === G.tid;
+    h += '<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:12px;">'
+      + '<span><span style="color:var(--txt3);margin-right:6px;font-family:monospace;">#' + (i + 1) + '</span>'
+      + '<span style="color:' + (isU ? 'var(--red)' : '#fff') + ';font-weight:' + (isU ? '800' : '500') + ';">' + tm.name + (isU ? ' \u25c0' : '') + '</span></span>'
+      + '<span style="font-family:monospace;font-weight:700;color:' + (tm.wins > tm.loss ? 'var(--grn2)' : 'var(--txt)') + ';">' + tm.wins + '-' + tm.loss + '</span></div>';
+  });
+  h += '</div>';
+
+  // Player of the Year
+  if (awards.poy) {
+    h += '<div class="card" style="padding:18px;border-left:4px solid var(--red);">'
+      + '<div style="font-size:10px;color:var(--txt2);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;">Player of the Year</div>'
+      + '<div style="font-size:18px;font-weight:900;color:' + (awards.poy.tid === G.tid ? 'var(--red)' : '#fff') + ';">' + awards.poy.name + '</div>'
+      + '<div style="font-size:11px;color:var(--txt2);margin-top:2px;">' + awards.poy.team + ' \u00b7 ' + awards.poy.pos + ' \u00b7 ' + awards.poy.ppg + ' PPG / ' + awards.poy.rpg + ' RPG / ' + awards.poy.apg + ' APG</div></div>';
+  }
+
+  // Freshman of the Year
+  if (awards.foy) {
+    h += '<div class="card" style="padding:18px;">'
+      + '<div style="font-size:10px;color:var(--txt2);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;">Freshman of the Year</div>'
+      + '<div style="font-size:16px;font-weight:900;color:' + (awards.foy.tid === G.tid ? 'var(--grn2)' : '#fff') + ';">' + awards.foy.name + '</div>'
+      + '<div style="font-size:11px;color:var(--txt2);margin-top:2px;">' + awards.foy.team + ' \u00b7 ' + awards.foy.ppg + ' PPG</div></div>';
+  }
+
+  // Coach of the Year
+  if (awards.coy) {
+    var coachName = awards.coy.coach ? awards.coy.coach.firstName + ' ' + awards.coy.coach.lastName : 'Staff';
+    h += '<div class="card" style="padding:18px;">'
+      + '<div style="font-size:10px;color:var(--txt2);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;">Coach of the Year</div>'
+      + '<div style="font-size:16px;font-weight:900;color:' + (awards.coy.id === G.tid ? 'var(--gld2)' : '#fff') + ';">' + coachName + '</div>'
+      + '<div style="font-size:11px;color:var(--txt2);margin-top:2px;">' + awards.coy.name + ' (' + awards.coy.wins + '-' + awards.coy.loss + ')</div></div>';
+  }
+
+  h += '</div>';
+
+  // RIGHT — Your program
+  h += '<div style="display:flex;flex-direction:column;gap:14px;">';
+
+  // Your season card
+  h += '<div class="card" style="padding:20px;background:linear-gradient(145deg,var(--s2),var(--s1));">'
+    + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">'
+    + '<div><div style="font-size:24px;font-weight:900;letter-spacing:-.5px;">' + t.name + '</div>'
+    + '<div style="font-size:13px;color:var(--red);font-weight:700;margin-top:2px;">' + t.wins + '-' + t.loss + ' (' + t.cWins + '-' + t.cLoss + ' ' + t.conf + ')</div></div>'
+    + '<div style="text-align:right;"><div style="font-size:10px;color:var(--txt2);">NET</div><div style="font-size:22px;font-weight:900;">#' + rank + '</div></div></div>'
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
+    + '<div style="background:rgba(255,255,255,.04);padding:10px;border-radius:4px;"><div style="font-size:9px;color:var(--txt3);text-transform:uppercase;">Tournament</div><div style="font-size:14px;font-weight:700;margin-top:2px;">' + tf + '</div></div>'
+    + '<div style="background:rgba(255,255,255,.04);padding:10px;border-radius:4px;"><div style="font-size:9px;color:var(--txt3);text-transform:uppercase;">Prestige</div><div style="font-size:14px;font-weight:700;margin-top:2px;">' + (t.schoolPrestige || '--') + '</div></div>'
+    + '</div></div>';
+
+  // All-American
+  if (awards.allAmerican.length) {
+    h += '<div class="card" style="padding:18px;">'
+      + '<div style="font-size:10px;color:var(--txt2);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;">All-American Team</div>';
+    awards.allAmerican.forEach(function(p) {
+      var isU = p.tid === G.tid;
+      h += '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.03);font-size:12px;">'
+        + '<span style="color:' + (isU ? 'var(--red)' : '#fff') + ';font-weight:' + (isU ? '800' : '600') + ';">' + p.name + ' <span style="color:var(--txt3);font-size:10px;">' + p.pos + ' \u00b7 ' + p.team + '</span></span>'
+        + '<span style="font-family:monospace;color:var(--txt2);">' + p.ppg + ' / ' + p.rpg + ' / ' + p.apg + '</span></div>';
+    });
+    h += '</div>';
+  }
+
+  // Your Conference All-Conference
+  if (awards.userAllConf.length) {
+    h += '<div class="card" style="padding:18px;">'
+      + '<div style="font-size:10px;color:var(--txt2);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;">All-' + awards.userConf + ' Team</div>';
+    awards.userAllConf.forEach(function(p) {
+      var isU = p.tid === G.tid;
+      h += '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.03);font-size:12px;">'
+        + '<span style="color:' + (isU ? 'var(--red)' : '#fff') + ';font-weight:' + (isU ? '800' : '600') + ';">' + p.name + ' <span style="color:var(--txt3);font-size:10px;">' + p.team + '</span></span>'
+        + '<span style="font-family:monospace;color:var(--txt2);">' + p.ppg + ' PPG</span></div>';
+    });
+    h += '</div>';
+  }
+
+  // Skill Points Earned
+  h += '<div class="card" style="padding:18px;border-left:4px solid var(--grn);">'
+    + '<div style="font-size:10px;color:var(--txt2);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;">Coaching XP Earned</div>'
+    + '<div style="font-size:28px;font-weight:900;color:var(--grn2);margin-bottom:8px;">' + skillPts.length + ' skill point' + (skillPts.length !== 1 ? 's' : '') + '</div>';
+  if (skillPts.length) {
+    skillPts.forEach(function(label) {
+      h += '<div style="font-size:11px;color:var(--grn2);padding:2px 0;">\u2713 ' + label + '</div>';
+    });
+  } else {
+    h += '<div style="font-size:11px;color:var(--txt3);">No achievements this season.</div>';
+  }
+  h += '</div>';
+
+  h += '</div>'; // close right
+  h += '</div>'; // close grid
+
+  // CTA
+  h += '<div style="margin-top:24px;text-align:center;">'
+    + '<div class="btn btn-red" onclick="beginOffseason()" style="display:inline-block;padding:14px 40px;font-size:14px;font-weight:800;">BEGIN OFFSEASON \u25b6</div></div>';
+
+  return h;
 }

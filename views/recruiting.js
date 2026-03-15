@@ -232,6 +232,13 @@ export function renderOffseason(){
   var el=ge('offseason-content');if(!el)return;
 
   // Route to correct screen
+  if(G.offseasonStep==='recap'){
+    // Render recap inside the offseason view
+    if(window._renderSeasonRecap) el.innerHTML=window._renderSeasonRecap();
+    else el.innerHTML='<div style="padding:40px;text-align:center;color:var(--txt3);">Season recap loading...</div>';
+    return;
+  }
+
   if(G.offseasonStep==='turnover'||!G.offseasonStep){
     el.innerHTML=renderTurnover();return;
   }

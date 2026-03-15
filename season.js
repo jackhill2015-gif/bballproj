@@ -93,7 +93,6 @@ export function buildSchedules() {
   G.teams.forEach(function(tm) { tm.sched = []; for (var i = 0; i < 30; i++) tm.sched.push(null); });
 
   // ── STEP 1: Conference games (weeks 10-29) ──
-  // Group teams by conference
   var confs = {};
   G.teams.forEach(function(tm) {
     if (!confs[tm.conf]) confs[tm.conf] = [];
@@ -102,87 +101,53 @@ export function buildSchedules() {
 
   Object.keys(confs).forEach(function(conf) {
     var ids = confs[conf];
-    var matchups = [];
-    // Round-robin: every team plays every other team once
-    for (var a = 0; a < ids.length; a++) {
-      for (var b = a + 1; b < ids.length; b++) {
-        matchups.push({ h: ids[a], a: ids[b] });
+    // For each team, schedule 20 conference games against conference opponents
+    ids.forEach(function(teamId) {
+      var opponents = ids.filter(function(x) { return x !== teamId; });
+      // Shuffle opponents
+      for (var s = opponents.length - 1; s > 0; s--) {
+        var k = ri(0, s); var tmp = opponents[s]; opponents[s] = opponents[k]; opponents[k] = tmp;
       }
-    }
-    // Shuffle matchups
-    for (var s = matchups.length - 1; s > 0; s--) {
-      var k = ri(0, s); var tmp = matchups[s]; matchups[s] = matchups[k]; matchups[k] = tmp;
-    }
-    // Assign to weeks 10-29 for each team
-    matchups.forEach(function(m) {
-      // Find a week 10-29 where BOTH teams are free
+      var gameCount = 0;
+      var oppIdx = 0;
       for (var w = 10; w < 30; w++) {
-        if (!G.teams[m.h].sched[w] && !G.teams[m.a].sched[w]) {
-          var homeFlip = ri(0, 1) === 0;
-          var hid = homeFlip ? m.h : m.a;
-          var aid = homeFlip ? m.a : m.h;
-          G.teams[hid].sched[w] = { opp: aid, home: true, conf: true, played: false, uScore: 0, oScore: 0 };
-          G.teams[aid].sched[w] = { opp: hid, home: false, conf: true, played: false, uScore: 0, oScore: 0 };
-          return;
+        if (G.teams[teamId].sched[w]) continue; // already filled by a paired matchup
+        if (gameCount >= 20) break;
+        // Find an opponent that's free this week
+        var found = false;
+        for (var attempt = 0; attempt < opponents.length; attempt++) {
+          var oppId = opponents[(oppIdx + attempt) % opponents.length];
+          if (!G.teams[oppId].sched[w]) {
+            var home = gameCount % 2 === 0;
+            var hid = home ? teamId : oppId;
+            var aid = home ? oppId : teamId;
+            G.teams[hid].sched[w] = { opp: aid, home: true, conf: true, played: false, uScore: 0, oScore: 0 };
+            G.teams[aid].sched[w] = { opp: hid, home: false, conf: true, played: false, uScore: 0, oScore: 0 };
+            gameCount++;
+            oppIdx = (oppIdx + attempt + 1) % opponents.length;
+            found = true;
+            break;
+          }
         }
-      }
-      // If no slot found (big conference overflow), double up: find any open slot
-      for (var w2 = 10; w2 < 30; w2++) {
-        if (!G.teams[m.h].sched[w2]) {
-          G.teams[m.h].sched[w2] = { opp: m.a, home: true, conf: true, played: false, uScore: 0, oScore: 0 };
-          break;
-        }
-      }
-      for (var w3 = 10; w3 < 30; w3++) {
-        if (!G.teams[m.a].sched[w3]) {
-          G.teams[m.a].sched[w3] = { opp: m.h, home: false, conf: true, played: false, uScore: 0, oScore: 0 };
-          break;
+        if (!found) {
+          // Force fill — pick any opponent even if they already have a game this week
+          var forceOpp = opponents[oppIdx % opponents.length];
+          var home2 = gameCount % 2 === 0;
+          G.teams[teamId].sched[w] = { opp: forceOpp, home: home2, conf: true, played: false, uScore: 0, oScore: 0 };
+          gameCount++;
+          oppIdx++;
         }
       }
     });
   });
 
-  // ── STEP 2: CPU OOC games (weeks 0-9) ──
-  // Pair CPU teams across conferences
-  var cpuNeedOOC = [];
-  G.teams.forEach(function(tm) {
-    if (tm.id === tid) return;
-    for (var w = 0; w < 10; w++) {
-      if (!tm.sched[w]) cpuNeedOOC.push({ tid: tm.id, week: w });
-    }
-  });
-  // Shuffle
-  for (var s2 = cpuNeedOOC.length - 1; s2 > 0; s2--) {
-    var k2 = ri(0, s2); var tmp2 = cpuNeedOOC[s2]; cpuNeedOOC[s2] = cpuNeedOOC[k2]; cpuNeedOOC[k2] = tmp2;
-  }
-  // Pair them up
-  var paired = new Set();
-  cpuNeedOOC.forEach(function(slot) {
-    if (paired.has(slot.tid + '-' + slot.week)) return;
-    if (G.teams[slot.tid].sched[slot.week]) return;
-    // Find a partner: different conference, also free this week
-    for (var j = 0; j < cpuNeedOOC.length; j++) {
-      var other = cpuNeedOOC[j];
-      if (other.tid === slot.tid) continue;
-      if (other.week !== slot.week) continue;
-      if (paired.has(other.tid + '-' + other.week)) continue;
-      if (G.teams[other.tid].sched[slot.week]) continue;
-      if (G.teams[slot.tid].conf === G.teams[other.tid].conf) continue;
-      // Pair them
-      G.teams[slot.tid].sched[slot.week] = { opp: other.tid, home: true, conf: false, played: false, uScore: 0, oScore: 0 };
-      G.teams[other.tid].sched[slot.week] = { opp: slot.tid, home: false, conf: false, played: false, uScore: 0, oScore: 0 };
-      paired.add(slot.tid + '-' + slot.week);
-      paired.add(other.tid + '-' + other.week);
-      break;
-    }
-  });
-
-  // Fill any remaining empty CPU OOC slots with cross-conf opponents
+  // ── STEP 2: OOC games (weeks 0-9) ──
+  // For CPU teams, pair them across conferences
   G.teams.forEach(function(tm) {
     if (tm.id === tid) return;
     for (var w = 0; w < 10; w++) {
       if (tm.sched[w]) continue;
-      // Find any team from different conf with an open slot this week
+      // Find a cross-conference opponent free this week
       for (var j = 0; j < G.teams.length; j++) {
         var other = G.teams[j];
         if (other.id === tm.id || other.id === tid || other.conf === tm.conf) continue;
@@ -191,17 +156,24 @@ export function buildSchedules() {
         other.sched[w] = { opp: tm.id, home: false, conf: false, played: false, uScore: 0, oScore: 0 };
         break;
       }
-      // Last resort: unmatched bye (null stays)
     }
   });
 
-  // ── STEP 3: User OOC slots (weeks 0-9) left blank for manual selection ──
-  // User's weeks 0-9 are open — filled by startDynasty() or setupUserOOC()
-
-  // Fill any empty conf weeks with bye placeholder
+  // ── STEP 3: Fill any remaining nulls ──
+  // Any team with empty slots gets a cross-conf game forced
   G.teams.forEach(function(tm) {
+    if (tm.id === tid) return;
     for (var w = 0; w < 30; w++) {
-      if (!tm.sched[w]) tm.sched[w] = null; // bye week
+      if (tm.sched[w]) continue;
+      // Find any opponent from a different conf
+      for (var j = 0; j < G.teams.length; j++) {
+        var other = G.teams[j];
+        if (other.id === tm.id || other.id === tid) continue;
+        if (other.sched[w]) continue;
+        tm.sched[w] = { opp: other.id, home: ri(0,1)===0, conf: false, played: false, uScore: 0, oScore: 0 };
+        other.sched[w] = { opp: tm.id, home: !tm.sched[w].home, conf: false, played: false, uScore: 0, oScore: 0 };
+        break;
+      }
     }
   });
 
@@ -474,6 +446,13 @@ export function doPlay(mode) {
   updateAutoBtn();
 
   if (G.phase === 'reg' && G.gi < 30) {
+    // Skip bye weeks
+    var userGame = G.teams[G.tid].sched[G.gi];
+    if (!userGame) {
+      simCPUWeek();
+      advanceWeek();
+      return;
+    }
     launchSim(mode === 'live');
   } else if (G.phase === 'reg' && G.gi >= 30) {
     G.phase = 'conf_tourn';
@@ -601,7 +580,6 @@ export function recordSeasonHistory(source) {
 }
 
 export function endSeason() {
-  // Record league champ if not already
   var still = G.bracket.filter(function(b) { return b.active; });
   if (still.length === 1) {
     if (!G.leagueChamps) G.leagueChamps = [];
@@ -610,16 +588,40 @@ export function endSeason() {
       G.leagueChamps.push({ year: G.yr, name: ch.name, tid: ch.id });
   }
   recordSeasonHistory('ncaa');
-  showRecap();
-  saveState();
+
+  // Calculate skill points
+  var t = G.teams[G.tid];
+  var sa = G.seasonAchievements;
+  var earned = 0;
+  if (t.wins >= 16) earned++;
+  if (t.wins >= 20) earned++;
+  if (t.wins >= 25) earned++;
+  if (sa.confTitleThisYear) earned++;
+  if (sa.madeNCAA) earned++;
+  if (sa.sweet16) earned++;
+  if (sa.finalFour) earned++;
+  if (sa.champGame) earned++;
+  if (sa.natChamp) earned++;
+  G.skillPointsEarned = earned;
+  G.skillPointsToSpend = earned;
+
+  // Update coach career stats
+  G.coach.careerWins += t.wins;
+  G.coach.careerLoss += t.loss;
+  G.coach.tenure++;
+  G.coach.age++;
+
+  // Go to recap as first offseason step
+  G.phase = 'offseason';
+  G.offseasonStep = 'recap';
+  saveState(); updateAll(); navTo('offseason');
 }
 
 export function showRecap() {
-  var rs = ge('recap-screen');
-  if (!rs) return;
-  rs.classList.add('open');
-  var rc = ge('recap-content');
-  if (rc && _ext.renderSeasonRecap) rc.innerHTML = _ext.renderSeasonRecap();
+  // Legacy — redirect to the offseason view
+  G.phase = 'offseason';
+  G.offseasonStep = 'recap';
+  updateAll(); navTo('offseason');
 }
 
 export function beginOffseason() {

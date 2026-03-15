@@ -172,6 +172,7 @@ window.autoSimNext = autoSimNext;
 
 // Bridge for recruiting.js to call genRecruits
 window._genRecruits = genRecruits;
+window._renderSeasonRecap = renderSeasonRecap;
 
 // ═══════════════════════════════════════════════════════════
 //  BOOT
