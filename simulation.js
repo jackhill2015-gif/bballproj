@@ -6,39 +6,97 @@
 // ═══════════════════════════════════════════════════════════
 
 import { COM, DIFF_MOD } from './constants.js';
-import { ri, clamp, gn, getOvr, getTOvr, pick } from './utils.js';
+import { ri, clamp, gn, getOvr, getTOvr, pick, freshS } from './utils.js';
 import { G } from './state.js';
 
 // ── Player Generation ────────────────────────────────────
 export function genPlayer(base, pos, cls) {
   var p = {
     name: gn(), pos: pos, cls: cls, mins: 0,
-    sht: ri(base - 12, base + 12),
-    fin: ri(base - 12, base + 12),
-    def: ri(base - 12, base + 12),
-    reb: ri(base - 12, base + 12),
-    ply: ri(base - 12, base + 12),
-    s: { gp: 0, pts: 0, reb: 0, ast: 0, fgm: 0, fga: 0 }
+    sht: ri(base - 18, base + 18),
+    fin: ri(base - 18, base + 18),
+    def: ri(base - 18, base + 18),
+    reb: ri(base - 18, base + 18),
+    ply: ri(base - 18, base + 18),
+    s: freshS()
   };
-  if (pos === 'PG') { p.ply += 16; p.sht += 5; p.reb -= 16; }
-  if (pos === 'SG') { p.sht += 14; p.fin += 5; p.reb -= 10; }
-  if (pos === 'SF') { p.sht += 5; p.fin += 7; p.def += 5; }
-  if (pos === 'PF') { p.fin += 11; p.reb += 11; p.sht -= 10; p.def += 4; }
-  if (pos === 'C')  { p.fin += 16; p.reb += 16; p.def += 10; p.sht -= 20; p.ply -= 8; }
-  ['sht', 'fin', 'def', 'reb', 'ply'].forEach(function(a) {
-    p[a] = clamp(p[a], 38, 99);
-  });
+
+  // Archetype system
+  var roll = ri(1, 100);
+  if (pos === 'PG') {
+    if (roll <= 52) { // Floor General
+      p.ply += ri(14, 22); p.sht += ri(6, 12); p.def += ri(3, 8); p.fin -= ri(6, 12); p.reb -= ri(12, 18);
+    } else { // Scoring Guard
+      p.sht += ri(14, 22); p.fin += ri(8, 14); p.ply += ri(4, 10); p.reb -= ri(8, 14);
+    }
+  } else if (pos === 'SG') {
+    if (roll <= 50) { // Sharpshooter
+      p.sht += ri(15, 23); p.fin -= ri(8, 14); p.def += ri(2, 7);
+    } else { // Slasher
+      p.fin += ri(14, 22); p.sht += ri(6, 12); p.ply += ri(5, 11);
+    }
+  } else if (pos === 'SF') {
+    if (roll <= 55) { // Two-Way Wing
+      p.sht += ri(8, 14); p.def += ri(10, 16); p.fin += ri(4, 9); p.ply += ri(3, 8);
+    } else { // Point Forward
+      p.ply += ri(13, 20); p.sht += ri(7, 13); p.reb += ri(5, 10);
+    }
+  } else if (pos === 'PF') {
+    if (roll <= 48) { // Stretch Four
+      p.sht += ri(12, 20); p.fin += ri(4, 9); p.reb += ri(6, 11); p.def += ri(3, 8);
+    } else { // Paint Beast
+      p.fin += ri(14, 22); p.reb += ri(13, 21); p.sht -= ri(10, 16); p.ply -= ri(5, 10);
+    }
+  } else if (pos === 'C') {
+    if (roll <= 50) { // Rim Protector
+      p.def += ri(14, 22); p.reb += ri(15, 23); p.fin += ri(6, 12); p.sht -= ri(14, 20); p.ply -= ri(8, 14);
+    } else { // Offensive Center
+      p.fin += ri(15, 23); p.reb += ri(8, 14); p.sht += ri(5, 11); p.def -= ri(8, 14);
+    }
+  }
+
+  // Star boost for high-base teams
+  if (base >= 78 && ri(1, 100) <= 28) {
+    var main = (pos === 'PG') ? 'ply' : (pos === 'SG') ? 'sht' : (pos === 'SF') ? 'def' : (pos === 'PF' || pos === 'C') ? 'reb' : 'fin';
+    p[main] = clamp(p[main] + ri(7, 13), 38, 99);
+  }
+
+  ['sht', 'fin', 'def', 'reb', 'ply'].forEach(function(a) { p[a] = clamp(p[a], 38, 99); });
   p.ovr = getOvr(p);
 
-  // Potential — higher ceiling for younger players
-  var potGap = cls === 'FR' ? ri(5, 18) : cls === 'SO' ? ri(3, 12) : cls === 'JR' ? ri(1, 7) : ri(0, 3);
-  // Hidden gem chance: ~8% of freshmen get a huge potential spike regardless of current OVR
-  if (cls === 'FR' && Math.random() < 0.08) {
-    potGap = ri(18, 30);
-  }
+  // Development curve + potential
+  var devRoll = ri(1, 100);
+  if (cls === 'FR') { p.devCurve = (devRoll <= 20) ? 'early' : (devRoll <= 80) ? 'normal' : 'late'; }
+  else if (cls === 'SO') { p.devCurve = (devRoll <= 15) ? 'early' : (devRoll <= 75) ? 'normal' : 'late'; }
+  else { p.devCurve = (devRoll <= 35) ? 'late' : 'normal'; }
+
+  var potGap = (cls === 'FR') ? ri(5, 18) : (cls === 'SO') ? ri(3, 12) : (cls === 'JR') ? ri(1, 7) : ri(0, 3);
+  if (cls === 'FR' && ri(1, 100) <= 8) { potGap = ri(18, 30); if (p.devCurve === 'normal') p.devCurve = 'late'; }
+  if (p.devCurve === 'late') potGap += ri(4, 9);
   p.pot = clamp(p.ovr + potGap, p.ovr, 99);
 
   return p;
+}
+
+export function calcGrowth(p, coachDev) {
+  var devBonus = Math.round((coachDev - 70) / 15);
+  var baseTotal = (p.cls === 'FR') ? ri(4, 9) : (p.cls === 'SO') ? ri(3, 6) : (p.cls === 'JR') ? ri(2, 4) : ri(1, 3);
+  baseTotal += devBonus;
+  baseTotal = clamp(baseTotal, 1, 12);
+  if (p.devCurve === 'early' && (p.cls === 'FR' || p.cls === 'SO')) baseTotal += ri(1, 3);
+  if (p.devCurve === 'late' && (p.cls === 'JR' || p.cls === 'SR')) baseTotal += ri(2, 4);
+  baseTotal = clamp(baseTotal, 1, 15);
+  var changes = { sht: 0, fin: 0, def: 0, reb: 0, ply: 0 };
+  var remaining = baseTotal;
+  var attrs = ['sht', 'fin', 'def', 'reb', 'ply'];
+  while (remaining > 0) {
+    var attr = attrs[ri(0, 4)];
+    var add = ri(1, Math.min(3, remaining + 1));
+    changes[attr] += add; remaining -= add;
+  }
+  if (p.pos === 'PG' || p.pos === 'SG') changes.ply = clamp(changes.ply + ri(0, 1), 0, 5);
+  if (p.pos === 'PF' || p.pos === 'C') changes.reb = clamp(changes.reb + ri(0, 1), 0, 5);
+  return changes;
 }
 
 // ── Engine Strategy ──────────────────────────────────────

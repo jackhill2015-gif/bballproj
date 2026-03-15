@@ -70,7 +70,12 @@ export function getTier(ovr) {
 
 // ── Player / Team Rating ─────────────────────────────────
 export function getOvr(p) {
-  return Math.round(p.sht * 0.28 + p.fin * 0.22 + p.def * 0.22 + p.reb * 0.12 + p.ply * 0.16);
+  if (p.pos === 'PG') return Math.round(p.sht * 0.25 + p.fin * 0.20 + p.def * 0.15 + p.reb * 0.10 + p.ply * 0.30);
+  if (p.pos === 'SG') return Math.round(p.sht * 0.30 + p.fin * 0.25 + p.def * 0.15 + p.reb * 0.15 + p.ply * 0.15);
+  if (p.pos === 'SF') return Math.round(p.sht * 0.22 + p.fin * 0.22 + p.def * 0.22 + p.reb * 0.17 + p.ply * 0.17);
+  if (p.pos === 'PF') return Math.round(p.sht * 0.15 + p.fin * 0.25 + p.def * 0.25 + p.reb * 0.25 + p.ply * 0.10);
+  if (p.pos === 'C')  return Math.round(p.sht * 0.10 + p.fin * 0.24 + p.def * 0.28 + p.reb * 0.28 + p.ply * 0.10);
+  return Math.round(p.sht * 0.22 + p.fin * 0.22 + p.def * 0.22 + p.reb * 0.17 + p.ply * 0.17);
 }
 
 export function getTOvr(t) {

@@ -9,7 +9,7 @@ import {
   ri, clamp, getTOvr, fixMins, freshS, getTeamStyle, getOvr, ge, txt
 } from './utils.js';
 import { G, LS, SetupState, saveState } from './state.js';
-import { genPlayer, simGame, distributeStats } from './simulation.js';
+import { genPlayer, simGame, distributeStats, calcGrowth } from './simulation.js';
 import { rollEvents } from './events.js';
 
 // ── Late-Binding Registry ────────────────────────────────
@@ -763,15 +763,15 @@ export function doOffseason() {
 
   var commits = G.recruits.filter(function(r) { return r.signed === G.tid; });
 
-  // Age up / develop returning players (coach DEV rating affects growth)
-  var devBonus = Math.round((G.coach.dev - 70) / 15); // -2 to +2 based on DEV rating
+  // Age up / develop returning players using calcGrowth
   t.rost.forEach(function(p) {
     if (p.cls === 'SR') return;
+    var growth = calcGrowth(p, G.coach.dev);
     ['sht', 'fin', 'def', 'reb', 'ply'].forEach(function(a) {
-      p[a] = clamp(p[a] + ri(-1, 4) + devBonus, 38, 99);
+      p[a] = clamp(p[a] + (growth[a] || 0), 38, 99);
     });
     p.ovr = getOvr(p);
-    if (p.pot && p.ovr > p.pot) p.pot = p.ovr; // pot can't be below ovr
+    if (p.pot && p.ovr > p.pot) p.pot = p.ovr;
     var idx = CLS.indexOf(p.cls);
     if (idx < 3) p.cls = CLS[idx + 1];
   });
