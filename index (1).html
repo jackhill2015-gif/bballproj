@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HOOPS OS</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="toast"></div>
+
+<!-- ═══ HOME SCREEN ═══ -->
+<div id="home-screen" style="display:none;">
+  <div class="home-brand">HOOPS<em>OS</em></div>
+  <div class="home-tagline">364 D1 programs. One champion. Build your dynasty.</div>
+  <div class="home-cards">
+    <div class="home-new" onclick="startNewDynasty()">
+      <div class="home-new-icon">＋</div>
+      <div class="home-new-label">New Dynasty</div>
+      <div class="home-new-sub">Start from scratch</div>
+    </div>
+    <div id="home-save-slot" style="display:none;" class="home-save">
+      <div class="home-save-title">Continue Dynasty</div>
+      <div class="home-dynasty-row">
+        <div class="home-dynasty-info">
+          <div class="home-dynasty-team" id="home-team-name">---</div>
+          <div class="home-dynasty-meta" id="home-dynasty-meta">---</div>
+          <div class="home-dynasty-stats">
+            <div class="home-dynasty-stat"><div class="home-dynasty-stat-v" id="home-record">0-0</div><div class="home-dynasty-stat-l">Record</div></div>
+            <div class="home-dynasty-stat"><div class="home-dynasty-stat-v" id="home-year">2025</div><div class="home-dynasty-stat-l">Year</div></div>
+            <div class="home-dynasty-stat"><div class="home-dynasty-stat-v" id="home-seasons">1</div><div class="home-dynasty-stat-l">Seasons</div></div>
+            <div class="home-dynasty-stat"><div class="home-dynasty-stat-v" id="home-titles">0</div><div class="home-dynasty-stat-l">Titles</div></div>
+          </div>
+        </div>
+        <div class="home-play-btn" onclick="loadAndPlay()">PLAY ▶</div>
+      </div>
+      <div class="home-delete">
+        <button class="home-delete-btn" onclick="deleteFromHome()">Delete save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SETUP WIZARD ═══ -->
+<div id="setup">
+  <div id="step1" class="setup-wrap">
+    <div class="setup-left">
+      <div class="setup-title">HOOPS<em>OS</em></div>
+      <div class="setup-sub">364 D1 programs. One champion. Build your dynasty.</div>
+      <div class="setup-label">Select Your Program</div>
+      <div style="position:relative;">
+        <div id="picker-trigger" class="picker-trigger" onclick="togglePicker()">
+          <span id="picker-label">Choose a program...</span>
+          <span style="font-size:10px;color:var(--txt3);">▼</span>
+        </div>
+        <div id="picker-dropdown" class="picker-dropdown">
+          <input id="picker-search" class="picker-search" placeholder="Search 364 teams...">
+          <div id="picker-list" class="picker-list"></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <div class="btn btn-ghost btn-sm" onclick="pickRandom()" style="flex:1;text-align:center;">Random</div>
+      </div>
+      <div class="setup-label">Difficulty</div>
+      <div class="diff-group" style="margin-bottom:8px;">
+        <div class="diff-btn" data-diff="easy" onclick="setDiff('easy')">Easy</div>
+        <div class="diff-btn on" data-diff="normal" onclick="setDiff('normal')">Normal</div>
+        <div class="diff-btn" data-diff="hard" onclick="setDiff('hard')">Hard</div>
+        <div class="diff-btn" data-diff="legend" onclick="setDiff('legend')">Legend</div>
+      </div>
+      <div id="diff-desc" style="font-size:11px;color:var(--txt3);margin-bottom:20px;">Balanced challenge.</div>
+      <div style="margin-top:auto;">
+        <div class="btn btn-red btn-full" id="step1-btn" data-disabled="true" onclick="goToStep2()" style="opacity:.5;pointer-events:none;">SELECT A TEAM TO CONTINUE</div>
+      </div>
+    </div>
+    <div class="setup-right" id="program-profile">
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;opacity:.3;">
+        <div style="font-size:48px;margin-bottom:12px;">🏀</div>
+        <div style="font-size:13px;color:var(--txt3);text-align:center;">Select a program<br>to see its profile</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="step2" style="display:none;background:var(--s1);border:1px solid var(--bdr);border-radius:10px;width:780px;max-width:96vw;overflow:hidden;">
+    <div style="padding:16px 20px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div style="font-size:15px;font-weight:900;color:#fff;">Non-Conference Schedule</div>
+        <div style="font-size:11px;color:var(--txt3);margin-top:2px;">Auto-generated. Swap any opponent you don't want.</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div class="btn btn-ghost btn-sm" onclick="goToStep1()">← Back</div>
+        <div class="btn btn-red btn-sm" onclick="startDynasty()">START SEASON ▶</div>
+      </div>
+    </div>
+    <div style="padding:16px 20px;">
+      <div id="nc-auto-list" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ APP SHELL ═══ -->
+<div id="topbar">
+  <div class="tb-brand">HOOPS<em>OS</em></div>
+  <div class="tb-div"></div>
+
+  <!-- PLAY BUTTON -->
+  <div class="play-wrap">
+    <div class="play-btn" id="play-btn" onclick="togglePlayMenu()">
+      <span id="play-label">PLAY</span>
+      <span class="play-arrow">▼</span>
+    </div>
+    <div class="play-dropdown" id="play-dropdown">
+      <div class="play-opt" onclick="doPlay('live')">
+        Live Sim
+        <span class="play-opt-sub">Watch play by play</span>
+      </div>
+      <div class="play-opt" onclick="doPlay('quick')">
+        Quick Sim
+        <span class="play-opt-sub">Instant result</span>
+      </div>
+      <div style="height:1px;background:var(--bdr);margin:0 12px;"></div>
+      <div class="play-opt" id="auto-opt" onclick="doPlay('auto')">
+        <span id="auto-label">Auto Sim Season</span>
+        <span class="play-opt-sub" id="auto-sub">Runs until you stop</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MATCHUP INFO -->
+  <div class="tb-matchup">
+    <span class="tb-wk" id="tb-wk">WK 1</span>
+    <span class="tb-vs">vs</span>
+    <span class="tb-opp" id="tb-opp">---</span>
+    <span class="tb-rec" id="tb-rec">0–0</span>
+  </div>
+
+  <div class="tb-right">
+    <div class="tb-stat"><div class="tb-stat-l">NET</div><div class="tb-stat-v" id="tb-rank">--</div></div>
+    <div class="tb-stat"><div class="tb-stat-l">Year</div><div class="tb-stat-v" id="tb-yr">2025</div></div>
+    <div style="font-size:11px;color:var(--txt2);font-family:'Inter',sans-serif;line-height:1.2;margin-right:8px;"><div id="tb-phase-label" style="font-weight:600;">2025 preseason</div><div style="font-size:10px;color:var(--txt3);">Idle</div></div><div class="tb-phase" id="tb-phase">PRESEASON</div>
+  </div>
+</div>
+
+<div id="app">
+  <!-- LEFT NAV -->
+  <div id="left">
+    <div class="nav-btn on" data-view="dashboard" onclick="navTo('dashboard')">Dashboard</div>
+    <div class="nav-btn" data-view="schedule" onclick="navTo('schedule')">Schedule</div>
+    <div class="nav-btn" data-view="roster" onclick="navTo('roster')">Roster</div>
+    <div class="nav-btn" data-view="stats" onclick="navTo('stats')">Stats</div>
+    <div class="nav-btn" data-view="standings" onclick="navTo('standings')">Standings</div>
+    <div class="nav-btn" data-view="history" onclick="navTo('history')">History</div>
+    <div class="nav-sep"></div>
+    <div class="nav-btn" data-view="bracket" onclick="navTo('bracket')">Bracket</div>
+    <div id="game-log"></div>
+    <div class="sidebar-footer">
+      <div class="sf-stars" id="sf-stars">☆☆☆☆☆</div>
+      <div class="sf-yr" id="sf-yr">SEASON 2025</div>
+      <div class="sf-new" onclick="newDynasty()">↺ New Dynasty</div>
+    </div>
+  </div>
+
+  <!-- CENTER CONTENT -->
+  <div id="center">
+    <div id="v-dashboard" class="view on"><div id="dash-content"></div></div>
+    <div id="v-schedule" class="view"><div id="schedule-content"></div></div>
+    <div id="v-roster" class="view">
+      <div class="card">
+        <div class="card-title">Depth Chart <span id="roster-mins-total"></span></div>
+        <div style="font-size:10px;color:var(--txt3);margin-bottom:10px;">Edit minutes by clicking the number. Total must equal 200.</div>
+        <div style="font-size:11px;font-weight:700;color:var(--grn2);letter-spacing:.5px;padding:6px 0 4px;">STARTERS</div>
+        <div id="roster-starters"></div>
+        <div style="font-size:11px;font-weight:700;color:var(--txt3);letter-spacing:.5px;padding:10px 0 4px;">BENCH</div>
+        <div id="roster-bench"></div>
+      </div>
+    </div>
+    <div id="v-stats" class="view">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div class="card"><div class="card-title">Points Per Game</div><table><thead><tr><th>RK</th><th>Player</th><th>Team</th><th style="text-align:right;">PPG</th></tr></thead><tbody id="stats-ppg"></tbody></table></div>
+        <div class="card"><div class="card-title">Rebounds Per Game</div><table><thead><tr><th>RK</th><th>Player</th><th>Team</th><th style="text-align:right;">RPG</th></tr></thead><tbody id="stats-rpg"></tbody></table></div>
+        <div class="card"><div class="card-title">Assists Per Game</div><table><thead><tr><th>RK</th><th>Player</th><th>Team</th><th style="text-align:right;">APG</th></tr></thead><tbody id="stats-apg"></tbody></table></div>
+        <div class="card"><div class="card-title">Field Goal %</div><table><thead><tr><th>RK</th><th>Player</th><th>Team</th><th style="text-align:right;">FG%</th></tr></thead><tbody id="stats-fg"></tbody></table></div>
+      </div>
+    </div>
+    <div id="v-standings" class="view"><div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;" id="standings-content"></div></div>
+    <div id="v-history" class="view">
+      <div class="card"><div class="card-title">Dynasty History <span id="history-record"></span></div><div id="history-list"></div></div>
+      <div class="card" style="margin-top:0;"><div class="card-title">League Champions</div><div id="history-champs"></div></div>
+    </div>
+    <div id="v-bracket" class="view"><div id="bracket-content"></div></div>
+    <div id="v-offseason" class="view"><div id="offseason-content"></div></div>
+  </div>
+</div>
+
+<!-- GAME MODAL -->
+<div id="gmod">
+  <div class="gpanel">
+    <div class="ghead">
+      <div class="ghead-t" id="gmod-title">LIVE SIMULATION</div>
+      <div style="font-size:10px;color:var(--txt3);font-weight:700;" id="gmod-wk"></div>
+    </div>
+    <div class="scoreboard">
+      <div class="sb-t a" id="sb-away">AWAY</div>
+      <div class="sb-mid">
+        <div class="sb-score" id="sb-score">0 – 0</div>
+        <div class="sb-clk" id="sb-clk">20:00</div>
+        <div class="sb-per" id="sb-per">1ST HALF</div>
+      </div>
+      <div class="sb-t h" id="sb-home">HOME</div>
+    </div>
+    <div class="hrow">
+      <span class="hcell lbl">1H</span>
+      <div class="hcell" id="hc-a1">–</div><div class="hcell" id="hc-h1">–</div>
+      <span class="hcell lbl" style="margin-left:6px;">2H</span>
+      <div class="hcell" id="hc-a2">–</div><div class="hcell" id="hc-h2">–</div>
+      <span class="hcell lbl" style="margin-left:6px;">OT</span>
+      <div class="hcell" id="hc-aot">–</div><div class="hcell" id="hc-hot">–</div>
+      <span class="hcell lbl" style="margin-left:6px;">FIN</span>
+      <div class="hcell" id="hc-af" style="font-weight:700;">–</div>
+      <div class="hcell" id="hc-hf" style="font-weight:700;">–</div>
+    </div>
+    <div class="mom-bar-wrap"><div class="mom-bar"><div class="mom-fill" id="mom-fill" style="width:50%"></div></div></div>
+    <div class="spd-row">
+      <div class="spd-lbl">SPEED</div>
+      <input type="range" id="spd" min="1" max="5" value="3">
+      <div class="spd-v" id="spd-v">MED</div>
+    </div>
+    <div class="lplay" id="lplay">Tip off...</div>
+    <div class="pbplog" id="pbplog"></div>
+    <div class="gfoot">
+      <div class="btn btn-red" onclick="skipGame()">SKIP TO FINAL</div>
+    </div>
+  </div>
+</div>
+
+<!-- NCAA BRACKET REVEAL -->
+<div id="bracket-reveal" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:9500;overflow-y:auto;padding:24px;">
+  <div style="max-width:1100px;margin:0 auto;">
+    <div style="text-align:center;margin-bottom:24px;">
+      <div style="font-size:11px;color:var(--red);font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:6px;">Selection Sunday</div>
+      <div style="font-size:36px;font-weight:900;letter-spacing:-1px;color:#fff;" id="br-title">NCAA Tournament</div>
+      <div style="font-size:13px;color:var(--txt2);margin-top:4px;" id="br-seed-line">The field of 64 is set.</div>
+    </div>
+    <div id="br-user-card" style="background:var(--s1);border:2px solid var(--gld);border-radius:8px;padding:20px;margin-bottom:20px;text-align:center;display:none;">
+      <div style="font-size:10px;color:var(--gld2);font-weight:800;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;">Your Program</div>
+      <div style="font-size:28px;font-weight:900;color:#fff;" id="br-user-team">---</div>
+      <div style="font-size:14px;color:var(--gld2);margin-top:4px;" id="br-user-seed">---</div>
+      <div style="font-size:12px;color:var(--txt2);margin-top:6px;" id="br-user-opp">---</div>
+    </div>
+    <div id="br-bracket" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;"></div>
+    <div style="text-align:center;">
+      <div class="btn btn-red" style="display:inline-block;padding:14px 40px;font-size:14px;font-weight:800;" onclick="closeBracketReveal()">LET'S DANCE ▶</div>
+    </div>
+  </div>
+</div>
+
+<!-- RECAP SCREEN -->
+<div id="recap-screen">
+  <div id="recap-content" style="max-width:800px;margin:0 auto;"></div>
+</div>
+
+<script type="module" src="main.js"></script>
+</body>
+</html>
