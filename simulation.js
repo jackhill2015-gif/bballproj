@@ -171,150 +171,234 @@ export function simPoss(offT, defT) {
   }
 }
 
-// ── Full Game Simulation ─────────────────────────────────
-// Runs a complete game (regulation + OT). Returns:
-//   { homeScore, awayScore }
-// Temporarily modifies user team player attributes for
-// difficulty, then restores them.
+
+// ── Full Game Simulation (Final Engine) ──────────────────
+// Possession-based with play types, clutch, momentum, fouls, fatigue, schemes.
+// Stats accumulate on player objects. No separate distributeStats needed.
 export function simGame(home, away, userIsHome) {
-  var dm = DIFF_MOD[G.difficulty] || 0;
-  var hStrat = getEngineStrat(home), aStrat = getEngineStrat(away);
-
-  // Pace
-  var pace = 71 + ri(-5, 6);
-  if (hStrat === 'Pace & Space' || aStrat === 'Pace & Space') pace += 7;
-  if (hStrat === 'Grit & Grind' && aStrat === 'Grit & Grind') pace -= 6;
-
-  // Apply difficulty — nerf user AND boost CPU
-  var userTeamPlayers = [];
-  var cpuTeamPlayers = [];
-  if (dm !== 0) {
-    var userT = (userIsHome ? home : away);
-    var cpuT = (userIsHome ? away : home);
-    // Nerf user
-    userT.rost.forEach(function(p) {
-      if (p.mins > 0) {
-        userTeamPlayers.push({ p: p, sht: p.sht, fin: p.fin, def: p.def });
-        p.sht = clamp(p.sht + dm, 30, 99);
-        p.fin = clamp(p.fin + dm, 30, 99);
-        p.def = clamp(p.def + dm, 30, 99);
-      }
-    });
-    // Boost CPU (half the magnitude, opposite direction)
-    var cpuBoost = Math.round(-dm * 0.5);
-    if (cpuBoost !== 0) {
-      cpuT.rost.forEach(function(p) {
-        if (p.mins > 0) {
-          cpuTeamPlayers.push({ p: p, sht: p.sht, fin: p.fin, def: p.def });
-          p.sht = clamp(p.sht + cpuBoost, 30, 99);
-          p.fin = clamp(p.fin + cpuBoost, 30, 99);
-          p.def = clamp(p.def + cpuBoost, 30, 99);
-        }
-      });
-    }
-  }
-
   var hScore = 0, aScore = 0;
-  var poss = 'A';
-
-  for (var i = 0; i < pace * 2; i++) {
-    var offT = poss === 'H' ? home : away;
-    var defT = poss === 'H' ? away : home;
-    var res = simPoss(offT, defT);
-    if (poss === 'H') hScore += res.pts; else aScore += res.pts;
-    poss = poss === 'H' ? 'A' : 'H';
-  }
-
-  // Home court — applies to WHOEVER is home, not just user
-  hScore += ri(1, 6);
-
-  // Upset variance — random swing that makes any game losable
-  var upset = ri(-8, 8);
-  hScore += upset > 0 ? upset : 0;
-  aScore += upset < 0 ? -upset : 0;
-
-  // Coach OFF/DEF bonuses (applied to user team only)
-  var userTeam = userIsHome ? home : away;
-  if (userTeam && G.coach) {
-    var offBonus = Math.round((G.coach.off - 70) * 0.15);
-    var defPenalty = Math.round((G.coach.def - 70) * 0.15);
-    if (userIsHome) { hScore += offBonus; aScore -= defPenalty; }
-    else { aScore += offBonus; hScore -= defPenalty; }
-  }
-
-  // Restore player stats
-  userTeamPlayers.forEach(function(obj) {
-    obj.p.sht = obj.sht; obj.p.fin = obj.fin; obj.p.def = obj.def;
+  var hOrig = [], aOrig = [];
+  var dm = DIFF_MOD[G.difficulty] || 0;
+  var userT = userIsHome ? home : away;
+  var cpuBoost = Math.round(-dm * 0.5);
+  home.rost.forEach(function(p, i) {
+    hOrig[i] = { sht: p.sht, fin: p.fin, def: p.def };
+    var mod = (userT === home) ? dm : cpuBoost;
+    p.sht = clamp(p.sht + mod, 30, 99); p.fin = clamp(p.fin + mod, 30, 99); p.def = clamp(p.def + mod, 30, 99);
   });
-  cpuTeamPlayers.forEach(function(obj) {
-    obj.p.sht = obj.sht; obj.p.fin = obj.fin; obj.p.def = obj.def;
+  away.rost.forEach(function(p, i) {
+    aOrig[i] = { sht: p.sht, fin: p.fin, def: p.def };
+    var mod = (userT === away) ? dm : cpuBoost;
+    p.sht = clamp(p.sht + mod, 30, 99); p.fin = clamp(p.fin + mod, 30, 99); p.def = clamp(p.def + mod, 30, 99);
   });
+  var homeBonus = 1;
+  var hStrat = getEngineStrat(home), aStrat = getEngineStrat(away);
+  var paceMod = 0;
+  if (hStrat === 'Pace & Space' || aStrat === 'Pace & Space') paceMod += 4;
+  if (hStrat === 'Grit & Grind' && aStrat === 'Grit & Grind') paceMod -= 4;
+  var possPerTeam = clamp(70 + paceMod + ri(-3, 3), 62, 78);
+  home.rost.forEach(function(p) { if (p.mins > 0) p.s.gp++; });
+  away.rost.forEach(function(p) { if (p.mins > 0) p.s.gp++; });
 
-  // Overtime
-  var ot = 0;
-  while (hScore === aScore && ot < 5) {
-    for (var j = 0; j < 8; j++) {
-      var res2 = simPoss(j % 2 === 0 ? home : away, j % 2 === 0 ? away : home);
-      if (j % 2 === 0) hScore += res2.pts; else aScore += res2.pts;
+  var fatigue = {}, playerFouls = {}, origMins = {};
+  home.rost.forEach(function(p) {
+    if (p.mins > 0) {
+      fatigue[p.name] = 0; playerFouls[p.name] = 0; origMins[p.name] = p.mins;
+      if (typeof p.s.stl !== 'number') p.s.stl = 0;
+      if (typeof p.s.blk !== 'number') p.s.blk = 0;
     }
-    ot++;
-    if (ot === 5 && hScore === aScore) hScore++;
+  });
+  away.rost.forEach(function(p) {
+    if (p.mins > 0) {
+      fatigue[p.name] = 0; playerFouls[p.name] = 0; origMins[p.name] = p.mins;
+      if (typeof p.s.stl !== 'number') p.s.stl = 0;
+      if (typeof p.s.blk !== 'number') p.s.blk = 0;
+    }
+  });
+
+  var hMomentum = 0, aMomentum = 0;
+  var lastTransition = false;
+
+  function runPoss(numPoss, offTeam, defTeam, isHomeOff) {
+    var shotBonus = isHomeOff ? homeBonus : 0;
+    for (var i = 0; i < numPoss; i++) {
+      var isClutch = (i >= numPoss - 8);
+      var off = getFloor(offTeam);
+      var def = getFloor(defTeam);
+      fatigue[off.name] = (fatigue[off.name] || 0) + 1;
+      fatigue[def.name] = (fatigue[def.name] || 0) + 1;
+      var defScheme = (defTeam.strat && defTeam.strat.def) ? defTeam.strat.def : 'man';
+      if (defScheme === 'press') fatigue[def.name] += 1;
+
+      var momMakeBonus = 0, momTOBonus = 0;
+      var offMom = isHomeOff ? hMomentum : aMomentum;
+      if (offMom >= 5) { momMakeBonus = 4; momTOBonus = 2; }
+      else if (offMom >= 3) { momMakeBonus = 2; momTOBonus = 1; }
+      momMakeBonus = clamp(momMakeBonus, 0, 5);
+
+      var toChance = clamp(13 + Math.round((def.def - off.ply) * 0.12), 8, 22);
+      if (defScheme === 'press') toChance += 5;
+      if (defScheme === 'zone') toChance -= 2;
+      if (isClutch) toChance += 2;
+      toChance += momTOBonus;
+      toChance = clamp(toChance, 8, 30);
+      if (ri(1, 100) <= toChance) {
+        if (ri(1, 100) <= 60) {
+          if (typeof def.s.stl !== 'number') def.s.stl = 0;
+          def.s.stl++;
+        }
+        if (defScheme === 'press' && ri(1, 100) <= 15) {
+          if (isHomeOff) aScore += 2; else hScore += 2;
+        }
+        lastTransition = true;
+        if (isHomeOff) { aMomentum++; hMomentum = 0; } else { hMomentum++; aMomentum = 0; }
+        continue;
+      }
+      lastTransition = false;
+
+      var playRoll = ri(1, 100);
+      var playType = 'standard';
+      if (playRoll <= 15) playType = 'iso';
+      else if (playRoll <= 40) playType = 'pnr';
+      else if (playRoll <= 50 && lastTransition) playType = 'fastbreak';
+      else if (playRoll <= 65) playType = 'post';
+      if (isClutch && playType === 'fastbreak') playType = 'standard';
+
+      var isThree = false, isRim = false, makePct = 0, foulExtra = 0, assistPct = 58;
+
+      if (playType === 'iso') {
+        var bestOvr = 0;
+        offTeam.rost.forEach(function(p) { if (p.mins > 0 && p.ovr > bestOvr) bestOvr = p.ovr; });
+        var tries = 0;
+        do { off = getFloor(offTeam); tries++; } while (off.ovr < bestOvr - 5 && tries < 3);
+        isRim = off.fin > off.sht;
+        isThree = !isRim && ri(1, 100) <= 40;
+        makePct = isRim ? 58 : 42;
+        assistPct = 20;
+      } else if (playType === 'pnr') {
+        var triesG = 0;
+        do { off = getFloor(offTeam); triesG++; } while ((off.pos !== 'PG' && off.pos !== 'SG') && triesG < 3);
+        var screener = getFloor(offTeam);
+        var triesB = 0;
+        while ((screener.pos !== 'PF' && screener.pos !== 'C') && triesB < 3) { screener = getFloor(offTeam); triesB++; }
+        var pnrRoll = ri(1, 100);
+        if (pnrRoll <= 50) { isThree = ri(1, 100) <= 55; isRim = !isThree; }
+        else if (pnrRoll <= 80) { off = screener; isRim = true; }
+        else { off = getFloor(offTeam); isThree = true; makePct += 4; }
+        assistPct = 75;
+      } else if (playType === 'fastbreak') {
+        isRim = true; makePct += 8; assistPct = 65;
+      } else if (playType === 'post') {
+        var triesP = 0;
+        do { off = getFloor(offTeam); triesP++; } while ((off.pos !== 'PF' && off.pos !== 'C') && triesP < 3);
+        isRim = true; foulExtra = 3;
+      } else {
+        var stratBonus = (getEngineStrat(offTeam) === 'Pace & Space') ? 6 : (getEngineStrat(offTeam) === 'Grit & Grind') ? -6 : 0;
+        isThree = ri(1, 100) <= (32 + stratBonus);
+        isRim = !isThree && ri(1, 100) <= 25;
+      }
+
+      var foulChance = 8 + foulExtra;
+      if (def.def < 60) foulChance += 3;
+      if (isRim) foulChance += 4;
+      if (isClutch) foulChance += 4;
+      foulChance = clamp(foulChance, 5, 22);
+      if (ri(1, 100) <= foulChance) {
+        var dName = def.name;
+        playerFouls[dName] = (playerFouls[dName] || 0) + 1;
+        if (playerFouls[dName] >= 5) def.mins = 0;
+        var ftPct = clamp(55 + Math.round(off.sht * 0.2), 65, 85);
+        var tiredness = Math.min((fatigue[off.name] || 0) / 80, 0.15);
+        ftPct = Math.round(ftPct * (1 - tiredness * 0.5));
+        ftPct = clamp(ftPct, 60, 90);
+        for (var ft = 0; ft < 2; ft++) {
+          if (ri(1, 100) <= ftPct) { if (isHomeOff) hScore++; else aScore++; off.s.pts++; }
+        }
+        if (isHomeOff) { aMomentum++; hMomentum = 0; } else { hMomentum++; aMomentum = 0; }
+        continue;
+      }
+
+      if (ri(1, 100) <= 12) {
+        var ftPct2 = clamp(55 + Math.round(off.sht * 0.2), 65, 85);
+        var tiredness2 = Math.min((fatigue[off.name] || 0) / 80, 0.15);
+        ftPct2 = Math.round(ftPct2 * (1 - tiredness2 * 0.5));
+        for (var ft2 = 0; ft2 < 2; ft2++) {
+          if (ri(1, 100) <= ftPct2) { if (isHomeOff) hScore++; else aScore++; off.s.pts++; }
+        }
+        if (isHomeOff) { aMomentum++; hMomentum = 0; } else { hMomentum++; aMomentum = 0; }
+        continue;
+      }
+
+      if (playType !== 'fastbreak') {
+        var blkChance = isThree ? 2 : (isRim ? 9 : 6);
+        blkChance = clamp(blkChance + Math.round((def.reb - 50) * 0.08), 1, 18);
+        if (ri(1, 100) <= blkChance) {
+          if (typeof def.s.blk !== 'number') def.s.blk = 0;
+          def.s.blk++; off.s.fga++;
+          if (isHomeOff) { aMomentum++; hMomentum = 0; } else { hMomentum++; aMomentum = 0; }
+          continue;
+        }
+      }
+
+      if (makePct === 0) {
+        if (isThree) {
+          makePct = clamp(34 + Math.round((off.sht - def.def) * 0.2) + shotBonus, 25, 42);
+          if (defScheme === 'zone') makePct -= 4; if (defScheme === 'press') makePct += 2;
+        } else if (isRim) {
+          makePct = clamp(58 + Math.round((off.fin - def.def) * 0.3) + shotBonus, 45, 75);
+          if (defScheme === 'zone') makePct -= 6; if (defScheme === 'press') makePct += 2;
+        } else {
+          makePct = clamp(42 + Math.round((off.sht - def.def) * 0.25) + shotBonus, 33, 52);
+          if (defScheme === 'zone') makePct += 3; if (defScheme === 'press') makePct += 2;
+        }
+      }
+      if (isClutch) makePct -= 3;
+      makePct += momMakeBonus;
+      var tiredness3 = Math.min((fatigue[off.name] || 0) / 80, 0.15);
+      makePct = Math.round(makePct * (1 - tiredness3));
+      makePct = clamp(makePct, 25, 78);
+
+      off.s.fga++;
+      if (ri(1, 100) <= makePct) {
+        var pts = isThree ? 3 : 2;
+        if (isHomeOff) hScore += pts; else aScore += pts;
+        off.s.pts += pts; off.s.fgm++;
+        if (ri(1, 100) <= assistPct) {
+          var tries2 = 0;
+          var asst = getFloor(offTeam);
+          while (asst === off && tries2 < 5) { asst = getFloor(offTeam); tries2++; }
+          if (asst !== off) asst.s.ast++;
+        }
+        if (!isThree && ri(1, 100) <= 8) { if (isHomeOff) hScore++; else aScore++; off.s.pts++; }
+        if (isHomeOff) { hMomentum++; aMomentum = 0; } else { aMomentum++; hMomentum = 0; }
+      } else {
+        var oRebChance = 22;
+        if (defScheme === 'zone') oRebChance += 5;
+        if (ri(1, 100) <= oRebChance) { var oReb = getFloor(offTeam); oReb.s.reb++; }
+        else {
+          var dReb = getFloor(defTeam); dReb.s.reb++; lastTransition = true;
+          if (isHomeOff) { aMomentum++; hMomentum = 0; } else { hMomentum++; aMomentum = 0; }
+        }
+      }
+    }
   }
 
+  runPoss(possPerTeam, home, away, true);
+  runPoss(possPerTeam, away, home, false);
+  if (G.coach) {
+    var offBonus = Math.round((G.coach.off - 70) * 0.15);
+    var defBonus = Math.round((G.coach.def - 70) * 0.15);
+    if (userIsHome) { hScore += offBonus; aScore -= defBonus; } else { aScore += offBonus; hScore -= defBonus; }
+  }
+  var ot = 0;
+  while (hScore === aScore && ot < 5) { ot++; runPoss(4, home, away, true); runPoss(4, away, home, false); }
+  if (hScore === aScore) hScore++;
+  home.rost.forEach(function(p, i) { p.sht = hOrig[i].sht; p.fin = hOrig[i].fin; p.def = hOrig[i].def; });
+  away.rost.forEach(function(p, i) { p.sht = aOrig[i].sht; p.fin = aOrig[i].fin; p.def = aOrig[i].def; });
+  home.rost.forEach(function(p) { if (origMins[p.name] !== undefined) p.mins = origMins[p.name]; });
+  away.rost.forEach(function(p) { if (origMins[p.name] !== undefined) p.mins = origMins[p.name]; });
   return { homeScore: hScore, awayScore: aScore };
 }
 
-// ── Stat Distribution ────────────────────────────────────
-// After a quick sim (non-live), distribute team score across
-// Distribute individual stats after a game. Weighted by minutes and attributes.
-// Target realistic college stats: top scorer ~22-26 PPG, top rebounder ~10-12 RPG, top assist ~6-8 APG
-export function distributeStats(team, teamScore) {
-  var active = team.rost.filter(function(p) { return p.mins > 0; });
-  if (!active.length) return;
-  var totalMins = active.reduce(function(a, b) { return a + b.mins; }, 0);
-  if (totalMins === 0) return;
-
-  // Calculate weighted shares for points (shooting-weighted)
-  var totalPtWeight = 0;
-  active.forEach(function(p) {
-    var share = p.mins / totalMins;
-    totalPtWeight += share * (0.5 + (p.sht / 99) * 0.5);
-  });
-
-  var remaining = teamScore;
-  active.forEach(function(p, i) {
-    p.s.gp++;
-    var share = p.mins / totalMins;
-
-    // Points — shooting-weighted share of team total
-    var ptWeight = share * (0.5 + (p.sht / 99) * 0.5);
-    var ptShare = Math.round(teamScore * (ptWeight / totalPtWeight));
-    if (i === active.length - 1) {
-      ptShare = remaining; // last player gets remainder to ensure total matches
-    } else {
-      ptShare = Math.min(ptShare, remaining);
-    }
-    p.s.pts += ptShare;
-    remaining -= ptShare;
-
-    // Rebounds — team gets ~33-38 total, distributed by reb attribute + minutes
-    var teamReb = 35;
-    var rebShare = Math.round(teamReb * share * (0.4 + (p.reb / 99) * 0.6));
-    rebShare = Math.max(0, Math.min(rebShare, 15)); // cap individual
-    p.s.reb += rebShare;
-
-    // Assists — team gets ~14-18 total, distributed by playmaking
-    var teamAst = 15;
-    var astShare = Math.round(teamAst * share * (0.3 + (p.ply / 99) * 0.7));
-    astShare = Math.max(0, Math.min(astShare, 12)); // cap individual
-    p.s.ast += astShare;
-
-    // FG attempts/makes
-    var fga = Math.round(ptShare * 0.55 + ri(0, 2)); // roughly 55% of points come from FG
-    if (fga < 1 && ptShare > 0) fga = 1;
-    var fgPct = clamp(0.32 + (p.sht / 99) * 0.28, 0.32, 0.60);
-    var fgm = Math.round(fga * fgPct);
-    p.s.fga += fga;
-    p.s.fgm += fgm;
-  });
-}
+// distributeStats is no longer needed — kept as no-op for backward compat
+export function distributeStats(team, teamScore) {}

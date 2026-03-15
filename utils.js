@@ -94,7 +94,7 @@ export function fixMins(rost) {
 }
 
 export function freshS() {
-  return { gp: 0, pts: 0, reb: 0, ast: 0, fgm: 0, fga: 0 };
+  return { gp: 0, pts: 0, reb: 0, ast: 0, fgm: 0, fga: 0, stl: 0, blk: 0 };
 }
 
 // ── Team Style / Identity ────────────────────────────────
