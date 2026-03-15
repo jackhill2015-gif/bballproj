@@ -31,7 +31,7 @@ export function renderScheduleView() {
     + '<div style="font-size:11px;color:var(--txt2);margin-top:2px;">' + team.conf + ' \u00b7 Season ' + G.yr + '</div></div>'
     + '<div style="display:flex;gap:12px;align-items:center;">'
     + '<div style="text-align:center;"><div style="font-size:18px;font-weight:900;color:var(--grn2);">' + wins + '</div><div style="font-size:9px;color:var(--txt3);">WINS</div></div>'
-    + '<div style="text-align:center;"><div style="font-size:18px;font-weight:900;color:#fc8181;">' + losses + '</div><div style="font-size:9px;color:var(--txt3);">LOSSES</div></div>'
+    + '<div style="text-align:center;"><div style="font-size:18px;font-weight:900;color:#dc2626;">' + losses + '</div><div style="font-size:9px;color:var(--txt3);">LOSSES</div></div>'
     + '<div style="text-align:center;"><div style="font-size:18px;font-weight:900;color:var(--txt2);">' + remaining + '</div><div style="font-size:9px;color:var(--txt3);">LEFT</div></div>'
     + '</div></div>';
 
@@ -55,7 +55,7 @@ export function renderScheduleView() {
 function renderGameRow(game, week, natSorted, team) {
   if (!game || game.opp === undefined || game.opp === null) {
     // Bye week
-    return '<div style="display:flex;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.03);opacity:.4;">'
+    return '<div style="display:flex;align-items:center;padding:8px 0;border-bottom:1px solid rgba(0,0,0,.03);opacity:.5;">'
       + '<div style="width:40px;font-family:monospace;font-size:10px;color:var(--txt3);flex-shrink:0;">WK ' + (week + 1) + '</div>'
       + '<div style="flex:1;font-size:11px;color:var(--txt3);font-style:italic;">BYE</div></div>';
   }
@@ -71,18 +71,18 @@ function renderGameRow(game, week, natSorted, team) {
   var oppRankStr = oppRank <= 25 ? '#' + oppRank + ' ' : '';
 
   // Border color
-  var borderCol = isWin ? 'var(--grn)' : isLoss ? '#fc8181' : isNext ? 'var(--red)' : 'transparent';
+  var borderCol = isWin ? 'var(--grn)' : isLoss ? '#dc2626' : isNext ? 'var(--red)' : 'transparent';
 
   // Win probability for upcoming
   var wpStr = '';
   if (!isPlayed) {
     var dm = DIFF_MOD[G.difficulty] || 0;
     var wp = clamp(Math.round(50 + (getTOvr(team) + dm - getTOvr(opp)) * 1.3 + (game.home ? 4 : -4)), 5, 95);
-    var wpCol = wp >= 55 ? 'var(--grn2)' : wp >= 40 ? 'var(--gld2)' : '#fc8181';
+    var wpCol = wp >= 55 ? 'var(--grn2)' : wp >= 40 ? 'var(--gld2)' : '#dc2626';
     wpStr = '<span style="font-family:monospace;font-size:11px;font-weight:700;color:' + wpCol + ';">' + wp + '%</span>';
   }
 
-  var h = '<div style="display:flex;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.03);border-left:3px solid ' + borderCol + ';padding-left:8px;'
+  var h = '<div style="display:flex;align-items:center;padding:8px 0;border-bottom:1px solid rgba(0,0,0,.03);border-left:3px solid ' + borderCol + ';padding-left:8px;'
     + (isNext ? 'background:rgba(0,102,204,.04);' : '') + '">';
 
   // Week number
@@ -90,7 +90,7 @@ function renderGameRow(game, week, natSorted, team) {
 
   // Result badge (played) or NEXT badge
   if (isPlayed) {
-    h += '<div style="width:28px;flex-shrink:0;"><span style="font-size:10px;font-weight:800;color:' + (isWin ? 'var(--grn2)' : '#fc8181') + ';background:' + (isWin ? 'rgba(56,161,105,.1)' : 'rgba(252,129,129,.1)') + ';padding:2px 6px;border-radius:3px;">' + (isWin ? 'W' : 'L') + '</span></div>';
+    h += '<div style="width:28px;flex-shrink:0;"><span style="font-size:10px;font-weight:800;color:' + (isWin ? 'var(--grn2)' : '#dc2626') + ';background:' + (isWin ? 'rgba(56,161,105,.1)' : 'rgba(252,129,129,.1)') + ';padding:2px 6px;border-radius:3px;">' + (isWin ? 'W' : 'L') + '</span></div>';
   } else if (isNext) {
     h += '<div style="width:28px;flex-shrink:0;"><span style="font-size:9px;font-weight:800;color:var(--red);background:rgba(0,102,204,.12);padding:2px 5px;border-radius:3px;">NEXT</span></div>';
   } else {

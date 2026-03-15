@@ -87,7 +87,7 @@ function renderConfBracket(myConf, ct) {
       if (oct && oct.done && oct.champ) {
         h += '<div style="background:var(--s2);border:1px solid var(--bdr);border-radius:5px;padding:6px 10px;font-size:11px;">';
         h += '<span style="color:var(--txt3);font-size:10px;">' + c + '</span><br>';
-        h += '<span style="font-weight:700;color:#fff;">' + oct.champ.name + '</span>';
+        h += '<span style="font-weight:700;color:var(--txt);">' + oct.champ.name + '</span>';
         h += '</div>';
       }
     });
@@ -130,12 +130,12 @@ function renderNCAAbracket() {
     h += '<div style="background:linear-gradient(135deg,rgba(214,158,46,.1),rgba(0,102,204,.08));border:2px solid var(--gld);border-radius:8px;padding:16px;margin-bottom:16px;">';
     h += '<div style="font-size:10px;font-weight:800;color:var(--gld2);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;">YOUR GAME \u2014 ' + currentRound + '</div>';
     h += '<div style="display:flex;align-items:center;gap:12px;">';
-    h += '<div style="flex:1;"><div style="font-size:11px;color:var(--gld2);font-weight:700;">#' + uTeam.seed + ' seed</div><div style="font-size:20px;font-weight:900;color:#fff;">' + uTeam.team.name + '</div></div>';
+    h += '<div style="flex:1;"><div style="font-size:11px;color:var(--gld2);font-weight:700;">#' + uTeam.seed + ' seed</div><div style="font-size:20px;font-weight:900;color:var(--txt);">' + uTeam.team.name + '</div></div>';
     h += '<div style="font-size:13px;font-weight:900;color:var(--txt3);">VS</div>';
     h += '<div style="flex:1;text-align:right;"><div style="font-size:11px;color:var(--txt2);font-weight:700;">#' + oppTeam.seed + ' seed</div><div style="font-size:20px;font-weight:900;color:var(--txt2);">' + oppTeam.team.name + '</div></div>';
     h += '</div>';
     var wp = clamp(50 + (getTOvr(uTeam.team) - getTOvr(oppTeam.team)) * 1.3, 5, 95);
-    h += '<div style="margin-top:12px;"><div style="display:flex;justify-content:space-between;font-size:10px;color:var(--txt2);margin-bottom:4px;"><span>Win Probability</span><span style="color:' + (wp >= 50 ? 'var(--grn2)' : '#fc8181');
+    h += '<div style="margin-top:12px;"><div style="display:flex;justify-content:space-between;font-size:10px;color:var(--txt2);margin-bottom:4px;"><span>Win Probability</span><span style="color:' + (wp >= 50 ? 'var(--grn2)' : '#dc2626');
     h += ';font-weight:700;">' + Math.round(wp) + '%</span></div>';
     h += '<div style="height:5px;background:var(--bdr2);border-radius:3px;overflow:hidden;"><div style="height:100%;width:' + Math.round(wp) + '%;background:' + (wp >= 50 ? 'var(--grn)' : 'var(--red)') + ';border-radius:3px;"></div></div>';
     h += '</div></div>';

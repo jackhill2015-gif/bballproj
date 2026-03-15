@@ -64,10 +64,10 @@ export function renderRoster() {
       + 'ondragover="rosterDragOver(event)" '
       + 'ondrop="rosterDrop(event,' + i + ')" '
       + 'style="display:grid;grid-template-columns:24px 38px 1fr 42px 42px 130px;align-items:center;gap:4px;'
-      + 'padding:9px 12px;border-left:3px solid ' + stripe + ';border-bottom:1px solid rgba(255,255,255,.025);'
+      + 'padding:9px 12px;border-left:3px solid ' + stripe + ';border-bottom:1px solid rgba(0,0,0,.04);'
       + 'transition:opacity .12s,background .1s;'
-      + (isBenched ? 'opacity:.35;' : '') + '" '
-      + 'onmouseover="this.style.background=\'rgba(255,255,255,.025)\'" '
+      + (isBenched ? 'opacity:.45;' : '') + '" '
+      + 'onmouseover="this.style.background=\'rgba(0,0,0,.04)\'" '
       + 'onmouseout="this.style.background=\'\'">';
 
     // Col 1: Drag handle — THIS is the only draggable element

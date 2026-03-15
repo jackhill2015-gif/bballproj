@@ -25,7 +25,7 @@ export function renderHistory() {
     + '<div style="font-size:18px;font-weight:900;">Coach ' + c.firstName + ' ' + c.lastName + '</div>'
     + '<div style="font-size:11px;color:var(--txt2);margin-top:2px;">Age ' + c.age + ' \u00b7 Year ' + (G.history.length + 1) + ' \u00b7 Currently at ' + G.teams[G.tid].name + '</div>'
     + '</div>'
-    + '<div style="font-family:monospace;font-size:20px;font-weight:900;color:' + (totalW > totalL ? 'var(--grn2)' : '#fc8181') + ';">' + fR(totalW, totalL) + '</div>'
+    + '<div style="font-family:monospace;font-size:20px;font-weight:900;color:' + (totalW > totalL ? 'var(--grn2)' : '#dc2626') + ';">' + fR(totalW, totalL) + '</div>'
     + '</div>';
 
   // Stats grid
@@ -62,7 +62,7 @@ export function renderHistory() {
   } else {
     h += '<div style="background:var(--s2);border:1px solid var(--bdr);border-radius:6px;overflow:hidden;">';
     G.history.slice().reverse().forEach(function(yr, idx) {
-      var winCol = yr.wins > yr.loss ? 'var(--grn2)' : yr.wins < yr.loss ? '#fc8181' : 'var(--txt)';
+      var winCol = yr.wins > yr.loss ? 'var(--grn2)' : yr.wins < yr.loss ? '#dc2626' : 'var(--txt)';
 
       // Badges
       var badges = '';
@@ -77,17 +77,17 @@ export function renderHistory() {
       if (c.history) {
         var ch = c.history.find(function(e) { return e.yr === yr.year; });
         if (ch) {
-          if (ch.action === 'Fired') coachAction = '<span style="font-size:9px;font-weight:800;color:#fc8181;margin-left:6px;">FIRED</span>';
-          else if (ch.action === 'Hot Seat') coachAction = '<span style="font-size:9px;font-weight:800;color:#fc8181;margin-left:6px;">HOT SEAT</span>';
+          if (ch.action === 'Fired') coachAction = '<span style="font-size:9px;font-weight:800;color:#dc2626;margin-left:6px;">FIRED</span>';
+          else if (ch.action === 'Hot Seat') coachAction = '<span style="font-size:9px;font-weight:800;color:#dc2626;margin-left:6px;">HOT SEAT</span>';
           else if (ch.action && ch.action.indexOf('Left for') >= 0) coachAction = '<span style="font-size:9px;font-weight:800;color:var(--gld2);margin-left:6px;">' + ch.action.toUpperCase() + '</span>';
         }
       }
 
-      h += '<div style="display:flex;align-items:center;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.025);gap:12px;">'
+      h += '<div style="display:flex;align-items:center;padding:10px 14px;border-bottom:1px solid rgba(0,0,0,.04);gap:12px;">'
         + '<div style="font-family:monospace;font-size:14px;font-weight:900;color:var(--red);width:40px;flex-shrink:0;">' + yr.year + '</div>'
         + '<div style="flex:1;min-width:0;">'
         + '<div style="display:flex;align-items:center;flex-wrap:wrap;">'
-        + '<span style="font-size:13px;font-weight:700;color:#fff;">' + fR(yr.wins, yr.loss) + '</span>'
+        + '<span style="font-size:13px;font-weight:700;color:var(--txt);">' + fR(yr.wins, yr.loss) + '</span>'
         + badges + coachAction
         + '</div>'
         + '<div style="font-size:10px;color:var(--txt3);margin-top:2px;">' + yr.note + '</div>'
@@ -104,7 +104,7 @@ export function renderHistory() {
     h += '<div style="background:var(--s2);border:1px solid var(--bdr);border-radius:6px;overflow:hidden;">';
     G.leagueChamps.slice().reverse().forEach(function(ch) {
       var isU = ch.tid === G.tid;
-      h += '<div style="display:flex;align-items:center;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.025);gap:12px;">'
+      h += '<div style="display:flex;align-items:center;padding:8px 14px;border-bottom:1px solid rgba(0,0,0,.04);gap:12px;">'
         + '<div style="font-family:monospace;font-size:14px;font-weight:900;color:var(--gld2);width:40px;flex-shrink:0;">' + ch.year + '</div>'
         + '<div style="font-size:13px;font-weight:' + (isU ? '800' : '600') + ';color:' + (isU ? 'var(--gld2)' : '#fff') + ';">' + ch.name + '</div>'
         + (isU ? '<span style="font-size:9px;font-weight:800;color:var(--gld2);background:rgba(214,158,46,.1);padding:2px 7px;border-radius:3px;">YOUR DYNASTY</span>' : '')

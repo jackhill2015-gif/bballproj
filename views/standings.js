@@ -25,12 +25,12 @@ export function renderStandings() {
     var winPct = total > 0 ? (t.wins / total * 100).toFixed(0) : '--';
     var rkCol = i < 4 ? 'var(--grn2)' : i < 8 ? 'var(--gld2)' : i < 16 ? 'var(--txt2)' : 'var(--txt3)';
 
-    h += '<div style="display:grid;grid-template-columns:40px 1fr 80px 70px 70px 60px;align-items:center;padding:7px 12px;border-bottom:1px solid rgba(255,255,255,.025);'
+    h += '<div style="display:grid;grid-template-columns:40px 1fr 80px 70px 70px 60px;align-items:center;padding:7px 12px;border-bottom:1px solid rgba(0,0,0,.04);'
       + (isU ? 'background:rgba(0,102,204,.06);border-left:3px solid var(--red);' : 'border-left:3px solid transparent;') + '">'
       + '<div style="font-family:monospace;font-weight:800;color:' + rkCol + ';">' + (i + 1) + '</div>'
       + '<div style="font-weight:' + (isU ? '800' : '600') + ';color:' + (isU ? 'var(--red)' : '#fff') + ';">' + t.name + '</div>'
       + '<div style="font-size:11px;color:var(--txt3);">' + t.conf + '</div>'
-      + '<div style="font-family:monospace;font-size:12px;color:' + (t.wins > t.loss ? 'var(--grn2)' : t.wins < t.loss ? '#fc8181' : 'var(--txt)') + ';">' + t.wins + '-' + t.loss + '</div>'
+      + '<div style="font-family:monospace;font-size:12px;color:' + (t.wins > t.loss ? 'var(--grn2)' : t.wins < t.loss ? '#dc2626' : 'var(--txt)') + ';">' + t.wins + '-' + t.loss + '</div>'
       + '<div style="font-family:monospace;font-size:11px;color:var(--txt2);">' + t.cWins + '-' + t.cLoss + '</div>'
       + '<div style="font-family:monospace;font-size:11px;color:var(--txt2);">' + winPct + '%</div>'
       + '</div>';
@@ -46,7 +46,7 @@ export function renderStandings() {
       + '<div style="font-family:monospace;font-weight:800;color:var(--txt3);">' + userRank + '</div>'
       + '<div style="font-weight:800;color:var(--red);">' + ut.name + '</div>'
       + '<div style="font-size:11px;color:var(--txt3);">' + ut.conf + '</div>'
-      + '<div style="font-family:monospace;font-size:12px;color:' + (ut.wins > ut.loss ? 'var(--grn2)' : '#fc8181') + ';">' + ut.wins + '-' + ut.loss + '</div>'
+      + '<div style="font-family:monospace;font-size:12px;color:' + (ut.wins > ut.loss ? 'var(--grn2)' : '#dc2626') + ';">' + ut.wins + '-' + ut.loss + '</div>'
       + '<div style="font-family:monospace;font-size:11px;color:var(--txt2);">' + ut.cWins + '-' + ut.cLoss + '</div>'
       + '<div style="font-family:monospace;font-size:11px;color:var(--txt2);">' + utPct + '%</div>'
       + '</div>';

@@ -79,7 +79,7 @@ export function rollEvents(weekNum) {
     G.injuries.push({ playerName: p.name, type: type, weeksLeft: weeks, origMins: p.mins });
     p.mins = 0;
     addLog('ev', weekNum, '\ud83d\udea8 <b>' + p.name + '</b> (' + p.pos + ') suffers a <b>' + type + '</b> \u2014 out ' + weeks + ' weeks.');
-    toast(p.name + ' injured!', '#fc8181');
+    toast(p.name + ' injured!', '#dc2626');
   });
 
   // 2. Hot Streak (12%)
@@ -108,7 +108,7 @@ export function rollEvents(weekNum) {
     G.injuries.push({ playerName: p.name, type: 'Academic', weeksLeft: 2, origMins: p.mins });
     p.mins = 0;
     addLog('ev', weekNum, '\ud83d\udcda <b>' + p.name + '</b> ruled academically ineligible \u2014 out 2 games.');
-    toast(p.name + ' suspended', '#fc8181');
+    toast(p.name + ' suspended', '#dc2626');
   });
 
   // 5. Player of the Week (20% — log only)
@@ -151,7 +151,7 @@ export function rollEvents(weekNum) {
     });
     G.buffs.push({ playerName: 'TEAM', attr: 'all', mod: -2, gamesLeft: 2 });
     addLog('ev', weekNum, '\ud83d\udca2 Locker room tension after ' + (lastWin ? 'a close call' : 'tough loss') + ' \u2014 team distracted for 2 games.');
-    toast('Locker room drama', '#fc8181');
+    toast('Locker room drama', '#dc2626');
   });
 
   // 9. Sellout Crowd (10%)
@@ -178,7 +178,7 @@ export function rollEvents(weekNum) {
   // 12. AD Meeting — hot seat warning
   tryFire(G.coach.hotSeat ? 25 : 0, function() {
     addLog('ev', weekNum, '\ud83d\udce2 Called into the AD\'s office. "We need to see improvement. The fanbase is restless."');
-    toast('AD meeting...', '#fc8181');
+    toast('AD meeting...', '#dc2626');
   });
 
   // 13. Booster Pressure (if losing record)

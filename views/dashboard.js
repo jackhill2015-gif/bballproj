@@ -21,7 +21,7 @@ export function renderStatsBanner() {
   var streakHtml = '<div style="display:flex;gap:4px;justify-content:center;margin-top:4px;">';
   for (var i = 0; i < 5; i++) {
     var s = last5[i];
-    var col = s ? (s.uScore > s.oScore ? 'var(--grn)' : '#fc8181') : 'var(--bdr2)';
+    var col = s ? (s.uScore > s.oScore ? 'var(--grn)' : '#dc2626') : 'var(--bdr2)';
     streakHtml += '<div style="width:8px;height:8px;border-radius:50%;background:' + col + ';"></div>';
   }
   streakHtml += '</div>';
@@ -61,8 +61,8 @@ function renderTicker() {
     var w = g.uScore > g.oScore;
     var oppName = opp ? opp.name : '???';
     h += '<div style="flex-shrink:0;padding:6px 10px;background:' + (w ? 'rgba(56,161,105,.08)' : 'rgba(252,129,129,.08)') + ';border:1px solid ' + (w ? 'rgba(56,161,105,.2)' : 'rgba(252,129,129,.2)') + ';border-radius:5px;min-width:100px;">'
-      + '<div style="font-size:9px;font-weight:800;color:' + (w ? 'var(--grn2)' : '#fc8181') + ';margin-bottom:2px;">' + (w ? 'W' : 'L') + '</div>'
-      + '<div style="font-size:11px;font-weight:600;color:#fff;white-space:nowrap;">' + oppName + '</div>'
+      + '<div style="font-size:9px;font-weight:800;color:' + (w ? 'var(--grn2)' : '#dc2626') + ';margin-bottom:2px;">' + (w ? 'W' : 'L') + '</div>'
+      + '<div style="font-size:11px;font-weight:600;color:var(--txt);white-space:nowrap;">' + oppName + '</div>'
       + '<div style="font-size:10px;color:var(--txt2);font-family:monospace;">' + g.uScore + '-' + g.oScore + '</div></div>';
   });
   h += '</div>';
@@ -136,9 +136,9 @@ function renderTeamStats() {
   var h = '<div style="background:var(--s2);border:1px solid var(--bdr);border-radius:6px;padding:10px;">'
     + '<div style="font-size:10px;font-weight:800;color:var(--txt3);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">Team Stats</div>'
     + '<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:11px;">'
-    + '<span style="color:var(--txt2);">Points</span><span style="font-family:monospace;font-weight:700;color:#fff;">' + ppg + ' <span style="font-size:9px;color:var(--txt3);">(' + ptsRank + getSuffix(ptsRank) + ')</span></span></div>'
+    + '<span style="color:var(--txt2);">Points</span><span style="font-family:monospace;font-weight:700;color:var(--txt);">' + ppg + ' <span style="font-size:9px;color:var(--txt3);">(' + ptsRank + getSuffix(ptsRank) + ')</span></span></div>'
     + '<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:11px;">'
-    + '<span style="color:var(--txt2);">Allowed</span><span style="font-family:monospace;font-weight:700;color:#fff;">' + oppg + ' <span style="font-size:9px;color:var(--txt3);">(' + defRank + getSuffix(defRank) + ')</span></span></div>'
+    + '<span style="color:var(--txt2);">Allowed</span><span style="font-family:monospace;font-weight:700;color:var(--txt);">' + oppg + ' <span style="font-size:9px;color:var(--txt3);">(' + defRank + getSuffix(defRank) + ')</span></span></div>'
     + '</div>';
   return h;
 }
@@ -149,11 +149,11 @@ function getSuffix(n) { if (n % 10 === 1 && n !== 11) return 'st'; if (n % 10 ==
 function renderCoachCard() {
   var c = G.coach;
   if (!c || !c.firstName) return '';
-  var hotSeatBadge = c.hotSeat ? ' <span style="font-size:9px;font-weight:800;color:#fc8181;background:rgba(252,129,129,.12);padding:1px 6px;border-radius:2px;">HOT SEAT</span>' : '';
+  var hotSeatBadge = c.hotSeat ? ' <span style="font-size:9px;font-weight:800;color:#dc2626;background:rgba(252,129,129,.12);padding:1px 6px;border-radius:2px;">HOT SEAT</span>' : '';
 
   var h = '<div style="background:var(--s2);border:1px solid var(--bdr);border-radius:6px;padding:10px;">'
     + '<div style="font-size:10px;font-weight:800;color:var(--txt3);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">Coach Profile</div>'
-    + '<div style="font-size:13px;font-weight:800;color:#fff;margin-bottom:4px;">' + c.firstName + ' ' + c.lastName + hotSeatBadge + '</div>'
+    + '<div style="font-size:13px;font-weight:800;color:var(--txt);margin-bottom:4px;">' + c.firstName + ' ' + c.lastName + hotSeatBadge + '</div>'
     + '<div style="font-size:10px;color:var(--txt2);margin-bottom:8px;">Age ' + c.age + ' \u00b7 Year ' + (c.tenure + 1) + ' \u00b7 Career ' + c.careerWins + '-' + c.careerLoss + '</div>'
     + '<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;">';
   [{ k: 'off', l: 'OFF' }, { k: 'def', l: 'DEF' }, { k: 'dev', l: 'DEV' }, { k: 'rec', l: 'REC' }].forEach(function(r) {
@@ -175,7 +175,7 @@ function renderExpectations() {
   var pct = Math.min(100, Math.round((wins / Math.max(1, exp.high)) * 100));
   var dangerPct = Math.round((exp.danger / Math.max(1, exp.high)) * 100);
   var lowPct = Math.round((exp.low / Math.max(1, exp.high)) * 100);
-  var col = wins >= exp.low ? 'var(--grn)' : wins >= exp.danger ? 'var(--gld)' : '#fc8181';
+  var col = wins >= exp.low ? 'var(--grn)' : wins >= exp.danger ? 'var(--gld)' : '#dc2626';
 
   var h = '<div style="background:var(--s2);border:1px solid var(--bdr);border-radius:6px;padding:10px;">'
     + '<div style="font-size:10px;font-weight:800;color:var(--txt3);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Season Expectations</div>'
@@ -183,7 +183,7 @@ function renderExpectations() {
     + '<span style="color:var(--txt2);">Target: ' + exp.low + '-' + exp.high + ' wins</span>'
     + '<span style="font-weight:700;color:' + col + ';">' + wins + ' W</span></div>'
     + '<div style="height:6px;background:var(--s3);border-radius:3px;overflow:hidden;position:relative;">'
-    + '<div style="position:absolute;left:' + dangerPct + '%;top:0;bottom:0;width:1px;background:#fc8181;opacity:.5;"></div>'
+    + '<div style="position:absolute;left:' + dangerPct + '%;top:0;bottom:0;width:1px;background:#dc2626;opacity:.5;"></div>'
     + '<div style="position:absolute;left:' + lowPct + '%;top:0;bottom:0;width:1px;background:var(--gld);opacity:.5;"></div>'
     + '<div style="height:100%;width:' + pct + '%;background:' + col + ';border-radius:3px;transition:width .3s;"></div>'
     + '</div>'
@@ -201,10 +201,10 @@ function renderHeadlines() {
     + '<div style="font-size:10px;font-weight:800;color:var(--txt3);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">Headlines</div>';
   if (headlines.length) {
     headlines.forEach(function(log) {
-      var typeCol = log.type === 'w' ? 'var(--grn)' : log.type === 'l' ? '#fc8181' : 'var(--red)';
+      var typeCol = log.type === 'w' ? 'var(--grn)' : log.type === 'l' ? '#dc2626' : 'var(--red)';
       var badge = log.type === 'w' ? 'WIN' : log.type === 'l' ? 'LOSS' : 'NEWS';
-      h += '<div style="padding:5px 0;border-bottom:1px solid rgba(255,255,255,.03);font-size:11px;display:flex;gap:6px;align-items:flex-start;">'
-        + '<span style="font-size:8px;font-weight:800;color:' + typeCol + ';background:' + typeCol.replace(')', ',.1)').replace('var(', 'rgba(').replace('#fc8181', 'rgba(252,129,129,.1)') + ';padding:1px 5px;border-radius:2px;flex-shrink:0;margin-top:1px;">' + badge + '</span>'
+      h += '<div style="padding:5px 0;border-bottom:1px solid rgba(0,0,0,.03);font-size:11px;display:flex;gap:6px;align-items:flex-start;">'
+        + '<span style="font-size:8px;font-weight:800;color:' + typeCol + ';background:' + typeCol.replace(')', ',.1)').replace('var(', 'rgba(').replace('#dc2626', 'rgba(252,129,129,.1)') + ';padding:1px 5px;border-radius:2px;flex-shrink:0;margin-top:1px;">' + badge + '</span>'
         + '<span style="color:var(--txt2);">' + log.text + '</span></div>';
     });
   } else {
@@ -228,7 +228,7 @@ function renderGameCard() {
     if (ng && no) {
       var dm = DIFF_MOD[G.difficulty] || 0;
       var wp = clamp(50 + ((getTOvr(t) + dm) - (getTOvr(no) + (ng.home ? 0 : 3.5))) * 1.3, 5, 95);
-      var wpc = wp >= 50 ? 'var(--grn)' : '#fc8181';
+      var wpc = wp >= 50 ? 'var(--grn)' : '#dc2626';
       var noRank = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; }).findIndex(function(x) { return x.id === no.id; }) + 1;
       var noRankStr = noRank <= 25 ? '<span style="font-size:10px;color:var(--gld2);">#' + noRank + ' </span>' : '';
       h += '<div class="matchup-card">'
@@ -263,7 +263,7 @@ function renderGameCard() {
       var roundName = getConfRoundName(confMatch.ct, confMatch.conf);
       var dm2 = DIFF_MOD[G.difficulty] || 0;
       var cwp = clamp(50 + ((getTOvr(t) + dm2) - getTOvr(confOpp)) * 1.3, 5, 95);
-      var cwpc = cwp >= 50 ? 'var(--grn)' : '#fc8181';
+      var cwpc = cwp >= 50 ? 'var(--grn)' : '#dc2626';
       h += '<div class="matchup-card" style="border-left-color:var(--blu);">'
         + '<div style="font-size:10px;font-weight:700;color:var(--blu);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">' + roundName + '</div>'
         + '<div class="matchup-opp">#' + confOppSeed + ' ' + confOpp.name + '</div>'
@@ -295,7 +295,7 @@ function renderGameCard() {
       var ncaaRoundName = rn[active] || 'NCAA Tournament';
       var dm3 = DIFF_MOD[G.difficulty] || 0;
       var nwp = clamp(50 + ((getTOvr(t) + dm3) - getTOvr(ncaaOpp)) * 1.3, 5, 95);
-      var nwpc = nwp >= 50 ? 'var(--grn)' : '#fc8181';
+      var nwpc = nwp >= 50 ? 'var(--grn)' : '#dc2626';
       h += '<div class="matchup-card" style="border-left-color:var(--gld);">'
         + '<div style="font-size:10px;font-weight:700;color:var(--gld2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">NCAA \u2014 ' + ncaaRoundName + '</div>'
         + '<div class="matchup-opp">#' + ncaaOppEntry.seed + ' ' + ncaaOpp.name + '</div>'

@@ -103,11 +103,11 @@ function renderCoachName() {
     + '<div style="font-size:13px;color:var(--txt2);margin-top:8px;">Create your coaching legacy.</div></div>'
     + '<div style="margin-bottom:20px;">'
     + '<div style="font-size:11px;font-weight:700;color:var(--txt3);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">First Name</div>'
-    + '<input id="coach-first" type="text" placeholder="John" style="width:100%;padding:12px 14px;background:var(--s2);border:1px solid var(--bdr);border-radius:6px;color:#fff;font-family:Inter,sans-serif;font-size:15px;outline:none;" maxlength="20">'
+    + '<input id="coach-first" type="text" placeholder="John" style="width:100%;padding:12px 14px;background:var(--s2);border:1px solid var(--bdr);border-radius:6px;color:var(--txt);font-family:Inter,sans-serif;font-size:15px;outline:none;" maxlength="20">'
     + '</div>'
     + '<div style="margin-bottom:28px;">'
     + '<div style="font-size:11px;font-weight:700;color:var(--txt3);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">Last Name</div>'
-    + '<input id="coach-last" type="text" placeholder="Smith" style="width:100%;padding:12px 14px;background:var(--s2);border:1px solid var(--bdr);border-radius:6px;color:#fff;font-family:Inter,sans-serif;font-size:15px;outline:none;" maxlength="20">'
+    + '<input id="coach-last" type="text" placeholder="Smith" style="width:100%;padding:12px 14px;background:var(--s2);border:1px solid var(--bdr);border-radius:6px;color:var(--txt);font-family:Inter,sans-serif;font-size:15px;outline:none;" maxlength="20">'
     + '</div>'
     + '<div class="btn btn-red btn-full" style="padding:14px;font-size:14px;" onclick="submitCoachName()">CONTINUE \u203a</div>'
     + '</div>';
@@ -202,7 +202,7 @@ function renderJobOffers() {
     var tier = getTier(t.baseOvr);
     var sp = t.schoolPrestige;
     h += '<div onclick="selectJob(' + t.id + ')" style="padding:14px;background:var(--s1);border:1px solid var(--bdr);border-radius:8px;cursor:pointer;transition:all .15s;" onmouseover="this.style.borderColor=\'var(--red)\';this.style.background=\'rgba(0,102,204,.04)\'" onmouseout="this.style.borderColor=\'var(--bdr)\';this.style.background=\'var(--s1)\'">'
-      + '<div style="font-size:14px;font-weight:800;color:#fff;margin-bottom:4px;">' + t.name + '</div>'
+      + '<div style="font-size:14px;font-weight:800;color:var(--txt);margin-bottom:4px;">' + t.name + '</div>'
       + '<div style="font-size:11px;color:var(--txt2);margin-bottom:8px;">' + t.conf + '</div>'
       + '<div style="display:flex;gap:12px;">'
       + '<div><div style="font-size:16px;font-weight:900;color:var(--red);">' + getTOvr(t) + '</div><div style="font-size:9px;color:var(--txt3);">OVR</div></div>'
@@ -265,7 +265,7 @@ function renderNCSchedule() {
     + '<div style="font-size:28px;font-weight:900;">' + t.name + '</div>'
     + '<div style="font-size:12px;color:var(--txt2);margin-top:4px;">' + t.conf + ' \u00b7 Prestige ' + t.schoolPrestige + ' \u00b7 OVR ' + getTOvr(t) + '</div></div>';
 
-  h += '<div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:8px;">Non-Conference Schedule</div>'
+  h += '<div style="font-size:13px;font-weight:700;color:var(--txt);margin-bottom:8px;">Non-Conference Schedule</div>'
     + '<div style="font-size:11px;color:var(--txt3);margin-bottom:12px;">Auto-generated. Swap any opponent you don\'t want.</div>';
 
   h += '<div id="nc-auto-list" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">';
@@ -273,10 +273,10 @@ function renderNCSchedule() {
     var opp = G.teams[id];
     var myOvr = getTOvr(t);
     var diff = getTOvr(opp) - myOvr;
-    var diffCol = diff >= 5 ? '#fc8181' : diff >= -5 ? 'var(--gld2)' : 'var(--grn2)';
+    var diffCol = diff >= 5 ? '#dc2626' : diff >= -5 ? 'var(--gld2)' : 'var(--grn2)';
     var diffStr = diff > 0 ? '+' + diff : '' + diff;
     h += '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--s2);border:1px solid var(--bdr);border-radius:5px;">'
-      + '<div><div style="font-size:12px;font-weight:700;color:#fff;">' + opp.name + '</div>'
+      + '<div><div style="font-size:12px;font-weight:700;color:var(--txt);">' + opp.name + '</div>'
       + '<div style="font-size:10px;color:var(--txt3);margin-top:1px;">' + opp.conf + ' \u00b7 OVR ' + getTOvr(opp) + ' <span style="color:' + diffCol + ';">(' + diffStr + ')</span></div></div>'
       + '<div style="display:flex;gap:6px;align-items:center;">'
       + '<div style="font-size:10px;color:var(--txt3);">' + (i % 2 === 0 ? 'HOME' : 'AWAY') + '</div>'
@@ -306,9 +306,9 @@ export function swapNC(idx) {
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:99999;display:flex;align-items:center;justify-content:center;';
   overlay.innerHTML = '<div style="background:var(--s1);border:1px solid var(--bdr);border-radius:8px;width:480px;max-height:500px;display:flex;flex-direction:column;overflow:hidden;">'
     + '<div style="padding:14px 16px;border-bottom:1px solid var(--bdr);display:flex;justify-content:space-between;align-items:center;">'
-    + '<div style="font-size:13px;font-weight:700;color:#fff;">Swap Opponent</div>'
+    + '<div style="font-size:13px;font-weight:700;color:var(--txt);">Swap Opponent</div>'
     + '<div style="cursor:pointer;color:var(--txt3);font-size:16px;" id="swap-close">\u2715</div></div>'
-    + '<input id="swap-search" placeholder="Search..." style="padding:10px 14px;background:var(--s2);border:none;border-bottom:1px solid var(--bdr);color:#fff;font-family:Inter,sans-serif;font-size:12px;outline:none;">'
+    + '<input id="swap-search" placeholder="Search..." style="padding:10px 14px;background:var(--s2);border:none;border-bottom:1px solid var(--bdr);color:var(--txt);font-family:Inter,sans-serif;font-size:12px;outline:none;">'
     + '<div id="swap-list" style="overflow-y:auto;max-height:360px;"></div></div>';
   document.body.appendChild(overlay);
   function renderSwapList(f) {
@@ -316,8 +316,8 @@ export function swapNC(idx) {
     pool.filter(function(t) { return !f || t.name.toLowerCase().indexOf(f) >= 0 || t.conf.toLowerCase().indexOf(f) >= 0; })
     .forEach(function(t) {
       var d = document.createElement('div');
-      d.style.cssText = 'padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.03);display:flex;justify-content:space-between;font-size:12px;';
-      d.innerHTML = '<span style="font-weight:600;color:#fff;">' + t.name + '</span><span style="color:var(--txt3);">' + t.conf + ' \u2022 ' + getTOvr(t) + '</span>';
+      d.style.cssText = 'padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(0,0,0,.03);display:flex;justify-content:space-between;font-size:12px;';
+      d.innerHTML = '<span style="font-weight:600;color:var(--txt);">' + t.name + '</span><span style="color:var(--txt3);">' + t.conf + ' \u2022 ' + getTOvr(t) + '</span>';
       d.onmouseover = function() { this.style.background = 'rgba(0,102,204,.08)'; };
       d.onmouseout = function() { this.style.background = ''; };
       d.onclick = function() { SetupState.NC_PICKS[idx] = t.id; document.body.removeChild(overlay); showStep('nc-schedule'); };

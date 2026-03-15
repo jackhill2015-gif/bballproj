@@ -269,7 +269,7 @@ export function renderOffseason(){
 
   // ── Stats bar ──
   h+='<div style="display:flex;gap:16px;margin-bottom:12px;padding:10px 14px;background:var(--s1);border:1px solid var(--bdr);border-radius:6px;">'
-    +'<div style="text-align:center;"><div style="font-size:18px;font-weight:900;color:'+(left>30?'var(--grn2)':left>0?'var(--gld2)':'#fc8181')+';">'+left+'</div><div style="font-size:9px;color:var(--txt3);">BUDGET</div></div>'
+    +'<div style="text-align:center;"><div style="font-size:18px;font-weight:900;color:'+(left>30?'var(--grn2)':left>0?'var(--gld2)':'#dc2626')+';">'+left+'</div><div style="font-size:9px;color:var(--txt3);">BUDGET</div></div>'
     +'<div style="text-align:center;"><div style="font-size:18px;font-weight:900;">'+((G.teams[G.tid]&&G.teams[G.tid].schoolPrestige)||50)+'</div><div style="font-size:9px;color:var(--txt3);">PRESTIGE</div></div>'
     +'<div style="text-align:center;"><div style="font-size:18px;font-weight:900;">'+Math.max(0,13-G.teams[G.tid].rost.length)+'</div><div style="font-size:9px;color:var(--txt3);">OPEN SPOTS</div></div>'
     +'<div style="text-align:center;"><div style="font-size:18px;font-weight:900;color:var(--grn2);">'+commits.length+'</div><div style="font-size:9px;color:var(--txt3);">COMMITS</div></div>'
@@ -334,14 +334,14 @@ function renderTurnover(){
 
   // Summary cards — bigger
   h+='<div style="display:flex;gap:14px;margin-bottom:20px;">'
-    +'<div class="card" style="flex:1;padding:20px;text-align:center;"><div style="font-size:32px;font-weight:900;color:#fc8181;">'+dep.length+'</div><div style="font-size:11px;color:var(--txt3);font-weight:700;margin-top:4px;">DEPARTING</div></div>'
+    +'<div class="card" style="flex:1;padding:20px;text-align:center;"><div style="font-size:32px;font-weight:900;color:#dc2626;">'+dep.length+'</div><div style="font-size:11px;color:var(--txt3);font-weight:700;margin-top:4px;">DEPARTING</div></div>'
     +'<div class="card" style="flex:1;padding:20px;text-align:center;"><div style="font-size:32px;font-weight:900;color:var(--grn2);">'+returning.length+'</div><div style="font-size:11px;color:var(--txt3);font-weight:700;margin-top:4px;">RETURNING</div></div>'
     +'<div class="card" style="flex:1;padding:20px;text-align:center;"><div style="font-size:32px;font-weight:900;color:var(--gld2);">'+openSpots+'</div><div style="font-size:11px;color:var(--txt3);font-weight:700;margin-top:4px;">OPEN SPOTS</div></div>'
     +'<div class="card" style="flex:1;padding:20px;text-align:center;"><div style="font-size:32px;font-weight:900;">'+lostMins+'</div><div style="font-size:11px;color:var(--txt3);font-weight:700;margin-top:4px;">MINS TO REPLACE</div></div></div>';
 
   // Position needs bar
   if(needs.length){
-    h+='<div style="margin-bottom:16px;padding:10px 14px;background:rgba(0,102,204,.06);border:1px solid rgba(0,102,204,.15);border-radius:6px;font-size:12px;color:#fc8181;font-weight:700;">'
+    h+='<div style="margin-bottom:16px;padding:10px 14px;background:rgba(0,102,204,.06);border:1px solid rgba(0,102,204,.15);border-radius:6px;font-size:12px;color:#dc2626;font-weight:700;">'
       +'Position needs: '+needs.join(', ')+' \u2014 target these in recruiting</div>';
   }
 
@@ -350,15 +350,15 @@ function renderTurnover(){
 
   // LEFT: Departing
   h+='<div class="card" style="padding:16px;">'
-    +'<div class="card-title" style="font-size:13px;">Departing Players <span style="color:#fc8181;">'+dep.length+'</span></div>';
+    +'<div class="card-title" style="font-size:13px;">Departing Players <span style="color:#dc2626;">'+dep.length+'</span></div>';
   if(dep.length){
     dep.forEach(function(d){
       var reasonCol=d.reason==='Graduated'?'var(--txt3)':'var(--gld2)';
       var gp=1;
-      h+='<div style="display:flex;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.03);">'
+      h+='<div style="display:flex;align-items:center;padding:10px 0;border-bottom:1px solid rgba(0,0,0,.03);">'
         +'<div class="pos-chip" style="margin-right:10px;">'+d.pos+'</div>'
         +'<div style="flex:1;">'
-        +'<div style="font-size:13px;font-weight:700;color:#fff;">'+d.name+'</div>'
+        +'<div style="font-size:13px;font-weight:700;color:var(--txt);">'+d.name+'</div>'
         +'<div style="font-size:11px;color:var(--txt2);margin-top:2px;">'+d.cls+' \u00b7 '+d.ppg+' PPG \u00b7 '+d.rpg+' RPG \u00b7 '+(d.apg||'0.0')+' APG \u00b7 '+d.mins+' MIN</div>'
         +'</div>'
         +'<div style="text-align:right;">'
@@ -383,10 +383,10 @@ function renderTurnover(){
     var pot=p.pot||p.ovr;
     var potCol=pot>p.ovr+8?'var(--grn2)':pot>p.ovr+3?'var(--gld2)':'var(--txt3)';
     var clsCol=p.cls==='FR'?'var(--grn2)':p.cls==='SO'?'var(--gld2)':p.cls==='JR'?'#63b3ed':'var(--txt3)';
-    h+='<div style="display:flex;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.03);">'
+    h+='<div style="display:flex;align-items:center;padding:8px 0;border-bottom:1px solid rgba(0,0,0,.03);">'
       +'<div class="pos-chip" style="margin-right:10px;">'+p.pos+'</div>'
       +'<div style="flex:1;">'
-      +'<div style="font-size:13px;font-weight:700;color:#fff;">'+p.name+' <span style="font-size:10px;font-weight:800;color:'+clsCol+';">'+p.cls+'</span></div>'
+      +'<div style="font-size:13px;font-weight:700;color:var(--txt);">'+p.name+' <span style="font-size:10px;font-weight:800;color:'+clsCol+';">'+p.cls+'</span></div>'
       +'<div style="font-size:11px;color:var(--txt2);margin-top:2px;">'+ppg+' PPG \u00b7 '+rpg+' RPG \u00b7 '+apg+' APG \u00b7 '+p.mins+' MIN</div>'
       +'</div>'
       +'<div style="text-align:right;display:flex;gap:8px;align-items:center;">'
@@ -422,13 +422,13 @@ function renderFired() {
   var h = '<div style="max-width:600px;margin:0 auto;padding:40px 20px;text-align:center;">';
 
   h += '<div style="font-size:48px;margin-bottom:16px;">\ud83d\udea8</div>'
-    + '<div style="font-size:10px;color:#fc8181;font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;">END OF THE ROAD</div>'
-    + '<div style="font-size:32px;font-weight:900;color:#fc8181;margin-bottom:8px;">YOU\'VE BEEN FIRED</div>'
+    + '<div style="font-size:10px;color:#dc2626;font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;">END OF THE ROAD</div>'
+    + '<div style="font-size:32px;font-weight:900;color:#dc2626;margin-bottom:8px;">YOU\'VE BEEN FIRED</div>'
     + '<div style="font-size:14px;color:var(--txt2);margin-bottom:24px;">' + schoolName + ' has relieved you of your duties after a ' + record + ' season.</div>';
 
   // Coach summary
   h += '<div class="card" style="padding:20px;margin-bottom:20px;text-align:left;">'
-    + '<div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:12px;">Coach ' + c.firstName + ' ' + c.lastName + '</div>'
+    + '<div style="font-size:13px;font-weight:700;color:var(--txt);margin-bottom:12px;">Coach ' + c.firstName + ' ' + c.lastName + '</div>'
     + '<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;">'
     + '<div><div style="font-size:18px;font-weight:900;">' + c.age + '</div><div style="font-size:9px;color:var(--txt3);">AGE</div></div>'
     + '<div><div style="font-size:18px;font-weight:900;">' + c.careerWins + '-' + c.careerLoss + '</div><div style="font-size:9px;color:var(--txt3);">CAREER</div></div>'
@@ -492,7 +492,7 @@ function renderSkillPoints() {
     h += '<div style="display:flex;align-items:center;gap:10px;padding:14px;margin-bottom:8px;background:var(--s1);border:1px solid var(--bdr);border-radius:8px;">'
       + '<div style="font-size:24px;width:36px;text-align:center;">' + r.icon + '</div>'
       + '<div style="flex:1;">'
-      + '<div style="font-size:14px;font-weight:700;color:#fff;">' + r.label + '</div>'
+      + '<div style="font-size:14px;font-weight:700;color:var(--txt);">' + r.label + '</div>'
       + '<div style="font-size:10px;color:var(--txt3);">' + r.desc + '</div>'
       + '<div style="height:4px;background:var(--bdr2);border-radius:2px;margin-top:6px;overflow:hidden;">'
       + '<div style="height:100%;width:' + Math.round((val - 40) / 59 * 100) + '%;background:var(--red);border-radius:2px;"></div></div>'
@@ -598,7 +598,7 @@ function renderCarousel() {
   h += '<div class="card" style="margin-bottom:16px;padding:16px;border-left:4px solid var(--grn);">'
     + '<div style="display:flex;justify-content:space-between;align-items:center;">'
     + '<div>'
-    + '<div style="font-size:14px;font-weight:800;color:#fff;">Stay at ' + currentTeam.name + '</div>'
+    + '<div style="font-size:14px;font-weight:800;color:var(--txt);">Stay at ' + currentTeam.name + '</div>'
     + '<div style="font-size:11px;color:var(--txt2);margin-top:2px;">' + currentTeam.conf + ' \u00b7 Prestige ' + (currentTeam.schoolPrestige || '?') + ' \u00b7 Year ' + (c.tenure + 1) + ' tenure</div>'
     + '</div>'
     + '<div class="btn btn-ghost btn-sm" style="padding:8px 20px;" onclick="stayAtSchool()">STAY</div>'
@@ -611,10 +611,10 @@ function renderCarousel() {
     jobs.forEach(function(job, idx) {
       if (_rejectedJobs.indexOf(idx) >= 0) return; // hide rejected jobs
       var chance = calcOfferChance(job);
-      var chanceCol = chance >= 60 ? 'var(--grn2)' : chance >= 30 ? 'var(--gld2)' : '#fc8181';
+      var chanceCol = chance >= 60 ? 'var(--grn2)' : chance >= 30 ? 'var(--gld2)' : '#dc2626';
       var t = job.team;
       h += '<div class="card" style="padding:14px;">'
-        + '<div style="font-size:14px;font-weight:800;color:#fff;margin-bottom:2px;">' + t.name + '</div>'
+        + '<div style="font-size:14px;font-weight:800;color:var(--txt);margin-bottom:2px;">' + t.name + '</div>'
         + '<div style="font-size:10px;color:var(--txt2);margin-bottom:8px;">' + t.conf + ' \u00b7 OVR ' + (t.baseOvr || '?') + ' \u00b7 Prestige ' + (t.schoolPrestige || '?') + '</div>'
         + '<div style="font-size:10px;color:var(--txt3);margin-bottom:8px;">Previous: ' + job.firedCoach + ' \u00b7 ' + job.reason + '</div>'
         + '<div style="display:flex;justify-content:space-between;align-items:center;">'
@@ -709,18 +709,18 @@ function showJobModal(job, offered, onContinue) {
   var overlay = document.createElement('div');
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:99999;display:flex;align-items:center;justify-content:center;';
   var content = '<div style="background:var(--s1);border:1px solid var(--bdr);border-radius:10px;padding:32px;max-width:420px;text-align:center;">'
-    + '<div style="font-size:10px;color:' + (offered ? 'var(--grn2)' : '#fc8181') + ';font-weight:800;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">' + (offered ? 'JOB OFFERED' : 'NOT INTERESTED') + '</div>'
+    + '<div style="font-size:10px;color:' + (offered ? 'var(--grn2)' : '#dc2626') + ';font-weight:800;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">' + (offered ? 'JOB OFFERED' : 'NOT INTERESTED') + '</div>'
     + '<div style="font-size:24px;font-weight:900;margin-bottom:4px;">' + job.team.name + '</div>'
     + '<div style="font-size:12px;color:var(--txt2);margin-bottom:16px;">' + job.team.conf + ' \u00b7 Prestige ' + (job.team.schoolPrestige || '?') + '</div>';
   if (offered) {
     content += '<div style="font-size:13px;color:var(--txt2);margin-bottom:20px;">The program wants you to lead them to glory. Do you accept?</div>'
       + '<div style="display:flex;gap:10px;justify-content:center;">'
       + '<div id="job-decline" style="padding:10px 24px;background:var(--s2);border:1px solid var(--bdr);border-radius:6px;cursor:pointer;font-size:13px;font-weight:700;color:var(--txt2);">DECLINE</div>'
-      + '<div id="job-accept" style="padding:10px 24px;background:var(--red);border-radius:6px;cursor:pointer;font-size:13px;font-weight:800;color:#fff;">ACCEPT</div>'
+      + '<div id="job-accept" style="padding:10px 24px;background:var(--red);border-radius:6px;cursor:pointer;font-size:13px;font-weight:800;color:var(--txt);">ACCEPT</div>'
       + '</div>';
   } else {
     content += '<div style="font-size:13px;color:var(--txt3);margin-bottom:20px;">' + job.team.name + ' has decided to go in a different direction.</div>'
-      + '<div id="job-ok" style="display:inline-block;padding:10px 32px;background:var(--s2);border:1px solid var(--bdr);border-radius:6px;cursor:pointer;font-size:13px;font-weight:700;color:#fff;">OK</div>';
+      + '<div id="job-ok" style="display:inline-block;padding:10px 32px;background:var(--s2);border:1px solid var(--bdr);border-radius:6px;cursor:pointer;font-size:13px;font-weight:700;color:var(--txt);">OK</div>';
   }
   content += '</div>';
   overlay.innerHTML = content;
@@ -750,10 +750,10 @@ function renderBoard(open,left){
   var h='';
   // Filters
   h+='<div style="display:flex;gap:8px;margin-bottom:10px;align-items:center;">';
-  h+='<select onchange="setRecruitFilter(\'pos\',this.value)" style="background:var(--s2);border:1px solid var(--bdr);border-radius:4px;color:#fff;padding:4px 8px;font-size:11px;">';
+  h+='<select onchange="setRecruitFilter(\'pos\',this.value)" style="background:var(--s2);border:1px solid var(--bdr);border-radius:4px;color:var(--txt);padding:4px 8px;font-size:11px;">';
   ['All','PG','SG','SF','PF','C'].forEach(function(p){h+='<option value="'+p+'"'+((_filter.pos===p)?' selected':'')+'>'+p+'</option>';});
   h+='</select>';
-  h+='<select onchange="setRecruitFilter(\'stars\',parseInt(this.value))" style="background:var(--s2);border:1px solid var(--bdr);border-radius:4px;color:#fff;padding:4px 8px;font-size:11px;">';
+  h+='<select onchange="setRecruitFilter(\'stars\',parseInt(this.value))" style="background:var(--s2);border:1px solid var(--bdr);border-radius:4px;color:var(--txt);padding:4px 8px;font-size:11px;">';
   [{v:0,l:'All Stars'},{v:5,l:'5\u2605'},{v:4,l:'4\u2605+'},{v:3,l:'3\u2605+'},{v:2,l:'2\u2605+'}].forEach(function(o){h+='<option value="'+o.v+'"'+((_filter.stars===o.v)?' selected':'')+'>'+o.l+'</option>';});
   h+='</select>';
   h+='<div style="flex:1;"></div>';
@@ -784,13 +784,13 @@ function renderBoard(open,left){
     var sp=(G.teams[G.tid]&&G.teams[G.tid].schoolPrestige)||50;
     var gatePrestige=SCHOOL_RECRUIT_GATES[r.stars]||0;
     var gated=sp<gatePrestige;
-    var gateBadge=gated?'<span style="font-size:8px;font-weight:900;color:#fc8181;background:rgba(0,102,204,.12);padding:1px 5px;border-radius:2px;margin-left:4px;">LONG SHOT</span>':'';
+    var gateBadge=gated?'<span style="font-size:8px;font-weight:900;color:#dc2626;background:rgba(0,102,204,.12);padding:1px 5px;border-radius:2px;margin-left:4px;">LONG SHOT</span>':'';
 
-    h+='<div onclick="showDetail('+r.id+')" style="display:flex;align-items:center;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.03);cursor:pointer;'+(isTarget?'background:rgba(49,130,206,.06);border-left:3px solid var(--blu);':'')+(r.id===_detailId?'background:rgba(0,102,204,.06);':'')+'transition:background .1s;" onmouseover="this.style.background=\'rgba(255,255,255,.03)\'" onmouseout="this.style.background=\''+(isTarget?'rgba(49,130,206,.06)':'')+'\'">'
+    h+='<div onclick="showDetail('+r.id+')" style="display:flex;align-items:center;padding:8px 10px;border-bottom:1px solid rgba(0,0,0,.03);cursor:pointer;'+(isTarget?'background:rgba(49,130,206,.06);border-left:3px solid var(--blu);':'')+(r.id===_detailId?'background:rgba(0,102,204,.06);':'')+'transition:background .1s;" onmouseover="this.style.background=\'rgba(0,0,0,.03)\'" onmouseout="this.style.background=\''+(isTarget?'rgba(49,130,206,.06)':'')+'\'">'
       +'<div style="width:32px;font-family:monospace;font-size:11px;color:var(--txt3);flex-shrink:0;">#'+r.natRank+'</div>'
       +'<div style="flex:1;min-width:0;">'
       +'<div style="display:flex;align-items:center;gap:5px;">'
-      +'<span style="font-size:12px;font-weight:700;color:#fff;">'+r.name+'</span>'
+      +'<span style="font-size:12px;font-weight:700;color:var(--txt);">'+r.name+'</span>'
       +'<span style="font-size:8px;color:var(--gld2);">'+stars+'</span>'
       +geoBadge+gateBadge
       +'</div>'
@@ -817,7 +817,7 @@ function renderDetailPanel(r,left){
   var h='<div style="background:var(--s1);border:1px solid var(--bdr);border-radius:8px;padding:16px;margin-bottom:14px;">';
   h+='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">'
     +'<div>'
-    +'<div style="font-size:16px;font-weight:900;color:#fff;">'+r.name+'</div>'
+    +'<div style="font-size:16px;font-weight:900;color:var(--txt);">'+r.name+'</div>'
     +'<div style="font-size:11px;color:var(--gld2);margin-top:2px;">'+stars+' \u00b7 #'+r.natRank+' National \u00b7 #'+r.posRank+' '+r.pos+'</div>'
     +'<div style="font-size:11px;color:var(--txt2);margin-top:2px;">'+r.pos+' \u00b7 OVR '+r.ovr+' \u00b7 POT '+(r.pot||r.ovr)+' \u00b7 '+stName+'</div></div>'
     +'<div onclick="closeDetail()" style="cursor:pointer;color:var(--txt3);font-size:16px;padding:4px 8px;">\u2715</div></div>';
@@ -833,7 +833,7 @@ function renderDetailPanel(r,left){
       +'<div onclick="event.stopPropagation();adjustPoints('+r.id+',5)" style="width:28px;height:28px;border-radius:4px;background:'+(left>=5?'var(--red)':'var(--s2)')+';border:1px solid '+(left>=5?'var(--red)':'var(--bdr)')+';color:'+(left>=5?'#fff':'var(--txt3)')+';display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;cursor:pointer;user-select:none;">+</div>'
       +'<span style="font-size:10px;color:var(--txt3);margin-left:4px;">pts invested</span>'
       +'<div style="flex:1;"></div>'
-      +'<div onclick="event.stopPropagation();removeTarget('+r.id+')" style="font-size:10px;color:#fc8181;cursor:pointer;text-decoration:underline;">Remove</div></div>';
+      +'<div onclick="event.stopPropagation();removeTarget('+r.id+')" style="font-size:10px;color:#dc2626;cursor:pointer;text-decoration:underline;">Remove</div></div>';
   }
 
   // Schools competing
@@ -878,7 +878,7 @@ function renderTargets(left){
     h+='<div style="padding:12px;margin-bottom:8px;background:var(--s1);border:1px solid var(--bdr);border-radius:6px;'+(leading?'border-left:3px solid var(--grn);':'border-left:3px solid var(--bdr2);')+'">';
     h+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'
       +'<div style="font-family:monospace;font-size:10px;color:var(--txt3);">#'+r.natRank+'</div>'
-      +'<div style="flex:1;"><div style="font-size:13px;font-weight:700;color:#fff;">'+r.name+'</div>'
+      +'<div style="flex:1;"><div style="font-size:13px;font-weight:700;color:var(--txt);">'+r.name+'</div>'
       +'<div style="font-size:10px;color:var(--txt3);">'+stars+' \u00b7 '+r.pos+' \u00b7 OVR '+r.ovr+' \u00b7 '+(STATE_NAMES[r.homeState]||r.homeState)+'</div></div>'
       +'<div style="font-size:18px;font-weight:900;color:'+(leading?'var(--grn2)':'var(--txt2)')+';">'+userPct+'%</div></div>';
 
@@ -888,7 +888,7 @@ function renderTargets(left){
       +'<div style="font-family:monospace;font-size:15px;font-weight:800;color:'+(pts>0?'var(--red)':'var(--txt3)')+';">'+pts+' pts</div>'
       +'<div onclick="adjustPoints('+r.id+',5)" style="width:28px;height:28px;border-radius:4px;background:'+(left>=5?'var(--red)':'var(--s2)')+';border:1px solid '+(left>=5?'var(--red)':'var(--bdr)')+';color:'+(left>=5?'#fff':'var(--txt3)')+';display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;cursor:pointer;user-select:none;">+</div>'
       +'<div style="flex:1;"></div>'
-      +'<div onclick="removeTarget('+r.id+')" style="font-size:10px;color:#fc8181;cursor:pointer;">Remove</div></div>';
+      +'<div onclick="removeTarget('+r.id+')" style="font-size:10px;color:#dc2626;cursor:pointer;">Remove</div></div>';
 
     // Top 3 schools
     schools.slice(0,3).forEach(function(s){
@@ -914,7 +914,7 @@ function renderCommits(commits){
   commits.forEach(function(r){
     var stars='';for(var i=0;i<5;i++)stars+=i<r.stars?'\u2605':'\u2606';
     h+='<div style="display:flex;align-items:center;padding:10px;margin-bottom:6px;background:var(--s1);border:1px solid var(--bdr);border-radius:6px;border-left:3px solid var(--grn);">'
-      +'<div style="flex:1;"><div style="font-size:13px;font-weight:700;color:#fff;">'+r.name+'</div>'
+      +'<div style="flex:1;"><div style="font-size:13px;font-weight:700;color:var(--txt);">'+r.name+'</div>'
       +'<div style="font-size:10px;color:var(--gld2);">'+stars+' \u00b7 '+r.pos+' \u00b7 '+(STATE_NAMES[r.homeState]||r.homeState)+'</div></div>'
       +'<div style="text-align:right;"><div style="font-family:monospace;font-size:16px;font-weight:900;color:var(--grn2);">'+r.ovr+'</div>'
       +'<div style="font-size:10px;color:var(--txt3);">POT '+(r.pot||r.ovr)+'</div></div></div>';
@@ -938,9 +938,9 @@ function renderRosterNeeds(){
     var ct=posNeeds[pos];
     var need=ct<2;
     h+='<div style="flex:1;padding:10px;text-align:center;background:var(--s1);border:1px solid '+(need?'rgba(0,102,204,.3)':'var(--bdr)')+';border-radius:6px;">'
-      +'<div style="font-size:20px;font-weight:900;color:'+(need?'#fc8181':'#fff')+';">'+ct+'</div>'
+      +'<div style="font-size:20px;font-weight:900;color:'+(need?'#dc2626':'#fff')+';">'+ct+'</div>'
       +'<div style="font-size:10px;color:var(--txt3);">'+pos+'</div>'
-      +(need?'<div style="font-size:8px;color:#fc8181;font-weight:700;margin-top:2px;">NEED</div>':'')+'</div>';
+      +(need?'<div style="font-size:8px;color:#dc2626;font-weight:700;margin-top:2px;">NEED</div>':'')+'</div>';
   });
   h+='</div>';
 
@@ -950,7 +950,7 @@ function renderRosterNeeds(){
     var gp=p.s.gp||0;var ppg=gp?(p.s.pts/gp).toFixed(1):'--';
     h+='<div style="display:flex;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.02);">'
       +'<div class="pos-chip" style="margin-right:8px;">'+p.pos+'</div>'
-      +'<div style="flex:1;font-size:11px;font-weight:600;color:#fff;">'+p.name+' <span style="font-size:9px;color:var(--txt3);">'+p.cls+'</span></div>'
+      +'<div style="flex:1;font-size:11px;font-weight:600;color:var(--txt);">'+p.name+' <span style="font-size:9px;color:var(--txt3);">'+p.cls+'</span></div>'
       +'<div style="font-size:10px;color:var(--txt2);margin-right:8px;">'+ppg+' PPG</div>'
       +'<div style="font-family:monospace;font-size:12px;font-weight:700;color:var(--red);">'+p.ovr+'</div></div>';
   });

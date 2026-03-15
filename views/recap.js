@@ -184,7 +184,7 @@ export function renderSeasonRecap() {
       + '<div style="font-size:10px;color:var(--txt2);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;">All-American Team</div>';
     awards.allAmerican.forEach(function(p) {
       var isU = p.tid === G.tid;
-      h += '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.03);font-size:12px;">'
+      h += '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(0,0,0,.03);font-size:12px;">'
         + '<span style="color:' + (isU ? 'var(--red)' : '#fff') + ';font-weight:' + (isU ? '800' : '600') + ';">' + p.name + ' <span style="color:var(--txt3);font-size:10px;">' + p.pos + ' \u00b7 ' + p.team + '</span></span>'
         + '<span style="font-family:monospace;color:var(--txt2);">' + p.ppg + ' / ' + p.rpg + ' / ' + p.apg + '</span></div>';
     });
@@ -197,7 +197,7 @@ export function renderSeasonRecap() {
       + '<div style="font-size:10px;color:var(--txt2);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;">All-' + awards.userConf + ' Team</div>';
     awards.userAllConf.forEach(function(p) {
       var isU = p.tid === G.tid;
-      h += '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.03);font-size:12px;">'
+      h += '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(0,0,0,.03);font-size:12px;">'
         + '<span style="color:' + (isU ? 'var(--red)' : '#fff') + ';font-weight:' + (isU ? '800' : '600') + ';">' + p.name + ' <span style="color:var(--txt3);font-size:10px;">' + p.team + '</span></span>'
         + '<span style="font-family:monospace;color:var(--txt2);">' + p.ppg + ' PPG</span></div>';
     });
