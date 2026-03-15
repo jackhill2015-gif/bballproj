@@ -460,7 +460,9 @@ export function doPlay(mode) {
   } else if (G.phase === 'conf_tourn' || G.phase === 'ncaa') {
     if (_ext.playTournamentGame) _ext.playTournamentGame(mode === 'live');
   } else if (G.phase === 'offseason') {
-    if (G.offseasonStep === 'recap') {
+    if (G.offseasonStep === 'fired') {
+      if (window.proceedFromFired) window.proceedFromFired();
+    } else if (G.offseasonStep === 'recap') {
       if (window.beginOffseason) window.beginOffseason();
     } else if (G.offseasonStep === 'skillpoints') {
       if (window.finishSkillPoints) window.finishSkillPoints();
@@ -617,10 +619,85 @@ export function endSeason() {
   G.coach.tenure++;
   G.coach.age++;
 
-  // Go to recap as first offseason step
-  G.phase = 'offseason';
-  G.offseasonStep = 'recap';
-  saveState(); updateAll(); navTo('offseason');
+  // ── HOT SEAT / FIRING CHECK ──
+  var exp = G.expectations;
+  var fired = false;
+  if (exp) {
+    if (t.wins < exp.danger) {
+      // Below danger zone
+      if (G.coach.hotSeat) {
+        // Two bad years in a row = FIRED
+        fired = true;
+        G.coach.hotSeat = false;
+      } else {
+        // First bad year = hot seat warning
+        G.coach.hotSeat = true;
+        addLog('ev', G.gi, '<b>HOT SEAT!</b> The administration is concerned about the program\'s direction.');
+      }
+    } else if (t.wins < exp.low) {
+      // Below expectations but not danger
+      if (G.coach.hotSeat) {
+        // Still underperforming while on hot seat
+        if (Math.random() < 0.4) {
+          fired = true;
+        } else {
+          addLog('ev', G.gi, 'The AD is giving you one more chance. Don\'t waste it.');
+        }
+      } else {
+        G.coach.hotSeat = true;
+        addLog('ev', G.gi, 'Disappointing season. The AD expects improvement next year.');
+      }
+    } else {
+      // Met or exceeded expectations — clear hot seat
+      G.coach.hotSeat = false;
+    }
+  }
+
+  // Fire CPU coaches that underperformed
+  G.teams.forEach(function(tm) {
+    if (tm.id === G.tid) return;
+    var tmTotal = tm.wins + tm.loss;
+    if (tmTotal === 0) return;
+    var tmWinPct = tm.wins / tmTotal;
+    if (tmWinPct < 0.35 || (tmWinPct < 0.42 && Math.random() < 0.3)) {
+      // CPU coach fired — generate replacement
+      tm.coachHistory = tm.coachHistory || [];
+      if (tm.coach) {
+        tm.coachHistory.push({ yr: G.yr, coach: tm.coach.firstName + ' ' + tm.coach.lastName, record: tm.wins + '-' + tm.loss, fired: true });
+      }
+      tm.coach = {
+        firstName: COACH_FN[ri(0, COACH_FN.length - 1)],
+        lastName: COACH_LN[ri(0, COACH_LN.length - 1)],
+        age: ri(35, 60), off: ri(55, 85), def: ri(55, 85),
+        dev: ri(55, 85), rec: ri(55, 85), tenure: 0
+      };
+    } else if (tm.coach) {
+      tm.coach.tenure = (tm.coach.tenure || 0) + 1;
+      tm.coach.age = (tm.coach.age || 45) + 1;
+    }
+  });
+
+  if (fired) {
+    G.coach.history.push({ yr: G.yr, school: t.name, wins: t.wins, loss: t.loss, action: 'Fired' });
+    addLog('ev', G.gi, '<b>You have been fired from ' + t.name + '.</b>');
+    // Replace user with NPC at current school
+    t.coach = {
+      firstName: COACH_FN[ri(0, COACH_FN.length - 1)],
+      lastName: COACH_LN[ri(0, COACH_LN.length - 1)],
+      age: ri(35, 60), off: ri(55, 85), def: ri(55, 85),
+      dev: ri(55, 85), rec: ri(55, 85), tenure: 0
+    };
+    t.coachHistory = t.coachHistory || [];
+    t.coachHistory.push({ yr: G.yr, coach: G.coach.firstName + ' ' + G.coach.lastName, record: t.wins + '-' + t.loss, fired: true });
+    G.phase = 'offseason';
+    G.offseasonStep = 'fired';
+    saveState(); updateAll(); navTo('offseason');
+  } else {
+    G.coach.history.push({ yr: G.yr, school: t.name, wins: t.wins, loss: t.loss, action: G.coach.hotSeat ? 'Hot Seat' : 'Retained' });
+    G.phase = 'offseason';
+    G.offseasonStep = 'recap';
+    saveState(); updateAll(); navTo('offseason');
+  }
 }
 
 export function showRecap() {
@@ -741,7 +818,14 @@ export function doOffseason() {
   setupUserOOC();
 
   genRecruits();
-  addLog('ev', 0, 'Season ' + G.yr + ' begins.');
+
+  // Calculate season expectations
+  var confTeams = G.teams.filter(function(x) { return x.conf === G.teams[G.tid].conf; });
+  var confAvgOvr = confTeams.reduce(function(s, x) { return s + getTOvr(x); }, 0) / (confTeams.length || 1);
+  G.expectations = calcExpectations(getTOvr(G.teams[G.tid]), confAvgOvr);
+  G.seasonAchievements = { confTitleThisYear: false, madeNCAA: false, sweet16: false, finalFour: false, champGame: false, natChamp: false };
+
+  addLog('ev', 0, 'Season ' + G.yr + ' begins. Expectations: ' + G.expectations.low + '-' + G.expectations.high + ' wins.');
   toast('Season ' + G.yr + ' starts now!');
   saveState(); updateAll(); navTo('dashboard');
 }

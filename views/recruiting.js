@@ -232,6 +232,10 @@ export function renderOffseason(){
   var el=ge('offseason-content');if(!el)return;
 
   // Route to correct screen
+  if(G.offseasonStep==='fired'){
+    el.innerHTML=renderFired();return;
+  }
+
   if(G.offseasonStep==='recap'){
     if(window._renderSeasonRecap) el.innerHTML=window._renderSeasonRecap();
     else el.innerHTML='<div style="padding:40px;text-align:center;color:var(--txt3);">Season recap loading...</div>';
@@ -404,6 +408,54 @@ function renderTurnover(){
 // ═══════════════════════════════════════════════════════════
 //  SKILL POINTS ALLOCATION
 // ═══════════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════════════
+//  FIRED SCREEN
+// ═══════════════════════════════════════════════════════════
+
+function renderFired() {
+  var c = G.coach;
+  var lastJob = c.history.length ? c.history[c.history.length - 1] : null;
+  var schoolName = lastJob ? lastJob.school : 'your school';
+  var record = lastJob ? lastJob.wins + '-' + lastJob.loss : '?-?';
+
+  var h = '<div style="max-width:600px;margin:0 auto;padding:40px 20px;text-align:center;">';
+
+  h += '<div style="font-size:48px;margin-bottom:16px;">\ud83d\udea8</div>'
+    + '<div style="font-size:10px;color:#fc8181;font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;">END OF THE ROAD</div>'
+    + '<div style="font-size:32px;font-weight:900;color:#fc8181;margin-bottom:8px;">YOU\'VE BEEN FIRED</div>'
+    + '<div style="font-size:14px;color:var(--txt2);margin-bottom:24px;">' + schoolName + ' has relieved you of your duties after a ' + record + ' season.</div>';
+
+  // Coach summary
+  h += '<div class="card" style="padding:20px;margin-bottom:20px;text-align:left;">'
+    + '<div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:12px;">Coach ' + c.firstName + ' ' + c.lastName + '</div>'
+    + '<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;">'
+    + '<div><div style="font-size:18px;font-weight:900;">' + c.age + '</div><div style="font-size:9px;color:var(--txt3);">AGE</div></div>'
+    + '<div><div style="font-size:18px;font-weight:900;">' + c.careerWins + '-' + c.careerLoss + '</div><div style="font-size:9px;color:var(--txt3);">CAREER</div></div>'
+    + '<div><div style="font-size:18px;font-weight:900;">' + (c.titles || 0) + '</div><div style="font-size:9px;color:var(--txt3);">TITLES</div></div>'
+    + '<div><div style="font-size:18px;font-weight:900;">' + (c.history.length) + '</div><div style="font-size:9px;color:var(--txt3);">SEASONS</div></div>'
+    + '</div></div>';
+
+  h += '<div style="font-size:12px;color:var(--txt3);margin-bottom:20px;">Your reputation has taken a hit. Fewer schools will be interested, but there\'s always a program looking for a fresh start.</div>';
+
+  h += '<div class="btn btn-red" style="display:inline-block;padding:14px 40px;font-size:14px;font-weight:800;" onclick="proceedFromFired()">FIND A NEW JOB \u25b6</div>';
+
+  h += '</div>';
+  return h;
+}
+
+export function proceedFromFired() {
+  // Skip skill points (you got fired, no development)
+  // Go straight to carousel with limited options
+  G.offseasonStep = 'carousel';
+  // Temporarily reduce coach ratings as firing penalty
+  G.coach.off = Math.max(50, G.coach.off - 3);
+  G.coach.def = Math.max(50, G.coach.def - 3);
+  G.coach.dev = Math.max(50, G.coach.dev - 3);
+  G.coach.rec = Math.max(50, G.coach.rec - 3);
+  saveState(); renderOffseason();
+}
+window.proceedFromFired = proceedFromFired;
 
 var _skillInitial = null;
 

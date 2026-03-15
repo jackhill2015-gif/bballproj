@@ -3,7 +3,7 @@
 //  Coach career setup: name → difficulty → job offers → start
 // ═══════════════════════════════════════════════════════════
 
-import { DIFF_DESC, calcSchoolPrestige } from '../constants.js';
+import { DIFF_DESC, calcSchoolPrestige, calcExpectations } from '../constants.js';
 import { ri, ge, txt, getTier, getTOvr, fR } from '../utils.js';
 import { G, SetupState, loadState, deleteSave, saveState } from '../state.js';
 import { buildSchedules, genRecruits, buildUniverse, setupUserOOC } from '../season.js';
@@ -334,8 +334,16 @@ export function startDynasty() {
   if (SetupState.NC_PICKS.length < 10) autoGenNC();
   setupUserOOC();
   genRecruits();
+
+  // Calculate season expectations
+  var t = G.teams[G.tid];
+  var confTeams = G.teams.filter(function(x) { return x.conf === t.conf; });
+  var confAvgOvr = confTeams.reduce(function(s, x) { return s + getTOvr(x); }, 0) / (confTeams.length || 1);
+  G.expectations = calcExpectations(getTOvr(t), confAvgOvr);
+  G.seasonAchievements = { confTitleThisYear: false, madeNCAA: false, sweet16: false, finalFour: false, champGame: false, natChamp: false };
+
   ge('setup').style.display = 'none';
-  addLog('ev', 0, 'Coach ' + G.coach.lastName + ' takes over at <b>' + G.teams[G.tid].name + '</b>. Season ' + G.yr + ' begins.');
+  addLog('ev', 0, 'Coach ' + G.coach.lastName + ' takes over at <b>' + t.name + '</b>. Season ' + G.yr + ' begins. Expectations: ' + G.expectations.low + '-' + G.expectations.high + ' wins.');
   updateAll(); saveState();
 }
 window.startDynasty = startDynasty;
