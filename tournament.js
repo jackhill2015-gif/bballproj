@@ -221,16 +221,80 @@ export function simConfBtn(el) {
 // ═══════════════════════════════════════════════════════════
 
 export function buildNCAA() {
-  var sorted = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; }).slice(0, 64);
-  G.bracket = sorted.map(function(t, i) {
+  // ── SELECTION COMMITTEE ──
+  // Step 1: Conference champs get automatic bids
+  var autoBids = [];
+  if (G.confTourneys) {
+    Object.keys(G.confTourneys).forEach(function(conf) {
+      var ct = G.confTourneys[conf];
+      if (ct && ct.done && ct.champ) {
+        autoBids.push(ct.champ);
+      }
+    });
+  }
+
+  // Step 2: Build resume score for at-large selection
+  // Resume = NET pts + win% bonus + strength of schedule
+  var allTeams = G.teams.map(function(t) {
+    var totalGames = t.wins + t.loss;
+    var winPct = totalGames > 0 ? t.wins / totalGames : 0;
+    var winBonus = Math.round((winPct - 0.5) * 80); // +40 for .750, -40 for .250
+    var isAutoBid = autoBids.some(function(ab) { return ab.id === t.id; });
+    return {
+      team: t,
+      resume: t.pts + winBonus,
+      isAutoBid: isAutoBid
+    };
+  });
+
+  // Step 3: Sort by resume, pick auto-bids first, then fill to 64 with at-large
+  allTeams.sort(function(a, b) { return b.resume - a.resume; });
+  var field = [];
+  var inField = {};
+
+  // Auto-bids first
+  autoBids.forEach(function(t) {
+    if (!inField[t.id]) {
+      field.push(t);
+      inField[t.id] = true;
+    }
+  });
+
+  // Fill remaining spots with at-large (best resume first)
+  allTeams.forEach(function(entry) {
+    if (field.length >= 64) return;
+    if (inField[entry.team.id]) return;
+    // At-large minimum: must have a winning record
+    if (entry.team.wins <= entry.team.loss) return;
+    field.push(entry.team);
+    inField[entry.team.id] = true;
+  });
+
+  // If still not 64 (unlikely but safety), fill with best remaining
+  allTeams.forEach(function(entry) {
+    if (field.length >= 64) return;
+    if (inField[entry.team.id]) return;
+    field.push(entry.team);
+    inField[entry.team.id] = true;
+  });
+
+  // Step 4: Seed by resume
+  field.sort(function(a, b) {
+    var aResume = allTeams.find(function(e) { return e.team.id === a.id; });
+    var bResume = allTeams.find(function(e) { return e.team.id === b.id; });
+    return (bResume ? bResume.resume : 0) - (aResume ? aResume.resume : 0);
+  });
+
+  G.bracket = field.slice(0, 64).map(function(t, i) {
     return { team: t, seed: i + 1, active: true, score: null, won: false };
   });
   G.phase = 'ncaa';
+
   var userSeed = G.bracket.findIndex(function(b) { return b.team.id === G.tid; }) + 1;
   if (userSeed > 0) {
     addLog('ev', G.gi, '<b>NCAA Tournament!</b> You are the #' + userSeed + ' seed.');
   } else {
-    addLog('ev', G.gi, 'NCAA Tournament \u2014 your program did not qualify.');
+    addLog('ev', G.gi, '<b>NIT bound.</b> Your program did not qualify for the NCAA Tournament.');
   }
   saveState(); updateAll();
   showBracketReveal(userSeed);

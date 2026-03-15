@@ -176,10 +176,13 @@ export function simGame(home, away, userIsHome) {
   if (hStrat === 'Pace & Space' || aStrat === 'Pace & Space') pace += 7;
   if (hStrat === 'Grit & Grind' && aStrat === 'Grit & Grind') pace -= 6;
 
-  // Apply difficulty to user team players temporarily
+  // Apply difficulty — nerf user AND boost CPU
   var userTeamPlayers = [];
+  var cpuTeamPlayers = [];
   if (dm !== 0) {
     var userT = (userIsHome ? home : away);
+    var cpuT = (userIsHome ? away : home);
+    // Nerf user
     userT.rost.forEach(function(p) {
       if (p.mins > 0) {
         userTeamPlayers.push({ p: p, sht: p.sht, fin: p.fin, def: p.def });
@@ -188,6 +191,18 @@ export function simGame(home, away, userIsHome) {
         p.def = clamp(p.def + dm, 30, 99);
       }
     });
+    // Boost CPU (half the magnitude, opposite direction)
+    var cpuBoost = Math.round(-dm * 0.5);
+    if (cpuBoost !== 0) {
+      cpuT.rost.forEach(function(p) {
+        if (p.mins > 0) {
+          cpuTeamPlayers.push({ p: p, sht: p.sht, fin: p.fin, def: p.def });
+          p.sht = clamp(p.sht + cpuBoost, 30, 99);
+          p.fin = clamp(p.fin + cpuBoost, 30, 99);
+          p.def = clamp(p.def + cpuBoost, 30, 99);
+        }
+      });
+    }
   }
 
   var hScore = 0, aScore = 0;
@@ -198,18 +213,23 @@ export function simGame(home, away, userIsHome) {
     var defT = poss === 'H' ? away : home;
     var res = simPoss(offT, defT);
     if (poss === 'H') hScore += res.pts; else aScore += res.pts;
-    // Alternate possession
     poss = poss === 'H' ? 'A' : 'H';
   }
 
-  // Home court adjustment
-  if (userIsHome) hScore += ri(0, 4); else aScore += ri(0, 4);
+  // Home court — applies to WHOEVER is home, not just user
+  hScore += ri(1, 6);
 
-  // Restore player stats that were modified for difficulty
+  // Upset variance — random swing that makes any game losable
+  var upset = ri(-8, 8);
+  hScore += upset > 0 ? upset : 0;
+  aScore += upset < 0 ? -upset : 0;
+
+  // Restore player stats
   userTeamPlayers.forEach(function(obj) {
-    obj.p.sht = obj.sht;
-    obj.p.fin = obj.fin;
-    obj.p.def = obj.def;
+    obj.p.sht = obj.sht; obj.p.fin = obj.fin; obj.p.def = obj.def;
+  });
+  cpuTeamPlayers.forEach(function(obj) {
+    obj.p.sht = obj.sht; obj.p.fin = obj.fin; obj.p.def = obj.def;
   });
 
   // Overtime

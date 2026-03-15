@@ -12,7 +12,18 @@ export const DIFF_DESC = {
   legend: 'Maximum difficulty. Good luck.'
 };
 
-export const DIFF_MOD = { easy: 4, normal: 0, hard: -4, legend: -8 };
+export const DIFF_MOD = { easy: 5, normal: 0, hard: -6, legend: -12 };
+
+// ── Recruiting Prestige Gates ────────────────────────────
+// Minimum prestige to have ANY shot at a recruit by star tier.
+// Below this, your bid is multiplied by a harsh penalty.
+export const RECRUIT_PRESTIGE_GATES = {
+  5: { minPrestige: 4, penalty: 0.15 },   // 5-stars: need prestige 4+, else 85% bid penalty
+  4: { minPrestige: 3, penalty: 0.35 },   // 4-stars: need prestige 3+, else 65% penalty
+  3: { minPrestige: 1, penalty: 0.70 },   // 3-stars: anyone can compete, slight penalty if prestige 0
+  2: { minPrestige: 1, penalty: 1.0 },    // 2-stars: open
+  1: { minPrestige: 1, penalty: 1.0 }     // 1-stars: open
+};
 
 // ── Positions & Classes ──────────────────────────────────
 export const POS = ['PG', 'SG', 'SF', 'PF', 'C'];

@@ -227,11 +227,19 @@ export function recordResult() {
   var won = uScore > oScore;
   var t = G.teams[G.tid], opp = uHome ? LS.tA : LS.tH;
   if (won) {
-    t.wins++; t.pts += 55; opp.loss++; opp.pts -= 18;
+    t.wins++; opp.loss++; opp.pts -= 15;
     if (game.conf) { t.cWins++; opp.cLoss++; }
+    // Quality win bonus: more pts for beating ranked teams
+    var oppRank = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; }).findIndex(function(x) { return x.id === opp.id; }) + 1;
+    var winBonus = oppRank <= 10 ? 65 : oppRank <= 25 ? 55 : oppRank <= 64 ? 45 : 35;
+    t.pts += winBonus;
   } else {
-    t.loss++; t.pts -= 18; opp.wins++; opp.pts += 55;
+    t.loss++; opp.wins++; opp.pts += 45;
     if (game.conf) { t.cLoss++; opp.cWins++; }
+    // Bad loss penalty: lose more pts for losing to weak teams
+    var oppRank2 = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; }).findIndex(function(x) { return x.id === opp.id; }) + 1;
+    var lossPenalty = oppRank2 > 150 ? -35 : oppRank2 > 64 ? -25 : -15;
+    t.pts += lossPenalty;
   }
   [LS.tH, LS.tA].forEach(function(tm) {
     tm.rost.forEach(function(p) { if (p.mins > 0) p.s.gp++; });

@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { ge } from '../utils.js';
-import { TEAM_STATES, STATE_TO_REGION, STATE_NAMES } from '../constants.js';
+import { TEAM_STATES, STATE_TO_REGION, STATE_NAMES, RECRUIT_PRESTIGE_GATES } from '../constants.js';
 import { G, SetupState, saveState, calcRecruitingBudget } from '../state.js';
 
 // ── Late-binding ─────────────────────────────────────────
@@ -73,7 +73,14 @@ function calcUserBid(recruit) {
   var userPrestigeMod = 0.6 + (G.prestige / 5) * 0.8;
   var userState = getTeamState(G.teams[G.tid]);
   var geoBonus = getGeoBonus(userState, recruit.homeState);
-  return ((recruit.points || 0) * userPrestigeMod * 1.5 + recruit.interest * 0.4) * (1 + geoBonus);
+  var baseBid = ((recruit.points || 0) * userPrestigeMod * 1.5 + recruit.interest * 0.4) * (1 + geoBonus);
+
+  // Apply prestige gate — harsh penalty if you're below the threshold
+  var gate = RECRUIT_PRESTIGE_GATES[recruit.stars] || { minPrestige: 1, penalty: 1.0 };
+  if (G.prestige < gate.minPrestige) {
+    baseBid *= gate.penalty;
+  }
+  return baseBid;
 }
 
 function calcCPURivalBids(recruit, cpuAgg) {
@@ -85,11 +92,11 @@ function calcCPURivalBids(recruit, cpuAgg) {
 
   return rivals.map(function(rival) {
     var rivalRank = ranked.findIndex(function(t) { return t.id === rival.id; }) + 1;
-    var rivalPower = rivalRank <= 10 ? 1.5 : rivalRank <= 25 ? 1.2 : rivalRank <= 64 ? 0.9 : 0.6;
-    var starBonus = recruit.stars >= 4 ? 1.3 : recruit.stars >= 3 ? 1.0 : 0.7;
+    var rivalPower = rivalRank <= 10 ? 1.8 : rivalRank <= 25 ? 1.4 : rivalRank <= 64 ? 1.0 : 0.65;
+    var starBonus = recruit.stars >= 5 ? 1.6 : recruit.stars >= 4 ? 1.3 : recruit.stars >= 3 ? 1.0 : 0.7;
     var rivalState = getTeamState(rival);
     var geoBonus = getGeoBonus(rivalState, recruit.homeState);
-    var bid = (Math.random() * 35 + 15) * rivalPower * starBonus * cpuAgg * (1 + geoBonus);
+    var bid = (Math.random() * 40 + 25) * rivalPower * starBonus * cpuAgg * (1 + geoBonus);
     var geoTag = getGeoLabel(rivalState, recruit.homeState);
     return { team: rival, bid: bid, rank: rivalRank, geo: geoTag, state: rivalState };
   }).sort(function(a, b) { return b.bid - a.bid; });
@@ -176,7 +183,7 @@ export function advanceRecruitPhase() {
     } else if (r.points > 0 && userBid > bestRivalBid * 0.7 && Math.random() < 0.15) {
       r.signed = G.tid; r.status = 'committed'; newCommits.push(r);
     } else if (bestRival) {
-      var cpuSignChance = r.stars >= 4 ? 0.65 : r.stars >= 3 ? 0.50 : 0.35;
+      var cpuSignChance = r.stars >= 5 ? 0.80 : r.stars >= 4 ? 0.70 : r.stars >= 3 ? 0.55 : 0.40;
       cpuSignChance *= phase.cpuAggression;
       if (Math.random() < cpuSignChance) {
         r.signed = bestRival.team.id; r.status = 'gone'; r.goneTo = bestRival.team.name;
@@ -317,6 +324,11 @@ export function renderOffseason() {
     var userGeoBadge = userGeo === 'HOME' ? '<span style="font-size:8px;font-weight:900;color:var(--grn2);background:rgba(56,161,105,.15);padding:1px 5px;border-radius:2px;margin-left:4px;">HOME</span>'
       : userGeo === 'REGION' ? '<span style="font-size:8px;font-weight:900;color:var(--blu2);background:rgba(49,130,206,.12);padding:1px 5px;border-radius:2px;margin-left:4px;">REGION</span>' : '';
 
+    // Prestige gate check
+    var gate = RECRUIT_PRESTIGE_GATES[r.stars] || { minPrestige: 1, penalty: 1.0 };
+    var isGated = G.prestige < gate.minPrestige;
+    var gateBadge = isGated ? '<span style="font-size:8px;font-weight:900;color:#fc8181;background:rgba(229,62,62,.15);padding:1px 5px;border-radius:2px;margin-left:4px;">LONG SHOT</span>' : '';
+
     // Get rivals for this recruit
     var rivals = ensureRivals(r);
     var topRivals = rivals.slice(0, 3);
@@ -335,7 +347,7 @@ export function renderOffseason() {
       + '<div style="display:flex;align-items:center;gap:5px;">'
       + '<span style="font-size:12px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+r.name+'</span>'
       + '<span style="font-size:8px;color:var(--gld2);flex-shrink:0;">'+stars+'</span>'
-      + userGeoBadge
+      + userGeoBadge + gateBadge
       + '</div>'
       + '<div style="font-size:10px;color:var(--txt3);margin-top:1px;">'+r.pos+' \u00b7 OVR '+r.ovr+' \u00b7 '+stName+'</div>'
       + '</div>';
