@@ -1,10 +1,16 @@
 // ═══════════════════════════════════════════════════════════
 //  HOOPS OS — state.js
+//  Versioned save system with automatic migrations.
 // ═══════════════════════════════════════════════════════════
 
 import { getTOvr } from './utils.js';
-import { RECRUIT_STATE_POOL } from './constants.js';
+import { RECRUIT_STATE_POOL, calcSchoolPrestige, COACH_FN, COACH_LN } from './constants.js';
 
+// ── Current save version — bump this when adding new fields ──
+var SAVE_VERSION = 4;
+var SAVE_KEY = 'hoops_os_v3';
+
+// ── Main Game State ──
 export const G = {
   tid: 0, yr: 2025, wk: 0, gi: 0, pts: 120,
   momentum: { tid: -1, pts: 0 },
@@ -24,16 +30,14 @@ export const G = {
     careerWins: 0, careerLoss: 0,
     tenure: 0, hotSeat: false,
     titles: 0, confTitles: 0, finalFours: 0, tourneyApps: 0,
-    awards: [],
-    history: []  // [{yr, school, wins, loss, tourney, fired}]
+    awards: [], history: []
   },
-  // Season tracking for skill points
   seasonAchievements: {
     confTitleThisYear: false, madeNCAA: false,
     sweet16: false, finalFour: false,
     champGame: false, natChamp: false
   },
-  expectations: null, // {low, high, danger, base}
+  expectations: null,
   skillPointsEarned: 0, skillPointsToSpend: 0
 };
 
@@ -59,13 +63,98 @@ export function calcRecruitingBudget() {
   var t=G.teams[G.tid];if(!t)return 50;
   var sp = t.schoolPrestige || 50;
   var open=Math.max(0,13-t.rost.length);
-  var recBonus = Math.round((G.coach.rec - 70) * 0.5); // coach recruiting skill bonus
+  var recBonus = Math.round(((G.coach ? G.coach.rec : 70) - 70) * 0.5);
   return Math.min(225,Math.max(50,50+Math.round(sp/5)+(open*10)+recBonus));
 }
+
+// ═══════════════════════════════════════════════════════════
+//  MIGRATIONS
+//  Each migration takes a raw save object and upgrades it.
+//  They run in order: v1→v2→v3→v4→...
+// ═══════════════════════════════════════════════════════════
+
+var MIGRATIONS = {
+  // v1→v2: Added recruiting system
+  2: function(s) {
+    if (!s.recruitPhase) s.recruitPhase = 0;
+    if (!s.recruitingBudget) s.recruitingBudget = 0;
+    if (!s.recruitingSpent) s.recruitingSpent = 0;
+    if (!s.recruitTargets) s.recruitTargets = [];
+    if (!s.departingPlayers) s.departingPlayers = [];
+    if (!s.offseasonStep) s.offseasonStep = 'turnover';
+    return s;
+  },
+  // v2→v3: Added coaching system + school prestige
+  3: function(s) {
+    if (!s.coach) {
+      s.coach = {
+        firstName: 'Coach', lastName: 'User', age: 30,
+        off: 70, def: 70, dev: 70, rec: 70,
+        xp: 0, level: 1, careerWins: 0, careerLoss: 0,
+        tenure: 0, hotSeat: false,
+        titles: s.championships || 0, confTitles: s.confTitles || 0,
+        finalFours: 0, tourneyApps: 0, awards: [], history: []
+      };
+    }
+    if (!s.seasonAchievements) {
+      s.seasonAchievements = { confTitleThisYear:false, madeNCAA:false, sweet16:false, finalFour:false, champGame:false, natChamp:false };
+    }
+    if (typeof s.skillPointsEarned !== 'number') s.skillPointsEarned = 0;
+    if (typeof s.skillPointsToSpend !== 'number') s.skillPointsToSpend = 0;
+    // Add school prestige to teams
+    if (s.teams) {
+      s.teams.forEach(function(t) {
+        if (!t.schoolPrestige && t.id !== undefined) {
+          var baseOvr = t.baseOvr || t.pts / 10 || 70;
+          t.schoolPrestige = calcSchoolPrestige(baseOvr);
+        }
+        if (!t.coach) {
+          t.coach = {
+            firstName: COACH_FN[Math.floor(Math.random() * COACH_FN.length)],
+            lastName: COACH_LN[Math.floor(Math.random() * COACH_LN.length)],
+            age: Math.floor(Math.random() * 30) + 35,
+            off: 70, def: 70, dev: 70, rec: 70, tenure: 1
+          };
+        }
+      });
+    }
+    return s;
+  },
+  // v3→v4: Added coach history, expectations, cleaned up prestige
+  4: function(s) {
+    if (s.coach && !s.coach.history) s.coach.history = [];
+    if (s.coach && !s.coach.awards) s.coach.awards = [];
+    if (!s.expectations) s.expectations = null;
+    // Ensure all coach fields exist
+    var cd = { firstName:'Coach',lastName:'User',age:30,off:70,def:70,dev:70,rec:70,xp:0,level:1,careerWins:0,careerLoss:0,tenure:0,hotSeat:false,titles:0,confTitles:0,finalFours:0,tourneyApps:0,awards:[],history:[] };
+    Object.keys(cd).forEach(function(k) {
+      if (s.coach && s.coach[k] === undefined) s.coach[k] = cd[k];
+    });
+    return s;
+  }
+};
+
+function runMigrations(s) {
+  var ver = s._saveVersion || 1;
+  while (ver < SAVE_VERSION) {
+    ver++;
+    if (MIGRATIONS[ver]) {
+      console.log('[Migration] v' + (ver-1) + ' → v' + ver);
+      s = MIGRATIONS[ver](s);
+    }
+  }
+  s._saveVersion = SAVE_VERSION;
+  return s;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  SAVE
+// ═══════════════════════════════════════════════════════════
 
 export function saveState() {
   try {
     var lean = {
+      _saveVersion: SAVE_VERSION,
       tid:G.tid,yr:G.yr,gi:G.gi,wk:G.wk,pts:G.pts,
       phase:G.phase,difficulty:G.difficulty,
       confTitles:G.confTitles,championships:G.championships,
@@ -90,15 +179,31 @@ export function saveState() {
       recruits:G.recruits,bracket:G.bracket,confTourneys:G.confTourneys
     };
     var str=JSON.stringify(lean);
-    localStorage.setItem('hoops_os_v3',str);
-    console.log('[Save] '+Math.round(str.length/1024)+'KB');
+    localStorage.setItem(SAVE_KEY,str);
+    console.log('[Save] v'+SAVE_VERSION+' '+Math.round(str.length/1024)+'KB');
   }catch(e){console.error('Save failed',e);}
 }
 
+// ═══════════════════════════════════════════════════════════
+//  LOAD (with automatic migration)
+// ═══════════════════════════════════════════════════════════
+
 export function loadState() {
   try {
-    var raw=localStorage.getItem('hoops_os_v3');if(!raw)return false;
+    var raw=localStorage.getItem(SAVE_KEY);if(!raw)return false;
     var s=JSON.parse(raw);
+
+    // Run migrations if needed
+    var ver = s._saveVersion || 1;
+    if (ver < SAVE_VERSION) {
+      console.log('[Load] Save version ' + ver + ', current ' + SAVE_VERSION + ' — migrating...');
+      s = runMigrations(s);
+      // Re-save migrated data
+      localStorage.setItem(SAVE_KEY, JSON.stringify(s));
+      console.log('[Load] Migration complete.');
+    }
+
+    // Apply to G
     G.tid=s.tid;G.yr=s.yr;G.gi=s.gi||0;G.wk=s.wk||0;G.pts=s.pts;
     G.phase=s.phase;G.difficulty=s.difficulty||'normal';
     G.confTitles=s.confTitles||0;G.championships=s.championships||0;
@@ -110,18 +215,19 @@ export function loadState() {
     G.recruitTargets=s.recruitTargets||[];
     G.departingPlayers=s.departingPlayers||[];
     G.offseasonStep=s.offseasonStep||'turnover';
-    // Coach
-    if(s.coach) G.coach=s.coach;
-    G.seasonAchievements=s.seasonAchievements||{confTitleThisYear:false,madeNCAA:false,sweet16:false,finalFour:false,champGame:false,natChamp:false};
+    G.coach=s.coach||G.coach;
+    G.seasonAchievements=s.seasonAchievements||G.seasonAchievements;
     G.expectations=s.expectations||null;
     G.skillPointsEarned=s.skillPointsEarned||0;
     G.skillPointsToSpend=s.skillPointsToSpend||0;
+
     // Recruits backward compat
     G.recruits.forEach(function(r){
       if(typeof r.points!=='number')r.points=0;
       if(typeof r.status!=='string')r.status=r.signed>=0?(r.signed===G.tid?'committed':'gone'):'open';
       if(!r.homeState)r.homeState=RECRUIT_STATE_POOL[Math.floor(Math.random()*RECRUIT_STATE_POOL.length)];
     });
+
     // Teams
     if(s.teams){s.teams.forEach(function(st,i){
       if(!G.teams[i])return;
@@ -141,14 +247,14 @@ export function loadState() {
         });
       }
     });}
-    console.log('[Load] Season '+G.yr+' gi='+G.gi);
+    console.log('[Load] v'+(s._saveVersion||1)+' Season '+G.yr+' gi='+G.gi);
     return true;
   }catch(e){console.error('Load failed',e);return false;}
 }
 
-export function deleteSave(){localStorage.removeItem('hoops_os_v3');}
-export function hasSave(){return!!localStorage.getItem('hoops_os_v3');}
+export function deleteSave(){localStorage.removeItem(SAVE_KEY);}
+export function hasSave(){return!!localStorage.getItem(SAVE_KEY);}
 export function getRawSave(){
-  var r=localStorage.getItem('hoops_os_v3');if(!r)return null;
+  var r=localStorage.getItem(SAVE_KEY);if(!r)return null;
   try{return JSON.parse(r);}catch(e){return null;}
 }
