@@ -33,7 +33,7 @@ import { renderStandings } from './views/standings.js';
 import { renderScheduleView } from './views/schedule.js';
 import { renderHistory } from './views/history.js';
 import { renderBracket } from './views/bracket.js';
-import { renderOffseason, pitchRecruit, resolvePitchWeek, resolveRecruitingClass, adjustPoints, registerRecruitingCallbacks } from './views/recruiting.js';
+import { renderOffseason, pitchRecruit, resolvePitchWeek, resolveRecruitingClass, adjustPoints, advanceRecruitPhase, registerRecruitingCallbacks } from './views/recruiting.js';
 import { renderSeasonRecap } from './views/recap.js';
 import {
   showHomeScreen, loadAndPlay, startNewDynasty, deleteFromHome, newDynasty,
@@ -150,6 +150,7 @@ window.pitchRecruit = pitchRecruit;
 window.resolvePitchWeek = resolvePitchWeek;
 window.resolveRecruitingClass = resolveRecruitingClass;
 window.adjustPoints = adjustPoints;
+window.advanceRecruitPhase = advanceRecruitPhase;
 
 // Auto-sim (referenced by setTimeout callbacks)
 window.autoSimNext = autoSimNext;

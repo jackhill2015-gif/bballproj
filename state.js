@@ -27,7 +27,8 @@ export const G = {
   history: [],
   leagueChamps: [],
   simInterval: null,
-  // ── Recruiting Point Allocation System ──
+  // ── 3-Phase Recruiting System ──
+  recruitPhase: 0,        // 0=not started, 1=evaluation, 2=early signing, 3=late signing
   recruitingBudget: 0,
   recruitingSpent: 0
 };
@@ -78,6 +79,7 @@ export function saveState() {
       logs: G.logs.slice(0, 30),
       history: G.history || [],
       leagueChamps: G.leagueChamps || [],
+      recruitPhase: G.recruitPhase,
       recruitingBudget: G.recruitingBudget,
       recruitingSpent: G.recruitingSpent,
       teams: G.teams.map(function(t, i) {
@@ -135,12 +137,14 @@ export function loadState() {
     G.bracket = saved.bracket || [];
     G.confTourneys = saved.confTourneys || {};
     G.recruits = saved.recruits || [];
+    G.recruitPhase = saved.recruitPhase || 0;
     G.recruitingBudget = saved.recruitingBudget || 0;
     G.recruitingSpent = saved.recruitingSpent || 0;
 
-    // Backward compat: ensure every recruit has a points property
+    // Backward compat: ensure every recruit has required properties
     G.recruits.forEach(function(r) {
       if (typeof r.points !== 'number') r.points = 0;
+      if (typeof r.status !== 'string') r.status = r.signed >= 0 ? (r.signed === G.tid ? 'committed' : 'gone') : 'open';
     });
 
     if (saved.teams) {
