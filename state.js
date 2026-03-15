@@ -7,7 +7,7 @@ import { getTOvr } from './utils.js';
 import { RECRUIT_STATE_POOL, calcSchoolPrestige, COACH_FN, COACH_LN } from './constants.js';
 
 // ── Current save version — bump this when adding new fields ──
-var SAVE_VERSION = 5;
+var SAVE_VERSION = 6;
 var SAVE_KEY = 'hoops_os_v3';
 
 // ── Main Game State ──
@@ -140,6 +140,13 @@ var MIGRATIONS = {
     if (typeof s.skillPointsEarned !== 'number') s.skillPointsEarned = 0;
     if (typeof s.skillPointsToSpend !== 'number') s.skillPointsToSpend = 0;
     return s;
+  },
+  // v5→v6: Added mid-season events (injuries, buffs, home bonus)
+  6: function(s) {
+    if (!s.injuries) s.injuries = [];
+    if (!s.buffs) s.buffs = [];
+    if (typeof s.nextHomeBonus !== 'number') s.nextHomeBonus = 0;
+    return s;
   }
 };
 
@@ -185,7 +192,8 @@ export function saveState() {
         });}
         return b;
       }),
-      recruits:G.recruits,bracket:G.bracket,confTourneys:G.confTourneys
+      recruits:G.recruits,bracket:G.bracket,confTourneys:G.confTourneys,
+      injuries:G.injuries||[],buffs:G.buffs||[],nextHomeBonus:G.nextHomeBonus||0
     };
     var str=JSON.stringify(lean);
     localStorage.setItem(SAVE_KEY,str);
@@ -229,6 +237,9 @@ export function loadState() {
     G.expectations=s.expectations||null;
     G.skillPointsEarned=s.skillPointsEarned||0;
     G.skillPointsToSpend=s.skillPointsToSpend||0;
+    G.injuries=s.injuries||[];
+    G.buffs=s.buffs||[];
+    G.nextHomeBonus=s.nextHomeBonus||0;
 
     // Recruits backward compat
     G.recruits.forEach(function(r){

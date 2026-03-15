@@ -312,6 +312,8 @@ export function stepSim() {
 
   var offT = LS.poss === 'H' ? LS.tH : LS.tA;
   var defT = LS.poss === 'H' ? LS.tA : LS.tH;
+  if (typeof LS.possCount !== 'number') LS.possCount = 0;
+  LS.possCount++;
   var res = simPoss(offT, defT);
   LS.clock -= Math.max(1, res.time);
   if (LS.poss === 'H') LS.hs += res.pts; else LS.as += res.pts;

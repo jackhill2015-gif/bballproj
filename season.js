@@ -10,6 +10,7 @@ import {
 } from './utils.js';
 import { G, LS, SetupState, saveState } from './state.js';
 import { genPlayer, simGame, distributeStats } from './simulation.js';
+import { rollEvents } from './events.js';
 
 // ── Late-Binding Registry ────────────────────────────────
 // To avoid circular imports (season ↔ tournament ↔ ui),
@@ -383,6 +384,12 @@ export function recordResult() {
 export function advanceWeek() {
   G.gi++;
   G.wk = G.gi;
+
+  // Fire mid-season events during regular season
+  if (G.phase === 'reg' && G.gi < 30) {
+    rollEvents(G.gi);
+  }
+
   if (G.gi >= 30 && G.phase === 'reg') {
     G.phase = 'conf_tourn';
     saveState();
@@ -412,6 +419,7 @@ export function launchSim(watch) {
   LS.clock = 1200; LS.half = 1; LS.hs = 0; LS.as = 0;
   LS.h1 = null; LS.a1 = null; LS.poss = 'A';
   LS.streak_h = 0; LS.streak_a = 0;
+  LS.possCount = 0;
   if (watch) {
     if (_ext.openModal) _ext.openModal(tH, tA);
   } else {

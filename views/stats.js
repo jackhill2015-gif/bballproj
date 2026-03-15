@@ -15,6 +15,8 @@ export function renderStats() {
         ppg: p.s.pts / p.s.gp,
         rpg: p.s.reb / p.s.gp,
         apg: p.s.ast / p.s.gp,
+        spg: (typeof p.s.stl === 'number' ? p.s.stl : 0) / p.s.gp,
+        bpg: (typeof p.s.blk === 'number' ? p.s.blk : 0) / p.s.gp,
         fg: p.s.fga > 0 ? p.s.fgm / p.s.fga : 0
       });
     });
@@ -45,4 +47,6 @@ export function renderStats() {
   makeTable('stats-rpg', players.slice(), 'rpg', function(v) { return v.toFixed(1); });
   makeTable('stats-apg', players.slice(), 'apg', function(v) { return v.toFixed(1); });
   makeTable('stats-fg', players.filter(function(r) { return r.p.s.fga > 10; }), 'fg', function(v) { return (v * 100).toFixed(1) + '%'; });
+  makeTable('stats-spg', players.slice(), 'spg', function(v) { return v.toFixed(1); });
+  makeTable('stats-bpg', players.slice(), 'bpg', function(v) { return v.toFixed(1); });
 }
