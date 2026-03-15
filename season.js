@@ -461,8 +461,11 @@ export function doPlay(mode) {
     if (_ext.playTournamentGame) _ext.playTournamentGame(mode === 'live');
   } else if (G.phase === 'offseason') {
     if (G.offseasonStep === 'recap') {
-      // Advance from recap to turnover
       if (window.beginOffseason) window.beginOffseason();
+    } else if (G.offseasonStep === 'skillpoints') {
+      if (window.finishSkillPoints) window.finishSkillPoints();
+    } else if (G.offseasonStep === 'carousel') {
+      if (window.stayAtSchool) window.stayAtSchool();
     } else if (G.offseasonStep === 'turnover') {
       if (window.proceedToRecruiting) window.proceedToRecruiting();
     } else if (G.recruitPhase < 3) {
@@ -645,7 +648,7 @@ export function beginOffseason() {
     }
   });
 
-  G.offseasonStep = 'turnover';
+  G.offseasonStep = 'skillpoints';
   G.recruitPhase = 0;
   G.recruitTargets = [];
   saveState(); updateAll(); navTo('offseason');

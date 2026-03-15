@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { ge, clamp } from '../utils.js';
-import { TEAM_STATES, STATE_TO_REGION, STATE_NAMES, SCHOOL_RECRUIT_GATES } from '../constants.js';
+import { TEAM_STATES, STATE_TO_REGION, STATE_NAMES, SCHOOL_RECRUIT_GATES, COACH_FN, COACH_LN } from '../constants.js';
 import { G, SetupState, saveState, calcRecruitingBudget } from '../state.js';
 
 var _ext = { toast: null, addLog: null, updateAll: null };
@@ -233,10 +233,17 @@ export function renderOffseason(){
 
   // Route to correct screen
   if(G.offseasonStep==='recap'){
-    // Render recap inside the offseason view
     if(window._renderSeasonRecap) el.innerHTML=window._renderSeasonRecap();
     else el.innerHTML='<div style="padding:40px;text-align:center;color:var(--txt3);">Season recap loading...</div>';
     return;
+  }
+
+  if(G.offseasonStep==='skillpoints'){
+    el.innerHTML=renderSkillPoints();return;
+  }
+
+  if(G.offseasonStep==='carousel'){
+    el.innerHTML=renderCarousel();return;
   }
 
   if(G.offseasonStep==='turnover'||!G.offseasonStep){
@@ -393,6 +400,221 @@ function renderTurnover(){
 
   return h;
 }
+
+// ═══════════════════════════════════════════════════════════
+//  SKILL POINTS ALLOCATION
+// ═══════════════════════════════════════════════════════════
+
+function renderSkillPoints() {
+  var pts = G.skillPointsToSpend || 0;
+  var c = G.coach;
+  var h = '<div style="max-width:600px;margin:0 auto;padding:20px;">';
+
+  h += '<div style="text-align:center;margin-bottom:24px;">'
+    + '<div style="font-size:10px;color:var(--grn2);font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:6px;">COACHING DEVELOPMENT</div>'
+    + '<div style="font-size:28px;font-weight:900;">Skill Points</div>'
+    + '<div style="font-size:12px;color:var(--txt2);margin-top:4px;">You earned <span style="color:var(--grn2);font-weight:800;">' + G.skillPointsEarned + '</span> skill point' + (G.skillPointsEarned !== 1 ? 's' : '') + ' this season. Allocate them to improve your coaching.</div>'
+    + '</div>';
+
+  h += '<div style="text-align:center;margin-bottom:20px;font-size:32px;font-weight:900;color:' + (pts > 0 ? 'var(--grn2)' : 'var(--txt3)') + ';">' + pts + ' <span style="font-size:14px;color:var(--txt3);">remaining</span></div>';
+
+  // Rating cards
+  var ratings = [
+    { key: 'off', label: 'Offense', desc: 'Boosts your team\'s scoring output', icon: '\ud83c\udfc0' },
+    { key: 'def', label: 'Defense', desc: 'Reduces opponent scoring', icon: '\ud83d\udee1\ufe0f' },
+    { key: 'dev', label: 'Development', desc: 'Players improve faster in offseason', icon: '\ud83d\udcc8' },
+    { key: 'rec', label: 'Recruiting', desc: 'Stronger bids, bigger budget', icon: '\ud83c\udf1f' }
+  ];
+
+  ratings.forEach(function(r) {
+    var val = c[r.key] || 70;
+    var canAdd = pts > 0 && val < 99;
+    h += '<div style="display:flex;align-items:center;gap:14px;padding:14px;margin-bottom:8px;background:var(--s1);border:1px solid var(--bdr);border-radius:8px;">'
+      + '<div style="font-size:24px;width:36px;text-align:center;">' + r.icon + '</div>'
+      + '<div style="flex:1;">'
+      + '<div style="font-size:14px;font-weight:700;color:#fff;">' + r.label + '</div>'
+      + '<div style="font-size:10px;color:var(--txt3);">' + r.desc + '</div>'
+      + '<div style="height:4px;background:var(--bdr2);border-radius:2px;margin-top:6px;overflow:hidden;">'
+      + '<div style="height:100%;width:' + Math.round((val - 40) / 59 * 100) + '%;background:var(--red);border-radius:2px;"></div></div>'
+      + '</div>'
+      + '<div style="font-family:monospace;font-size:22px;font-weight:900;color:var(--red);width:44px;text-align:center;">' + val + '</div>'
+      + '<div onclick="' + (canAdd ? 'allocateSkillPoint(\'' + r.key + '\')' : '') + '" style="width:36px;height:36px;border-radius:6px;background:' + (canAdd ? 'var(--red)' : 'var(--s2)') + ';color:' + (canAdd ? '#fff' : 'var(--txt3)') + ';display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;cursor:' + (canAdd ? 'pointer' : 'default') + ';user-select:none;">+</div>'
+      + '</div>';
+  });
+
+  h += '<div style="text-align:center;margin-top:20px;">'
+    + '<div class="btn btn-red" style="display:inline-block;padding:14px 40px;font-size:14px;font-weight:800;" onclick="finishSkillPoints()">CONTINUE \u25b6</div></div>';
+
+  h += '</div>';
+  return h;
+}
+
+export function allocateSkillPoint(key) {
+  if (G.skillPointsToSpend <= 0) return;
+  if (G.coach[key] >= 99) return;
+  G.coach[key]++;
+  G.skillPointsToSpend--;
+  saveState(); renderOffseason();
+}
+window.allocateSkillPoint = allocateSkillPoint;
+
+export function finishSkillPoints() {
+  G.offseasonStep = 'carousel';
+  saveState(); renderOffseason();
+}
+window.finishSkillPoints = finishSkillPoints;
+
+// ═══════════════════════════════════════════════════════════
+//  COACHING CAROUSEL
+// ═══════════════════════════════════════════════════════════
+
+function generateOpenJobs() {
+  // Find CPU teams that underperformed → their coach gets fired
+  var openJobs = [];
+  G.teams.forEach(function(t) {
+    if (t.id === G.tid) return;
+    var totalGames = t.wins + t.loss;
+    if (totalGames === 0) return;
+    var winPct = t.wins / totalGames;
+    var expectedWinPct = Math.max(0.2, (t.baseOvr - 50) / 50);
+    var underperformed = winPct < expectedWinPct - 0.15;
+    var terrible = winPct < 0.35;
+    if (terrible || underperformed) {
+      openJobs.push({
+        team: t,
+        firedCoach: t.coach ? t.coach.firstName + ' ' + t.coach.lastName : 'Unknown',
+        record: t.wins + '-' + t.loss,
+        reason: terrible ? 'Fired (' + t.wins + '-' + t.loss + ')' : 'Underperformed'
+      });
+    }
+  });
+  // Shuffle and limit to ~10
+  for (var i = openJobs.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = openJobs[i]; openJobs[i] = openJobs[j]; openJobs[j] = tmp;
+  }
+  return openJobs.slice(0, 12);
+}
+
+function calcOfferChance(job) {
+  var sp = job.team.schoolPrestige || 30;
+  var coachAvg = (G.coach.off + G.coach.def + G.coach.dev + G.coach.rec) / 4;
+  var totalGames = G.coach.careerWins + G.coach.careerLoss;
+  var winPct = totalGames > 0 ? G.coach.careerWins / totalGames : 0.5;
+  var base = 30;
+  base += Math.round((coachAvg - 70) * 1.5); // coaching skill
+  base += Math.round((winPct - 0.5) * 40);    // career record
+  base += G.coach.titles * 15;                  // championships
+  base += G.coach.tenure * 2;                   // experience
+  base -= Math.round((sp - 40) * 0.8);         // harder to get high prestige jobs
+  return Math.min(95, Math.max(5, base));
+}
+
+function renderCarousel() {
+  var jobs = generateOpenJobs();
+  var c = G.coach;
+  var currentTeam = G.teams[G.tid];
+
+  var h = '<div style="max-width:800px;margin:0 auto;padding:20px;">';
+
+  h += '<div style="text-align:center;margin-bottom:20px;">'
+    + '<div style="font-size:10px;color:var(--red);font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:6px;">COACHING CAROUSEL</div>'
+    + '<div style="font-size:28px;font-weight:900;">Job Market</div>'
+    + '<div style="font-size:12px;color:var(--txt2);margin-top:4px;">Coach ' + c.lastName + ' \u00b7 Age ' + c.age + ' \u00b7 Career ' + c.careerWins + '-' + c.careerLoss + ' \u00b7 OFF ' + c.off + ' DEF ' + c.def + ' DEV ' + c.dev + ' REC ' + c.rec + '</div>'
+    + '</div>';
+
+  // Stay option
+  h += '<div class="card" style="margin-bottom:16px;padding:16px;border-left:4px solid var(--grn);">'
+    + '<div style="display:flex;justify-content:space-between;align-items:center;">'
+    + '<div>'
+    + '<div style="font-size:14px;font-weight:800;color:#fff;">Stay at ' + currentTeam.name + '</div>'
+    + '<div style="font-size:11px;color:var(--txt2);margin-top:2px;">' + currentTeam.conf + ' \u00b7 Prestige ' + (currentTeam.schoolPrestige || '?') + ' \u00b7 Year ' + (c.tenure + 1) + ' tenure</div>'
+    + '</div>'
+    + '<div class="btn btn-ghost btn-sm" style="padding:8px 20px;" onclick="stayAtSchool()">STAY</div>'
+    + '</div></div>';
+
+  // Open jobs
+  if (jobs.length) {
+    h += '<div style="font-size:11px;font-weight:700;color:var(--txt3);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">' + jobs.length + ' Open Positions</div>';
+    h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">';
+    jobs.forEach(function(job, idx) {
+      var chance = calcOfferChance(job);
+      var chanceCol = chance >= 60 ? 'var(--grn2)' : chance >= 30 ? 'var(--gld2)' : '#fc8181';
+      var t = job.team;
+      h += '<div class="card" style="padding:14px;">'
+        + '<div style="font-size:14px;font-weight:800;color:#fff;margin-bottom:2px;">' + t.name + '</div>'
+        + '<div style="font-size:10px;color:var(--txt2);margin-bottom:8px;">' + t.conf + ' \u00b7 OVR ' + (t.baseOvr || '?') + ' \u00b7 Prestige ' + (t.schoolPrestige || '?') + '</div>'
+        + '<div style="font-size:10px;color:var(--txt3);margin-bottom:8px;">Previous: ' + job.firedCoach + ' \u00b7 ' + job.reason + '</div>'
+        + '<div style="display:flex;justify-content:space-between;align-items:center;">'
+        + '<div style="font-size:12px;font-weight:800;color:' + chanceCol + ';">' + chance + '% chance</div>'
+        + '<div class="btn btn-red btn-sm" style="padding:6px 16px;" onclick="applyForJob(' + idx + ')">APPLY</div>'
+        + '</div></div>';
+    });
+    h += '</div>';
+  } else {
+    h += '<div style="padding:20px;text-align:center;color:var(--txt3);">No coaching vacancies this year.</div>';
+  }
+
+  h += '<div style="text-align:center;margin-top:16px;">'
+    + '<div style="font-size:10px;color:var(--txt3);">You can also skip the carousel and stay at your current school.</div></div>';
+
+  h += '</div>';
+  // Store jobs for apply function
+  window._carouselJobs = jobs;
+  return h;
+}
+
+export function applyForJob(idx) {
+  var jobs = window._carouselJobs || [];
+  var job = jobs[idx];
+  if (!job) return;
+  var chance = calcOfferChance(job);
+  var roll = Math.random() * 100;
+  if (roll < chance) {
+    // Offered!
+    if (confirm('You\'ve been offered the job at ' + job.team.name + '! Accept?')) {
+      // Move to new school
+      var oldTid = G.tid;
+      G.tid = job.team.id;
+      // Put a new NPC coach at old school
+      var oldTeam = G.teams[oldTid];
+      oldTeam.coach = {
+        firstName: COACH_FN[Math.floor(Math.random() * COACH_FN.length)],
+        lastName: COACH_LN[Math.floor(Math.random() * COACH_LN.length)],
+        age: Math.floor(Math.random() * 25) + 35,
+        off: Math.floor(Math.random() * 20) + 60,
+        def: Math.floor(Math.random() * 20) + 60,
+        dev: Math.floor(Math.random() * 20) + 60,
+        rec: Math.floor(Math.random() * 20) + 60,
+        tenure: 0
+      };
+      // Set user as coach of new school
+      var newTeam = G.teams[G.tid];
+      newTeam.coach = {
+        firstName: G.coach.firstName, lastName: G.coach.lastName,
+        age: G.coach.age, off: G.coach.off, def: G.coach.def,
+        dev: G.coach.dev, rec: G.coach.rec, tenure: 0, isUser: true
+      };
+      G.coach.tenure = 0;
+      G.coach.history.push({ yr: G.yr, school: oldTeam.name, action: 'Left for ' + newTeam.name });
+      addLog('ev', G.gi, 'Coach ' + G.coach.lastName + ' accepts the job at <b>' + newTeam.name + '</b>!');
+      toast('Welcome to ' + newTeam.name + '!', 'var(--grn)');
+      G.offseasonStep = 'turnover';
+      saveState(); updateAll(); renderOffseason();
+    }
+  } else {
+    toast(job.team.name + ' is not interested at this time.', 'var(--txt3)');
+  }
+}
+window.applyForJob = applyForJob;
+
+export function stayAtSchool() {
+  G.coach.history.push({ yr: G.yr, school: G.teams[G.tid].name, action: 'Stayed' });
+  addLog('ev', G.gi, 'Coach ' + G.coach.lastName + ' returns to <b>' + G.teams[G.tid].name + '</b>.');
+  G.offseasonStep = 'turnover';
+  saveState(); updateAll(); renderOffseason();
+}
+window.stayAtSchool = stayAtSchool;
 
 // ═══════════════════════════════════════════════════════════
 //  BOARD TAB

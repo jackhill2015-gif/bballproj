@@ -351,32 +351,64 @@ export function showBracketReveal(userSeed) {
   } else {
     txt('br-seed-line', 'The field of 64 is set. Your program did not qualify this year.');
   }
-  // Build bracket visual — 4 columns of 16
+
   var wrap = ge('br-bracket');
   if (!wrap) return;
   wrap.innerHTML = '';
+  wrap.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;';
+
   var regions = ['East', 'West', 'South', 'Midwest'];
+  // Bracket matchup order: 1v16, 8v9, 5v12, 4v13, 6v11, 3v14, 7v10, 2v15
+  var matchupSeeds = [[1,16],[8,9],[5,12],[4,13],[6,11],[3,14],[7,10],[2,15]];
+
   for (var r = 0; r < 4; r++) {
+    var regionStart = r * 16;
     var col = document.createElement('div');
-    col.style.cssText = 'background:var(--s1);border:1px solid var(--bdr);border-radius:6px;padding:10px;';
+    col.style.cssText = 'background:var(--s1);border:1px solid var(--bdr);border-radius:8px;overflow:hidden;';
+
+    // Region header
     var header = document.createElement('div');
-    header.style.cssText = 'font-size:10px;font-weight:800;color:var(--red);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;text-align:center;';
+    header.style.cssText = 'font-size:11px;font-weight:800;color:var(--red);letter-spacing:1.5px;text-transform:uppercase;padding:10px 14px;border-bottom:1px solid var(--bdr);text-align:center;';
     header.textContent = regions[r] + ' Region';
     col.appendChild(header);
-    var seeds = [1, 16, 8, 9, 5, 12, 4, 13, 6, 11, 3, 14, 7, 10, 2, 15];
-    seeds.forEach(function(s) {
-      var globalSeed = r * 16 + seeds.indexOf(s) + 1;
-      var b = G.bracket[globalSeed - 1];
-      if (!b) return;
-      var isU = b.team.id === G.tid;
-      var row = document.createElement('div');
-      row.style.cssText = 'display:flex;align-items:center;gap:6px;padding:4px 6px;border-radius:3px;margin-bottom:2px;font-size:11px;' +
-        (isU ? 'background:rgba(214,158,46,.15);border:1px solid var(--gld);' : '');
-      row.innerHTML = '<span style="width:18px;font-family:monospace;font-size:10px;color:var(--txt3);flex-shrink:0;">' + b.seed + '</span>' +
-        '<span style="font-weight:' + (isU ? '800' : '500') + ';color:' + (isU ? 'var(--gld2)' : 'var(--txt)') +
-        ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + b.team.name + '</span>';
-      col.appendChild(row);
+
+    // Matchups
+    matchupSeeds.forEach(function(pair) {
+      var s1 = pair[0], s2 = pair[1];
+      // Map region seed (1-16) to global bracket index
+      var idx1 = regionStart + s1 - 1;
+      var idx2 = regionStart + s2 - 1;
+      var b1 = G.bracket[idx1];
+      var b2 = G.bracket[idx2];
+      if (!b1 || !b2) return;
+
+      var isU1 = b1.team.id === G.tid;
+      var isU2 = b2.team.id === G.tid;
+
+      var matchup = document.createElement('div');
+      matchup.style.cssText = 'border-bottom:1px solid rgba(255,255,255,.04);';
+
+      // Team 1
+      var row1 = document.createElement('div');
+      row1.style.cssText = 'display:flex;align-items:center;gap:6px;padding:6px 12px;font-size:11px;' +
+        (isU1 ? 'background:rgba(214,158,46,.12);border-left:3px solid var(--gld);' : 'border-left:3px solid transparent;');
+      row1.innerHTML = '<span style="width:20px;font-family:monospace;font-size:10px;color:' + (isU1 ? 'var(--gld2)' : 'var(--txt3)') + ';font-weight:700;">' + s1 + '</span>'
+        + '<span style="flex:1;font-weight:' + (isU1 ? '800' : '500') + ';color:' + (isU1 ? 'var(--gld2)' : '#fff') + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + b1.team.name + '</span>'
+        + '<span style="font-family:monospace;font-size:10px;color:var(--txt3);">' + b1.team.wins + '-' + b1.team.loss + '</span>';
+      matchup.appendChild(row1);
+
+      // Team 2
+      var row2 = document.createElement('div');
+      row2.style.cssText = 'display:flex;align-items:center;gap:6px;padding:6px 12px;font-size:11px;border-bottom:2px solid var(--bdr);' +
+        (isU2 ? 'background:rgba(214,158,46,.12);border-left:3px solid var(--gld);' : 'border-left:3px solid transparent;');
+      row2.innerHTML = '<span style="width:20px;font-family:monospace;font-size:10px;color:' + (isU2 ? 'var(--gld2)' : 'var(--txt3)') + ';font-weight:700;">' + s2 + '</span>'
+        + '<span style="flex:1;font-weight:' + (isU2 ? '800' : '500') + ';color:' + (isU2 ? 'var(--gld2)' : '#fff') + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + b2.team.name + '</span>'
+        + '<span style="font-family:monospace;font-size:10px;color:var(--txt3);">' + b2.team.wins + '-' + b2.team.loss + '</span>';
+      matchup.appendChild(row2);
+
+      col.appendChild(matchup);
     });
+
     wrap.appendChild(col);
   }
 }
