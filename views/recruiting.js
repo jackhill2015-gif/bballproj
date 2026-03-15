@@ -50,31 +50,35 @@ function calcSchoolChances(r) {
   var ranked = G.teams.slice().sort(function(a,b){return b.pts-a.pts;});
   var cpuAgg = (PHASES[G.recruitPhase]||PHASES[1]).cpuAgg;
   var schools = [];
-  // User bid
+
+  // User bid (only if invested)
   var userBid = calcUserBid(r);
   if((r.points||0)>0) {
     var userGeo = getGeoLabel(getTeamState(G.teams[G.tid]),r.homeState);
     schools.push({name:G.teams[G.tid].name,bid:userBid,isUser:true,geo:userGeo,rank:ranked.findIndex(function(t){return t.id===G.tid;})+1});
   }
-  // CPU bids — top programs compete
-  var pool = ranked.slice(0,80).filter(function(t){return t.id!==G.tid;});
-  pool.sort(function(){return 0.5-Math.random();});
-  var rivals = pool.slice(0,Math.floor(Math.random()*3)+3);
+
+  // Use PERSISTENT rivals from recruit generation — never reshuffles
+  var rivals = r.rivals || [];
   rivals.forEach(function(rv){
-    var rk = ranked.findIndex(function(t){return t.id===rv.id;})+1;
+    var team = G.teams[rv.tid];
+    if(!team) return;
+    var rk = ranked.findIndex(function(t){return t.id===rv.tid;})+1;
     var pw = rk<=10?1.8:rk<=25?1.4:rk<=64?1.0:0.65;
     var sb = r.stars>=5?1.6:r.stars>=4?1.3:r.stars>=3?1.0:0.7;
-    var geo = getGeoBonus(getTeamState(rv),r.homeState);
-    var bid = (Math.random()*40+25)*pw*sb*cpuAgg*(1+geo);
-    var geoL = getGeoLabel(getTeamState(rv),r.homeState);
+    var geo = getGeoBonus(getTeamState(team),r.homeState);
+    // Deterministic bid based on rank + star + geo (seeded by recruit id + rival id)
+    var seed = ((r.id * 7 + rv.tid * 13) % 100) / 100;
+    var bid = (seed*30+20)*pw*sb*cpuAgg*(1+geo);
+    var geoL = getGeoLabel(getTeamState(team),r.homeState);
     schools.push({name:rv.name,bid:bid,isUser:false,geo:geoL,rank:rk});
   });
+
   // Convert to percentages
   var total = schools.reduce(function(s,x){return s+x.bid;},0);
   if(total===0) total=1;
   schools.forEach(function(s){s.pct=Math.round((s.bid/total)*100);});
   schools.sort(function(a,b){return b.pct-a.pct;});
-  // Ensure at least >1% for anyone with a bid
   schools.forEach(function(s){if(s.pct<1&&s.bid>0)s.pct=1;});
   return schools;
 }
@@ -370,7 +374,7 @@ function renderBoard(open,left){
   }
 
   // List (max 30)
-  filtered.slice(0,30).forEach(function(r){
+  filtered.forEach(function(r){
     var stars='';for(var i=0;i<5;i++)stars+=i<r.stars?'\u2605':'\u2606';
     var isTarget=G.recruitTargets.indexOf(r.id)>=0;
     var stName=STATE_NAMES[r.homeState]||r.homeState;

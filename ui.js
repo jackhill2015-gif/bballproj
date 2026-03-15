@@ -169,7 +169,7 @@ export function updatePlayBtn() {
     updatePlayDropdown('ncaa');
   } else if (G.phase === 'offseason') {
     txt('tb-wk', 'OFFSEASON'); txt('tb-opp', '');
-    btn.className = 'play-btn disabled'; txt('play-label', 'OFFSEASON');
+    btn.className = 'play-btn'; txt('play-label', G.offseasonStep === 'turnover' ? 'START RECRUITING \u25bc' : G.recruitPhase >= 3 ? 'FINALIZE \u25bc' : 'ADVANCE \u25bc');
     updatePlayDropdown('offseason');
   }
 }
@@ -210,7 +210,14 @@ export function updatePlayDropdown(phase) {
       dd.appendChild(d);
     });
   } else {
-    dd.innerHTML = '<div class="play-opt" style="color:var(--txt3);cursor:default;">Managing offseason...</div>';
+    dd.innerHTML = '';
+    var phaseNames = { 1: 'Advance to Early Signing', 2: 'Advance to Late Signing', 3: 'Finalize Class & Start Season' };
+    var label = G.offseasonStep === 'turnover' ? 'Proceed to Recruiting' : phaseNames[G.recruitPhase] || 'Advance';
+    var sub = G.offseasonStep === 'turnover' ? 'Review departures, then recruit' : G.recruitPhase >= 3 ? 'Resolve all recruits and start next season' : 'Resolve current phase decisions';
+    var d = document.createElement('div'); d.className = 'play-opt';
+    d.innerHTML = label + ' <span class="play-opt-sub">' + sub + '</span>';
+    d.onclick = function() { doPlay('advance'); };
+    dd.appendChild(d);
   }
 }
 

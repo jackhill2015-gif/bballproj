@@ -32,6 +32,10 @@ export function genPlayer(base, pos, cls) {
 
   // Potential — higher ceiling for younger players
   var potGap = cls === 'FR' ? ri(5, 18) : cls === 'SO' ? ri(3, 12) : cls === 'JR' ? ri(1, 7) : ri(0, 3);
+  // Hidden gem chance: ~8% of freshmen get a huge potential spike regardless of current OVR
+  if (cls === 'FR' && Math.random() < 0.08) {
+    potGap = ri(18, 30);
+  }
   p.pot = clamp(p.ovr + potGap, p.ovr, 99);
 
   return p;

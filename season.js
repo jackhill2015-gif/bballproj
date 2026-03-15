@@ -184,6 +184,21 @@ export function genRecruits() {
     posCount[r.pos]++;
     r.posRank = posCount[r.pos];
   });
+  // Assign persistent rival schools (3-5 CPU schools interested in each recruit)
+  var ranked = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; });
+  G.recruits.forEach(function(r) {
+    var rivalCount = ri(3, 5);
+    // Higher-star recruits attract higher-ranked schools
+    var poolSize = r.stars >= 5 ? 25 : r.stars >= 4 ? 50 : r.stars >= 3 ? 100 : r.stars >= 2 ? 200 : 332;
+    var pool = ranked.slice(0, poolSize).filter(function(t) { return t.id !== G.tid; });
+    // Shuffle and pick
+    for (var j = pool.length - 1; j > 0; j--) {
+      var k = ri(0, j); var tmp = pool[j]; pool[j] = pool[k]; pool[k] = tmp;
+    }
+    r.rivals = pool.slice(0, rivalCount).map(function(t) {
+      return { tid: t.id, name: t.name };
+    });
+  });
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -345,8 +360,15 @@ export function doPlay(mode) {
     G.phase = 'conf_tourn';
     if (_ext.startConfTourney) _ext.startConfTourney();
   } else if (G.phase === 'conf_tourn' || G.phase === 'ncaa') {
-    // Route through playTournamentGame so the user gets live/quick choice
     if (_ext.playTournamentGame) _ext.playTournamentGame(mode === 'live');
+  } else if (G.phase === 'offseason') {
+    if (G.offseasonStep === 'turnover') {
+      if (window.proceedToRecruiting) window.proceedToRecruiting();
+    } else if (G.recruitPhase < 3) {
+      if (window.advanceRecruitPhase) window.advanceRecruitPhase();
+    } else {
+      doOffseason();
+    }
   }
 }
 
