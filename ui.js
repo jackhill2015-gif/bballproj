@@ -239,6 +239,14 @@ export function togglePlayMenu() {
 // ═══════════════════════════════════════════════════════════
 
 export function openModal(tH, tA, isTournament, roundName) {
+  // Safety: clear any lingering sim interval from previous game
+  if (G.simInterval) { clearInterval(G.simInterval); G.simInterval = null; }
+  // Remove any lingering tournament result overlay
+  var panel = ge('gmod').querySelector('.gpanel');
+  if (panel) {
+    var oldOverlay = panel.querySelector('div[style*="position:absolute"]');
+    if (oldOverlay) panel.removeChild(oldOverlay);
+  }
   ge('gmod').classList.add('open');
   if (isTournament && roundName) {
     txt('gmod-title', roundName); txt('gmod-wk', 'TOURNAMENT GAME');
@@ -252,6 +260,7 @@ export function openModal(tH, tA, isTournament, roundName) {
   he.textContent = hName; he.className = 'sb-t h' + (tH.id === G.tid ? ' u' : '');
   ge('sb-score').textContent = '0 \u2013 0';
   txt('sb-clk', '20:00'); txt('sb-per', '1ST HALF');
+  var momFill = ge('mom-fill'); if (momFill) momFill.style.width = '50%';
   ge('pbplog').innerHTML = '<span style="color:var(--txt3)">\u25b6 TIP OFF</span>';
   ge('lplay').textContent = 'Tip off...'; ge('lplay').className = 'lplay';
   ['hc-a1', 'hc-h1', 'hc-a2', 'hc-h2', 'hc-aot', 'hc-hot', 'hc-af', 'hc-hf'].forEach(function(id) {
