@@ -27,7 +27,7 @@ import {
 
 // ── Views ────────────────────────────────────────────────
 import { renderDashboard, renderStatsBanner } from './views/dashboard.js';
-import { renderRoster, updateMins, updateMinsSlider, autoOptimizeRoster } from './views/roster.js';
+import { renderRoster, updateMins, updateMinsSlider, autoOptimizeRoster, rosterMove } from './views/roster.js';
 import { renderStats } from './views/stats.js';
 import { renderStandings } from './views/standings.js';
 import { renderScheduleView } from './views/schedule.js';
@@ -146,6 +146,7 @@ window.swapNC = swapNC;
 window.updateMins = updateMins;
 window.updateMinsSlider = updateMinsSlider;
 window.autoOptimizeRoster = autoOptimizeRoster;
+window.rosterMove = rosterMove;
 
 // Recruiting
 window.pitchRecruit = pitchRecruit;
