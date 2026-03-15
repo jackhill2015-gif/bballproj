@@ -266,28 +266,54 @@ export function simGame(home, away, userIsHome) {
 
 // ── Stat Distribution ────────────────────────────────────
 // After a quick sim (non-live), distribute team score across
-// active players weighted by OVR and minutes.
+// Distribute individual stats after a game. Weighted by minutes and attributes.
+// Target realistic college stats: top scorer ~22-26 PPG, top rebounder ~10-12 RPG, top assist ~6-8 APG
 export function distributeStats(team, teamScore) {
   var active = team.rost.filter(function(p) { return p.mins > 0; });
   if (!active.length) return;
   var totalMins = active.reduce(function(a, b) { return a + b.mins; }, 0);
+  if (totalMins === 0) return;
+
+  // Calculate weighted shares for points (shooting-weighted)
+  var totalPtWeight = 0;
+  active.forEach(function(p) {
+    var share = p.mins / totalMins;
+    totalPtWeight += share * (0.5 + (p.sht / 99) * 0.5);
+  });
+
   var remaining = teamScore;
   active.forEach(function(p, i) {
     p.s.gp++;
     var share = p.mins / totalMins;
-    // Points weighted by shooting ability
-    var ptShare = Math.round(teamScore * share * (0.7 + (p.sht / 100) * 0.6));
-    ptShare = Math.min(ptShare, remaining);
+
+    // Points — shooting-weighted share of team total
+    var ptWeight = share * (0.5 + (p.sht / 99) * 0.5);
+    var ptShare = Math.round(teamScore * (ptWeight / totalPtWeight));
+    if (i === active.length - 1) {
+      ptShare = remaining; // last player gets remainder to ensure total matches
+    } else {
+      ptShare = Math.min(ptShare, remaining);
+    }
     p.s.pts += ptShare;
-    if (i === active.length - 1) p.s.pts += remaining - ptShare;
     remaining -= ptShare;
-    // Rebounds weighted by reb attribute
-    p.s.reb += Math.round((p.reb / 99) * (35 * share) + ri(0, 2));
-    // Assists weighted by playmaking
-    p.s.ast += Math.round((p.ply / 99) * (18 * share) + ri(0, 1));
-    // FG attempts/makes (rough estimate)
-    var fga = Math.round(p.mins * 0.7 + ri(0, 3));
-    var fgm = Math.round(fga * clamp(0.3 + (p.sht / 200), 0.3, 0.65));
+
+    // Rebounds — team gets ~33-38 total, distributed by reb attribute + minutes
+    var teamReb = 35;
+    var rebShare = Math.round(teamReb * share * (0.4 + (p.reb / 99) * 0.6));
+    rebShare = Math.max(0, Math.min(rebShare, 15)); // cap individual
+    p.s.reb += rebShare;
+
+    // Assists — team gets ~14-18 total, distributed by playmaking
+    var teamAst = 15;
+    var astShare = Math.round(teamAst * share * (0.3 + (p.ply / 99) * 0.7));
+    astShare = Math.max(0, Math.min(astShare, 12)); // cap individual
+    p.s.ast += astShare;
+
+    // FG attempts/makes
+    var fga = Math.round(ptShare * 0.55 + ri(0, 2)); // roughly 55% of points come from FG
+    if (fga < 1 && ptShare > 0) fga = 1;
+    var fgPct = clamp(0.32 + (p.sht / 99) * 0.28, 0.32, 0.60);
+    var fgm = Math.round(fga * fgPct);
     p.s.fga += fga;
     p.s.fgm += fgm;
   });
