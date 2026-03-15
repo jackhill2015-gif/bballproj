@@ -295,50 +295,90 @@ function renderTurnover(){
   var openSpots=Math.max(0,13-returning.length);
   var lostMins=dep.reduce(function(s,d){return s+(d.mins||0);},0);
 
-  var h='<div style="max-width:700px;margin:0 auto;padding:20px;">';
-  h+='<div style="text-align:center;margin-bottom:24px;">'
-    +'<div style="font-size:10px;color:var(--red);font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:6px;">OFFSEASON '+G.yr+'</div>'
-    +'<div style="font-size:28px;font-weight:900;">Roster Turnover</div>'
-    +'<div style="height:2px;width:50px;background:var(--red);margin:12px auto;"></div></div>';
+  // Position needs
+  var posCount={PG:0,SG:0,SF:0,PF:0,C:0};
+  returning.forEach(function(p){if(posCount.hasOwnProperty(p.pos))posCount[p.pos]++;});
+  var needs=[];
+  Object.keys(posCount).forEach(function(pos){if(posCount[pos]<2)needs.push(pos);});
 
-  // Summary
-  h+='<div style="display:flex;gap:12px;margin-bottom:20px;">'
-    +'<div class="card" style="flex:1;padding:14px;text-align:center;"><div style="font-size:24px;font-weight:900;color:#fc8181;">'+dep.length+'</div><div style="font-size:10px;color:var(--txt3);">DEPARTING</div></div>'
-    +'<div class="card" style="flex:1;padding:14px;text-align:center;"><div style="font-size:24px;font-weight:900;color:var(--grn2);">'+returning.length+'</div><div style="font-size:10px;color:var(--txt3);">RETURNING</div></div>'
-    +'<div class="card" style="flex:1;padding:14px;text-align:center;"><div style="font-size:24px;font-weight:900;color:var(--gld2);">'+openSpots+'</div><div style="font-size:10px;color:var(--txt3);">OPEN SPOTS</div></div>'
-    +'<div class="card" style="flex:1;padding:14px;text-align:center;"><div style="font-size:24px;font-weight:900;">'+lostMins+'</div><div style="font-size:10px;color:var(--txt3);">MINS TO REPLACE</div></div></div>';
+  var h='';
 
-  // Departing list
-  if(dep.length){
-    h+='<div class="card" style="margin-bottom:16px;"><div class="card-title">Departing Players</div>';
-    dep.forEach(function(d){
-      var reasonCol=d.reason==='Graduated'?'var(--txt3)':'var(--gld2)';
-      h+='<div style="display:flex;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.03);">'
-        +'<div class="pos-chip" style="margin-right:8px;">'+d.pos+'</div>'
-        +'<div style="flex:1;"><div style="font-size:12px;font-weight:600;color:#fff;">'+d.name+'</div>'
-        +'<div style="font-size:10px;color:var(--txt3);">'+d.cls+' \u00b7 '+d.ppg+' PPG \u00b7 '+d.rpg+' RPG</div></div>'
-        +'<div style="text-align:right;"><div style="font-family:monospace;font-size:13px;font-weight:800;color:var(--red);">'+d.ovr+'</div>'
-        +'<div style="font-size:9px;font-weight:700;color:'+reasonCol+';">'+d.reason+'</div></div></div>';
-    });
-    h+='</div>';
-  } else {
-    h+='<div class="card" style="padding:20px;text-align:center;color:var(--txt3);margin-bottom:16px;">No players departing. Full squad returning.</div>';
+  // Header
+  h+='<div style="text-align:center;margin-bottom:20px;">'
+    +'<div style="font-size:11px;color:var(--red);font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:6px;">OFFSEASON '+G.yr+'</div>'
+    +'<div style="font-size:32px;font-weight:900;">Roster Turnover</div>'
+    +'<div style="height:2px;width:60px;background:var(--red);margin:14px auto;"></div>'
+    +'<div style="font-size:13px;color:var(--txt2);">'+t.name+' \u2014 Review your departures and returning squad before recruiting.</div></div>';
+
+  // Summary cards — bigger
+  h+='<div style="display:flex;gap:14px;margin-bottom:20px;">'
+    +'<div class="card" style="flex:1;padding:20px;text-align:center;"><div style="font-size:32px;font-weight:900;color:#fc8181;">'+dep.length+'</div><div style="font-size:11px;color:var(--txt3);font-weight:700;margin-top:4px;">DEPARTING</div></div>'
+    +'<div class="card" style="flex:1;padding:20px;text-align:center;"><div style="font-size:32px;font-weight:900;color:var(--grn2);">'+returning.length+'</div><div style="font-size:11px;color:var(--txt3);font-weight:700;margin-top:4px;">RETURNING</div></div>'
+    +'<div class="card" style="flex:1;padding:20px;text-align:center;"><div style="font-size:32px;font-weight:900;color:var(--gld2);">'+openSpots+'</div><div style="font-size:11px;color:var(--txt3);font-weight:700;margin-top:4px;">OPEN SPOTS</div></div>'
+    +'<div class="card" style="flex:1;padding:20px;text-align:center;"><div style="font-size:32px;font-weight:900;">'+lostMins+'</div><div style="font-size:11px;color:var(--txt3);font-weight:700;margin-top:4px;">MINS TO REPLACE</div></div></div>';
+
+  // Position needs bar
+  if(needs.length){
+    h+='<div style="margin-bottom:16px;padding:10px 14px;background:rgba(229,62,62,.06);border:1px solid rgba(229,62,62,.15);border-radius:6px;font-size:12px;color:#fc8181;font-weight:700;">'
+      +'Position needs: '+needs.join(', ')+' \u2014 target these in recruiting</div>';
   }
 
-  // Returning preview
-  h+='<div class="card" style="margin-bottom:20px;"><div class="card-title">Returning Roster <span>'+returning.length+' players</span></div>';
-  returning.sort(function(a,b){return b.ovr-a.ovr;});
-  returning.slice(0,8).forEach(function(p){
-    h+='<div style="display:flex;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.02);">'
-      +'<div class="pos-chip" style="margin-right:8px;">'+p.pos+'</div>'
-      +'<div style="flex:1;font-size:11px;font-weight:600;color:#fff;">'+p.name+' <span style="color:var(--txt3);font-size:9px;">'+p.cls+'</span></div>'
-      +'<div style="font-family:monospace;font-size:12px;font-weight:700;color:var(--red);">'+p.ovr+'</div></div>';
-  });
-  if(returning.length>8) h+='<div style="font-size:10px;color:var(--txt3);padding:4px 0;">+'+(returning.length-8)+' more</div>';
+  // Two-column layout
+  h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">';
+
+  // LEFT: Departing
+  h+='<div class="card" style="padding:16px;">'
+    +'<div class="card-title" style="font-size:13px;">Departing Players <span style="color:#fc8181;">'+dep.length+'</span></div>';
+  if(dep.length){
+    dep.forEach(function(d){
+      var reasonCol=d.reason==='Graduated'?'var(--txt3)':'var(--gld2)';
+      var gp=1;
+      h+='<div style="display:flex;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.03);">'
+        +'<div class="pos-chip" style="margin-right:10px;">'+d.pos+'</div>'
+        +'<div style="flex:1;">'
+        +'<div style="font-size:13px;font-weight:700;color:#fff;">'+d.name+'</div>'
+        +'<div style="font-size:11px;color:var(--txt2);margin-top:2px;">'+d.cls+' \u00b7 '+d.ppg+' PPG \u00b7 '+d.rpg+' RPG \u00b7 '+d.mins+' MIN</div>'
+        +'</div>'
+        +'<div style="text-align:right;">'
+        +'<div style="font-family:monospace;font-size:16px;font-weight:900;color:var(--red);">'+d.ovr+'</div>'
+        +'<div style="font-size:10px;font-weight:700;color:'+reasonCol+';margin-top:2px;">'+d.reason+'</div>'
+        +'</div></div>';
+    });
+  } else {
+    h+='<div style="padding:20px 0;text-align:center;color:var(--txt3);font-size:12px;">No players departing. Full squad returning.</div>';
+  }
   h+='</div>';
 
-  h+='<div style="text-align:center;"><div class="btn btn-red" style="display:inline-block;padding:14px 40px;font-size:14px;font-weight:800;" onclick="proceedToRecruiting()">PROCEED TO RECRUITING \u25b6</div></div>';
+  // RIGHT: Returning — FULL roster, no truncation
+  returning.sort(function(a,b){return b.ovr-a.ovr;});
+  h+='<div class="card" style="padding:16px;">'
+    +'<div class="card-title" style="font-size:13px;">Returning Roster <span style="color:var(--grn2);">'+returning.length+' players</span></div>';
+  returning.forEach(function(p){
+    var gp=p.s.gp||0;
+    var ppg=gp?(p.s.pts/gp).toFixed(1):'--';
+    var rpg=gp?(p.s.reb/gp).toFixed(1):'--';
+    var pot=p.pot||p.ovr;
+    var potCol=pot>p.ovr+8?'var(--grn2)':pot>p.ovr+3?'var(--gld2)':'var(--txt3)';
+    var clsCol=p.cls==='FR'?'var(--grn2)':p.cls==='SO'?'var(--gld2)':p.cls==='JR'?'#63b3ed':'var(--txt3)';
+    h+='<div style="display:flex;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.03);">'
+      +'<div class="pos-chip" style="margin-right:10px;">'+p.pos+'</div>'
+      +'<div style="flex:1;">'
+      +'<div style="font-size:13px;font-weight:700;color:#fff;">'+p.name+' <span style="font-size:10px;font-weight:800;color:'+clsCol+';">'+p.cls+'</span></div>'
+      +'<div style="font-size:11px;color:var(--txt2);margin-top:2px;">'+ppg+' PPG \u00b7 '+rpg+' RPG \u00b7 '+p.mins+' MIN</div>'
+      +'</div>'
+      +'<div style="text-align:right;display:flex;gap:8px;align-items:center;">'
+      +'<div style="font-family:monospace;font-size:16px;font-weight:900;color:var(--red);">'+p.ovr+'</div>'
+      +'<div style="font-family:monospace;font-size:12px;font-weight:700;color:'+potCol+';">'+pot+'</div>'
+      +'</div></div>';
+  });
   h+='</div>';
+
+  h+='</div>'; // close grid
+
+  // Proceed button
+  h+='<div style="text-align:center;margin-top:20px;">'
+    +'<div class="btn btn-red" style="display:inline-block;padding:16px 48px;font-size:15px;font-weight:800;" onclick="proceedToRecruiting()">PROCEED TO RECRUITING \u25b6</div></div>';
+
   return h;
 }
 
