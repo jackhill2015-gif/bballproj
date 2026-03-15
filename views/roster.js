@@ -40,7 +40,7 @@ export function renderRoster() {
   // Validation warnings
   if (!rosterValid) {
     h += '<div style="padding:8px 12px;margin-bottom:10px;border-radius:5px;font-size:11px;font-weight:600;'
-      + 'background:rgba(229,62,62,.08);border:1px solid rgba(229,62,62,.2);color:#fc8181;">';
+      + 'background:rgba(0,102,204,.08);border:1px solid rgba(0,102,204,.2);color:#fc8181;">';
     var warnings = [];
     if (!totalOk) warnings.push('Minutes must total exactly 200 (currently ' + total + ')');
     if (startersWithMins < 5) warnings.push('All 5 starters need minutes assigned (' + startersWithMins + '/5 have minutes)');

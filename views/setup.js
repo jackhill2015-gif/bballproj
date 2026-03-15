@@ -154,7 +154,7 @@ function renderDifficulty() {
 
 function renderDiffBtn(key, label, desc) {
   var on = SetupState.DIFF === key;
-  return '<div onclick="setDiff(\'' + key + '\')" style="padding:14px 16px;background:' + (on ? 'rgba(229,62,62,.12)' : 'var(--s2)') + ';border:1px solid ' + (on ? 'var(--red)' : 'var(--bdr)') + ';border-radius:6px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">'
+  return '<div onclick="setDiff(\'' + key + '\')" style="padding:14px 16px;background:' + (on ? 'rgba(0,102,204,.12)' : 'var(--s2)') + ';border:1px solid ' + (on ? 'var(--red)' : 'var(--bdr)') + ';border-radius:6px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">'
     + '<div><div style="font-size:13px;font-weight:700;color:' + (on ? '#fff' : 'var(--txt2)') + ';">' + label + '</div>'
     + '<div style="font-size:10px;color:var(--txt3);">' + desc + '</div></div>'
     + (on ? '<div style="width:10px;height:10px;border-radius:50%;background:var(--red);"></div>' : '')
@@ -201,7 +201,7 @@ function renderJobOffers() {
   _jobOffers.forEach(function(t) {
     var tier = getTier(t.baseOvr);
     var sp = t.schoolPrestige;
-    h += '<div onclick="selectJob(' + t.id + ')" style="padding:14px;background:var(--s1);border:1px solid var(--bdr);border-radius:8px;cursor:pointer;transition:all .15s;" onmouseover="this.style.borderColor=\'var(--red)\';this.style.background=\'rgba(229,62,62,.04)\'" onmouseout="this.style.borderColor=\'var(--bdr)\';this.style.background=\'var(--s1)\'">'
+    h += '<div onclick="selectJob(' + t.id + ')" style="padding:14px;background:var(--s1);border:1px solid var(--bdr);border-radius:8px;cursor:pointer;transition:all .15s;" onmouseover="this.style.borderColor=\'var(--red)\';this.style.background=\'rgba(0,102,204,.04)\'" onmouseout="this.style.borderColor=\'var(--bdr)\';this.style.background=\'var(--s1)\'">'
       + '<div style="font-size:14px;font-weight:800;color:#fff;margin-bottom:4px;">' + t.name + '</div>'
       + '<div style="font-size:11px;color:var(--txt2);margin-bottom:8px;">' + t.conf + '</div>'
       + '<div style="display:flex;gap:12px;">'
@@ -318,7 +318,7 @@ export function swapNC(idx) {
       var d = document.createElement('div');
       d.style.cssText = 'padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.03);display:flex;justify-content:space-between;font-size:12px;';
       d.innerHTML = '<span style="font-weight:600;color:#fff;">' + t.name + '</span><span style="color:var(--txt3);">' + t.conf + ' \u2022 ' + getTOvr(t) + '</span>';
-      d.onmouseover = function() { this.style.background = 'rgba(229,62,62,.08)'; };
+      d.onmouseover = function() { this.style.background = 'rgba(0,102,204,.08)'; };
       d.onmouseout = function() { this.style.background = ''; };
       d.onclick = function() { SetupState.NC_PICKS[idx] = t.id; document.body.removeChild(overlay); showStep('nc-schedule'); };
       list.appendChild(d);

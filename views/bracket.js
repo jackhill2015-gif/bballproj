@@ -127,7 +127,7 @@ function renderNCAAbracket() {
     var ub1 = userMatch.b1, ub2 = userMatch.b2;
     var uIsB1 = ub1.team.id === G.tid;
     var uTeam = uIsB1 ? ub1 : ub2, oppTeam = uIsB1 ? ub2 : ub1;
-    h += '<div style="background:linear-gradient(135deg,rgba(214,158,46,.1),rgba(229,62,62,.08));border:2px solid var(--gld);border-radius:8px;padding:16px;margin-bottom:16px;">';
+    h += '<div style="background:linear-gradient(135deg,rgba(214,158,46,.1),rgba(0,102,204,.08));border:2px solid var(--gld);border-radius:8px;padding:16px;margin-bottom:16px;">';
     h += '<div style="font-size:10px;font-weight:800;color:var(--gld2);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;">YOUR GAME \u2014 ' + currentRound + '</div>';
     h += '<div style="display:flex;align-items:center;gap:12px;">';
     h += '<div style="flex:1;"><div style="font-size:11px;color:var(--gld2);font-weight:700;">#' + uTeam.seed + ' seed</div><div style="font-size:20px;font-weight:900;color:#fff;">' + uTeam.team.name + '</div></div>';

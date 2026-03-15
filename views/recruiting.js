@@ -261,7 +261,7 @@ export function renderOffseason(){
   h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">'
     +'<div><div style="font-size:18px;font-weight:900;">Recruiting '+G.yr+'</div>'
     +'<div style="font-size:11px;color:var(--txt2);">'+phase.name+' \u2014 '+phase.desc+'</div></div>'
-    +'<div style="font-size:10px;font-weight:800;color:var(--red);letter-spacing:1.5px;background:rgba(229,62,62,.1);padding:4px 12px;border-radius:4px;">'+phase.tag+'</div></div>';
+    +'<div style="font-size:10px;font-weight:800;color:var(--red);letter-spacing:1.5px;background:rgba(0,102,204,.1);padding:4px 12px;border-radius:4px;">'+phase.tag+'</div></div>';
 
   // ── Stats bar ──
   h+='<div style="display:flex;gap:16px;margin-bottom:12px;padding:10px 14px;background:var(--s1);border:1px solid var(--bdr);border-radius:6px;">'
@@ -337,7 +337,7 @@ function renderTurnover(){
 
   // Position needs bar
   if(needs.length){
-    h+='<div style="margin-bottom:16px;padding:10px 14px;background:rgba(229,62,62,.06);border:1px solid rgba(229,62,62,.15);border-radius:6px;font-size:12px;color:#fc8181;font-weight:700;">'
+    h+='<div style="margin-bottom:16px;padding:10px 14px;background:rgba(0,102,204,.06);border:1px solid rgba(0,102,204,.15);border-radius:6px;font-size:12px;color:#fc8181;font-weight:700;">'
       +'Position needs: '+needs.join(', ')+' \u2014 target these in recruiting</div>';
   }
 
@@ -732,9 +732,9 @@ function renderBoard(open,left){
     var sp=(G.teams[G.tid]&&G.teams[G.tid].schoolPrestige)||50;
     var gatePrestige=SCHOOL_RECRUIT_GATES[r.stars]||0;
     var gated=sp<gatePrestige;
-    var gateBadge=gated?'<span style="font-size:8px;font-weight:900;color:#fc8181;background:rgba(229,62,62,.12);padding:1px 5px;border-radius:2px;margin-left:4px;">LONG SHOT</span>':'';
+    var gateBadge=gated?'<span style="font-size:8px;font-weight:900;color:#fc8181;background:rgba(0,102,204,.12);padding:1px 5px;border-radius:2px;margin-left:4px;">LONG SHOT</span>':'';
 
-    h+='<div onclick="showDetail('+r.id+')" style="display:flex;align-items:center;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.03);cursor:pointer;'+(isTarget?'background:rgba(49,130,206,.06);border-left:3px solid var(--blu);':'')+(r.id===_detailId?'background:rgba(229,62,62,.06);':'')+'transition:background .1s;" onmouseover="this.style.background=\'rgba(255,255,255,.03)\'" onmouseout="this.style.background=\''+(isTarget?'rgba(49,130,206,.06)':'')+'\'">'
+    h+='<div onclick="showDetail('+r.id+')" style="display:flex;align-items:center;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.03);cursor:pointer;'+(isTarget?'background:rgba(49,130,206,.06);border-left:3px solid var(--blu);':'')+(r.id===_detailId?'background:rgba(0,102,204,.06);':'')+'transition:background .1s;" onmouseover="this.style.background=\'rgba(255,255,255,.03)\'" onmouseout="this.style.background=\''+(isTarget?'rgba(49,130,206,.06)':'')+'\'">'
       +'<div style="width:32px;font-family:monospace;font-size:11px;color:var(--txt3);flex-shrink:0;">#'+r.natRank+'</div>'
       +'<div style="flex:1;min-width:0;">'
       +'<div style="display:flex;align-items:center;gap:5px;">'
@@ -885,7 +885,7 @@ function renderRosterNeeds(){
   Object.keys(posNeeds).forEach(function(pos){
     var ct=posNeeds[pos];
     var need=ct<2;
-    h+='<div style="flex:1;padding:10px;text-align:center;background:var(--s1);border:1px solid '+(need?'rgba(229,62,62,.3)':'var(--bdr)')+';border-radius:6px;">'
+    h+='<div style="flex:1;padding:10px;text-align:center;background:var(--s1);border:1px solid '+(need?'rgba(0,102,204,.3)':'var(--bdr)')+';border-radius:6px;">'
       +'<div style="font-size:20px;font-weight:900;color:'+(need?'#fc8181':'#fff')+';">'+ct+'</div>'
       +'<div style="font-size:10px;color:var(--txt3);">'+pos+'</div>'
       +(need?'<div style="font-size:8px;color:#fc8181;font-weight:700;margin-top:2px;">NEED</div>':'')+'</div>';
