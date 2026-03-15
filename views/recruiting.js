@@ -337,7 +337,7 @@ function renderTurnover(){
         +'<div class="pos-chip" style="margin-right:10px;">'+d.pos+'</div>'
         +'<div style="flex:1;">'
         +'<div style="font-size:13px;font-weight:700;color:#fff;">'+d.name+'</div>'
-        +'<div style="font-size:11px;color:var(--txt2);margin-top:2px;">'+d.cls+' \u00b7 '+d.ppg+' PPG \u00b7 '+d.rpg+' RPG \u00b7 '+d.mins+' MIN</div>'
+        +'<div style="font-size:11px;color:var(--txt2);margin-top:2px;">'+d.cls+' \u00b7 '+d.ppg+' PPG \u00b7 '+d.rpg+' RPG \u00b7 '+(d.apg||'0.0')+' APG \u00b7 '+d.mins+' MIN</div>'
         +'</div>'
         +'<div style="text-align:right;">'
         +'<div style="font-family:monospace;font-size:16px;font-weight:900;color:var(--red);">'+d.ovr+'</div>'
@@ -357,6 +357,7 @@ function renderTurnover(){
     var gp=p.s.gp||0;
     var ppg=gp?(p.s.pts/gp).toFixed(1):'--';
     var rpg=gp?(p.s.reb/gp).toFixed(1):'--';
+    var apg=gp?(p.s.ast/gp).toFixed(1):'--';
     var pot=p.pot||p.ovr;
     var potCol=pot>p.ovr+8?'var(--grn2)':pot>p.ovr+3?'var(--gld2)':'var(--txt3)';
     var clsCol=p.cls==='FR'?'var(--grn2)':p.cls==='SO'?'var(--gld2)':p.cls==='JR'?'#63b3ed':'var(--txt3)';
@@ -364,7 +365,7 @@ function renderTurnover(){
       +'<div class="pos-chip" style="margin-right:10px;">'+p.pos+'</div>'
       +'<div style="flex:1;">'
       +'<div style="font-size:13px;font-weight:700;color:#fff;">'+p.name+' <span style="font-size:10px;font-weight:800;color:'+clsCol+';">'+p.cls+'</span></div>'
-      +'<div style="font-size:11px;color:var(--txt2);margin-top:2px;">'+ppg+' PPG \u00b7 '+rpg+' RPG \u00b7 '+p.mins+' MIN</div>'
+      +'<div style="font-size:11px;color:var(--txt2);margin-top:2px;">'+ppg+' PPG \u00b7 '+rpg+' RPG \u00b7 '+apg+' APG \u00b7 '+p.mins+' MIN</div>'
       +'</div>'
       +'<div style="text-align:right;display:flex;gap:8px;align-items:center;">'
       +'<div style="font-family:monospace;font-size:16px;font-weight:900;color:var(--red);">'+p.ovr+'</div>'
