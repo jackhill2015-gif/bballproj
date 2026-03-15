@@ -33,7 +33,7 @@ import { renderStandings } from './views/standings.js';
 import { renderScheduleView } from './views/schedule.js';
 import { renderHistory } from './views/history.js';
 import { renderBracket } from './views/bracket.js';
-import { renderOffseason, pitchRecruit, resolvePitchWeek, resolveRecruitingClass, adjustPoints, advanceRecruitPhase, registerRecruitingCallbacks } from './views/recruiting.js';
+import { renderOffseason, pitchRecruit, resolvePitchWeek, resolveRecruitingClass, adjustPoints, advanceRecruitPhase, addTarget, removeTarget, showDetail, closeDetail, setRecruitTab, setRecruitFilter, proceedToRecruiting, registerRecruitingCallbacks } from './views/recruiting.js';
 import { renderSeasonRecap } from './views/recap.js';
 import {
   showHomeScreen, loadAndPlay, startNewDynasty, deleteFromHome, newDynasty,
@@ -154,9 +154,19 @@ window.resolvePitchWeek = resolvePitchWeek;
 window.resolveRecruitingClass = resolveRecruitingClass;
 window.adjustPoints = adjustPoints;
 window.advanceRecruitPhase = advanceRecruitPhase;
+window.addTarget = addTarget;
+window.removeTarget = removeTarget;
+window.showDetail = showDetail;
+window.closeDetail = closeDetail;
+window.setRecruitTab = setRecruitTab;
+window.setRecruitFilter = setRecruitFilter;
+window.proceedToRecruiting = proceedToRecruiting;
 
 // Auto-sim (referenced by setTimeout callbacks)
 window.autoSimNext = autoSimNext;
+
+// Bridge for recruiting.js to call genRecruits
+window._genRecruits = genRecruits;
 
 // ═══════════════════════════════════════════════════════════
 //  BOOT

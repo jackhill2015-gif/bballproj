@@ -156,14 +156,34 @@ export function swapOOC(slot, newTeamId) {
 
 export function genRecruits() {
   G.recruits = [];
-  for (var i = 0; i < 60; i++) {
-    var star = ri(1, 5);
-    var r = genPlayer(50 + star * 7 + ri(-4, 4), POS[ri(0, 4)], 'FR');
-    r.id = i; r.stars = star; r.interest = ri(0, 30); r.signed = -1; r.points = 0; r.status = 'open';
+  // Star distribution: 10x5★, 40x4★, 100x3★, 150x2★, 100x1★ = 400 total
+  var starDist = [];
+  var i;
+  for (i = 0; i < 10; i++) starDist.push(5);
+  for (i = 0; i < 40; i++) starDist.push(4);
+  for (i = 0; i < 100; i++) starDist.push(3);
+  for (i = 0; i < 150; i++) starDist.push(2);
+  for (i = 0; i < 100; i++) starDist.push(1);
+
+  for (i = 0; i < starDist.length; i++) {
+    var star = starDist[i];
+    var base = star === 5 ? ri(82, 92) : star === 4 ? ri(74, 84) : star === 3 ? ri(66, 76) : star === 2 ? ri(58, 68) : ri(50, 60);
+    var r = genPlayer(base, POS[ri(0, 4)], 'FR');
+    r.id = i; r.stars = star; r.interest = ri(0, 25); r.signed = -1;
+    r.points = 0; r.status = 'open';
     r.homeState = RECRUIT_STATE_POOL[ri(0, RECRUIT_STATE_POOL.length - 1)];
     G.recruits.push(r);
   }
+  // Sort by OVR descending, then assign national rank
   G.recruits.sort(function(a, b) { return b.ovr - a.ovr; });
+  G.recruits.forEach(function(r, idx) { r.id = idx; r.natRank = idx + 1; });
+  // Assign positional rank
+  var posCount = {};
+  G.recruits.forEach(function(r) {
+    if (!posCount[r.pos]) posCount[r.pos] = 0;
+    posCount[r.pos]++;
+    r.posRank = posCount[r.pos];
+  });
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -465,8 +485,24 @@ export function beginOffseason() {
   var rs = ge('recap-screen');
   if (rs) rs.classList.remove('open');
   G.phase = 'offseason';
-  updateAll();
-  navTo('offseason');
+
+  // Calculate departing players
+  var t = G.teams[G.tid];
+  G.departingPlayers = [];
+  t.rost.forEach(function(p) {
+    var gp = p.s.gp || 0;
+    var ppg = gp > 0 ? p.s.pts / gp : 0;
+    if (p.cls === 'SR') {
+      G.departingPlayers.push({ name: p.name, pos: p.pos, cls: p.cls, ovr: p.ovr, reason: 'Graduated', ppg: ppg.toFixed(1), rpg: gp > 0 ? (p.s.reb / gp).toFixed(1) : '0.0', mins: p.mins });
+    } else if (ppg >= 16 && p.cls !== 'FR') {
+      G.departingPlayers.push({ name: p.name, pos: p.pos, cls: p.cls, ovr: p.ovr, reason: 'Declared for Draft', ppg: ppg.toFixed(1), rpg: gp > 0 ? (p.s.reb / gp).toFixed(1) : '0.0', mins: p.mins });
+    }
+  });
+
+  G.offseasonStep = 'turnover';
+  G.recruitPhase = 0;
+  G.recruitTargets = [];
+  saveState(); updateAll(); navTo('offseason');
 }
 
 // ═══════════════════════════════════════════════════════════
