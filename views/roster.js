@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════
 //  HOOPS OS — views/roster.js
-//  Drag-and-drop depth chart with smart minute redistribution
+//  Final: drag-drop with auto-minutes, inline slider fills
 // ═══════════════════════════════════════════════════════════
 
 import { ge, clamp } from '../utils.js';
@@ -24,158 +24,192 @@ export function renderRoster() {
   var h = '';
 
   // Header
-  h += '<div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:16px;">'
+  h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">'
     + '<div>'
-    + '<div style="font-size:22px;font-weight:900;letter-spacing:-.5px;">' + t.name + ' Roster</div>'
-    + '<div style="font-size:11px;color:var(--txt2);margin-top:4px;">Drag to reorder \u00b7 Top 5 start \u00b7 Sliders set minutes \u00b7 Minutes auto-balance by position</div>'
+    + '<div style="font-size:20px;font-weight:900;">Depth Chart</div>'
+    + '<div style="font-size:11px;color:var(--txt2);margin-top:3px;">Drag to reorder \u00b7 Top 5 = Starters \u00b7 Sliders control minutes</div>'
     + '</div>'
     + '<div style="display:flex;align-items:center;gap:14px;">'
-    + '<div style="font-family:monospace;font-size:16px;font-weight:900;color:' + (totalOk ? 'var(--grn2)' : '#fc8181') + ';">'
-    + total + '/200 ' + (totalOk ? '\u2713' : '\u26a0') + '</div>'
+    + '<div style="font-family:\'JetBrains Mono\',monospace;font-size:15px;font-weight:800;color:' + (totalOk ? 'var(--grn2)' : '#fc8181') + ';">'
+    + total + '/200' + (totalOk ? ' \u2713' : ' \u26a0') + '</div>'
     + '<div class="btn btn-red" onclick="autoOptimizeRoster()" style="font-size:11px;padding:8px 20px;font-weight:800;">AUTO SET</div>'
     + '</div></div>';
 
-  // Team summary bar
-  var avgOvr = Math.round(t.rost.reduce(function(s, p) { return s + p.ovr; }, 0) / t.rost.length);
-  var frCount = t.rost.filter(function(p) { return p.cls === 'FR'; }).length;
-  var soCount = t.rost.filter(function(p) { return p.cls === 'SO'; }).length;
-  var jrCount = t.rost.filter(function(p) { return p.cls === 'JR'; }).length;
-  var srCount = t.rost.filter(function(p) { return p.cls === 'SR'; }).length;
-
-  h += '<div style="display:flex;gap:12px;margin-bottom:14px;">'
-    + '<div style="padding:8px 14px;background:var(--s2);border:1px solid var(--bdr);border-radius:5px;font-size:11px;">'
-    + '<span style="color:var(--txt3);">AVG OVR</span> <span style="font-weight:800;color:var(--red);font-family:monospace;">' + avgOvr + '</span></div>'
-    + '<div style="padding:8px 14px;background:var(--s2);border:1px solid var(--bdr);border-radius:5px;font-size:11px;">'
-    + '<span style="color:var(--grn2);font-weight:700;">' + frCount + ' FR</span>'
-    + ' <span style="color:var(--gld2);font-weight:700;">' + soCount + ' SO</span>'
-    + ' <span style="color:#63b3ed;font-weight:700;">' + jrCount + ' JR</span>'
-    + ' <span style="color:var(--txt3);font-weight:700;">' + srCount + ' SR</span></div>'
-    + '<div style="padding:8px 14px;background:var(--s2);border:1px solid var(--bdr);border-radius:5px;font-size:11px;">'
-    + '<span style="color:var(--txt3);">ROSTER</span> <span style="font-weight:800;color:#fff;">' + t.rost.length + ' players</span></div>'
-    + '</div>';
-
-  // Player list
+  // Player rows
   t.rost.forEach(function(p, i) {
     var tier = i < 5 ? 'starter' : i < 9 ? 'rotation' : 'bench';
-    var gp = p.s.gp || 0;
-    var ppg = gp > 0 ? (p.s.pts / gp).toFixed(1) : '0.0';
-    var rpg = gp > 0 ? (p.s.reb / gp).toFixed(1) : '0.0';
-    var apg = gp > 0 ? (p.s.ast / gp).toFixed(1) : '0.0';
 
     // Section headers
-    if (i === 0) h += sectionHead('STARTERS', '5 players \u00b7 ' + t.rost.slice(0, 5).reduce(function(s, x) { return s + x.mins; }, 0) + ' min', 'var(--red)');
-    else if (i === 5) h += sectionHead('ROTATION', '4 players \u00b7 ' + t.rost.slice(5, 9).reduce(function(s, x) { return s + x.mins; }, 0) + ' min', 'var(--blu)');
-    else if (i === 9) h += sectionHead('BENCH', (t.rost.length - 9) + ' players \u00b7 ' + t.rost.slice(9).reduce(function(s, x) { return s + x.mins; }, 0) + ' min', 'var(--txt3)');
+    if (i === 0) h += sectHead('STARTERS', 'var(--red)');
+    else if (i === 5) h += sectHead('ROTATION', 'var(--txt2)');
+    else if (i === 9) h += sectHead('BENCH', 'var(--txt3)');
+
+    // Stats
+    var gp = p.s ? (p.s.gp || 0) : 0;
+    var ppg = gp > 0 ? (p.s.pts / gp).toFixed(1) : null;
+    var rpg = gp > 0 ? (p.s.reb / gp).toFixed(1) : null;
+    var apg = gp > 0 ? (p.s.ast / gp).toFixed(1) : null;
 
     // Colors
-    var clsColors = { FR: 'var(--grn2)', SO: 'var(--gld2)', JR: '#63b3ed', SR: 'var(--txt3)' };
-    var clsCol = clsColors[p.cls] || 'var(--txt3)';
+    var stripe = tier === 'starter' ? 'var(--red)' : tier === 'rotation' ? 'var(--bdr2)' : 'transparent';
+    var clsMap = { FR: '#48bb78', SO: '#ecc94b', JR: '#63b3ed', SR: '#a0aec0' };
+    var clsCol = clsMap[p.cls] || '#a0aec0';
     var pot = p.pot || p.ovr;
-    var potCol = pot > p.ovr + 8 ? 'var(--grn2)' : pot > p.ovr + 3 ? 'var(--gld2)' : 'var(--txt3)';
-    var stripeCol = tier === 'starter' ? 'var(--red)' : tier === 'rotation' ? 'var(--blu)' : 'var(--bdr)';
+    var potCol = pot > p.ovr + 8 ? '#48bb78' : pot > p.ovr + 3 ? '#ecc94b' : 'var(--txt3)';
+    var isBenched = p.mins === 0;
+
+    // Slider fill — compute inline background gradient since CSS var approach is broken
     var fillPct = Math.round((p.mins / 40) * 100);
-    var isBench0 = tier === 'bench' && p.mins === 0;
+    var sliderTrackCol = tier === 'starter' ? 'var(--red)' : tier === 'rotation' ? '#718096' : '#4a5568';
+    var sliderBg = 'linear-gradient(90deg,' + sliderTrackCol + ' 0%,' + sliderTrackCol + ' ' + fillPct + '%,var(--bdr2) ' + fillPct + '%)';
 
-    h += '<div draggable="true" data-idx="' + i + '" ondragstart="rosterDragStart(event,' + i + ')" ondragover="rosterDragOver(event)" ondrop="rosterDrop(event,' + i + ')" '
-      + 'style="display:grid;grid-template-columns:24px 36px 1fr 40px 40px 130px 160px;align-items:center;gap:8px;padding:10px 12px;border-left:3px solid ' + stripeCol + ';border-bottom:1px solid rgba(255,255,255,.03);cursor:grab;transition:all .1s;'
-      + (isBench0 ? 'opacity:.45;' : '') + '" '
-      + 'onmouseover="this.style.background=\'rgba(255,255,255,.03)\'" onmouseout="this.style.background=\'\'">';
+    h += '<div draggable="true" data-idx="' + i + '" '
+      + 'ondragstart="rosterDragStart(event,' + i + ')" '
+      + 'ondragover="rosterDragOver(event)" '
+      + 'ondrop="rosterDrop(event,' + i + ')" '
+      + 'style="display:grid;grid-template-columns:24px 38px 1fr 42px 42px 130px;align-items:center;gap:4px;'
+      + 'padding:9px 12px;border-left:3px solid ' + stripe + ';border-bottom:1px solid rgba(255,255,255,.025);'
+      + 'cursor:grab;transition:opacity .12s,background .1s;'
+      + (isBenched ? 'opacity:.35;' : '') + '" '
+      + 'onmouseover="this.style.background=\'rgba(255,255,255,.025)\'" '
+      + 'onmouseout="this.style.background=\'\'">';
 
-    // Drag handle
-    h += '<div style="color:var(--txt3);font-size:14px;cursor:grab;text-align:center;">\u2630</div>';
+    // Col 1: Drag handle
+    h += '<div style="color:var(--txt3);font-size:12px;cursor:grab;user-select:none;text-align:center;">\u2630</div>';
 
-    // Position chip
-    h += '<div><span style="font-size:9px;font-weight:800;background:var(--s3);color:var(--txt2);padding:3px 7px;border-radius:3px;display:inline-block;">' + p.pos + '</span></div>';
+    // Col 2: Position chip
+    h += '<div><span style="display:inline-block;font-size:9px;font-weight:800;background:var(--s3);color:var(--txt);padding:3px 7px;border-radius:4px;text-align:center;min-width:28px;">' + p.pos + '</span></div>';
 
-    // Player info (name + class + role)
-    var roleBadge = tier === 'starter' ? '<span style="font-size:8px;font-weight:800;color:var(--red);background:rgba(0,102,204,.1);padding:1px 5px;border-radius:2px;margin-left:6px;">START</span>'
-      : tier === 'rotation' ? '<span style="font-size:8px;font-weight:800;color:var(--blu);background:rgba(74,158,237,.1);padding:1px 5px;border-radius:2px;margin-left:6px;">ROT</span>'
-      : '';
-    h += '<div style="min-width:0;">'
-      + '<div style="display:flex;align-items:center;">'
-      + '<span style="font-size:13px;font-weight:700;color:' + (isBench0 ? 'var(--txt3)' : '#fff') + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + p.name + '</span>'
-      + roleBadge
-      + '</div>'
-      + '<div style="font-size:10px;color:var(--txt3);margin-top:1px;">'
-      + '<span style="color:' + clsCol + ';font-weight:700;">' + p.cls + '</span>'
-      + ' \u00b7 ' + ppg + ' ppg \u00b7 ' + rpg + ' rpg \u00b7 ' + apg + ' apg'
-      + '</div></div>';
+    // Col 3: Name + class + stats
+    h += '<div style="min-width:0;overflow:hidden;">'
+      + '<div style="display:flex;align-items:center;gap:5px;">'
+      + '<span style="font-size:13px;font-weight:700;color:' + (isBenched ? 'var(--txt3)' : '#fff') + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + p.name + '</span>'
+      + '<span style="font-size:8px;font-weight:800;color:' + clsCol + ';background:' + clsCol + '18;padding:1px 5px;border-radius:3px;flex-shrink:0;">' + p.cls + '</span></div>';
+    if (ppg !== null) {
+      h += '<div style="font-size:10px;color:var(--txt3);margin-top:1px;white-space:nowrap;">' + ppg + ' pts \u00b7 ' + rpg + ' reb \u00b7 ' + apg + ' ast</div>';
+    }
+    h += '</div>';
 
-    // OVR
-    h += '<div style="text-align:center;"><div style="font-family:monospace;font-size:16px;font-weight:900;color:var(--red);">' + p.ovr + '</div>'
-      + '<div style="font-size:8px;color:var(--txt3);">OVR</div></div>';
-
-    // POT
-    h += '<div style="text-align:center;"><div style="font-family:monospace;font-size:14px;font-weight:800;color:' + potCol + ';">' + pot + '</div>'
-      + '<div style="font-size:8px;color:var(--txt3);">POT</div></div>';
-
-    // Minutes display (number + mini bar)
+    // Col 4: OVR
     h += '<div style="text-align:center;">'
-      + '<div style="font-family:monospace;font-size:18px;font-weight:900;color:' + (tier === 'starter' ? '#fff' : tier === 'rotation' ? 'var(--txt2)' : 'var(--txt3)') + ';">' + p.mins + '</div>'
-      + '<div style="height:3px;background:var(--bdr2);border-radius:2px;margin-top:3px;overflow:hidden;">'
-      + '<div style="height:100%;width:' + fillPct + '%;background:' + stripeCol + ';border-radius:2px;"></div></div>'
-      + '<div style="font-size:8px;color:var(--txt3);margin-top:1px;">MIN</div></div>';
+      + '<div style="font-family:\'JetBrains Mono\',monospace;font-size:15px;font-weight:900;color:var(--red);">' + p.ovr + '</div></div>';
 
-    // Slider
-    h += '<div style="display:flex;align-items:center;padding:0 4px;">'
-      + '<input type="range" min="0" max="40" value="' + p.mins + '" data-idx="' + i + '" oninput="updateMinsSlider(this)" class="mins-slider ' + tier + '" style="width:100%;--fill:' + fillPct + '%;">'
+    // Col 5: POT
+    h += '<div style="text-align:center;">'
+      + '<div style="font-family:\'JetBrains Mono\',monospace;font-size:13px;font-weight:700;color:' + potCol + ';">' + pot + '</div></div>';
+
+    // Col 6: Slider with inline fill
+    h += '<div style="display:flex;align-items:center;gap:6px;">'
+      + '<input type="range" min="0" max="40" value="' + p.mins + '" data-idx="' + i + '" '
+      + 'oninput="updateMinsSlider(this)" '
+      + 'style="-webkit-appearance:none;appearance:none;width:100%;height:5px;border-radius:3px;outline:none;cursor:pointer;'
+      + 'background:' + sliderBg + ';">'
+      + '<span style="font-family:\'JetBrains Mono\',monospace;font-size:11px;font-weight:700;color:' + (p.mins > 0 ? '#fff' : 'var(--txt3)') + ';width:22px;text-align:right;flex-shrink:0;">' + p.mins + '</span>'
       + '</div>';
 
     h += '</div>';
   });
 
+  // Inject slider thumb styles if not already present
+  if (!document.getElementById('roster-thumb-style')) {
+    var style = document.createElement('style');
+    style.id = 'roster-thumb-style';
+    style.textContent = '#roster-content input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid var(--red);cursor:pointer;}'
+      + '#roster-content input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid var(--red);cursor:pointer;}';
+    document.head.appendChild(style);
+  }
+
   el.innerHTML = h;
 }
 
-function sectionHead(label, sub, col) {
-  return '<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 12px 6px;border-bottom:1px solid ' + col + ';">'
-    + '<div style="font-size:11px;font-weight:800;color:' + col + ';letter-spacing:1.5px;text-transform:uppercase;">' + label + '</div>'
-    + '<div style="font-size:10px;color:var(--txt3);">' + sub + '</div></div>';
+function sectHead(label, col) {
+  return '<div style="padding:10px 12px 5px;font-size:10px;font-weight:800;color:' + col + ';letter-spacing:1.5px;border-bottom:1px solid ' + col + ';">' + label + '</div>';
 }
 
 // ═══════════════════════════════════════════════════════════
-//  DRAG AND DROP
+//  DRAG AND DROP — auto-adjusts minutes on tier change
 // ═══════════════════════════════════════════════════════════
 
 export function rosterDragStart(e, idx) {
   _dragIdx = idx;
   e.dataTransfer.effectAllowed = 'move';
-  e.dataTransfer.setData('text/plain', idx.toString());
-  setTimeout(function() {
-    if (e.target && e.target.style) e.target.style.opacity = '0.3';
-  }, 0);
+  e.dataTransfer.setData('text/plain', '' + idx);
+  setTimeout(function() { if (e.target) e.target.style.opacity = '0.2'; }, 0);
 }
 window.rosterDragStart = rosterDragStart;
 
-export function rosterDragOver(e) {
-  e.preventDefault();
-  e.dataTransfer.dropEffect = 'move';
-}
+export function rosterDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }
 window.rosterDragOver = rosterDragOver;
 
 export function rosterDrop(e, dropIdx) {
   e.preventDefault();
   if (_dragIdx < 0 || _dragIdx === dropIdx) return;
   var t = G.teams[G.tid];
+
   var player = t.rost.splice(_dragIdx, 1)[0];
   t.rost.splice(dropIdx, 0, player);
   _dragIdx = -1;
+
+  // Auto-adjust minutes based on new tier
+  autoAdjustMinutes(t);
   saveState();
   renderRoster();
 }
 window.rosterDrop = rosterDrop;
 
+function autoAdjustMinutes(t) {
+  // Assign default minutes by position in list
+  // Starters: 28-36, Rotation: 10-16, Bench: 0
+  var targets = [];
+  t.rost.forEach(function(p, i) {
+    if (i < 5) targets.push({ p: p, target: 32 });
+    else if (i < 9) targets.push({ p: p, target: 12 });
+    else targets.push({ p: p, target: 0 });
+  });
+
+  // Only change minutes for players whose tier changed
+  targets.forEach(function(entry) {
+    var oldTier = entry.p.mins >= 25 ? 'starter' : entry.p.mins >= 5 ? 'rotation' : 'bench';
+    var newTier = entry.target >= 25 ? 'starter' : entry.target >= 5 ? 'rotation' : 'bench';
+    if (oldTier !== newTier) {
+      entry.p.mins = entry.target;
+    }
+  });
+
+  // Fix total to exactly 200
+  var total = t.rost.reduce(function(s, p) { return s + p.mins; }, 0);
+  var diff = 200 - total;
+  if (diff !== 0 && t.rost.length >= 5) {
+    // Distribute difference among starters
+    var perStarter = Math.floor(Math.abs(diff) / 5);
+    var remainder = Math.abs(diff) % 5;
+    for (var i = 0; i < 5; i++) {
+      var adj = perStarter + (i < remainder ? 1 : 0);
+      t.rost[i].mins = clamp(t.rost[i].mins + (diff > 0 ? adj : -adj), 0, 40);
+    }
+  }
+  // Final safety clamp
+  total = t.rost.reduce(function(s, p) { return s + p.mins; }, 0);
+  if (total !== 200 && t.rost[4]) {
+    t.rost[4].mins = clamp(t.rost[4].mins + (200 - total), 0, 40);
+  }
+}
+
 export function rosterMove(idx, dir) {
   var t = G.teams[G.tid];
   var newIdx = idx + dir;
   if (newIdx < 0 || newIdx >= t.rost.length) return;
-  var temp = t.rost[idx]; t.rost[idx] = t.rost[newIdx]; t.rost[newIdx] = temp;
-  saveState(); renderRoster();
+  var temp = t.rost[idx];
+  t.rost[idx] = t.rost[newIdx];
+  t.rost[newIdx] = temp;
+  autoAdjustMinutes(t);
+  saveState();
+  renderRoster();
 }
 window.rosterMove = rosterMove;
 
 // ═══════════════════════════════════════════════════════════
-//  SMART SLIDER — redistributes minutes by position
+//  SMART SLIDER — redistributes by position
 // ═══════════════════════════════════════════════════════════
 
 export function updateMinsSlider(input) {
@@ -189,49 +223,43 @@ export function updateMinsSlider(input) {
   var delta = val - oldVal;
   if (delta === 0) return;
 
-  // Find same-position players for smart redistribution
+  // Find same-position players
   var samePos = [];
   t.rost.forEach(function(pl, i) {
     if (i !== idx && pl.pos === p.pos) samePos.push(pl);
   });
 
   if (delta > 0) {
-    // Taking minutes — first from same position (lowest OVR first)
     var needed = delta;
-    samePos.sort(function(a, b) { return a.ovr - b.ovr; });
+    // Take from same-pos first (lowest mins first)
+    samePos.sort(function(a, b) { return a.mins - b.mins; });
     samePos.forEach(function(sp) {
       if (needed <= 0) return;
       var take = Math.min(sp.mins, needed);
       sp.mins -= take; needed -= take;
     });
-    // If still short, take from anyone (lowest mins first)
+    // Then from anyone
     if (needed > 0) {
-      var all = [];
-      t.rost.forEach(function(pl, i) { if (i !== idx && pl.mins > 0) all.push(pl); });
-      all.sort(function(a, b) { return a.mins - b.mins; });
-      all.forEach(function(pl) {
-        if (needed <= 0) return;
+      t.rost.forEach(function(pl, i) {
+        if (i === idx || needed <= 0 || pl.mins <= 0) return;
         var take = Math.min(pl.mins, needed);
         pl.mins -= take; needed -= take;
       });
     }
     val = oldVal + (delta - needed);
   } else {
-    // Giving minutes — to same position (highest OVR first)
     var freed = -delta;
+    // Give to same-pos (highest OVR first)
     samePos.sort(function(a, b) { return b.ovr - a.ovr; });
     samePos.forEach(function(sp) {
       if (freed <= 0) return;
       var give = Math.min(40 - sp.mins, freed);
       sp.mins += give; freed -= give;
     });
-    // If can't absorb, give to highest OVR anyone
+    // Then to anyone
     if (freed > 0) {
-      var all2 = [];
-      t.rost.forEach(function(pl, i) { if (i !== idx) all2.push(pl); });
-      all2.sort(function(a, b) { return b.ovr - a.ovr; });
-      all2.forEach(function(pl) {
-        if (freed <= 0) return;
+      t.rost.forEach(function(pl, i) {
+        if (i === idx || freed <= 0) return;
         var give = Math.min(40 - pl.mins, freed);
         pl.mins += give; freed -= give;
       });
@@ -241,7 +269,7 @@ export function updateMinsSlider(input) {
   p.mins = val;
   saveState();
   clearTimeout(window._rosterRenderTimeout);
-  window._rosterRenderTimeout = setTimeout(renderRoster, 250);
+  window._rosterRenderTimeout = setTimeout(renderRoster, 200);
 }
 window.updateMinsSlider = updateMinsSlider;
 
@@ -259,8 +287,9 @@ export function autoOptimizeRoster() {
   });
   var total = t.rost.reduce(function(a, b) { return a + b.mins; }, 0);
   var diff = 200 - total;
-  if (t.rost[4]) t.rost[4].mins = Math.max(1, t.rost[4].mins + diff);
-  saveState(); renderRoster();
+  if (t.rost[4]) t.rost[4].mins = clamp(t.rost[4].mins + diff, 0, 40);
+  saveState();
+  renderRoster();
 }
 window.autoOptimizeRoster = autoOptimizeRoster;
 
