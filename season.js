@@ -88,69 +88,151 @@ export function buildUniverse() {
 
 export function buildSchedules() {
   var tid = G.tid;
-  var t = G.teams[tid];
-  G.teams[tid].sched = [];
 
-  // Build tier-appropriate OOC pool
-  var myOvr = getTOvr(t);
-  var oocPool = [];
-  if (myOvr >= 85) {
-    oocPool = G.teams.filter(function(x) { return x.id !== tid && x.conf !== t.conf && getTOvr(x) >= 78; });
-  } else if (myOvr >= 75) {
-    oocPool = G.teams.filter(function(x) { return x.id !== tid && x.conf !== t.conf && getTOvr(x) >= 68; });
-  } else {
-    oocPool = G.teams.filter(function(x) { return x.id !== tid && x.conf !== t.conf; });
-  }
-  oocPool.sort(function() { return 0.5 - Math.random(); });
-  var picks = oocPool.slice(0, 10);
-  while (picks.length < 10) {
-    var extra;
-    do { extra = ri(0, G.teams.length - 1); }
-    while (extra === tid || picks.some(function(p) { return p.id === extra; }));
-    picks.push(G.teams[extra]);
-  }
-  for (var w = 0; w < 10; w++) {
-    G.teams[tid].sched.push({
-      opp: picks[w].id, home: w % 2 === 0,
-      conf: false, played: false, uScore: 0, oScore: 0
-    });
-  }
-  // Override with any manual NC picks
-  SetupState.NC_PICKS.forEach(function(id, i) {
-    G.teams[tid].sched[i] = {
-      opp: id, home: i % 2 === 0,
-      conf: false, played: false, uScore: 0, oScore: 0
-    };
+  // Clear all schedules
+  G.teams.forEach(function(tm) { tm.sched = []; for (var i = 0; i < 30; i++) tm.sched.push(null); });
+
+  // ── STEP 1: Conference games (weeks 10-29) ──
+  // Group teams by conference
+  var confs = {};
+  G.teams.forEach(function(tm) {
+    if (!confs[tm.conf]) confs[tm.conf] = [];
+    confs[tm.conf].push(tm.id);
   });
-  // Conference games 10–29
-  var conf = G.teams.filter(function(x) { return x.conf === t.conf && x.id !== tid; });
-  for (var w2 = 0; w2 < 20; w2++) {
-    G.teams[tid].sched.push({
-      opp: conf[w2 % conf.length].id, home: w2 % 2 === 0,
-      conf: true, played: false, uScore: 0, oScore: 0
+
+  Object.keys(confs).forEach(function(conf) {
+    var ids = confs[conf];
+    var matchups = [];
+    // Round-robin: every team plays every other team once
+    for (var a = 0; a < ids.length; a++) {
+      for (var b = a + 1; b < ids.length; b++) {
+        matchups.push({ h: ids[a], a: ids[b] });
+      }
+    }
+    // Shuffle matchups
+    for (var s = matchups.length - 1; s > 0; s--) {
+      var k = ri(0, s); var tmp = matchups[s]; matchups[s] = matchups[k]; matchups[k] = tmp;
+    }
+    // Assign to weeks 10-29 for each team
+    matchups.forEach(function(m) {
+      // Find a week 10-29 where BOTH teams are free
+      for (var w = 10; w < 30; w++) {
+        if (!G.teams[m.h].sched[w] && !G.teams[m.a].sched[w]) {
+          var homeFlip = ri(0, 1) === 0;
+          var hid = homeFlip ? m.h : m.a;
+          var aid = homeFlip ? m.a : m.h;
+          G.teams[hid].sched[w] = { opp: aid, home: true, conf: true, played: false, uScore: 0, oScore: 0 };
+          G.teams[aid].sched[w] = { opp: hid, home: false, conf: true, played: false, uScore: 0, oScore: 0 };
+          return;
+        }
+      }
+      // If no slot found (big conference overflow), double up: find any open slot
+      for (var w2 = 10; w2 < 30; w2++) {
+        if (!G.teams[m.h].sched[w2]) {
+          G.teams[m.h].sched[w2] = { opp: m.a, home: true, conf: true, played: false, uScore: 0, oScore: 0 };
+          break;
+        }
+      }
+      for (var w3 = 10; w3 < 30; w3++) {
+        if (!G.teams[m.a].sched[w3]) {
+          G.teams[m.a].sched[w3] = { opp: m.h, home: false, conf: true, played: false, uScore: 0, oScore: 0 };
+          break;
+        }
+      }
     });
-  }
-  // CPU teams schedules
+  });
+
+  // ── STEP 2: CPU OOC games (weeks 0-9) ──
+  // Pair CPU teams across conferences
+  var cpuNeedOOC = [];
   G.teams.forEach(function(tm) {
     if (tm.id === tid) return;
-    tm.sched = [];
-    var tconf = G.teams.filter(function(x) { return x.conf === tm.conf && x.id !== tm.id; });
-    for (var w3 = 0; w3 < 10; w3++) {
-      var opp;
-      do { opp = ri(0, G.teams.length - 1); } while (opp === tm.id);
-      tm.sched.push({
-        opp: opp, home: ri(0, 1) === 1,
-        conf: false, played: false, uScore: 0, oScore: 0
-      });
-    }
-    for (var w4 = 0; w4 < 20; w4++) {
-      tm.sched.push({
-        opp: tconf[w4 % tconf.length].id, home: w4 % 2 === 0,
-        conf: true, played: false, uScore: 0, oScore: 0
-      });
+    for (var w = 0; w < 10; w++) {
+      if (!tm.sched[w]) cpuNeedOOC.push({ tid: tm.id, week: w });
     }
   });
+  // Shuffle
+  for (var s2 = cpuNeedOOC.length - 1; s2 > 0; s2--) {
+    var k2 = ri(0, s2); var tmp2 = cpuNeedOOC[s2]; cpuNeedOOC[s2] = cpuNeedOOC[k2]; cpuNeedOOC[k2] = tmp2;
+  }
+  // Pair them up
+  var paired = new Set();
+  cpuNeedOOC.forEach(function(slot) {
+    if (paired.has(slot.tid + '-' + slot.week)) return;
+    if (G.teams[slot.tid].sched[slot.week]) return;
+    // Find a partner: different conference, also free this week
+    for (var j = 0; j < cpuNeedOOC.length; j++) {
+      var other = cpuNeedOOC[j];
+      if (other.tid === slot.tid) continue;
+      if (other.week !== slot.week) continue;
+      if (paired.has(other.tid + '-' + other.week)) continue;
+      if (G.teams[other.tid].sched[slot.week]) continue;
+      if (G.teams[slot.tid].conf === G.teams[other.tid].conf) continue;
+      // Pair them
+      G.teams[slot.tid].sched[slot.week] = { opp: other.tid, home: true, conf: false, played: false, uScore: 0, oScore: 0 };
+      G.teams[other.tid].sched[slot.week] = { opp: slot.tid, home: false, conf: false, played: false, uScore: 0, oScore: 0 };
+      paired.add(slot.tid + '-' + slot.week);
+      paired.add(other.tid + '-' + other.week);
+      break;
+    }
+  });
+
+  // Fill any remaining empty CPU OOC slots with cross-conf opponents
+  G.teams.forEach(function(tm) {
+    if (tm.id === tid) return;
+    for (var w = 0; w < 10; w++) {
+      if (tm.sched[w]) continue;
+      // Find any team from different conf with an open slot this week
+      for (var j = 0; j < G.teams.length; j++) {
+        var other = G.teams[j];
+        if (other.id === tm.id || other.id === tid || other.conf === tm.conf) continue;
+        if (other.sched[w]) continue;
+        tm.sched[w] = { opp: other.id, home: true, conf: false, played: false, uScore: 0, oScore: 0 };
+        other.sched[w] = { opp: tm.id, home: false, conf: false, played: false, uScore: 0, oScore: 0 };
+        break;
+      }
+      // Last resort: unmatched bye (null stays)
+    }
+  });
+
+  // ── STEP 3: User OOC slots (weeks 0-9) left blank for manual selection ──
+  // User's weeks 0-9 are open — filled by startDynasty() or setupUserOOC()
+
+  // Fill any empty conf weeks with bye placeholder
+  G.teams.forEach(function(tm) {
+    for (var w = 0; w < 30; w++) {
+      if (!tm.sched[w]) tm.sched[w] = null; // bye week
+    }
+  });
+
   G.gi = 0;
+}
+
+// ── Assign user's OOC picks into the master schedule as matched pairs ──
+export function setupUserOOC() {
+  var tid = G.tid;
+  var picks = SetupState.NC_PICKS || [];
+  var assigned = 0;
+  picks.forEach(function(oppId) {
+    // Find a week 0-9 where BOTH user and opponent are free
+    for (var w = 0; w < 10; w++) {
+      if (G.teams[tid].sched[w] || G.teams[oppId].sched[w]) continue;
+      var home = assigned % 2 === 0;
+      G.teams[tid].sched[w] = { opp: oppId, home: home, conf: false, played: false, uScore: 0, oScore: 0 };
+      G.teams[oppId].sched[w] = { opp: tid, home: !home, conf: false, played: false, uScore: 0, oScore: 0 };
+      assigned++;
+      return;
+    }
+    // If no shared free week, find any free user week and force it
+    for (var w2 = 0; w2 < 10; w2++) {
+      if (!G.teams[tid].sched[w2]) {
+        var home2 = assigned % 2 === 0;
+        G.teams[tid].sched[w2] = { opp: oppId, home: home2, conf: false, played: false, uScore: 0, oScore: 0 };
+        assigned++;
+        return;
+      }
+    }
+  });
 }
 
 export function getAutoOOC() {
@@ -224,25 +306,49 @@ export function genRecruits() {
 // ═══════════════════════════════════════════════════════════
 
 export function simCPUWeek() {
+  var simmed = new Set(); // track "teamA-teamB" pairs already simmed this week
   G.teams.forEach(function(t) {
     if (t.id === G.tid) return;
     var s = t.sched[G.gi];
     if (!s || s.played || s.opp === undefined || s.opp === null) return;
     var opp = G.teams[s.opp];
-    if (!opp) return;
-    if (opp.id === G.tid) return;
-    var res = simGame(t, opp, false);
-    var s1 = res.homeScore, s2 = res.awayScore;
-    if (s1 > s2) {
-      t.wins++; t.pts += 45; opp.loss++; opp.pts -= 15;
-      if (s.conf) { t.cWins++; opp.cLoss++; }
+    if (!opp || opp.id === G.tid) return;
+
+    // Check if we already simmed this pair (matched game)
+    var pairKey = Math.min(t.id, opp.id) + '-' + Math.max(t.id, opp.id);
+    if (simmed.has(pairKey)) { s.played = true; return; }
+    simmed.add(pairKey);
+
+    var homeTeam = s.home ? t : opp;
+    var awayTeam = s.home ? opp : t;
+    var res = simGame(homeTeam, awayTeam, false);
+    var hScore = res.homeScore, aScore = res.awayScore;
+
+    // Record results for both teams
+    if (hScore > aScore) {
+      homeTeam.wins++; homeTeam.pts += 45; awayTeam.loss++; awayTeam.pts -= 15;
+      if (s.conf) { homeTeam.cWins++; awayTeam.cLoss++; }
     } else {
-      opp.wins++; opp.pts += 45; t.loss++; t.pts -= 15;
-      if (s.conf) { opp.cWins++; t.cLoss++; }
+      awayTeam.wins++; awayTeam.pts += 45; homeTeam.loss++; homeTeam.pts -= 15;
+      if (s.conf) { awayTeam.cWins++; homeTeam.cLoss++; }
     }
+
+    // Mark both sides as played
     s.played = true;
-    t.ts.pts += s1; t.ts.opp += s2; t.ts.games++;
-    distributeStats(t, s1);
+    s.uScore = s.home ? hScore : aScore;
+    s.oScore = s.home ? aScore : hScore;
+    var oppSched = opp.sched[G.gi];
+    if (oppSched && oppSched.opp === t.id) {
+      oppSched.played = true;
+      oppSched.uScore = oppSched.home ? hScore : aScore;
+      oppSched.oScore = oppSched.home ? aScore : hScore;
+    }
+
+    // Stats
+    homeTeam.ts.pts += hScore; homeTeam.ts.opp += aScore; homeTeam.ts.games++;
+    awayTeam.ts.pts += aScore; awayTeam.ts.opp += hScore; awayTeam.ts.games++;
+    distributeStats(homeTeam, hScore);
+    distributeStats(awayTeam, aScore);
   });
   // CPU recruit drift
   G.recruits.forEach(function(r) {
@@ -619,6 +725,13 @@ export function doOffseason() {
   });
 
   buildSchedules();
+  // Auto-generate user's OOC opponents for new season
+  var myOvr = getTOvr(G.teams[G.tid]);
+  var oocPool = G.teams.filter(function(x) { return x.id !== G.tid && x.conf !== G.teams[G.tid].conf; });
+  oocPool.sort(function() { return 0.5 - Math.random(); });
+  SetupState.NC_PICKS = oocPool.slice(0, 10).map(function(x) { return x.id; });
+  setupUserOOC();
+
   genRecruits();
   addLog('ev', 0, 'Season ' + G.yr + ' begins.');
   toast('Season ' + G.yr + ' starts now!');

@@ -6,7 +6,7 @@
 import { DIFF_DESC, calcSchoolPrestige } from '../constants.js';
 import { ri, ge, txt, getTier, getTOvr, fR } from '../utils.js';
 import { G, SetupState, loadState, deleteSave, saveState } from '../state.js';
-import { buildSchedules, genRecruits, buildUniverse } from '../season.js';
+import { buildSchedules, genRecruits, buildUniverse, setupUserOOC } from '../season.js';
 
 var _ext = { addLog: null, updateAll: null };
 export function registerSetupCallbacks(cb) {
@@ -332,9 +332,7 @@ window.swapNC = swapNC;
 
 export function startDynasty() {
   if (SetupState.NC_PICKS.length < 10) autoGenNC();
-  SetupState.NC_PICKS.forEach(function(id, i) {
-    G.teams[G.tid].sched[i] = { opp: id, home: i % 2 === 0, conf: false, played: false, uScore: 0, oScore: 0 };
-  });
+  setupUserOOC();
   genRecruits();
   ge('setup').style.display = 'none';
   addLog('ev', 0, 'Coach ' + G.coach.lastName + ' takes over at <b>' + G.teams[G.tid].name + '</b>. Season ' + G.yr + ' begins.');
