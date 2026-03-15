@@ -7,7 +7,7 @@ import { getTOvr } from './utils.js';
 import { RECRUIT_STATE_POOL, calcSchoolPrestige, COACH_FN, COACH_LN } from './constants.js';
 
 // ── Current save version — bump this when adding new fields ──
-var SAVE_VERSION = 4;
+var SAVE_VERSION = 5;
 var SAVE_KEY = 'hoops_os_v3';
 
 // ── Main Game State ──
@@ -130,6 +130,15 @@ var MIGRATIONS = {
     Object.keys(cd).forEach(function(k) {
       if (s.coach && s.coach[k] === undefined) s.coach[k] = cd[k];
     });
+    return s;
+  },
+  // v4→v5: Added hot seat, firing, expectations failsafe
+  5: function(s) {
+    if (s.coach && s.coach.hotSeat === undefined) s.coach.hotSeat = false;
+    if (!s.expectations) s.expectations = { low: 12, high: 18, danger: 7, base: 15 };
+    if (!s.seasonAchievements) s.seasonAchievements = { confTitleThisYear:false, madeNCAA:false, sweet16:false, finalFour:false, champGame:false, natChamp:false };
+    if (typeof s.skillPointsEarned !== 'number') s.skillPointsEarned = 0;
+    if (typeof s.skillPointsToSpend !== 'number') s.skillPointsToSpend = 0;
     return s;
   }
 };

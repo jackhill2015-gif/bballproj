@@ -399,6 +399,8 @@ export function advanceWeek() {
 // ═══════════════════════════════════════════════════════════
 
 export function launchSim(watch) {
+  if (G.phase !== 'reg') return; // Only regular season games
+  if (G.gi >= 30) return; // Past end of schedule
   var t = G.teams[G.tid];
   var game = t.sched[G.gi];
   if (!game) { toast('No game scheduled \u2014 game ' + G.gi); return; }
@@ -622,34 +624,44 @@ export function endSeason() {
   // ── HOT SEAT / FIRING CHECK ──
   var exp = G.expectations;
   var fired = false;
-  if (exp) {
-    if (t.wins < exp.danger) {
-      // Below danger zone
-      if (G.coach.hotSeat) {
-        // Two bad years in a row = FIRED
+  var totalGames = t.wins + t.loss;
+  var winPct = totalGames > 0 ? t.wins / totalGames : 0.5;
+
+  // Fallback: if no expectations, generate them now based on current data
+  if (!exp) {
+    var confT = G.teams.filter(function(x) { return x.conf === t.conf; });
+    var cAvg = confT.reduce(function(s, x) { return s + (x.baseOvr || 70); }, 0) / (confT.length || 1);
+    exp = calcExpectations(t.baseOvr || 70, cAvg);
+  }
+
+  if (t.wins < exp.danger) {
+    if (G.coach.hotSeat) {
+      fired = true;
+      G.coach.hotSeat = false;
+    } else {
+      G.coach.hotSeat = true;
+      addLog('ev', G.gi, '<b>\ud83d\udea8 HOT SEAT!</b> The administration is seriously concerned. Another bad season and you\'re gone.');
+    }
+  } else if (t.wins < exp.low) {
+    if (G.coach.hotSeat) {
+      if (Math.random() < 0.4) {
         fired = true;
-        G.coach.hotSeat = false;
       } else {
-        // First bad year = hot seat warning
-        G.coach.hotSeat = true;
-        addLog('ev', G.gi, '<b>HOT SEAT!</b> The administration is concerned about the program\'s direction.');
-      }
-    } else if (t.wins < exp.low) {
-      // Below expectations but not danger
-      if (G.coach.hotSeat) {
-        // Still underperforming while on hot seat
-        if (Math.random() < 0.4) {
-          fired = true;
-        } else {
-          addLog('ev', G.gi, 'The AD is giving you one more chance. Don\'t waste it.');
-        }
-      } else {
-        G.coach.hotSeat = true;
-        addLog('ev', G.gi, 'Disappointing season. The AD expects improvement next year.');
+        addLog('ev', G.gi, '\u26a0\ufe0f The AD is giving you one more chance. Don\'t waste it.');
       }
     } else {
-      // Met or exceeded expectations — clear hot seat
-      G.coach.hotSeat = false;
+      G.coach.hotSeat = true;
+      addLog('ev', G.gi, 'Disappointing season. The AD expects improvement next year.');
+    }
+  } else {
+    G.coach.hotSeat = false;
+  }
+
+  // Additional failsafe: 4+ years of losing = fired regardless
+  if (!fired && G.coach.tenure >= 4 && G.coach.careerWins < G.coach.careerLoss) {
+    if (winPct < 0.40) {
+      fired = true;
+      addLog('ev', G.gi, 'After ' + G.coach.tenure + ' years of losing, the administration has seen enough.');
     }
   }
 
