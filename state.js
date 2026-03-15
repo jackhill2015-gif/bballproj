@@ -159,7 +159,16 @@ export function loadState() {
         G.teams[i].pts = st.pts || G.teams[i].pts;
         G.teams[i].ts = st.ts || G.teams[i].ts;
         G.teams[i].sched = st.sched || [];
-        if (i === G.tid && st.rost) G.teams[i].rost = st.rost;
+        if (i === G.tid && st.rost) {
+          G.teams[i].rost = st.rost;
+          // Backward compat: ensure all players have pot
+          G.teams[i].rost.forEach(function(p) {
+            if (typeof p.pot !== 'number') {
+              var potGap = p.cls === 'FR' ? 12 : p.cls === 'SO' ? 8 : p.cls === 'JR' ? 4 : 1;
+              p.pot = Math.min(99, p.ovr + potGap);
+            }
+          });
+        }
       });
     }
 

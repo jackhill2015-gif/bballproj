@@ -29,6 +29,11 @@ export function genPlayer(base, pos, cls) {
     p[a] = clamp(p[a], 38, 99);
   });
   p.ovr = getOvr(p);
+
+  // Potential — higher ceiling for younger players
+  var potGap = cls === 'FR' ? ri(5, 18) : cls === 'SO' ? ri(3, 12) : cls === 'JR' ? ri(1, 7) : ri(0, 3);
+  p.pot = clamp(p.ovr + potGap, p.ovr, 99);
+
   return p;
 }
 
