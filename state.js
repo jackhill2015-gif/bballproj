@@ -5,6 +5,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { getTOvr } from './utils.js';
+import { RECRUIT_STATE_POOL } from './constants.js';
 
 // ── Main Game State ──────────────────────────────────────
 export const G = {
@@ -145,6 +146,7 @@ export function loadState() {
     G.recruits.forEach(function(r) {
       if (typeof r.points !== 'number') r.points = 0;
       if (typeof r.status !== 'string') r.status = r.signed >= 0 ? (r.signed === G.tid ? 'committed' : 'gone') : 'open';
+      if (!r.homeState) r.homeState = RECRUIT_STATE_POOL[Math.floor(Math.random() * RECRUIT_STATE_POOL.length)];
     });
 
     if (saved.teams) {

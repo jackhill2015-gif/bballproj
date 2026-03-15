@@ -4,7 +4,7 @@
 //  week advancement, game launching, auto-sim, offseason.
 // ═══════════════════════════════════════════════════════════
 
-import { ALL_TEAMS, POS, CLS } from './constants.js';
+import { ALL_TEAMS, POS, CLS, RECRUIT_STATE_POOL } from './constants.js';
 import {
   ri, clamp, getTOvr, fixMins, freshS, getTeamStyle, getOvr, ge, txt
 } from './utils.js';
@@ -160,6 +160,7 @@ export function genRecruits() {
     var star = ri(1, 5);
     var r = genPlayer(50 + star * 7 + ri(-4, 4), POS[ri(0, 4)], 'FR');
     r.id = i; r.stars = star; r.interest = ri(0, 30); r.signed = -1; r.points = 0; r.status = 'open';
+    r.homeState = RECRUIT_STATE_POOL[ri(0, RECRUIT_STATE_POOL.length - 1)];
     G.recruits.push(r);
   }
   G.recruits.sort(function(a, b) { return b.ovr - a.ovr; });

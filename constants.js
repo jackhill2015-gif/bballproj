@@ -311,3 +311,171 @@ export const COM = {
     function(t,n){return t+" on an absolute tear. "+n+"-0 run changes everything.";},
   ]
 };
+
+// ═══════════════════════════════════════════════════════════
+//  GEOGRAPHY — Team States, Regions, Recruit Talent Pools
+// ═══════════════════════════════════════════════════════════
+
+// ── 6 Recruiting Regions ─────────────────────────────────
+export const REGIONS = {
+  'Northeast':    ['CT','MA','ME','NH','NJ','NY','PA','RI','VT'],
+  'Southeast':    ['AL','FL','GA','KY','MS','NC','SC','TN','VA','WV'],
+  'Midwest':      ['IA','IL','IN','KS','MI','MN','MO','ND','NE','OH','SD','WI'],
+  'South':        ['AR','LA','OK','TX'],
+  'West':         ['AK','AZ','CA','CO','HI','ID','MT','NM','NV','OR','UT','WA','WY'],
+  'Mid-Atlantic': ['DC','DE','MD']
+};
+
+// ── Reverse lookup: state → region ───────────────────────
+export const STATE_TO_REGION = {};
+(function() {
+  Object.keys(REGIONS).forEach(function(reg) {
+    REGIONS[reg].forEach(function(st) { STATE_TO_REGION[st] = reg; });
+  });
+})();
+
+// ── Team → State mapping (by team name) ──────────────────
+export const TEAM_STATES = {
+  // ACC
+  "Duke":"NC","UNC":"NC","Virginia":"VA","Syracuse":"NY","Miami FL":"FL","Florida St":"FL",
+  "Louisville":"KY","NC State":"NC","Clemson":"SC","Wake Forest":"NC","Pitt":"PA",
+  "Georgia Tech":"GA","Notre Dame":"IN","Boston Coll":"MA","Virginia Tech":"VA",
+  "Stanford":"CA","Cal":"CA",
+  // Big 12
+  "Kansas":"KS","Houston":"TX","Baylor":"TX","Arizona":"AZ","Iowa State":"IA","BYU":"UT",
+  "Texas Tech":"TX","TCU":"TX","Utah":"UT","Colorado":"CO","K-State":"KS","Cincinnati":"OH",
+  "UCF":"FL","Oklahoma St":"OK","West Virginia":"WV","Arizona St":"AZ",
+  // Big Ten
+  "Purdue":"IN","Illinois":"IL","Wisconsin":"WI","Ohio State":"OH","Michigan St":"MI",
+  "Michigan":"MI","Indiana":"IN","Maryland":"MD","Iowa":"IA","Northwestern":"IL",
+  "Penn State":"PA","Rutgers":"NJ","Nebraska":"NE","Minnesota":"MN","UCLA":"CA","USC":"CA",
+  "Oregon":"OR","Washington":"WA",
+  // SEC
+  "Kentucky":"KY","Tennessee":"TN","Alabama":"AL","Auburn":"AL","Florida":"FL",
+  "Texas A&M":"TX","Arkansas":"AR","Texas":"TX","Oklahoma":"OK","LSU":"LA","Missouri":"MO",
+  "Georgia":"GA","Ole Miss":"MS","Miss State":"MS","Vanderbilt":"TN","South Carolina":"SC",
+  // American
+  "Memphis":"TN","Tulsa":"OK","SMU":"TX","East Carolina":"NC","South Florida":"FL",
+  "Temple":"PA","Wichita St":"KS","UAB":"AL","North Texas":"TX","UTSA":"TX","Rice":"TX",
+  "Florida Atl":"FL",
+  // MW
+  "San Diego St":"CA","Nevada":"NV","New Mexico":"NM","UNLV":"NV","Utah St":"UT",
+  "Boise St":"ID","Colorado St":"CO","Air Force":"CO","Wyoming":"WY","Fresno St":"CA",
+  "San Jose St":"CA","Hawaii":"HI",
+  // WCC
+  "Gonzaga":"WA","Saint Mary's":"CA","San Francisco":"CA","Pacific":"CA","Pepperdine":"CA",
+  "Santa Clara":"CA","Portland":"OR","Loyola Mary":"CA","LMU":"CA","San Diego":"CA",
+  // A-10
+  "Dayton":"OH","VCU":"VA","Davidson":"NC","Saint Louis":"MO","Rhode Island":"RI",
+  "Richmond":"VA","George Mason":"VA","Fordham":"NY","La Salle":"PA","Duquesne":"PA",
+  "GWU":"DC","Massachusetts":"MA","St Bonaventure":"NY","George Washington":"DC",
+  // MVC
+  "Drake":"IA","Loyola Chi":"IL","Bradley":"IL","Illinois St":"IL","Indiana St":"IN",
+  "Missouri St":"MO","S Illinois":"IL","Evansville":"IN","UNI":"IA","Belmont":"TN",
+  // CUSA
+  "Liberty":"VA","Jacksonville St":"AL","New Mexico St":"NM","Sam Houston":"TX",
+  "Western Ky":"KY","UTEP":"TX","Louisiana Tech":"LA","Middle Tenn":"TN","FIU":"FL",
+  "Charlotte":"NC","Old Dominion":"VA","Southern Miss":"MS",
+  // Sun Belt
+  "Troy":"AL","Georgia Southern":"GA","Louisiana":"LA","App State":"NC","South Alabama":"AL",
+  "Arkansas St":"AR","Texas St":"TX","ULM":"LA","Georgia St":"GA","Marshall":"WV",
+  "Southern Ala":"AL","James Madison":"VA",
+  // WAC
+  "Utah Valley":"UT","Grand Canyon":"AZ","Cal Baptist":"CA","Abilene Chr":"TX",
+  "Tarleton St":"TX","Southern Utah":"UT","Seattle U":"WA","UMKC":"MO","Chicago St":"IL",
+  "Lamar":"TX",
+  // Big East
+  "UConn":"CT","Marquette":"WI","Creighton":"NE","Providence":"RI","Villanova":"PA",
+  "Xavier":"OH","Seton Hall":"NJ","Georgetown":"DC","DePaul":"IL","Butler":"IN",
+  "St John's":"NY",
+  // MAC
+  "Toledo":"OH","Akron":"OH","Ball State":"IN","Ohio":"OH","Miami OH":"OH","Buffalo":"NY",
+  "Kent State":"OH","W Michigan":"MI","E Michigan":"MI","Bowling Green":"OH",
+  "N Illinois":"IL","Cent Michigan":"MI",
+  // Horizon
+  "Cleveland St":"OH","Wright State":"OH","Detroit Mercy":"MI","Oakland":"MI",
+  "Youngstown St":"OH","Milwaukee":"WI","IUPUI":"IN","Green Bay":"WI","N Kentucky":"KY",
+  "Purdue Fort Wayne":"IN",
+  // MAAC
+  "Iona":"NY","Rider":"NJ","Manhattan":"NY","Niagara":"NY","Quinnipiac":"CT",
+  "Fairfield":"CT","Canisius":"NY","Marist":"NY","Siena":"NY","St Peter's":"NJ",
+  // Southland
+  "Stephen F Austin":"TX","SE Louisiana":"LA","McNeese":"LA","Nicholls":"LA",
+  "Houston Baptist":"TX","Incarnate Word":"TX","Northwestern St":"LA","New Orleans":"LA",
+  // Big South
+  "UNC Asheville":"NC","High Point":"NC","Longwood":"VA","Charleston So":"SC",
+  "Presbyterian":"SC","Campbell":"NC","Winthrop":"SC","Gardner-Webb":"NC","USC Upstate":"SC",
+  // CAA
+  "Towson":"MD","Hofstra":"NY","Drexel":"PA","UNCW":"NC","Delaware":"DE","Elon":"NC",
+  "William & Mary":"VA","Charleston":"SC","Stony Brook":"NY","Hampton":"VA",
+  // OVC
+  "Bellarmine":"KY","Tennessee Tech":"TN","E Kentucky":"KY","E Tennessee":"TN",
+  "Morehead St":"KY","Austin Peay":"TN","SIUE":"IL","Tennessee Martin":"TN",
+  // Patriot
+  "Colgate":"NY","Lehigh":"PA","American":"DC","Navy":"MD","Army":"NY","Holy Cross":"MA",
+  "Bucknell":"PA","Lafayette":"PA","Boston U":"MA",
+  // Summit
+  "South Dakota St":"SD","South Dakota":"SD","North Dakota St":"ND","North Dakota":"ND",
+  "Denver":"CO","Oral Roberts":"OK","W Illinois":"IL","Kansas City":"MO",
+  // SWAC
+  "Grambling":"LA","Southern U":"LA","Prairie View":"TX","Texas Southern":"TX",
+  "Jackson St":"MS","Alabama A&M":"AL","Alabama St":"AL","Bethune-Cookman":"FL",
+  "Florida A&M":"FL","Alcorn St":"MS",
+  // MEAC
+  "Howard":"DC","Morgan St":"MD","Delaware St":"DE","Coppin St":"MD","NC A&T":"NC",
+  "Norfolk St":"VA","SC State":"SC","Md Eastern Shore":"MD",
+  // America East
+  "Vermont":"VT","UMBC":"MD","Albany":"NY","Hartford":"CT","Binghamton":"NY","Maine":"ME",
+  "New Hampshire":"NH",
+  // NEC
+  "Merrimack":"MA","Sacred Heart":"CT","LIU":"NY","Wagner":"NY","Fairleigh Dick":"NJ",
+  "St Francis PA":"PA","Central Conn":"CT","Bryant":"RI","CCSU":"CT","Mercer":"GA",
+  // SoCon
+  "Furman":"SC","Chattanooga":"TN","ETSU":"TN","Western Carolina":"NC","VMI":"VA",
+  "The Citadel":"SC","UNC Greensboro":"NC","Samford":"AL","Wofford":"SC",
+  // Ivy
+  "Yale":"CT","Princeton":"NJ","Penn":"PA","Harvard":"MA","Columbia":"NY","Cornell":"NY",
+  "Dartmouth":"NH","Brown":"RI",
+  // Big West
+  "UC Irvine":"CA","UCSB":"CA","Long Beach St":"CA","UC San Diego":"CA","Cal Poly":"CA",
+  "UC Davis":"CA","UC Riverside":"CA","CSU Fullerton":"CA","CSU Bakersfield":"CA",
+  "CSU Northridge":"CA",
+  // ASUN
+  "Kennesaw St":"GA","Jacksonville":"FL","Lipscomb":"TN","North Florida":"FL","Queens":"NC",
+  "Eastern Ky":"KY","Florida Gulf Coast":"FL","Central Arkansas":"AR"
+};
+
+// ── Recruit Home State Weighted Pool ─────────────────────
+// Each state appears N times based on basketball talent output.
+// Total pool entries determine probability of a recruit being from that state.
+export const RECRUIT_STATE_POOL = (function() {
+  var weights = {
+    // Tier 1 — Basketball factories (weight 10)
+    CA:10,TX:10,FL:10,NY:10,IL:10,GA:10,NC:10,OH:10,
+    // Tier 2 — Strong talent (weight 6)
+    IN:6,MI:6,PA:6,VA:6,NJ:6,TN:6,MD:6,LA:6,AL:6,SC:6,
+    // Tier 3 — Moderate (weight 3)
+    KY:3,MO:3,CT:3,MA:3,WI:3,MN:3,MS:3,AR:3,AZ:3,CO:3,WA:3,OK:3,
+    // Tier 4 — Light (weight 1)
+    IA:1,KS:1,NE:1,NM:1,NV:1,OR:1,UT:1,WV:1,DC:1,DE:1,HI:1,ID:1,
+    ME:1,MT:1,ND:1,NH:1,RI:1,SD:1,VT:1,WY:1,AK:1
+  };
+  var pool = [];
+  Object.keys(weights).forEach(function(st) {
+    for (var i = 0; i < weights[st]; i++) pool.push(st);
+  });
+  return pool;
+})();
+
+// ── State Abbreviation → Full Name (for display) ─────────
+export const STATE_NAMES = {
+  AL:"Alabama",AK:"Alaska",AZ:"Arizona",AR:"Arkansas",CA:"California",CO:"Colorado",
+  CT:"Connecticut",DE:"Delaware",DC:"Washington DC",FL:"Florida",GA:"Georgia",HI:"Hawaii",
+  ID:"Idaho",IL:"Illinois",IN:"Indiana",IA:"Iowa",KS:"Kansas",KY:"Kentucky",LA:"Louisiana",
+  ME:"Maine",MD:"Maryland",MA:"Massachusetts",MI:"Michigan",MN:"Minnesota",MS:"Mississippi",
+  MO:"Missouri",MT:"Montana",NE:"Nebraska",NV:"Nevada",NH:"New Hampshire",NJ:"New Jersey",
+  NM:"New Mexico",NY:"New York",NC:"North Carolina",ND:"North Dakota",OH:"Ohio",OK:"Oklahoma",
+  OR:"Oregon",PA:"Pennsylvania",RI:"Rhode Island",SC:"South Carolina",SD:"South Dakota",
+  TN:"Tennessee",TX:"Texas",UT:"Utah",VT:"Vermont",VA:"Virginia",WA:"Washington",
+  WV:"West Virginia",WI:"Wisconsin",WY:"Wyoming"
+};
