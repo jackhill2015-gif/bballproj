@@ -182,6 +182,7 @@ function advanceConfRoundExceptUser(conf) {
   if (!ct || ct.done) return;
   var last = ct.rounds[ct.rounds.length - 1];
   if (!last) return;
+  // Sim only CPU games in the current round of user's conference
   last.forEach(function(m) {
     if (m.winner !== null) return;
     if (m.t1.id === G.tid || m.t2.id === G.tid) return;
@@ -189,16 +190,10 @@ function advanceConfRoundExceptUser(conf) {
     m.s1 = res.homeScore; m.s2 = res.awayScore;
     m.winner = res.homeScore > res.awayScore ? m.t1 : m.t2;
   });
-  Object.keys(G.confTourneys).forEach(function(c) {
-    if (c === conf) return;
-    simConfFull(c);
-  });
+  // If all games in this round are done, build next round
   var allDone = last.every(function(m) { return m.winner !== null; });
   if (allDone) {
     buildNextConfRound(conf);
-    if (G.confTourneys[conf].done) {
-      if (allConfDone() && !G.bracket.length) buildNCAA();
-    }
   }
 }
 
@@ -525,6 +520,23 @@ export function resolveTournamentGame() {
       addLog('l', G.gi, '<b>L</b> vs <b>' + oppName + '</b> ' + uScore + '\u2013' + oScore + ' (Conf Tourney)');
     }
     advanceConfRoundExceptUser(conf);
+    // Also advance other conferences one round
+    Object.keys(G.confTourneys).forEach(function(c) {
+      if (c === conf) return;
+      var oct = G.confTourneys[c];
+      if (!oct || oct.done) return;
+      var round = getCurrentConfRound(c);
+      if (!round) return;
+      round.forEach(function(rm) {
+        if (rm.winner !== null) return;
+        var res3 = simGame(rm.t1, rm.t2, true);
+        rm.s1 = res3.homeScore; rm.s2 = res3.awayScore;
+        rm.winner = res3.homeScore > res3.awayScore ? rm.t1 : rm.t2;
+      });
+      buildNextConfRound(c);
+    });
+    // Check if everything is done
+    if (allConfDone() && !G.bracket.length) buildNCAA();
   } else if (game._type === 'ncaa') {
     var b1 = game._b1, b2 = game._b2;
     b1.score = LS.hs; b2.score = LS.as;
