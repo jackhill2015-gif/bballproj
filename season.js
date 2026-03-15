@@ -224,13 +224,12 @@ export function genRecruits() {
 // ═══════════════════════════════════════════════════════════
 
 export function simCPUWeek() {
-  var done = new Set();
   G.teams.forEach(function(t) {
-    if (t.id === G.tid || done.has(t.id)) return;
+    if (t.id === G.tid) return;
     var s = t.sched[G.gi];
     if (!s || s.played || s.opp === undefined || s.opp === null) return;
     var opp = G.teams[s.opp];
-    if (!opp || done.has(opp.id)) return;
+    if (!opp) return;
     if (opp.id === G.tid) return;
     var res = simGame(t, opp, false);
     var s1 = res.homeScore, s2 = res.awayScore;
@@ -242,12 +241,8 @@ export function simCPUWeek() {
       if (s.conf) { opp.cWins++; t.cLoss++; }
     }
     s.played = true;
-    if (opp.id !== G.tid) { var sg = opp.sched[G.gi]; if (sg) sg.played = true; }
     t.ts.pts += s1; t.ts.opp += s2; t.ts.games++;
-    opp.ts.pts += s2; opp.ts.opp += s1; opp.ts.games++;
     distributeStats(t, s1);
-    distributeStats(opp, s2);
-    done.add(t.id); done.add(opp.id);
   });
   // CPU recruit drift
   G.recruits.forEach(function(r) {
