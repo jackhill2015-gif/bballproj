@@ -196,7 +196,7 @@ export function simGame(home, away, userIsHome) {
   var paceMod = 0;
   if (hStrat === 'Pace & Space' || aStrat === 'Pace & Space') paceMod += 4;
   if (hStrat === 'Grit & Grind' && aStrat === 'Grit & Grind') paceMod -= 4;
-  var possPerTeam = clamp(70 + paceMod + ri(-3, 3), 62, 78);
+  var possPerTeam = clamp(76 + paceMod + ri(-3, 3), 68, 84);
   home.rost.forEach(function(p) { if (p.mins > 0) p.s.gp++; });
   away.rost.forEach(function(p) { if (p.mins > 0) p.s.gp++; });
 
@@ -318,7 +318,7 @@ export function simGame(home, away, userIsHome) {
         continue;
       }
 
-      if (ri(1, 100) <= 12) {
+      if (ri(1, 100) <= 5) {
         var ftPct2 = clamp(55 + Math.round(off.sht * 0.2), 65, 85);
         var tiredness2 = Math.min((fatigue[off.name] || 0) / 80, 0.15);
         ftPct2 = Math.round(ftPct2 * (1 - tiredness2 * 0.5));
@@ -342,13 +342,13 @@ export function simGame(home, away, userIsHome) {
 
       if (makePct === 0) {
         if (isThree) {
-          makePct = clamp(34 + Math.round((off.sht - def.def) * 0.2) + shotBonus, 25, 42);
+          makePct = clamp(38 + Math.round((off.sht - def.def) * 0.2) + shotBonus, 28, 46);
           if (defScheme === 'zone') makePct -= 4; if (defScheme === 'press') makePct += 2;
         } else if (isRim) {
-          makePct = clamp(58 + Math.round((off.fin - def.def) * 0.3) + shotBonus, 45, 75);
+          makePct = clamp(62 + Math.round((off.fin - def.def) * 0.3) + shotBonus, 48, 78);
           if (defScheme === 'zone') makePct -= 6; if (defScheme === 'press') makePct += 2;
         } else {
-          makePct = clamp(42 + Math.round((off.sht - def.def) * 0.25) + shotBonus, 33, 52);
+          makePct = clamp(46 + Math.round((off.sht - def.def) * 0.25) + shotBonus, 36, 56);
           if (defScheme === 'zone') makePct += 3; if (defScheme === 'press') makePct += 2;
         }
       }
