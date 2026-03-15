@@ -5,7 +5,7 @@
 
 import { ge, clamp } from '../utils.js';
 import { TEAM_STATES, STATE_TO_REGION, STATE_NAMES, SCHOOL_RECRUIT_GATES, COACH_FN, COACH_LN } from '../constants.js';
-import { G, SetupState, saveState, calcRecruitingBudget } from '../state.js';
+import { G, LS, SetupState, saveState, calcRecruitingBudget } from '../state.js';
 
 var _ext = { toast: null, addLog: null, updateAll: null };
 export function registerRecruitingCallbacks(cb) {
@@ -405,9 +405,15 @@ function renderTurnover(){
 //  SKILL POINTS ALLOCATION
 // ═══════════════════════════════════════════════════════════
 
+var _skillInitial = null;
+
 function renderSkillPoints() {
   var pts = G.skillPointsToSpend || 0;
   var c = G.coach;
+  // Snapshot initial values on first render
+  if (!_skillInitial) {
+    _skillInitial = { off: c.off, def: c.def, dev: c.dev, rec: c.rec };
+  }
   var h = '<div style="max-width:600px;margin:0 auto;padding:20px;">';
 
   h += '<div style="text-align:center;margin-bottom:24px;">'
@@ -428,8 +434,10 @@ function renderSkillPoints() {
 
   ratings.forEach(function(r) {
     var val = c[r.key] || 70;
+    var initVal = (_skillInitial && _skillInitial[r.key]) || val;
     var canAdd = pts > 0 && val < 99;
-    h += '<div style="display:flex;align-items:center;gap:14px;padding:14px;margin-bottom:8px;background:var(--s1);border:1px solid var(--bdr);border-radius:8px;">'
+    var canRemove = val > initVal;
+    h += '<div style="display:flex;align-items:center;gap:10px;padding:14px;margin-bottom:8px;background:var(--s1);border:1px solid var(--bdr);border-radius:8px;">'
       + '<div style="font-size:24px;width:36px;text-align:center;">' + r.icon + '</div>'
       + '<div style="flex:1;">'
       + '<div style="font-size:14px;font-weight:700;color:#fff;">' + r.label + '</div>'
@@ -437,8 +445,9 @@ function renderSkillPoints() {
       + '<div style="height:4px;background:var(--bdr2);border-radius:2px;margin-top:6px;overflow:hidden;">'
       + '<div style="height:100%;width:' + Math.round((val - 40) / 59 * 100) + '%;background:var(--red);border-radius:2px;"></div></div>'
       + '</div>'
+      + '<div onclick="' + (canRemove ? 'deallocateSkillPoint(\'' + r.key + '\')' : '') + '" style="width:32px;height:32px;border-radius:6px;background:' + (canRemove ? 'var(--s3)' : 'var(--s2)') + ';color:' + (canRemove ? '#fff' : 'var(--txt3)') + ';display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;cursor:' + (canRemove ? 'pointer' : 'default') + ';user-select:none;">\u2212</div>'
       + '<div style="font-family:monospace;font-size:22px;font-weight:900;color:var(--red);width:44px;text-align:center;">' + val + '</div>'
-      + '<div onclick="' + (canAdd ? 'allocateSkillPoint(\'' + r.key + '\')' : '') + '" style="width:36px;height:36px;border-radius:6px;background:' + (canAdd ? 'var(--red)' : 'var(--s2)') + ';color:' + (canAdd ? '#fff' : 'var(--txt3)') + ';display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;cursor:' + (canAdd ? 'pointer' : 'default') + ';user-select:none;">+</div>'
+      + '<div onclick="' + (canAdd ? 'allocateSkillPoint(\'' + r.key + '\')' : '') + '" style="width:32px;height:32px;border-radius:6px;background:' + (canAdd ? 'var(--red)' : 'var(--s2)') + ';color:' + (canAdd ? '#fff' : 'var(--txt3)') + ';display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;cursor:' + (canAdd ? 'pointer' : 'default') + ';user-select:none;">+</div>'
       + '</div>';
   });
 
@@ -458,7 +467,17 @@ export function allocateSkillPoint(key) {
 }
 window.allocateSkillPoint = allocateSkillPoint;
 
+export function deallocateSkillPoint(key) {
+  var initVal = (_skillInitial && _skillInitial[key]) || 70;
+  if (G.coach[key] <= initVal) return;
+  G.coach[key]--;
+  G.skillPointsToSpend++;
+  saveState(); renderOffseason();
+}
+window.deallocateSkillPoint = deallocateSkillPoint;
+
 export function finishSkillPoints() {
+  _skillInitial = null;
   G.offseasonStep = 'carousel';
   saveState(); renderOffseason();
 }
@@ -538,6 +557,7 @@ function renderCarousel() {
     h += '<div style="font-size:11px;font-weight:700;color:var(--txt3);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">' + jobs.length + ' Open Positions</div>';
     h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">';
     jobs.forEach(function(job, idx) {
+      if (_rejectedJobs.indexOf(idx) >= 0) return; // hide rejected jobs
       var chance = calcOfferChance(job);
       var chanceCol = chance >= 60 ? 'var(--grn2)' : chance >= 30 ? 'var(--gld2)' : '#fc8181';
       var t = job.team;
@@ -564,19 +584,20 @@ function renderCarousel() {
   return h;
 }
 
+var _rejectedJobs = [];
+
 export function applyForJob(idx) {
   var jobs = window._carouselJobs || [];
   var job = jobs[idx];
   if (!job) return;
   var chance = calcOfferChance(job);
   var roll = Math.random() * 100;
+
   if (roll < chance) {
-    // Offered!
-    if (confirm('You\'ve been offered the job at ' + job.team.name + '! Accept?')) {
-      // Move to new school
+    // Show offer modal
+    showJobModal(job, true, function() {
       var oldTid = G.tid;
       G.tid = job.team.id;
-      // Put a new NPC coach at old school
       var oldTeam = G.teams[oldTid];
       oldTeam.coach = {
         firstName: COACH_FN[Math.floor(Math.random() * COACH_FN.length)],
@@ -588,7 +609,6 @@ export function applyForJob(idx) {
         rec: Math.floor(Math.random() * 20) + 60,
         tenure: 0
       };
-      // Set user as coach of new school
       var newTeam = G.teams[G.tid];
       newTeam.coach = {
         firstName: G.coach.firstName, lastName: G.coach.lastName,
@@ -597,21 +617,75 @@ export function applyForJob(idx) {
       };
       G.coach.tenure = 0;
       G.coach.history.push({ yr: G.yr, school: oldTeam.name, action: 'Left for ' + newTeam.name });
+
+      // Reset all state for new school
+      G.departingPlayers = [];
+      var t = newTeam;
+      t.rost.forEach(function(p) {
+        var gp = p.s ? p.s.gp || 0 : 0;
+        var ppg = gp > 0 ? p.s.pts / gp : 0;
+        if (p.cls === 'SR') {
+          G.departingPlayers.push({ name: p.name, pos: p.pos, cls: p.cls, ovr: p.ovr, reason: 'Graduated', ppg: ppg.toFixed(1), rpg: gp > 0 ? (p.s.reb / gp).toFixed(1) : '0.0', apg: gp > 0 ? (p.s.ast / gp).toFixed(1) : '0.0', mins: p.mins || 0 });
+        }
+      });
+
+      // Clear live sim state
+      LS.tH = null; LS.tA = null; LS.game = null; LS.userTeam = null;
+      LS.hs = 0; LS.as = 0;
+
+      // Reset recruiting
+      G.recruitPhase = 0; G.recruitTargets = [];
+      G.recruitingBudget = 0; G.recruitingSpent = 0;
+
       addLog('ev', G.gi, 'Coach ' + G.coach.lastName + ' accepts the job at <b>' + newTeam.name + '</b>!');
       toast('Welcome to ' + newTeam.name + '!', 'var(--grn)');
       G.offseasonStep = 'turnover';
+      _rejectedJobs = [];
       saveState(); updateAll(); renderOffseason();
-    }
+    });
   } else {
-    toast(job.team.name + ' is not interested at this time.', 'var(--txt3)');
+    // Rejected — show modal and remove from list
+    _rejectedJobs.push(idx);
+    showJobModal(job, false, function() {
+      renderOffseason();
+    });
   }
 }
 window.applyForJob = applyForJob;
+
+function showJobModal(job, offered, onContinue) {
+  var overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:99999;display:flex;align-items:center;justify-content:center;';
+  var content = '<div style="background:var(--s1);border:1px solid var(--bdr);border-radius:10px;padding:32px;max-width:420px;text-align:center;">'
+    + '<div style="font-size:10px;color:' + (offered ? 'var(--grn2)' : '#fc8181') + ';font-weight:800;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">' + (offered ? 'JOB OFFERED' : 'NOT INTERESTED') + '</div>'
+    + '<div style="font-size:24px;font-weight:900;margin-bottom:4px;">' + job.team.name + '</div>'
+    + '<div style="font-size:12px;color:var(--txt2);margin-bottom:16px;">' + job.team.conf + ' \u00b7 Prestige ' + (job.team.schoolPrestige || '?') + '</div>';
+  if (offered) {
+    content += '<div style="font-size:13px;color:var(--txt2);margin-bottom:20px;">The program wants you to lead them to glory. Do you accept?</div>'
+      + '<div style="display:flex;gap:10px;justify-content:center;">'
+      + '<div id="job-decline" style="padding:10px 24px;background:var(--s2);border:1px solid var(--bdr);border-radius:6px;cursor:pointer;font-size:13px;font-weight:700;color:var(--txt2);">DECLINE</div>'
+      + '<div id="job-accept" style="padding:10px 24px;background:var(--red);border-radius:6px;cursor:pointer;font-size:13px;font-weight:800;color:#fff;">ACCEPT</div>'
+      + '</div>';
+  } else {
+    content += '<div style="font-size:13px;color:var(--txt3);margin-bottom:20px;">' + job.team.name + ' has decided to go in a different direction.</div>'
+      + '<div id="job-ok" style="display:inline-block;padding:10px 32px;background:var(--s2);border:1px solid var(--bdr);border-radius:6px;cursor:pointer;font-size:13px;font-weight:700;color:#fff;">OK</div>';
+  }
+  content += '</div>';
+  overlay.innerHTML = content;
+  document.body.appendChild(overlay);
+  if (offered) {
+    overlay.querySelector('#job-accept').onclick = function() { document.body.removeChild(overlay); onContinue(); };
+    overlay.querySelector('#job-decline').onclick = function() { document.body.removeChild(overlay); };
+  } else {
+    overlay.querySelector('#job-ok').onclick = function() { document.body.removeChild(overlay); if (onContinue) onContinue(); };
+  }
+}
 
 export function stayAtSchool() {
   G.coach.history.push({ yr: G.yr, school: G.teams[G.tid].name, action: 'Stayed' });
   addLog('ev', G.gi, 'Coach ' + G.coach.lastName + ' returns to <b>' + G.teams[G.tid].name + '</b>.');
   G.offseasonStep = 'turnover';
+  _rejectedJobs = [];
   saveState(); updateAll(); renderOffseason();
 }
 window.stayAtSchool = stayAtSchool;
