@@ -460,7 +460,10 @@ export function doPlay(mode) {
   } else if (G.phase === 'conf_tourn' || G.phase === 'ncaa') {
     if (_ext.playTournamentGame) _ext.playTournamentGame(mode === 'live');
   } else if (G.phase === 'offseason') {
-    if (G.offseasonStep === 'turnover') {
+    if (G.offseasonStep === 'recap') {
+      // Advance from recap to turnover
+      if (window.beginOffseason) window.beginOffseason();
+    } else if (G.offseasonStep === 'turnover') {
       if (window.proceedToRecruiting) window.proceedToRecruiting();
     } else if (G.recruitPhase < 3) {
       if (window.advanceRecruitPhase) window.advanceRecruitPhase();

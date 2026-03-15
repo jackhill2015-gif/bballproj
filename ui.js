@@ -158,7 +158,12 @@ export function updatePlayBtn() {
     txt('play-label', SetupState.G_AUTO ? 'STOP \u25a0' : 'PLAY \u25bc');
     updatePlayDropdown('reg');
   } else if (G.phase === 'conf_tourn') {
-    txt('tb-wk', 'CONF'); txt('tb-opp', 'Tournament');
+    var myConf = G.teams[G.tid].conf;
+    var myCt = G.confTourneys ? G.confTourneys[myConf] : null;
+    var confRound = myCt && myCt.rounds ? myCt.rounds.length : 0;
+    var confRoundNames = { 1: 'First Round', 2: 'Quarterfinals', 3: 'Semifinals', 4: 'Championship' };
+    var crn = confRoundNames[confRound] || 'Conf Tourney';
+    txt('tb-wk', crn); txt('tb-opp', myConf + ' Tournament');
     btn.className = 'play-btn'; txt('play-label', 'PLAY \u25bc');
     updatePlayDropdown('conf_tourn');
   } else if (G.phase === 'ncaa') {
@@ -169,7 +174,8 @@ export function updatePlayBtn() {
     updatePlayDropdown('ncaa');
   } else if (G.phase === 'offseason') {
     txt('tb-wk', 'OFFSEASON'); txt('tb-opp', '');
-    btn.className = 'play-btn'; txt('play-label', G.offseasonStep === 'turnover' ? 'START RECRUITING \u25bc' : G.recruitPhase >= 3 ? 'FINALIZE \u25bc' : 'ADVANCE \u25bc');
+    var offLabel = G.offseasonStep === 'recap' ? 'CONTINUE \u25bc' : G.offseasonStep === 'turnover' ? 'CONTINUE \u25bc' : G.recruitPhase >= 3 ? 'FINALIZE \u25bc' : 'ADVANCE \u25bc';
+    btn.className = 'play-btn'; txt('play-label', offLabel);
     updatePlayDropdown('offseason');
   }
 }

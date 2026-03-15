@@ -203,14 +203,50 @@ function advanceConfRoundExceptUser(conf) {
 }
 
 export function advanceConfTourney() {
-  Object.keys(G.confTourneys).forEach(function(conf) { simConfFull(conf); });
+  var userConf = G.teams[G.tid].conf;
+
+  // Advance OTHER conferences by one round each
+  Object.keys(G.confTourneys).forEach(function(conf) {
+    if (conf === userConf) return;
+    var ct = G.confTourneys[conf];
+    if (!ct || ct.done) return;
+    var round = getCurrentConfRound(conf);
+    if (!round) return;
+    round.forEach(function(m) {
+      if (m.winner !== null) return;
+      var res = simGame(m.t1, m.t2, true);
+      m.s1 = res.homeScore; m.s2 = res.awayScore;
+      m.winner = res.homeScore > res.awayScore ? m.t1 : m.t2;
+    });
+    buildNextConfRound(conf);
+  });
+
+  // Check user's conference — advance CPU games in current round only
+  var uct = G.confTourneys[userConf];
+  if (uct && !uct.done) {
+    advanceConfRoundExceptUser(userConf);
+  }
+
+  // Check if all done
   if (allConfDone() && !G.bracket.length) buildNCAA();
   saveState(); updateAll();
 }
 
 // Aliases used by doPlay
 export function simConfRoundAll() { advanceConfTourney(); }
-export function simConfRound(conf) { simConfFull(conf); }
+export function simConfRound(conf) {
+  var ct = G.confTourneys[conf];
+  if (!ct || ct.done) return;
+  var round = getCurrentConfRound(conf);
+  if (!round) return;
+  round.forEach(function(m) {
+    if (m.winner !== null) return;
+    var res = simGame(m.t1, m.t2, true);
+    m.s1 = res.homeScore; m.s2 = res.awayScore;
+    m.winner = res.homeScore > res.awayScore ? m.t1 : m.t2;
+  });
+  buildNextConfRound(conf);
+}
 export function simConfBtn(el) {
   var c = el.getAttribute('data-conf');
   if (c) simConfFull(c);
@@ -470,6 +506,10 @@ export function resolveTournamentGame() {
   var game = LS.game;
   if (!game) return;
   var userTeam = G.teams[G.tid];
+  var userIsHome = LS.tH && LS.tH.id === G.tid;
+  var uScore = userIsHome ? LS.hs : LS.as;
+  var oScore = userIsHome ? LS.as : LS.hs;
+
   if (game._type === 'conf') {
     var m = game._matchup;
     var conf = game._conf;
@@ -478,11 +518,11 @@ export function resolveTournamentGame() {
     var userWon = (m.winner.id === G.tid);
     var oppName = (m.t1.id === G.tid ? m.t2 : m.t1).name;
     if (userWon) {
-      toast(userTeam.name + ' ADVANCES! ' + LS.hs + '-' + LS.as, 'var(--grn)');
-      addLog('w', G.gi, '<b>W</b> vs <b>' + oppName + '</b> ' + LS.hs + '\u2013' + LS.as + ' (Conf Tourney)');
+      toast(userTeam.name + ' ADVANCES! ' + uScore + '-' + oScore, 'var(--grn)');
+      addLog('w', G.gi, '<b>W</b> vs <b>' + oppName + '</b> ' + uScore + '\u2013' + oScore + ' (Conf Tourney)');
     } else {
-      toast('Eliminated by ' + oppName + ' ' + LS.hs + '-' + LS.as, 'var(--red)');
-      addLog('l', G.gi, '<b>L</b> vs <b>' + oppName + '</b> ' + LS.hs + '\u2013' + LS.as + ' (Conf Tourney)');
+      toast('Eliminated by ' + oppName + ' ' + uScore + '-' + oScore, 'var(--red)');
+      addLog('l', G.gi, '<b>L</b> vs <b>' + oppName + '</b> ' + uScore + '\u2013' + oScore + ' (Conf Tourney)');
     }
     advanceConfRoundExceptUser(conf);
   } else if (game._type === 'ncaa') {
@@ -490,14 +530,14 @@ export function resolveTournamentGame() {
     b1.score = LS.hs; b2.score = LS.as;
     if (LS.hs > LS.as) { b1.won = true; b2.won = false; b2.active = false; }
     else { b2.won = true; b1.won = false; b1.active = false; }
-    var userWon2 = (LS.hs > LS.as) === (b1.team.id === G.tid);
+    var userWon2 = (b1.team.id === G.tid) ? (LS.hs > LS.as) : (LS.as > LS.hs);
     var oppName2 = (b1.team.id === G.tid ? b2 : b1).team.name;
     if (userWon2) {
-      toast(userTeam.name + ' ADVANCES! ' + LS.hs + '-' + LS.as, 'var(--grn)');
-      addLog('w', G.gi, '<b>W</b> vs <b>' + oppName2 + '</b> ' + LS.hs + '\u2013' + LS.as + ' (NCAA)');
+      toast(userTeam.name + ' ADVANCES! ' + uScore + '-' + oScore, 'var(--grn)');
+      addLog('w', G.gi, '<b>W</b> vs <b>' + oppName2 + '</b> ' + uScore + '\u2013' + oScore + ' (NCAA)');
     } else {
-      toast('Eliminated by ' + oppName2 + ' ' + LS.hs + '-' + LS.as, 'var(--red)');
-      addLog('l', G.gi, '<b>L</b> vs <b>' + oppName2 + '</b> ' + LS.hs + '\u2013' + LS.as + ' (NCAA)');
+      toast('Eliminated by ' + oppName2 + ' ' + uScore + '-' + oScore, 'var(--red)');
+      addLog('l', G.gi, '<b>L</b> vs <b>' + oppName2 + '</b> ' + uScore + '\u2013' + oScore + ' (NCAA)');
     }
     simNCAArimExceptUser();
     checkNCAAdone();
@@ -511,10 +551,10 @@ export function resolveTournamentGame() {
 // ═══════════════════════════════════════════════════════════
 
 export function showTournamentResult() {
-  var won = LS.hs > LS.as;
-  var userIsHome = LS.tH.id === G.tid;
+  var userIsHome = LS.tH && LS.tH.id === G.tid;
   var uScore = userIsHome ? LS.hs : LS.as;
   var oScore = userIsHome ? LS.as : LS.hs;
+  var won = uScore > oScore;
   var opp = userIsHome ? LS.tA : LS.tH;
   var roundName = G.phase === 'ncaa' ? getNCAAroundName() : getConfRoundName(LS.game._ct, LS.game._conf);
   var panel = ge('gmod').querySelector('.gpanel');
