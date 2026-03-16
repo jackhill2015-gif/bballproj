@@ -421,6 +421,9 @@ export function launchSim(watch) {
   LS.streak_h = 0; LS.streak_a = 0;
   LS.possCount = 0;
   if (watch) {
+    // Increment GP for live sim (simGame does this internally for quick sim)
+    tH.rost.forEach(function(p) { if (p.mins > 0) p.s.gp++; });
+    tA.rost.forEach(function(p) { if (p.mins > 0) p.s.gp++; });
     if (_ext.openModal) _ext.openModal(tH, tA);
   } else {
     var res = simGame(tH, tA, game.home);

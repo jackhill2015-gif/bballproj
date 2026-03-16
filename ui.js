@@ -346,7 +346,14 @@ export function stepSim() {
 // ── Skip Game ────────────────────────────────────────────
 export function skipGame() {
   if (G.simInterval) { clearInterval(G.simInterval); G.simInterval = null; }
+  // Save GP before simGame (already incremented at live sim start)
+  var gpSave = {};
+  LS.tH.rost.forEach(function(p) { gpSave[p.name + '_h'] = p.s.gp; });
+  LS.tA.rost.forEach(function(p) { gpSave[p.name + '_a'] = p.s.gp; });
   var res = simGame(LS.tH, LS.tA, LS.game.home);
+  // Restore GP to what it was (simGame incremented it again)
+  LS.tH.rost.forEach(function(p) { if (gpSave[p.name + '_h'] !== undefined) p.s.gp = gpSave[p.name + '_h']; });
+  LS.tA.rost.forEach(function(p) { if (gpSave[p.name + '_a'] !== undefined) p.s.gp = gpSave[p.name + '_a']; });
   LS.hs = res.homeScore; LS.as = res.awayScore;
   finalizeModal();
 }
