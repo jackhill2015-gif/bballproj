@@ -287,7 +287,7 @@ export function renderOffseason(){
   h+='<div style="display:flex;gap:0;margin-bottom:14px;border-bottom:2px solid var(--bdr);">';
   tabs.forEach(function(tb){
     var on=_tab===tb.id;
-    h+='<div onclick="setRecruitTab(\''+tb.id+'\')" style="padding:8px 16px;font-size:12px;font-weight:'+(on?'800':'600')+';color:'+(on?'#fff':'var(--txt3)')+';cursor:pointer;border-bottom:2px solid '+(on?'var(--red)':'transparent')+';margin-bottom:-2px;">'+tb.label+'</div>';
+    h+='<div onclick="setRecruitTab(\''+tb.id+'\')" style="padding:8px 16px;font-size:12px;font-weight:'+(on?'800':'600')+';color:'+(on?'var(--red)':'var(--txt3)')+';cursor:pointer;border-bottom:2px solid '+(on?'var(--red)':'transparent')+';margin-bottom:-2px;">'+tb.label+'</div>';
   });
   h+='</div>';
 
@@ -497,9 +497,9 @@ function renderSkillPoints() {
       + '<div style="height:4px;background:var(--bdr2);border-radius:2px;margin-top:6px;overflow:hidden;">'
       + '<div style="height:100%;width:' + Math.round((val - 40) / 59 * 100) + '%;background:var(--red);border-radius:2px;"></div></div>'
       + '</div>'
-      + '<div onclick="' + (canRemove ? 'deallocateSkillPoint(\'' + r.key + '\')' : '') + '" style="width:32px;height:32px;border-radius:6px;background:' + (canRemove ? 'var(--s3)' : 'var(--s2)') + ';color:' + (canRemove ? '#fff' : 'var(--txt3)') + ';display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;cursor:' + (canRemove ? 'pointer' : 'default') + ';user-select:none;">\u2212</div>'
+      + '<div onclick="' + (canRemove ? 'deallocateSkillPoint(\'' + r.key + '\')' : '') + '" style="width:32px;height:32px;border-radius:6px;background:' + (canRemove ? 'var(--s3)' : 'var(--s2)') + ';color:' + (canRemove ? 'var(--txt)' : 'var(--txt3)') + ';display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;cursor:' + (canRemove ? 'pointer' : 'default') + ';user-select:none;">\u2212</div>'
       + '<div style="font-family:monospace;font-size:22px;font-weight:900;color:var(--red);width:44px;text-align:center;">' + val + '</div>'
-      + '<div onclick="' + (canAdd ? 'allocateSkillPoint(\'' + r.key + '\')' : '') + '" style="width:32px;height:32px;border-radius:6px;background:' + (canAdd ? 'var(--red)' : 'var(--s2)') + ';color:' + (canAdd ? '#fff' : 'var(--txt3)') + ';display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;cursor:' + (canAdd ? 'pointer' : 'default') + ';user-select:none;">+</div>'
+      + '<div onclick="' + (canAdd ? 'allocateSkillPoint(\'' + r.key + '\')' : '') + '" style="width:32px;height:32px;border-radius:6px;background:' + (canAdd ? 'var(--red)' : 'var(--s2)') + ';color:' + (canAdd ? 'var(--txt)' : 'var(--txt3)') + ';display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;cursor:' + (canAdd ? 'pointer' : 'default') + ';user-select:none;">+</div>'
       + '</div>';
   });
 
@@ -843,7 +843,7 @@ function renderDetailPanel(r,left){
   } else {
     schools.forEach(function(s){
       var barCol=s.isUser?'var(--red)':'var(--bdr2)';
-      var nameCol=s.isUser?'var(--red)':'#fff';
+      var nameCol=s.isUser?'var(--red)':'var(--txt)';
       h+='<div style="display:flex;align-items:center;gap:8px;padding:4px 0;">'
         +'<div style="width:120px;font-size:11px;font-weight:'+(s.isUser?'800':'600')+';color:'+nameCol+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+s.name+(s.geo?' <span style="font-size:8px;color:'+(s.geo==='HOME'?'var(--grn2)':'#63b3ed')+';">'+s.geo+'</span>':'')+'</div>'
         +'<div style="flex:1;height:6px;background:var(--s2);border-radius:3px;overflow:hidden;">'
@@ -938,7 +938,7 @@ function renderRosterNeeds(){
     var ct=posNeeds[pos];
     var need=ct<2;
     h+='<div style="flex:1;padding:10px;text-align:center;background:var(--s1);border:1px solid '+(need?'rgba(0,102,204,.3)':'var(--bdr)')+';border-radius:6px;">'
-      +'<div style="font-size:20px;font-weight:900;color:'+(need?'#dc2626':'#fff')+';">'+ct+'</div>'
+      +'<div style="font-size:20px;font-weight:900;color:'+(need?'#dc2626':'var(--txt)')+';">'+ct+'</div>'
       +'<div style="font-size:10px;color:var(--txt3);">'+pos+'</div>'
       +(need?'<div style="font-size:8px;color:#dc2626;font-weight:700;margin-top:2px;">NEED</div>':'')+'</div>';
   });
@@ -948,7 +948,7 @@ function renderRosterNeeds(){
   t.rost.sort(function(a,b){return b.ovr-a.ovr;});
   t.rost.forEach(function(p){
     var gp=p.s.gp||0;var ppg=gp?(p.s.pts/gp).toFixed(1):'--';
-    h+='<div style="display:flex;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.02);">'
+    h+='<div style="display:flex;align-items:center;padding:5px 0;border-bottom:1px solid rgba(0,0,0,.02);">'
       +'<div class="pos-chip" style="margin-right:8px;">'+p.pos+'</div>'
       +'<div style="flex:1;font-size:11px;font-weight:600;color:var(--txt);">'+p.name+' <span style="font-size:9px;color:var(--txt3);">'+p.cls+'</span></div>'
       +'<div style="font-size:10px;color:var(--txt2);margin-right:8px;">'+ppg+' PPG</div>'

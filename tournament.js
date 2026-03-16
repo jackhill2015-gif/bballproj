@@ -386,14 +386,14 @@ export function showBracketReveal(userSeed) {
       var isU2 = b2.team.id === G.tid;
 
       var matchup = document.createElement('div');
-      matchup.style.cssText = 'border-bottom:1px solid rgba(255,255,255,.04);';
+      matchup.style.cssText = 'border-bottom:1px solid rgba(0,0,0,.04);';
 
       // Team 1
       var row1 = document.createElement('div');
       row1.style.cssText = 'display:flex;align-items:center;gap:6px;padding:6px 12px;font-size:11px;' +
         (isU1 ? 'background:rgba(214,158,46,.12);border-left:3px solid var(--gld);' : 'border-left:3px solid transparent;');
       row1.innerHTML = '<span style="width:20px;font-family:monospace;font-size:10px;color:' + (isU1 ? 'var(--gld2)' : 'var(--txt3)') + ';font-weight:700;">' + s1 + '</span>'
-        + '<span style="flex:1;font-weight:' + (isU1 ? '800' : '500') + ';color:' + (isU1 ? 'var(--gld2)' : '#fff') + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + b1.team.name + '</span>'
+        + '<span style="flex:1;font-weight:' + (isU1 ? '800' : '500') + ';color:' + (isU1 ? 'var(--gld2)' : 'var(--txt)') + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + b1.team.name + '</span>'
         + '<span style="font-family:monospace;font-size:10px;color:var(--txt3);">' + b1.team.wins + '-' + b1.team.loss + '</span>';
       matchup.appendChild(row1);
 
@@ -402,7 +402,7 @@ export function showBracketReveal(userSeed) {
       row2.style.cssText = 'display:flex;align-items:center;gap:6px;padding:6px 12px;font-size:11px;border-bottom:2px solid var(--bdr);' +
         (isU2 ? 'background:rgba(214,158,46,.12);border-left:3px solid var(--gld);' : 'border-left:3px solid transparent;');
       row2.innerHTML = '<span style="width:20px;font-family:monospace;font-size:10px;color:' + (isU2 ? 'var(--gld2)' : 'var(--txt3)') + ';font-weight:700;">' + s2 + '</span>'
-        + '<span style="flex:1;font-weight:' + (isU2 ? '800' : '500') + ';color:' + (isU2 ? 'var(--gld2)' : '#fff') + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + b2.team.name + '</span>'
+        + '<span style="flex:1;font-weight:' + (isU2 ? '800' : '500') + ';color:' + (isU2 ? 'var(--gld2)' : 'var(--txt)') + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + b2.team.name + '</span>'
         + '<span style="font-family:monospace;font-size:10px;color:var(--txt3);">' + b2.team.wins + '-' + b2.team.loss + '</span>';
       matchup.appendChild(row2);
 

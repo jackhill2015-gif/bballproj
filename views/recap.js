@@ -132,7 +132,7 @@ export function renderSeasonRecap() {
     var isU = tm.id === G.tid;
     h += '<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:12px;">'
       + '<span><span style="color:var(--txt3);margin-right:6px;font-family:monospace;">#' + (i + 1) + '</span>'
-      + '<span style="color:' + (isU ? 'var(--red)' : '#fff') + ';font-weight:' + (isU ? '800' : '500') + ';">' + tm.name + (isU ? ' \u25c0' : '') + '</span></span>'
+      + '<span style="color:' + (isU ? 'var(--red)' : 'var(--txt)') + ';font-weight:' + (isU ? '800' : '500') + ';">' + tm.name + (isU ? ' \u25c0' : '') + '</span></span>'
       + '<span style="font-family:monospace;font-weight:700;color:' + (tm.wins > tm.loss ? 'var(--grn2)' : 'var(--txt)') + ';">' + tm.wins + '-' + tm.loss + '</span></div>';
   });
   h += '</div>';
@@ -141,7 +141,7 @@ export function renderSeasonRecap() {
   if (awards.poy) {
     h += '<div class="card" style="padding:18px;border-left:4px solid var(--red);">'
       + '<div style="font-size:10px;color:var(--txt2);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;">Player of the Year</div>'
-      + '<div style="font-size:18px;font-weight:900;color:' + (awards.poy.tid === G.tid ? 'var(--red)' : '#fff') + ';">' + awards.poy.name + '</div>'
+      + '<div style="font-size:18px;font-weight:900;color:' + (awards.poy.tid === G.tid ? 'var(--red)' : 'var(--txt)') + ';">' + awards.poy.name + '</div>'
       + '<div style="font-size:11px;color:var(--txt2);margin-top:2px;">' + awards.poy.team + ' \u00b7 ' + awards.poy.pos + ' \u00b7 ' + awards.poy.ppg + ' PPG / ' + awards.poy.rpg + ' RPG / ' + awards.poy.apg + ' APG</div></div>';
   }
 
@@ -149,7 +149,7 @@ export function renderSeasonRecap() {
   if (awards.foy) {
     h += '<div class="card" style="padding:18px;">'
       + '<div style="font-size:10px;color:var(--txt2);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;">Freshman of the Year</div>'
-      + '<div style="font-size:16px;font-weight:900;color:' + (awards.foy.tid === G.tid ? 'var(--grn2)' : '#fff') + ';">' + awards.foy.name + '</div>'
+      + '<div style="font-size:16px;font-weight:900;color:' + (awards.foy.tid === G.tid ? 'var(--grn2)' : 'var(--txt)') + ';">' + awards.foy.name + '</div>'
       + '<div style="font-size:11px;color:var(--txt2);margin-top:2px;">' + awards.foy.team + ' \u00b7 ' + awards.foy.ppg + ' PPG</div></div>';
   }
 
@@ -158,7 +158,7 @@ export function renderSeasonRecap() {
     var coachName = awards.coy.coach ? awards.coy.coach.firstName + ' ' + awards.coy.coach.lastName : 'Staff';
     h += '<div class="card" style="padding:18px;">'
       + '<div style="font-size:10px;color:var(--txt2);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;">Coach of the Year</div>'
-      + '<div style="font-size:16px;font-weight:900;color:' + (awards.coy.id === G.tid ? 'var(--gld2)' : '#fff') + ';">' + coachName + '</div>'
+      + '<div style="font-size:16px;font-weight:900;color:' + (awards.coy.id === G.tid ? 'var(--gld2)' : 'var(--txt)') + ';">' + coachName + '</div>'
       + '<div style="font-size:11px;color:var(--txt2);margin-top:2px;">' + awards.coy.name + ' (' + awards.coy.wins + '-' + awards.coy.loss + ')</div></div>';
   }
 
@@ -174,8 +174,8 @@ export function renderSeasonRecap() {
     + '<div style="font-size:13px;color:var(--red);font-weight:700;margin-top:2px;">' + t.wins + '-' + t.loss + ' (' + t.cWins + '-' + t.cLoss + ' ' + t.conf + ')</div></div>'
     + '<div style="text-align:right;"><div style="font-size:10px;color:var(--txt2);">NET</div><div style="font-size:22px;font-weight:900;">#' + rank + '</div></div></div>'
     + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
-    + '<div style="background:rgba(255,255,255,.04);padding:10px;border-radius:4px;"><div style="font-size:9px;color:var(--txt3);text-transform:uppercase;">Tournament</div><div style="font-size:14px;font-weight:700;margin-top:2px;">' + tf + '</div></div>'
-    + '<div style="background:rgba(255,255,255,.04);padding:10px;border-radius:4px;"><div style="font-size:9px;color:var(--txt3);text-transform:uppercase;">Prestige</div><div style="font-size:14px;font-weight:700;margin-top:2px;">' + (t.schoolPrestige || '--') + '</div></div>'
+    + '<div style="background:rgba(0,0,0,.04);padding:10px;border-radius:4px;"><div style="font-size:9px;color:var(--txt3);text-transform:uppercase;">Tournament</div><div style="font-size:14px;font-weight:700;margin-top:2px;">' + tf + '</div></div>'
+    + '<div style="background:rgba(0,0,0,.04);padding:10px;border-radius:4px;"><div style="font-size:9px;color:var(--txt3);text-transform:uppercase;">Prestige</div><div style="font-size:14px;font-weight:700;margin-top:2px;">' + (t.schoolPrestige || '--') + '</div></div>'
     + '</div></div>';
 
   // All-American
@@ -185,7 +185,7 @@ export function renderSeasonRecap() {
     awards.allAmerican.forEach(function(p) {
       var isU = p.tid === G.tid;
       h += '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(0,0,0,.03);font-size:12px;">'
-        + '<span style="color:' + (isU ? 'var(--red)' : '#fff') + ';font-weight:' + (isU ? '800' : '600') + ';">' + p.name + ' <span style="color:var(--txt3);font-size:10px;">' + p.pos + ' \u00b7 ' + p.team + '</span></span>'
+        + '<span style="color:' + (isU ? 'var(--red)' : 'var(--txt)') + ';font-weight:' + (isU ? '800' : '600') + ';">' + p.name + ' <span style="color:var(--txt3);font-size:10px;">' + p.pos + ' \u00b7 ' + p.team + '</span></span>'
         + '<span style="font-family:monospace;color:var(--txt2);">' + p.ppg + ' / ' + p.rpg + ' / ' + p.apg + '</span></div>';
     });
     h += '</div>';
@@ -198,7 +198,7 @@ export function renderSeasonRecap() {
     awards.userAllConf.forEach(function(p) {
       var isU = p.tid === G.tid;
       h += '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(0,0,0,.03);font-size:12px;">'
-        + '<span style="color:' + (isU ? 'var(--red)' : '#fff') + ';font-weight:' + (isU ? '800' : '600') + ';">' + p.name + ' <span style="color:var(--txt3);font-size:10px;">' + p.team + '</span></span>'
+        + '<span style="color:' + (isU ? 'var(--red)' : 'var(--txt)') + ';font-weight:' + (isU ? '800' : '600') + ';">' + p.name + ' <span style="color:var(--txt3);font-size:10px;">' + p.team + '</span></span>'
         + '<span style="font-family:monospace;color:var(--txt2);">' + p.ppg + ' PPG</span></div>';
     });
     h += '</div>';

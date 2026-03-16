@@ -71,7 +71,7 @@ function renderConfBracket(myConf, ct) {
     h += '<div class="brk-col-title">Champion</div>';
     h += '<div style="text-align:center;padding:12px;">';
     h += '<div style="font-size:28px;margin-bottom:6px;">\ud83c\udfc6</div>';
-    h += '<div style="font-size:13px;font-weight:900;color:' + (ct.champ.id === G.tid ? 'var(--gld2)' : '#fff') + ';line-height:1.2;">' + ct.champ.name + '</div>';
+    h += '<div style="font-size:13px;font-weight:900;color:' + (ct.champ.id === G.tid ? 'var(--gld2)' : 'var(--txt)') + ';line-height:1.2;">' + ct.champ.name + '</div>';
     if (ct.champ.id === G.tid) h += '<div style="font-size:10px;color:var(--gld2);margin-top:4px;font-weight:800;">YOUR TEAM</div>';
     h += '</div></div>';
   }
@@ -110,7 +110,7 @@ function renderNCAAbracket() {
     h = '<div style="text-align:center;padding:48px 32px;">';
     h += '<div style="font-size:64px;margin-bottom:12px;">\ud83c\udfc6</div>';
     h += '<div style="font-size:10px;font-weight:800;color:var(--gld2);letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;">' + G.yr + ' National Champion</div>';
-    h += '<div style="font-size:40px;font-weight:900;color:' + (isu ? 'var(--gld2)' : '#fff') + ';letter-spacing:-1px;margin-bottom:6px;">' + ch.name + '</div>';
+    h += '<div style="font-size:40px;font-weight:900;color:' + (isu ? 'var(--gld2)' : 'var(--txt)') + ';letter-spacing:-1px;margin-bottom:6px;">' + ch.name + '</div>';
     if (isu) h += '<div style="font-size:15px;font-weight:800;color:var(--gld2);margin-bottom:24px;">YOUR DYNASTY. YOUR LEGACY.</div>';
     h += '<div class="btn btn-red" style="display:inline-block;padding:12px 28px;font-size:13px;" onclick="endSeason()">VIEW SEASON RECAP</div>';
     h += '</div>';
@@ -153,7 +153,7 @@ function renderNCAAbracket() {
       var b1 = regionTeams[i], b2 = regionTeams[i + 1];
       if (!b1 || !b2) continue;
       var played = b1.score !== null;
-      h += '<div style="border-bottom:1px solid rgba(255,255,255,.04);">';
+      h += '<div style="border-bottom:1px solid rgba(0,0,0,.04);">';
       [b1, b2].forEach(function(b, idx) {
         var isu = b.team.id === G.tid;
         var isWin = played && b.won;
@@ -164,7 +164,7 @@ function renderNCAAbracket() {
         else if (isLose) rowStyle += 'color:var(--txt3);';
         else if (!isu) rowStyle += 'color:var(--txt);';
         else rowStyle += 'color:var(--gld2);';
-        if (idx === 0) rowStyle += 'border-bottom:1px solid rgba(255,255,255,.04);';
+        if (idx === 0) rowStyle += 'border-bottom:1px solid rgba(0,0,0,.04);';
         h += '<div style="' + rowStyle + '">';
         h += '<span style="font-size:9px;font-family:monospace;color:' + (isu ? 'var(--gld2)' : 'var(--txt3)') + ';width:16px;text-align:right;flex-shrink:0;">' + b.seed + '</span>';
         h += '<span style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + b.team.name + '</span>';
