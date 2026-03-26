@@ -129,6 +129,17 @@ function renderNCAA_Hub() {
   var currentRound = rn[active.length] || 'NCAA Tournament';
   var h = '';
 
+  // Round-specific flavor
+  var flavor = {
+    64: { sub: 'First Round Frenzy', desc: '32 games. Chaos everywhere. Win and advance.', accent: 'var(--red)' },
+    32: { sub: 'Second Round', desc: 'The field narrows. Every game matters more.', accent: 'var(--red)' },
+    16: { sub: 'Regional Semifinals', desc: 'The best 16 teams left standing. This is where legends begin.', accent: 'var(--gld2)' },
+    8:  { sub: 'Regional Finals', desc: 'One win from the Final Four. The pressure is suffocating.', accent: 'var(--gld2)' },
+    4:  { sub: 'National Semifinals', desc: 'Four teams remain. 40 minutes from the championship game.', accent: 'var(--gld2)' },
+    2:  { sub: 'National Championship', desc: '40 minutes for immortality. The title game starts now.', accent: 'var(--gld)' }
+  };
+  var rf = flavor[active.length] || { sub: 'NCAA Tournament', desc: '', accent: 'var(--red)' };
+
   // Champion screen
   if (active.length === 1) {
     var ch = active[0].team; var isu = ch.id === G.tid;
@@ -136,30 +147,48 @@ function renderNCAA_Hub() {
     h += '<div style="font-size:64px;margin-bottom:12px;">\ud83c\udfc6</div>';
     h += '<div style="font-size:10px;font-weight:800;color:var(--gld2);letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;">' + G.yr + ' National Champion</div>';
     h += '<div style="font-size:40px;font-weight:900;color:' + (isu ? 'var(--gld2)' : 'var(--txt)') + ';letter-spacing:-1px;margin-bottom:6px;">' + ch.name + '</div>';
-    if (isu) h += '<div style="font-size:15px;font-weight:800;color:var(--gld2);margin-bottom:24px;">YOUR DYNASTY. YOUR LEGACY.</div>';
-    h += '<div class="btn btn-red" style="display:inline-block;padding:12px 28px;font-size:13px;" onclick="endSeason()">VIEW SEASON RECAP</div>';
+    if (isu) {
+      var userSeed = 0;
+      G.bracket.forEach(function(b) { if (b.team.id === G.tid) userSeed = b.seed; });
+      h += '<div style="font-size:15px;font-weight:800;color:var(--gld2);margin-bottom:8px;">YOUR DYNASTY. YOUR LEGACY.</div>';
+      if (userSeed >= 11) h += '<div style="font-size:13px;color:var(--gld2);margin-bottom:8px;">\ud83d\udc60 From #' + userSeed + ' seed to National Champions \u2014 the greatest Cinderella story ever told.</div>';
+    }
+    h += '<div class="btn btn-red" style="display:inline-block;padding:12px 28px;font-size:13px;margin-top:16px;" onclick="endSeason()">VIEW SEASON RECAP</div>';
     h += '</div>';
+
+    // All-Tournament highlights
+    h += renderTournamentHighlights();
     h += renderFullBracket();
     return h;
   }
 
-  // Header
-  h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">'
-    + '<div><div style="font-size:22px;font-weight:900;">NCAA Tournament</div>'
-    + '<div style="font-size:11px;color:var(--txt2);margin-top:2px;">March Madness ' + G.yr + '</div></div>'
-    + '<div style="font-size:12px;font-weight:800;color:var(--red);letter-spacing:1px;text-transform:uppercase;background:rgba(0,102,204,.06);padding:6px 12px;border-radius:4px;">' + currentRound + '</div></div>';
+  // Escalating header
+  h += '<div style="margin-bottom:16px;">';
+  h += '<div style="display:flex;justify-content:space-between;align-items:flex-start;">';
+  h += '<div><div style="font-size:24px;font-weight:900;letter-spacing:-.5px;">NCAA Tournament</div>';
+  h += '<div style="font-size:11px;color:var(--txt2);margin-top:2px;">March Madness ' + G.yr + '</div></div>';
+  h += '<div style="text-align:right;"><div style="font-size:14px;font-weight:900;color:' + rf.accent + ';letter-spacing:1px;text-transform:uppercase;">' + currentRound + '</div>';
+  h += '<div style="font-size:10px;color:var(--txt3);font-weight:600;margin-top:2px;">' + rf.sub + '</div></div>';
+  h += '</div>';
+  if (rf.desc) h += '<div style="font-size:12px;color:var(--txt2);margin-top:8px;font-style:italic;">' + rf.desc + '</div>';
+  h += '</div>';
+
+  // Cinderella tracker
+  h += renderCinderellaTracker();
 
   // Your matchup scouting report
   var userMatch = getUserNCAAmatchup();
   if (userMatch) {
     h += renderNCAAScoutingReport(userMatch, currentRound);
   } else if (active.length > 1) {
+    var finalRound = G.seasonAchievements && G.seasonAchievements.tourneyFinish ? G.seasonAchievements.tourneyFinish : 'the tournament';
     h += '<div style="background:var(--s2);border:1px solid var(--bdr);border-radius:8px;padding:20px;margin-bottom:16px;text-align:center;">'
-      + '<div style="font-size:13px;color:var(--txt2);margin-bottom:10px;">Your tournament run is over. Simming remaining games...</div>'
-      + '<div class="btn btn-red" style="display:inline-block;padding:10px 24px;" onclick="simNCAAround()">SIM NEXT ROUND</div></div>';
+      + '<div style="font-size:16px;font-weight:800;color:var(--txt);margin-bottom:6px;">Your run ends in the ' + finalRound + '.</div>'
+      + '<div style="font-size:12px;color:var(--txt2);margin-bottom:12px;">Watch the rest of the tournament unfold.</div>'
+      + '<div class="btn btn-red" style="display:inline-block;padding:10px 24px;" onclick="simNCAAround()">SIM NEXT ROUND \u25b6</div></div>';
   }
 
-  // Upsets / Results Feed
+  // Results Feed
   h += renderResultsFeed();
 
   // Full bracket
@@ -370,5 +399,91 @@ function renderScoutingReport(matchup, ct, type) {
     + '<div class="btn btn-red btn-full" onclick="doPlay(\'quick\')">\u26a1 QUICK SIM</div>'
     + '<div class="btn btn-ghost btn-full" onclick="doPlay(\'live\')">\u25b6 LIVE SIM</div></div>';
   h += '</div>';
+  return h;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  CINDERELLA TRACKER
+// ═══════════════════════════════════════════════════════════
+
+function renderCinderellaTracker() {
+  if (!G.cinderellas || !G.cinderellas.length) return '';
+  var active = G.bracket.filter(function(b) { return b.active; });
+  // Only show Cinderellas still alive
+  var alive = G.cinderellas.filter(function(c) {
+    return active.some(function(b) { return b.team.id === c.tid; });
+  });
+  if (!alive.length) return '';
+
+  var h = '<div style="background:linear-gradient(135deg,rgba(214,158,46,.06),rgba(214,158,46,.02));border:1px solid var(--gld);border-radius:8px;padding:12px 16px;margin-bottom:14px;">';
+  h += '<div style="font-size:9px;font-weight:800;color:var(--gld2);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">\ud83d\udc60 CINDERELLA WATCH</div>';
+  h += '<div style="display:flex;flex-wrap:wrap;gap:8px;">';
+  alive.forEach(function(c) {
+    var isUser = c.tid === G.tid;
+    h += '<div style="background:var(--s1);border:1px solid ' + (isUser ? 'var(--gld)' : 'var(--bdr)') + ';border-radius:6px;padding:6px 10px;display:flex;align-items:center;gap:6px;">'
+      + '<span style="font-size:9px;font-family:monospace;color:var(--gld2);font-weight:700;">#' + c.seed + '</span>'
+      + '<span style="font-size:11px;font-weight:' + (isUser ? '800' : '600') + ';color:' + (isUser ? 'var(--gld2)' : 'var(--txt)') + ';">' + c.name + '</span>'
+      + '</div>';
+  });
+  h += '</div>';
+  h += '<div style="font-size:10px;color:var(--txt3);margin-top:6px;font-style:italic;">The clock hasn\u2019t struck midnight yet...</div>';
+  h += '</div>';
+  return h;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  TOURNAMENT HIGHLIGHTS (post-championship)
+// ═══════════════════════════════════════════════════════════
+
+function renderTournamentHighlights() {
+  var h = '<div style="margin:20px 0;">';
+  h += '<div style="font-size:14px;font-weight:900;margin-bottom:10px;">Tournament Highlights</div>';
+  h += '<div style="background:var(--s1);border:1px solid var(--bdr);border-radius:8px;overflow:hidden;">';
+
+  // Find biggest upsets
+  var upsets = [];
+  for (var i = 0; i < G.bracket.length - 1; i += 2) {
+    var b1 = G.bracket[i], b2 = G.bracket[i + 1];
+    if (b1.score === null) continue;
+    var winner = b1.won ? b1 : b2;
+    var loser = b1.won ? b2 : b1;
+    if (winner.seed > loser.seed + 3) {
+      upsets.push({ winner: winner, loser: loser, diff: winner.seed - loser.seed });
+    }
+  }
+  upsets.sort(function(a, b) { return b.diff - a.diff; });
+
+  // User's best game (highest margin)
+  var userGames = [];
+  for (var j = 0; j < G.bracket.length - 1; j += 2) {
+    var ub1 = G.bracket[j], ub2 = G.bracket[j + 1];
+    if (ub1.score === null) continue;
+    if (ub1.team.id === G.tid || ub2.team.id === G.tid) {
+      var userEntry = ub1.team.id === G.tid ? ub1 : ub2;
+      var oppEntry = ub1.team.id === G.tid ? ub2 : ub1;
+      if (userEntry.won) userGames.push({ user: userEntry, opp: oppEntry, margin: userEntry.score - oppEntry.score });
+    }
+  }
+  userGames.sort(function(a, b) { return b.margin - a.margin; });
+
+  var highlights = [];
+  if (userGames.length) {
+    highlights.push('\u2b50 <b>' + G.teams[G.tid].name + '</b> dominated ' + userGames[0].opp.team.name + ' by ' + userGames[0].margin + ' points in the tournament.');
+  }
+  upsets.slice(0, 3).forEach(function(u) {
+    highlights.push('\ud83d\udea8 <b>UPSET:</b> #' + u.winner.seed + ' ' + u.winner.team.name + ' stunned #' + u.loser.seed + ' ' + u.loser.team.name + ' ' + u.winner.score + '-' + u.loser.score);
+  });
+  if (G.cinderellaRun) {
+    var userSeed = 0; G.bracket.forEach(function(b) { if (b.team.id === G.tid) userSeed = b.seed; });
+    highlights.push('\ud83d\udc60 From #' + userSeed + ' seed to champion \u2014 ' + G.teams[G.tid].name + ' wrote the greatest Cinderella story in tournament history.');
+  }
+
+  if (!highlights.length) highlights.push('Another chapter in March Madness history is complete.');
+
+  highlights.forEach(function(line) {
+    h += '<div style="padding:8px 14px;font-size:12px;color:var(--txt);border-bottom:1px solid rgba(0,0,0,.04);line-height:1.5;">' + line + '</div>';
+  });
+
+  h += '</div></div>';
   return h;
 }

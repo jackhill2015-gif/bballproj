@@ -362,14 +362,27 @@ export function showBracketReveal(userSeed) {
   var bubble = ge('br-bubble');
   if (bubble) {
     var allSorted = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; });
-    var lastIn = []; var firstOut = [];
+    var firstOut = [];
     for (var bi = 0; bi < allSorted.length; bi++) {
       var inBracket = G.bracket.some(function(br) { return br.team.id === allSorted[bi].id; });
-      if (inBracket && lastIn.length < 4) lastIn.push(allSorted[bi]);
       if (!inBracket && firstOut.length < 4 && allSorted[bi].wins > allSorted[bi].loss) firstOut.push(allSorted[bi]);
     }
-    // Show from bottom of bracket for "last in"
-    lastIn = G.bracket.slice().sort(function(a, b) { return b.seed - a.seed; }).slice(0, 4).map(function(b) { return b.team; });
+
+    // Last Four In = at-large teams with worst resumes (not auto-bids)
+    // Auto-bids are conf tournament champs — they get in regardless of record
+    var autoBidIds = {};
+    if (G.confTourneys) {
+      Object.keys(G.confTourneys).forEach(function(c) {
+        var ct = G.confTourneys[c];
+        if (ct && ct.champ) autoBidIds[ct.champ.id] = true;
+      });
+    }
+    var atLarge = G.bracket.filter(function(b) { return !autoBidIds[b.team.id]; });
+    atLarge.sort(function(a, b) {
+      var aResume = a.team.pts || 0; var bResume = b.team.pts || 0;
+      return aResume - bResume;
+    });
+    var lastIn = atLarge.slice(0, 4).map(function(b) { return b.team; });
 
     var bh = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">';
     bh += '<div style="background:var(--s1);border:1px solid var(--grn);border-radius:6px;padding:10px;">';
@@ -501,19 +514,44 @@ function simNCAArimExceptUser() {
   }
 }
 
+function detectCPUCinderellas() {
+  if (!G.bracket) return;
+  if (!G.cinderellas) G.cinderellas = [];
+  var active = G.bracket.filter(function(b) { return b.active; });
+  active.forEach(function(b) {
+    if (b.seed >= 11 && b.team.id !== G.tid) {
+      var already = G.cinderellas.some(function(c) { return c.tid === b.team.id; });
+      if (!already) {
+        G.cinderellas.push({ tid: b.team.id, name: b.team.name, seed: b.seed, round: active.length });
+        addLog('ev', G.gi, '\ud83d\udc60 <b>Cinderella!</b> #' + b.seed + ' ' + b.team.name + ' advances \u2014 the clock hasn\u2019t struck midnight!');
+      }
+    }
+  });
+}
+
 function checkNCAAdone() {
   var still = G.bracket.filter(function(b) { return b.active; });
   if (still.length === 1) {
     var ch = still[0].team;
     if (ch.id === G.tid) {
-      G.championships++; G.prestige = 5;
-      addLog('ev', G.gi, '<b>NATIONAL CHAMPIONS! \ud83c\udfc6</b>');
+      G.championships++;
+      var t = G.teams[G.tid];
+      t.schoolPrestige = Math.min(100, (t.schoolPrestige || 50) + 12);
+      if (G.coach) G.coach.rec = Math.min(99, (G.coach.rec || 70) + 3);
+      if (G.cinderellaRun) {
+        t.schoolPrestige = Math.min(100, t.schoolPrestige + 8);
+        G.coach.rec = Math.min(99, G.coach.rec + 5);
+        addLog('ev', G.gi, '\ud83d\udc60\ud83c\udfc6 <b>CINDERELLA CHAMPIONS!</b> The greatest underdog story in tournament history!');
+      }
+      addLog('ev', G.gi, '<b>NATIONAL CHAMPIONS! \ud83c\udfc6</b> +12 prestige!');
       toast('NATIONAL CHAMPIONS!!!', 'var(--gld)');
     } else {
       addLog('ev', G.gi, ch.name + ' wins the National Championship.');
       if (!G.leagueChamps) G.leagueChamps = [];
       G.leagueChamps.push({ year: G.yr, name: ch.name, tid: ch.id });
     }
+    G.cinderellas = [];
+    G.cinderellaRun = false;
     if (_ext.endSeason) _ext.endSeason();
   }
 }
@@ -627,13 +665,54 @@ export function resolveTournamentGame() {
     else { b2.won = true; b1.won = false; b1.active = false; }
     var userWon2 = (b1.team.id === G.tid) ? (LS.hs > LS.as) : (LS.as > LS.hs);
     var oppName2 = (b1.team.id === G.tid ? b2 : b1).team.name;
+    var remaining = G.bracket.filter(function(b) { return b.active; }).length;
+
     if (userWon2) {
-      toast(userTeam.name + ' ADVANCES! ' + uScore + '-' + oScore, 'var(--grn)');
-      addLog('w', G.gi, '<b>W</b> vs <b>' + oppName2 + '</b> ' + uScore + '\u2013' + oScore + ' (NCAA)');
+      // Round-specific headlines and prestige bonuses
+      var userSeed = (b1.team.id === G.tid) ? b1.seed : b2.seed;
+      var oppSeed = (b1.team.id === G.tid) ? b2.seed : b1.seed;
+      var isUpset = userSeed > oppSeed + 3;
+      var roundMsg = '';
+      var prestigeGain = 0;
+
+      if (remaining <= 2) { roundMsg = 'CHAMPIONSHIP BOUND!'; prestigeGain = 8; }
+      else if (remaining <= 4) { roundMsg = 'FINAL FOUR!'; prestigeGain = 5; }
+      else if (remaining <= 8) { roundMsg = 'ELITE EIGHT!'; prestigeGain = 3; }
+      else if (remaining <= 16) { roundMsg = 'SWEET 16!'; prestigeGain = 2; }
+      else if (remaining <= 32) { roundMsg = 'Moving on!'; prestigeGain = 1; }
+      else { roundMsg = 'ADVANCING!'; prestigeGain = 1; }
+
+      // Cinderella bonus: 11+ seed reaching Sweet 16+
+      if (userSeed >= 11 && remaining <= 16) {
+        prestigeGain += 5;
+        if (!G.cinderellaRun) G.cinderellaRun = true;
+        addLog('ev', G.gi, '\ud83d\udc60 <b>CINDERELLA ALERT!</b> #' + userSeed + ' ' + userTeam.name + ' keeps dancing! The country is watching.');
+      }
+
+      // Upset bonus
+      if (isUpset) {
+        prestigeGain += 2;
+        addLog('ev', G.gi, '\ud83d\udea8 <b>UPSET!</b> #' + userSeed + ' ' + userTeam.name + ' stuns #' + oppSeed + ' ' + oppName2 + '! ' + uScore + '-' + oScore);
+      }
+
+      // Apply prestige
+      var t = G.teams[G.tid];
+      t.schoolPrestige = Math.min(100, (t.schoolPrestige || 50) + prestigeGain);
+
+      toast(userTeam.name + ' ADVANCES! ' + roundMsg, 'var(--grn)');
+      addLog('w', G.gi, '<b>W</b> vs <b>' + oppName2 + '</b> ' + uScore + '\u2013' + oScore + ' (NCAA \u2014 ' + roundMsg + ')');
     } else {
-      toast('Eliminated by ' + oppName2 + ' ' + uScore + '-' + oScore, 'var(--red)');
-      addLog('l', G.gi, '<b>L</b> vs <b>' + oppName2 + '</b> ' + uScore + '\u2013' + oScore + ' (NCAA)');
+      // Elimination — record how far we got
+      var finalRound = remaining <= 2 ? 'Championship Game' : remaining <= 4 ? 'Final Four' : remaining <= 8 ? 'Elite Eight' : remaining <= 16 ? 'Sweet 16' : remaining <= 32 ? 'Round of 32' : 'Round of 64';
+      toast('Season over. Eliminated in the ' + finalRound + '.', 'var(--red)');
+      addLog('l', G.gi, '<b>L</b> vs <b>' + oppName2 + '</b> ' + uScore + '\u2013' + oScore + ' (NCAA \u2014 ' + finalRound + ')');
+      G.seasonAchievements = G.seasonAchievements || {};
+      G.seasonAchievements.tourneyFinish = finalRound;
     }
+
+    // Detect CPU Cinderellas and upsets
+    detectCPUCinderellas();
+
     simNCAArimExceptUser();
     checkNCAAdone();
   }
