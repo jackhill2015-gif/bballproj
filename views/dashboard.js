@@ -86,7 +86,7 @@ function renderMiniStandings() {
       + (isU ? 'background:rgba(0,102,204,.08);border-left:3px solid var(--red);' : 'border-left:3px solid transparent;') + '">'
       + '<div style="display:flex;align-items:center;gap:6px;">'
       + '<span style="width:16px;font-family:monospace;font-size:10px;color:var(--txt3);">' + (i + 1) + '</span>'
-      + '<span style="font-weight:' + (isU ? '800' : '500') + ';color:' + (isU ? '#fff' : 'var(--txt2)') + ';">' + tm.name + '</span></div>'
+      + '<span style="font-weight:' + (isU ? '800' : '500') + ';color:' + (isU ? 'var(--txt)' : 'var(--txt2)') + ';">' + tm.name + '</span></div>'
       + '<div style="display:flex;gap:10px;align-items:center;">'
       + '<span style="font-family:monospace;font-size:10px;color:var(--txt3);">' + tm.cWins + '-' + tm.cLoss + '</span>'
       + '<span style="width:24px;text-align:right;font-family:monospace;font-size:10px;color:var(--txt3);">' + (gb === 0 ? '-' : gb) + '</span>'
@@ -103,18 +103,20 @@ function renderTeamLeaders() {
   t.rost.forEach(function(p) {
     var gp = p.s.gp || 0; if (gp < 1) return;
     var ppg = p.s.pts / gp, rpg = p.s.reb / gp, apg = p.s.ast / gp;
-    if (!leaders.pts || ppg > leaders.pts.val) leaders.pts = { name: p.name, val: ppg };
-    if (!leaders.reb || rpg > leaders.reb.val) leaders.reb = { name: p.name, val: rpg };
-    if (!leaders.ast || apg > leaders.ast.val) leaders.ast = { name: p.name, val: apg };
+    if (!leaders.pts || ppg > leaders.pts.val) leaders.pts = { name: p.name, pos: p.pos, cls: p.cls, val: ppg };
+    if (!leaders.reb || rpg > leaders.reb.val) leaders.reb = { name: p.name, pos: p.pos, cls: p.cls, val: rpg };
+    if (!leaders.ast || apg > leaders.ast.val) leaders.ast = { name: p.name, pos: p.pos, cls: p.cls, val: apg };
   });
 
-  var h = '<div style="background:var(--s2);border:1px solid var(--bdr);border-radius:6px;padding:10px;">'
-    + '<div style="font-size:10px;font-weight:800;color:var(--txt3);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">Team Leaders</div>';
+  var h = '<div style="background:var(--s1);border:1px solid var(--g200);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow-sm);">'
+    + '<div style="font-size:10px;font-weight:700;color:var(--g500);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--g100);">Team Leaders</div>';
   [{ key: 'pts', label: 'PPG' }, { key: 'reb', label: 'RPG' }, { key: 'ast', label: 'APG' }].forEach(function(cat) {
     var l = leaders[cat.key];
-    h += '<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:11px;">'
-      + '<span style="color:var(--txt2);">' + (l ? l.name : '--') + '</span>'
-      + '<span style="font-family:monospace;font-weight:700;color:var(--red);">' + (l ? l.val.toFixed(1) : '--') + ' <span style="color:var(--txt3);font-size:9px;">' + cat.label + '</span></span></div>';
+    h += '<div style="display:flex;align-items:center;gap:10px;padding:6px 0;' + (cat.key !== 'ast' ? 'border-bottom:1px solid var(--g100);' : '') + '">'
+      + '<div style="flex:1;min-width:0;"><div style="font-size:12px;font-weight:700;color:var(--g900);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + (l ? l.name : '--') + '</div>'
+      + '<div style="font-size:10px;color:var(--g400);">' + (l ? l.pos + ' \u00b7 ' + l.cls : '') + '</div></div>'
+      + '<div style="text-align:right;flex-shrink:0;"><div style="font-family:var(--mono);font-size:22px;font-weight:900;color:var(--g900);line-height:1;">' + (l ? l.val.toFixed(1) : '--') + '</div>'
+      + '<div style="font-size:9px;color:var(--g400);font-weight:700;letter-spacing:.5px;">' + cat.label + '</div></div></div>';
   });
   h += '</div>';
   return h;

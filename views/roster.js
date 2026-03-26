@@ -19,27 +19,34 @@ export function renderRoster() {
   if (!t || !t.rost) return;
 
   var total = t.rost.reduce(function(s, p) { return s + p.mins; }, 0);
-  var totalOk = total === 200;
+  var totalCol = total === 200 ? 'var(--grn2)' : 'var(--danger)';
 
   var h = '';
 
   // Header
-  h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">'
+  h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">'
     + '<div>'
-    + '<div style="font-size:20px;font-weight:900;">Depth Chart</div>'
-    + '<div style="font-size:11px;color:var(--txt2);margin-top:3px;">Drag to reorder \u00b7 Top 5 = Starters \u00b7 Sliders control minutes</div>'
+    + '<div style="font-size:22px;font-weight:900;color:var(--g900);">Depth Chart</div>'
+    + '<div style="font-size:11px;color:var(--g500);margin-top:4px;">Drag to reorder \u00b7 Top 5 = Starters \u00b7 Sliders control minutes</div>'
     + '</div>'
-    + '<div class="btn btn-red" onclick="autoOptimizeRoster()" style="font-size:11px;padding:8px 20px;font-weight:800;">AUTO SET</div>'
-    + '</div>';
+    + '<div style="display:flex;align-items:center;gap:12px;">'
+    + '<div style="text-align:right;"><div style="font-size:9px;color:var(--g400);font-weight:700;letter-spacing:.5px;text-transform:uppercase;">TOTAL MIN</div>'
+    + '<div style="font-family:var(--mono);font-size:16px;font-weight:900;color:' + totalCol + ';">' + total + '/200</div></div>'
+    + '<div class="btn btn-red btn-sm" onclick="autoOptimizeRoster()">AUTO SET</div>'
+    + '</div></div>';
+
+  // Column headers
+  h += '<div style="display:grid;grid-template-columns:28px 36px 1fr 50px 50px 150px;align-items:center;gap:6px;padding:6px 14px;font-size:9px;font-weight:700;color:var(--g400);letter-spacing:.5px;text-transform:uppercase;border-bottom:2px solid var(--g200);">'
+    + '<div></div><div>POS</div><div>PLAYER</div><div style="text-align:center;">OVR</div><div style="text-align:center;">POT</div><div style="text-align:right;padding-right:28px;">MINUTES</div></div>';
 
   // Player rows
   t.rost.forEach(function(p, i) {
     var tier = i < 5 ? 'starter' : i < 9 ? 'rotation' : 'bench';
 
     // Section headers
-    if (i === 0) h += sectHead('STARTERS', 'var(--red)');
-    else if (i === 5) h += sectHead('ROTATION', 'var(--txt2)');
-    else if (i === 9) h += sectHead('BENCH', 'var(--txt3)');
+    if (i === 0) h += sectHead('STARTERS', 'var(--primary)');
+    else if (i === 5) h += sectHead('ROTATION', 'var(--g500)');
+    else if (i === 9) h += sectHead('BENCH', 'var(--g400)');
 
     // Stats
     var gp = p.s ? (p.s.gp || 0) : 0;
@@ -48,70 +55,73 @@ export function renderRoster() {
     var apg = gp > 0 ? (p.s.ast / gp).toFixed(1) : null;
 
     // Colors
-    var stripe = tier === 'starter' ? 'var(--red)' : tier === 'rotation' ? 'var(--bdr2)' : 'transparent';
-    var clsMap = { FR: '#48bb78', SO: '#ecc94b', JR: '#63b3ed', SR: '#a0aec0' };
-    var clsCol = clsMap[p.cls] || '#a0aec0';
+    var stripe = tier === 'starter' ? 'var(--primary)' : tier === 'rotation' ? 'var(--accent)' : 'transparent';
+    var clsBg = { FR: '#dbeafe', SO: '#f3e8ff', JR: '#ffedd5', SR: '#fce7f3' };
+    var clsCol2 = { FR: '#1e40af', SO: '#6b21a8', JR: '#9a3412', SR: '#9d174d' };
     var pot = p.pot || p.ovr;
-    var potCol = pot > p.ovr + 8 ? '#48bb78' : pot > p.ovr + 3 ? '#ecc94b' : 'var(--txt3)';
+    var potCol = pot > p.ovr + 8 ? 'var(--grn2)' : pot > p.ovr + 3 ? 'var(--gld2)' : 'var(--g400)';
     var isBenched = p.mins === 0;
 
-    // Slider fill — compute inline background gradient since CSS var approach is broken
+    // Slider fill
     var fillPct = Math.round((p.mins / 40) * 100);
-    var sliderTrackCol = tier === 'starter' ? 'var(--red)' : tier === 'rotation' ? '#718096' : '#4a5568';
-    var sliderBg = 'linear-gradient(90deg,' + sliderTrackCol + ' 0%,' + sliderTrackCol + ' ' + fillPct + '%,var(--bdr2) ' + fillPct + '%)';
+    var sliderTrackCol = tier === 'starter' ? 'var(--primary)' : tier === 'rotation' ? 'var(--accent)' : 'var(--g300)';
+    var sliderBg = 'linear-gradient(90deg,' + sliderTrackCol + ' 0%,' + sliderTrackCol + ' ' + fillPct + '%,var(--g200) ' + fillPct + '%)';
 
     h += '<div data-idx="' + i + '" '
       + 'ondragover="rosterDragOver(event)" '
       + 'ondrop="rosterDrop(event,' + i + ')" '
-      + 'style="display:grid;grid-template-columns:24px 38px 1fr 42px 42px 130px;align-items:center;gap:4px;'
-      + 'padding:9px 12px;border-left:3px solid ' + stripe + ';border-bottom:1px solid rgba(0,0,0,.04);'
+      + 'style="display:grid;grid-template-columns:28px 36px 1fr 50px 50px 150px;align-items:center;gap:6px;'
+      + 'padding:10px 14px;border-left:3px solid ' + stripe + ';border-bottom:1px solid var(--g100);'
       + 'transition:opacity .12s,background .1s;'
       + (isBenched ? 'opacity:.45;' : '') + '" '
-      + 'onmouseover="this.style.background=\'rgba(0,0,0,.04)\'" '
+      + 'onmouseover="this.style.background=\'var(--g50)\'" '
       + 'onmouseout="this.style.background=\'\'">';
 
-    // Col 1: Drag handle — THIS is the only draggable element
-    h += '<div draggable="true" ondragstart="rosterDragStart(event,' + i + ')" style="color:var(--txt3);font-size:12px;cursor:grab;user-select:none;text-align:center;">\u2630</div>';
+    // Col 1: Drag handle
+    h += '<div draggable="true" ondragstart="rosterDragStart(event,' + i + ')" style="color:var(--g300);font-size:14px;cursor:grab;user-select:none;text-align:center;transition:color .1s;" onmouseover="this.style.color=\'var(--g500)\'" onmouseout="this.style.color=\'var(--g300)\'">\u2630</div>';
 
     // Col 2: Position chip
-    h += '<div><span style="display:inline-block;font-size:9px;font-weight:800;background:var(--s3);color:var(--txt);padding:3px 7px;border-radius:4px;text-align:center;min-width:28px;">' + p.pos + '</span></div>';
+    var posKey = p.pos.toLowerCase();
+    var posBg = { pg: '#dbeafe', sg: '#e0f2fe', sf: '#dcfce7', pf: '#ffedd5', c: '#fef3c7' };
+    var posCol = { pg: '#1e40af', sg: '#0369a1', sf: '#166534', pf: '#9a3412', c: '#92400e' };
+    h += '<div><span style="display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;background:' + (posBg[posKey] || 'var(--g100)') + ';color:' + (posCol[posKey] || 'var(--g500)') + ';padding:3px 0;border-radius:4px;width:32px;">' + p.pos + '</span></div>';
 
-    // Col 3: Name + class + stats
+    // Col 3: Name + class badge + stats
     h += '<div style="min-width:0;overflow:hidden;">'
-      + '<div style="display:flex;align-items:center;gap:5px;">'
-      + '<span style="font-size:13px;font-weight:700;color:' + (isBenched ? 'var(--txt3)' : '#fff') + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + p.name + '</span>'
-      + '<span style="font-size:8px;font-weight:800;color:' + clsCol + ';background:' + clsCol + '18;padding:1px 5px;border-radius:3px;flex-shrink:0;">' + p.cls + '</span></div>';
+      + '<div style="display:flex;align-items:center;gap:6px;">'
+      + '<span style="font-size:13px;font-weight:700;color:' + (isBenched ? 'var(--g400)' : 'var(--g900)') + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + p.name + '</span>'
+      + '<span style="font-size:9px;font-weight:800;color:' + (clsCol2[p.cls] || '#64748b') + ';background:' + (clsBg[p.cls] || '#f1f5f9') + ';padding:1px 6px;border-radius:3px;flex-shrink:0;">' + p.cls + '</span></div>';
     if (ppg !== null) {
-      h += '<div style="font-size:10px;color:var(--txt3);margin-top:1px;white-space:nowrap;">' + ppg + ' pts \u00b7 ' + rpg + ' reb \u00b7 ' + apg + ' ast</div>';
+      h += '<div style="font-size:10px;color:var(--g400);margin-top:2px;white-space:nowrap;font-family:var(--mono);">' + ppg + ' pts \u00b7 ' + rpg + ' reb \u00b7 ' + apg + ' ast</div>';
     }
     h += '</div>';
 
     // Col 4: OVR
     h += '<div style="text-align:center;">'
-      + '<div style="font-family:\'JetBrains Mono\',monospace;font-size:15px;font-weight:900;color:var(--red);">' + p.ovr + '</div></div>';
+      + '<div style="font-family:var(--mono);font-size:16px;font-weight:900;color:var(--primary);">' + p.ovr + '</div></div>';
 
     // Col 5: POT
     h += '<div style="text-align:center;">'
-      + '<div style="font-family:\'JetBrains Mono\',monospace;font-size:13px;font-weight:700;color:' + potCol + ';">' + pot + '</div></div>';
+      + '<div style="font-family:var(--mono);font-size:13px;font-weight:700;color:' + potCol + ';">' + pot + '</div></div>';
 
-    // Col 6: Slider with inline fill
-    h += '<div style="display:flex;align-items:center;gap:6px;">'
+    // Col 6: Slider + minutes value
+    h += '<div style="display:flex;align-items:center;gap:8px;">'
       + '<input type="range" min="0" max="40" value="' + p.mins + '" data-idx="' + i + '" '
       + 'oninput="updateMinsSlider(this)" '
       + 'style="-webkit-appearance:none;appearance:none;width:100%;height:5px;border-radius:3px;outline:none;cursor:pointer;'
       + 'background:' + sliderBg + ';">'
-      + '<span style="font-family:\'JetBrains Mono\',monospace;font-size:11px;font-weight:700;color:' + (p.mins > 0 ? '#fff' : 'var(--txt3)') + ';width:22px;text-align:right;flex-shrink:0;">' + p.mins + '</span>'
+      + '<span style="font-family:var(--mono);font-size:12px;font-weight:700;color:' + (p.mins > 0 ? 'var(--g900)' : 'var(--g400)') + ';width:24px;text-align:right;flex-shrink:0;">' + p.mins + '</span>'
       + '</div>';
 
     h += '</div>';
   });
 
-  // Inject slider thumb styles if not already present
+  // Inject slider thumb styles
   if (!document.getElementById('roster-thumb-style')) {
     var style = document.createElement('style');
     style.id = 'roster-thumb-style';
-    style.textContent = '#roster-content input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid var(--red);cursor:pointer;}'
-      + '#roster-content input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid var(--red);cursor:pointer;}';
+    style.textContent = '#roster-content input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--primary);cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.15);}'
+      + '#roster-content input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--primary);cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.15);}';
     document.head.appendChild(style);
   }
 
@@ -119,7 +129,7 @@ export function renderRoster() {
 }
 
 function sectHead(label, col) {
-  return '<div style="padding:10px 12px 5px;font-size:10px;font-weight:800;color:' + col + ';letter-spacing:1.5px;border-bottom:1px solid ' + col + ';">' + label + '</div>';
+  return '<div style="padding:12px 14px 6px;font-size:10px;font-weight:800;color:' + col + ';letter-spacing:1.5px;border-bottom:2px solid ' + col + ';">' + label + '</div>';
 }
 
 // ═══════════════════════════════════════════════════════════
