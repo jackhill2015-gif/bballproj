@@ -335,88 +335,139 @@ export function showBracketReveal(userSeed) {
   var rev = ge('bracket-reveal');
   if (!rev) return;
   rev.style.display = 'block';
+  G._revealStep = 0; // Track which region we're revealing
+
+  // User card
   if (userSeed > 0) {
     var uc = ge('br-user-card'); if (uc) uc.style.display = 'block';
     txt('br-user-team', G.teams[G.tid].name);
-    txt('br-user-seed', '#' + userSeed + ' Seed \u2014 ' +
-      (userSeed <= 4 ? 'Top 4 seed! Host site.' :
-       userSeed <= 8 ? 'Top 8 seed.' :
-       userSeed <= 16 ? 'Top half of bracket.' :
-       'Lower seed \u2014 need an upset run.'));
+    var seedDesc = userSeed <= 4 ? 'Top 4 seed! You could host.' :
+                   userSeed <= 8 ? 'Strong seed. Favorable draw.' :
+                   userSeed <= 12 ? 'Middle of the pack. Road gets tough.' :
+                   'Low seed \u2014 the country loves an underdog.';
+    txt('br-user-seed', '#' + userSeed + ' Seed \u2014 ' + seedDesc);
     var idx = userSeed - 1;
     var oppIdx = idx % 2 === 0 ? idx + 1 : idx - 1;
     var opp = G.bracket[oppIdx];
-    txt('br-user-opp', opp ? 'First round vs #' + opp.seed + ' ' + opp.team.name : 'First round opponent TBD');
-    txt('br-seed-line', 'The field of 64 is set. You are in.');
+    var userRegion = Math.floor(idx / 16);
+    var regions = ['East', 'West', 'South', 'Midwest'];
+    txt('br-user-opp', opp ? regions[userRegion] + ' Region \u2014 First Round vs #' + opp.seed + ' ' + opp.team.name : '');
+    txt('br-seed-line', '32 automatic bids confirmed. 32 at-large bids decided.');
   } else {
-    txt('br-seed-line', 'The field of 64 is set. Your program did not qualify this year.');
+    txt('br-seed-line', 'The field of 64 is set. Your program did not qualify.');
+    var uc2 = ge('br-user-card'); if (uc2) uc2.style.display = 'none';
   }
 
-  var wrap = ge('br-bracket');
-  if (!wrap) return;
-  wrap.innerHTML = '';
-  wrap.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;';
+  // Build bubble report
+  var bubble = ge('br-bubble');
+  if (bubble) {
+    var allSorted = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; });
+    var lastIn = []; var firstOut = [];
+    for (var bi = 0; bi < allSorted.length; bi++) {
+      var inBracket = G.bracket.some(function(br) { return br.team.id === allSorted[bi].id; });
+      if (inBracket && lastIn.length < 4) lastIn.push(allSorted[bi]);
+      if (!inBracket && firstOut.length < 4 && allSorted[bi].wins > allSorted[bi].loss) firstOut.push(allSorted[bi]);
+    }
+    // Show from bottom of bracket for "last in"
+    lastIn = G.bracket.slice().sort(function(a, b) { return b.seed - a.seed; }).slice(0, 4).map(function(b) { return b.team; });
 
+    var bh = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">';
+    bh += '<div style="background:var(--s1);border:1px solid var(--grn);border-radius:6px;padding:10px;">';
+    bh += '<div style="font-size:9px;font-weight:800;color:var(--grn2);letter-spacing:1px;margin-bottom:6px;">LAST FOUR IN</div>';
+    lastIn.forEach(function(t) {
+      bh += '<div style="font-size:11px;padding:3px 0;color:' + (t.id === G.tid ? 'var(--gld2)' : 'var(--txt)') + ';font-weight:' + (t.id === G.tid ? '800' : '500') + ';">' + t.name + ' (' + t.wins + '-' + t.loss + ')</div>';
+    });
+    bh += '</div>';
+    bh += '<div style="background:var(--s1);border:1px solid #dc2626;border-radius:6px;padding:10px;">';
+    bh += '<div style="font-size:9px;font-weight:800;color:#dc2626;letter-spacing:1px;margin-bottom:6px;">FIRST FOUR OUT</div>';
+    firstOut.forEach(function(t) {
+      bh += '<div style="font-size:11px;padding:3px 0;color:var(--txt2);">' + t.name + ' (' + t.wins + '-' + t.loss + ')</div>';
+    });
+    bh += '</div></div>';
+    bubble.innerHTML = bh;
+    bubble.style.display = 'block';
+  }
+
+  // Clear bracket — will fill region by region
+  var wrap = ge('br-bracket');
+  if (wrap) wrap.innerHTML = '';
+
+  // Set first reveal button
+  var btn = ge('br-reveal-btn');
+  if (btn) { btn.textContent = 'REVEAL EAST REGION \u25b6'; btn.onclick = function() { revealNextRegion(); }; }
+}
+
+export function revealNextRegion() {
+  var step = G._revealStep || 0;
   var regions = ['East', 'West', 'South', 'Midwest'];
-  // Bracket matchup order: 1v16, 8v9, 5v12, 4v13, 6v11, 3v14, 7v10, 2v15
+  var wrap = ge('br-bracket');
+  var btn = ge('br-reveal-btn');
+  if (!wrap || step >= 4) return;
+
+  // Build region card
+  var regionStart = step * 16;
   var matchupSeeds = [[1,16],[8,9],[5,12],[4,13],[6,11],[3,14],[7,10],[2,15]];
 
-  for (var r = 0; r < 4; r++) {
-    var regionStart = r * 16;
-    var col = document.createElement('div');
-    col.style.cssText = 'background:var(--s1);border:1px solid var(--bdr);border-radius:8px;overflow:hidden;';
+  var col = document.createElement('div');
+  col.style.cssText = 'background:var(--s1);border:1px solid var(--bdr);border-radius:8px;overflow:hidden;opacity:0;transition:opacity 0.6s;';
 
-    // Region header
-    var header = document.createElement('div');
-    header.style.cssText = 'font-size:11px;font-weight:800;color:var(--red);letter-spacing:1.5px;text-transform:uppercase;padding:10px 14px;border-bottom:1px solid var(--bdr);text-align:center;';
-    header.textContent = regions[r] + ' Region';
-    col.appendChild(header);
+  var header = document.createElement('div');
+  header.style.cssText = 'font-size:12px;font-weight:800;color:var(--red);letter-spacing:1.5px;text-transform:uppercase;padding:10px 14px;border-bottom:1px solid var(--bdr);text-align:center;background:var(--s2);';
+  header.textContent = regions[step] + ' Region';
+  col.appendChild(header);
 
-    // Matchups
-    matchupSeeds.forEach(function(pair) {
-      var s1 = pair[0], s2 = pair[1];
-      // Map region seed (1-16) to global bracket index
-      var idx1 = regionStart + s1 - 1;
-      var idx2 = regionStart + s2 - 1;
-      var b1 = G.bracket[idx1];
-      var b2 = G.bracket[idx2];
-      if (!b1 || !b2) return;
+  var hasUser = false;
+  matchupSeeds.forEach(function(pair) {
+    var s1 = pair[0], s2 = pair[1];
+    var idx1 = regionStart + s1 - 1;
+    var idx2 = regionStart + s2 - 1;
+    var b1 = G.bracket[idx1], b2 = G.bracket[idx2];
+    if (!b1 || !b2) return;
 
-      var isU1 = b1.team.id === G.tid;
-      var isU2 = b2.team.id === G.tid;
+    var isU1 = b1.team.id === G.tid, isU2 = b2.team.id === G.tid;
+    if (isU1 || isU2) hasUser = true;
 
-      var matchup = document.createElement('div');
-      matchup.style.cssText = 'border-bottom:1px solid rgba(0,0,0,.04);';
+    var matchup = document.createElement('div');
+    matchup.style.cssText = 'border-bottom:1px solid rgba(0,0,0,.04);';
 
-      // Team 1
-      var row1 = document.createElement('div');
-      row1.style.cssText = 'display:flex;align-items:center;gap:6px;padding:6px 12px;font-size:11px;' +
-        (isU1 ? 'background:rgba(214,158,46,.12);border-left:3px solid var(--gld);' : 'border-left:3px solid transparent;');
-      row1.innerHTML = '<span style="width:20px;font-family:monospace;font-size:10px;color:' + (isU1 ? 'var(--gld2)' : 'var(--txt3)') + ';font-weight:700;">' + s1 + '</span>'
-        + '<span style="flex:1;font-weight:' + (isU1 ? '800' : '500') + ';color:' + (isU1 ? 'var(--gld2)' : 'var(--txt)') + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + b1.team.name + '</span>'
-        + '<span style="font-family:monospace;font-size:10px;color:var(--txt3);">' + b1.team.wins + '-' + b1.team.loss + '</span>';
-      matchup.appendChild(row1);
-
-      // Team 2
-      var row2 = document.createElement('div');
-      row2.style.cssText = 'display:flex;align-items:center;gap:6px;padding:6px 12px;font-size:11px;border-bottom:2px solid var(--bdr);' +
-        (isU2 ? 'background:rgba(214,158,46,.12);border-left:3px solid var(--gld);' : 'border-left:3px solid transparent;');
-      row2.innerHTML = '<span style="width:20px;font-family:monospace;font-size:10px;color:' + (isU2 ? 'var(--gld2)' : 'var(--txt3)') + ';font-weight:700;">' + s2 + '</span>'
-        + '<span style="flex:1;font-weight:' + (isU2 ? '800' : '500') + ';color:' + (isU2 ? 'var(--gld2)' : 'var(--txt)') + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + b2.team.name + '</span>'
-        + '<span style="font-family:monospace;font-size:10px;color:var(--txt3);">' + b2.team.wins + '-' + b2.team.loss + '</span>';
-      matchup.appendChild(row2);
-
-      col.appendChild(matchup);
+    [{ b: b1, s: s1, isu: isU1 }, { b: b2, s: s2, isu: isU2 }].forEach(function(entry, idx) {
+      var row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;gap:6px;padding:6px 12px;font-size:11px;'
+        + (entry.isu ? 'background:rgba(214,158,46,.12);border-left:3px solid var(--gld);' : 'border-left:3px solid transparent;')
+        + (idx === 0 ? 'border-bottom:1px solid rgba(0,0,0,.03);' : '');
+      row.innerHTML = '<span style="width:18px;font-family:monospace;font-size:10px;color:' + (entry.isu ? 'var(--gld2)' : 'var(--txt3)') + ';font-weight:700;text-align:right;">' + entry.s + '</span>'
+        + '<span style="flex:1;font-weight:' + (entry.isu ? '800' : '500') + ';color:' + (entry.isu ? 'var(--gld2)' : 'var(--txt)') + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + entry.b.team.name + '</span>'
+        + '<span style="font-family:monospace;font-size:10px;color:var(--txt3);">' + entry.b.team.wins + '-' + entry.b.team.loss + '</span>';
+      matchup.appendChild(row);
     });
+    col.appendChild(matchup);
+  });
 
-    wrap.appendChild(col);
+  wrap.appendChild(col);
+  // Fade in
+  setTimeout(function() { col.style.opacity = '1'; }, 50);
+
+  // If user's region, add gold pulse
+  if (hasUser) {
+    col.style.border = '2px solid var(--gld)';
+    col.style.boxShadow = '0 0 12px rgba(214,158,46,.2)';
+  }
+
+  G._revealStep = step + 1;
+
+  // Update button
+  if (step + 1 < 4) {
+    btn.textContent = 'REVEAL ' + regions[step + 1].toUpperCase() + ' REGION \u25b6';
+  } else {
+    btn.textContent = "LET\u2019S DANCE \u25b6";
+    btn.onclick = function() { closeBracketReveal(); };
   }
 }
 
 export function closeBracketReveal() {
   var rev = ge('bracket-reveal');
   if (rev) rev.style.display = 'none';
-  navTo('dashboard');
+  navTo('bracket');
 }
 
 // ═══════════════════════════════════════════════════════════

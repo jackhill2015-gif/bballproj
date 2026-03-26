@@ -177,23 +177,24 @@
   </div>
 </div>
 
-<!-- NCAA BRACKET REVEAL -->
+<!-- NCAA BRACKET REVEAL (Selection Sunday) -->
 <div id="bracket-reveal" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:9500;overflow-y:auto;padding:24px;">
   <div style="max-width:1100px;margin:0 auto;">
     <div style="text-align:center;margin-bottom:24px;">
-      <div style="font-size:11px;color:var(--red);font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:6px;">Selection Sunday</div>
-      <div style="font-size:36px;font-weight:900;letter-spacing:-1px;color:#1a1a1a;" id="br-title">NCAA Tournament</div>
-      <div style="font-size:13px;color:var(--txt2);margin-top:4px;" id="br-seed-line">The field of 64 is set.</div>
+      <div style="font-size:10px;color:var(--red);font-weight:800;letter-spacing:4px;text-transform:uppercase;margin-bottom:6px;" id="br-label">SELECTION SUNDAY</div>
+      <div style="font-size:40px;font-weight:900;letter-spacing:-1px;color:var(--txt);" id="br-title">NCAA Tournament</div>
+      <div style="font-size:13px;color:var(--txt2);margin-top:4px;" id="br-seed-line"></div>
     </div>
-    <div id="br-user-card" style="background:var(--s1);border:2px solid var(--gld);border-radius:8px;padding:20px;margin-bottom:20px;text-align:center;display:none;">
-      <div style="font-size:10px;color:var(--gld2);font-weight:800;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;">Your Program</div>
-      <div style="font-size:28px;font-weight:900;color:#1a1a1a;" id="br-user-team">---</div>
-      <div style="font-size:14px;color:var(--gld2);margin-top:4px;" id="br-user-seed">---</div>
-      <div style="font-size:12px;color:var(--txt2);margin-top:6px;" id="br-user-opp">---</div>
+    <div id="br-user-card" style="background:linear-gradient(135deg,rgba(214,158,46,.08),rgba(0,102,204,.04));border:2px solid var(--gld);border-radius:8px;padding:24px;margin-bottom:20px;text-align:center;display:none;">
+      <div style="font-size:10px;color:var(--gld2);font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:6px;">YOUR PROGRAM IS GOING DANCING</div>
+      <div style="font-size:32px;font-weight:900;color:var(--txt);" id="br-user-team">---</div>
+      <div style="font-size:16px;color:var(--gld2);margin-top:6px;font-weight:800;" id="br-user-seed">---</div>
+      <div style="font-size:12px;color:var(--txt2);margin-top:8px;" id="br-user-opp">---</div>
     </div>
-    <div id="br-bracket" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;"></div>
-    <div style="text-align:center;">
-      <div class="btn btn-red" style="display:inline-block;padding:14px 40px;font-size:14px;font-weight:800;" onclick="closeBracketReveal()">LET'S DANCE ▶</div>
+    <div id="br-bubble" style="display:none;margin-bottom:16px;"></div>
+    <div id="br-bracket" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;"></div>
+    <div id="br-reveal-controls" style="text-align:center;">
+      <div id="br-reveal-btn" class="btn btn-red" style="display:inline-block;padding:14px 40px;font-size:14px;font-weight:800;" onclick="revealNextRegion()">REVEAL EAST REGION ▶</div>
     </div>
   </div>
 </div>
