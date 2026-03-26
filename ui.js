@@ -244,9 +244,14 @@ export function openModal(tH, tA, isTournament, roundName) {
   // Remove any lingering tournament result overlay
   var panel = ge('gmod').querySelector('.gpanel');
   if (panel) {
-    var oldOverlay = panel.querySelector('div[style*="position:absolute"]');
-    if (oldOverlay) panel.removeChild(oldOverlay);
+    var overlays = panel.querySelectorAll('div[style*="position:absolute"], div[style*="position: absolute"]');
+    for (var oi = 0; oi < overlays.length; oi++) panel.removeChild(overlays[oi]);
   }
+  // Reset LS state for fresh game
+  LS.clock = 1200; LS.half = 1; LS.hs = 0; LS.as = 0;
+  LS.h1 = null; LS.a1 = null; LS.poss = 'A';
+  if (typeof LS.possCount !== 'undefined') LS.possCount = 0;
+
   ge('gmod').classList.add('open');
   if (isTournament && roundName) {
     txt('gmod-title', roundName); txt('gmod-wk', 'TOURNAMENT GAME');
