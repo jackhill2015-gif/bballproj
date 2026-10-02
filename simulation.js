@@ -7,6 +7,7 @@
 
 import { COM, DIFF_MOD } from './constants.js';
 import { ri, clamp, gn, getOvr, getTOvr, pick, freshS } from './utils.js';
+import { moraleAttrMod, MORALE_DEFAULT } from './morale.js';
 import { G, LS } from './state.js';
 
 // ── Player Generation ────────────────────────────────────
@@ -18,6 +19,7 @@ export function genPlayer(base, pos, cls) {
     def: ri(base - 18, base + 18),
     reb: ri(base - 18, base + 18),
     ply: ri(base - 18, base + 18),
+    morale: MORALE_DEFAULT,
     s: freshS()
   };
 
@@ -395,12 +397,14 @@ export function simGame(home, away, userIsHome) {
   home.rost.forEach(function(p, i) {
     hOrig[i] = { sht: p.sht, fin: p.fin, def: p.def };
     var mod = (userT === home) ? dm : cpuBoost;
-    p.sht = clamp(p.sht + mod, 30, 99); p.fin = clamp(p.fin + mod, 30, 99); p.def = clamp(p.def + mod, 30, 99);
+    var mm = moraleAttrMod(p); // morale: -2..+2, subtle team-wide drift
+    p.sht = clamp(p.sht + mod + mm, 30, 99); p.fin = clamp(p.fin + mod + mm, 30, 99); p.def = clamp(p.def + mod + mm, 30, 99);
   });
   away.rost.forEach(function(p, i) {
     aOrig[i] = { sht: p.sht, fin: p.fin, def: p.def };
     var mod = (userT === away) ? dm : cpuBoost;
-    p.sht = clamp(p.sht + mod, 30, 99); p.fin = clamp(p.fin + mod, 30, 99); p.def = clamp(p.def + mod, 30, 99);
+    var mm = moraleAttrMod(p); // morale: -2..+2, subtle team-wide drift
+    p.sht = clamp(p.sht + mod + mm, 30, 99); p.fin = clamp(p.fin + mod + mm, 30, 99); p.def = clamp(p.def + mod + mm, 30, 99);
   });
   // M8 FIX: wire the sellout-crowd event (events.js sets G.nextHomeBonus=3).
   // Applies to the user's next home game only, consumed once.

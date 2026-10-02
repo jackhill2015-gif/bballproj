@@ -7,6 +7,7 @@
 import { ge, txt } from './utils.js';
 import { G, LS, SetupState, saveState } from './state.js';
 import { simGame } from './simulation.js';
+import { recordGameMorale } from './morale.js';
 
 // ── Late-Binding Registry ────────────────────────────────
 var _ext = {
@@ -725,6 +726,9 @@ export function resolveTournamentGame() {
     m.winner = LS.hs > LS.as ? m.t1 : m.t2;
     var userWon = (m.winner.id === G.tid);
     var oppName = (m.t1.id === G.tid ? m.t2 : m.t1).name;
+    var oppTeam = (m.t1.id === G.tid ? m.t2 : m.t1);
+    // Morale: tournament games swing moods too
+    recordGameMorale(userWon ? userTeam : oppTeam, userWon ? oppTeam : userTeam);
     if (userWon) {
       toast(userTeam.name + ' ADVANCES! ' + uScore + '-' + oScore, 'var(--grn)');
       addLog('w', G.gi, '<b>W</b> vs <b>' + oppName + '</b> ' + uScore + '\u2013' + oScore + ' (Conf Tourney)');
@@ -762,6 +766,9 @@ export function resolveTournamentGame() {
     else { b2.won = true; b1.won = false; b1.active = false; }
     var userWon2 = (b1.team.id === G.tid) ? (LS.hs > LS.as) : (LS.as > LS.hs);
     var oppName2 = (b1.team.id === G.tid ? b2 : b1).team.name;
+    var oppTeam2 = (b1.team.id === G.tid ? b2 : b1).team;
+    // Morale: tournament games swing moods too
+    recordGameMorale(userWon2 ? userTeam : oppTeam2, userWon2 ? oppTeam2 : userTeam);
     // Teams left AFTER the full round: 32 / 16 / 8 / 4 / 2 / 1
     var remaining = G.bracket.filter(function(b) { return b.active; }).length;
 

@@ -10,6 +10,7 @@
 import { G, saveState } from '../state.js';
 import { ri, freshS } from '../utils.js';
 import { CLS } from '../constants.js';
+import { portalEntryChance, moralePortalReason, MORALE_DEFAULT } from '../morale.js';
 import { teamLogo } from '../ui.js';
 
 // ── Callbacks registered by views/recruiting.js (avoids an import cycle) ──
@@ -32,8 +33,7 @@ var _nextPid = 1;
 var _portalShown = 30;
 
 function portalReason(p) {
-  if (p.ovr >= 78 && p.mins < 18) return 'Bigger role';
-  return 'Playing time';
+  return moralePortalReason(p);
 }
 
 // Build the portal class from low-minute / unhappy returners across every
@@ -48,10 +48,18 @@ export function genPortalEntrants() {
     tm.rost.forEach(function(p) {
       if (p.cls === 'SR') return;              // seniors already departing
       if (count >= 3) return;                  // max 3 entrants per team
-      if ((p.mins || 0) >= 18) return;         // rotation players stay put
+      if ((p.mins || 0) >= 18) {
+        // Rotation players stay put — unless they're checked out (morale < 25)
+        var _m = (typeof p.morale === 'number') ? p.morale : MORALE_DEFAULT;
+        if (_m >= 25) return;
+      }
       var unhappy = p.mins <= 10 || (p.ovr >= 78 && p.mins < 18) || (p.cls === 'FR' && p.mins <= 8);
-      if (!unhappy) return;
-      if (Math.random() > 0.45) return;         // not everyone acts on it
+      if (!unhappy) {
+        var _m2 = (typeof p.morale === 'number') ? p.morale : MORALE_DEFAULT;
+        if (_m2 >= 25) return;                 // content players with minutes stay
+      }
+      // Morale-weighted: lower morale → substantially more likely to enter
+      if (Math.random() > portalEntryChance(p)) return;
       var pid = _nextPid++;
       p._portalPid = pid;
       G.portalEntrants.push({

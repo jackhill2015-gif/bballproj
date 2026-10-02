@@ -10,6 +10,7 @@ import {
 } from './utils.js';
 import { G, LS, SetupState, saveState } from './state.js';
 import { genPlayer, simGame, calcGrowth } from './simulation.js';
+import { recordGameMorale } from './morale.js';
 import { rollEvents } from './events.js';
 
 // ── Late-Binding Registry ────────────────────────────────
@@ -353,9 +354,11 @@ export function simCPUWeek() {
     if (hScore > aScore) {
       homeTeam.wins++; homeTeam.pts += 45; awayTeam.loss++; awayTeam.pts -= 15;
       if (s.conf) { homeTeam.cWins++; awayTeam.cLoss++; }
+      recordGameMorale(homeTeam, awayTeam);
     } else {
       awayTeam.wins++; awayTeam.pts += 45; homeTeam.loss++; homeTeam.pts -= 15;
       if (s.conf) { awayTeam.cWins++; homeTeam.cLoss++; }
+      recordGameMorale(awayTeam, homeTeam);
     }
 
     // Mark both sides as played
@@ -428,6 +431,8 @@ export function recordResult() {
   }
   // Note: GP is counted once per game — simGame() increments it internally
   // for quick/auto-simmed games, and launchSim() increments at tipoff for live games.
+  // Morale: both teams' players react to the result.
+  recordGameMorale(won ? t : opp, won ? opp : t);
   addLog(won ? 'w' : 'l', G.gi + 1,
     '<b>' + (won ? 'W' : 'L') + '</b> vs <b>' + opp.name + '</b>  ' + uScore + '\u2013' + oScore);
   toast((won ? 'W ' : 'L ') + uScore + '-' + oScore + ' vs ' + opp.name,
@@ -929,7 +934,7 @@ export function doOffseason() {
   G.teams.forEach(function(tm) {
     tm.wins = 0; tm.loss = 0; tm.cWins = 0; tm.cLoss = 0; tm.sched = [];
     tm.ts = { pts: 0, opp: 0, fgm: 0, fga: 0, games: 0 }; tm.streak = 0;
-    tm.rost.forEach(function(p) { p.s = freshS(); });
+    tm.rost.forEach(function(p) { p.s = freshS(); p.morale = 50; }); // fresh vibes, new season
     if (tm.id !== G.tid) {
       tm.rost = tm.rost.filter(function(p) { return p.cls !== 'SR'; });
       tm.rost.forEach(function(p) {

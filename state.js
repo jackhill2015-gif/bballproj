@@ -394,6 +394,7 @@ export function loadState() {
             var pg=p.cls==='FR'?12:p.cls==='SO'?8:p.cls==='JR'?4:1;
             p.pot=Math.min(99,p.ovr+pg);
           }
+          if(typeof p.morale!=='number')p.morale=50; // morale system (v8)
         });
       }
     });}

@@ -13,6 +13,7 @@
 
 import { ge, clamp } from '../utils.js';
 import { G, saveState } from '../state.js';
+import { moodTag, moodColors, MORALE_DEFAULT } from '../morale.js';
 
 var _dragIdx = -1;
 
@@ -48,6 +49,7 @@ function ensureSkin() {
     '.pos-chip{display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;' +
     'background:var(--blu-soft);color:var(--blu);padding:5px 0;border-radius:5px;width:38px;flex-shrink:0;}' +
     '.cls-badge{font-size:9px;font-weight:800;padding:2px 7px;border-radius:4px;flex-shrink:0;}' +
+    '.mood-tag{font-size:9px;font-weight:800;padding:2px 7px;border-radius:4px;flex-shrink:0;margin-left:4px;white-space:nowrap;}' +
     '@media(min-width:861px){.drag-handle{display:block;}}' +
     '#roster-content input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;' +
     'border-radius:50%;background:#fff;border:3px solid var(--blu);cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.2);}' +
@@ -78,6 +80,10 @@ function depthRow(p, i) {
   var clsBg = { FR: '#dbeafe', SO: '#f3e8ff', JR: '#ffedd5', SR: '#fce7f3' };
   var clsTx = { FR: '#1e40af', SO: '#6b21a8', JR: '#9a3412', SR: '#9d174d' };
   var benched = p.mins === 0;
+  // Mood tag — roster page only, per jack (no dashboard meter)
+  var _mor = (typeof p.morale === 'number') ? p.morale : MORALE_DEFAULT;
+  var _mc = moodColors(_mor);
+  var moodPill = '<span class="mood-tag" style="background:' + _mc[0] + ';color:' + _mc[1] + ';">' + moodTag(_mor) + '</span>';
 
   var h = '<div class="depth-row ' + tier + (benched ? ' benched' : '') + '" data-row="' + i + '">'
     + '<div class="dr-top">'
@@ -88,7 +94,7 @@ function depthRow(p, i) {
     + '<button class="nudge-btn" data-rmove="' + i + '" data-dir="1" aria-label="Move ' + p.name + ' down">▼</button>'
     + '</div>'
     + '<span class="pos-chip">' + p.pos + '</span>'
-    + '<div class="dr-name">' + p.name + ' <span class="cls-badge" style="background:' + (clsBg[p.cls] || '#f1f5f9') + ';color:' + (clsTx[p.cls] || '#64748b') + ';">' + p.cls + '</span>'
+    + '<div class="dr-name">' + p.name + ' <span class="cls-badge" style="background:' + (clsBg[p.cls] || '#f1f5f9') + ';color:' + (clsTx[p.cls] || '#64748b') + ';">' + p.cls + '</span>' + moodPill
     + '<div class="dr-sub">' + line + '</div></div>'
     + '<div class="dr-ovr"><b>' + p.ovr + '</b><small style="color:' + potCol + ';">POT ' + pot + '</small></div>'
     + '</div>'

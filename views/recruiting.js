@@ -14,6 +14,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { ge, clamp } from '../utils.js';
+import { hasRestlessStarAt } from '../morale.js';
 import { TEAM_STATES, STATE_TO_REGION, STATE_NAMES, SCHOOL_RECRUIT_GATES, COACH_FN, COACH_LN } from '../constants.js';
 import { G, LS, SetupState, saveState, calcRecruitingBudget } from '../state.js';
 import { renderPortal, genPortalEntrants, registerPortalCallbacks, portalPickup, advanceFromPortal, showMorePortal } from './portal.js';
@@ -109,6 +110,9 @@ function calcUserBid(r) {
   var us = getTeamState(G.teams[G.tid]);
   var geo = getGeoBonus(us, r.homeState);
   var base = ((r.points || 0) * recMod * 1.5 + r.interest * 0.4) * (1 + geo);
+  // Morale pitch: a restless star at the recruit's position means the job is
+  // opening up — "come start right away" lands harder.
+  if (hasRestlessStarAt(G.teams[G.tid], r.pos)) base *= 1.15;
   var gatePrestige = SCHOOL_RECRUIT_GATES[r.stars] || 0;
   if (sp < gatePrestige) {
     var deficit = gatePrestige - sp;
