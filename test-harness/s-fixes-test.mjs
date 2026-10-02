@@ -230,7 +230,7 @@ console.log('\n── S9/S10: save slimming, debounce, prestige ──');
   check(kb < 1500, `save slimmed well under old 3.4MB (${kb}KB)`);
   const parsed = JSON.parse(raw);
   check(typeof parsed.prestige === 'number' && parsed.prestige === 4, 'prestige persisted in save');
-  check(parsed._saveVersion === 8, `save version is 8 (got ${parsed._saveVersion})`);
+  check(parsed._saveVersion === 9, `save version is 9 (got ${parsed._saveVersion})`);
   const bracketHasObjects = parsed.bracket.some(b => b.team && typeof b.team === 'object');
   check(!bracketHasObjects, 'bracket serialized as team IDs (no embedded team objects)');
 

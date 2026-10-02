@@ -553,7 +553,7 @@ export function doPlay(mode) {
     } else if (G.offseasonStep === 'turnover') {
       if (window.proceedToRecruiting) window.proceedToRecruiting();
     } else if (G.offseasonStep === 'portal') {
-      if (window.advanceFromPortal) window.advanceFromPortal();
+      if (window.advancePortalStage) window.advancePortalStage();
     } else if (G.recruitPhase < 3) {
       if (window.advanceRecruitPhase) window.advanceRecruitPhase();
     } else {
@@ -876,7 +876,7 @@ export function beginOffseason() {
   G.offseasonStep = 'skillpoints';
   G.recruitPhase = 0;
   G.recruitTargets = [];
-  G.portalEntrants = []; G.portalPicksLeft = 0;
+  G.portalEntrants = []; G.portalStage = 0; G.portalCpuTakes = {}; G.portalUserSigns = 0;
   saveState(); updateAll(); navTo('offseason');
 }
 
@@ -935,12 +935,6 @@ export function doOffseason() {
   // Reset recruiting budget for next cycle
   G.recruitingBudget = 0;
   G.recruitingSpent = 0;
-
-  // Rank-based offseason NIL bonus
-  var _osRanked = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; });
-  var _osRank = _osRanked.findIndex(function(x) { return x.id === G.tid; }) + 1;
-  var _osBonus = _osRank <= 10 ? 200 : _osRank <= 25 ? 150 : _osRank <= 64 ? 100 : _osRank <= 150 ? 70 : 40;
-  G.pts += _osBonus;
 
   // Reset all teams for new season
   var _userTouchedByPortal = false;

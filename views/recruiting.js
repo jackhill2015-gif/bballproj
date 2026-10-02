@@ -13,12 +13,14 @@
 //  re-render); board pagination kept.
 // ═══════════════════════════════════════════════════════════
 
-import { ge, clamp } from '../utils.js';
+import { ge, clamp, ri } from '../utils.js';
 import { hasRestlessStarAt } from '../morale.js';
-import { TEAM_STATES, STATE_TO_REGION, STATE_NAMES, SCHOOL_RECRUIT_GATES, COACH_FN, COACH_LN } from '../constants.js';
+import { TEAM_STATES, STATE_TO_REGION, STATE_NAMES, SCHOOL_RECRUIT_GATES, COACH_FN, COACH_LN, RECRUIT_STATE_POOL } from '../constants.js';
 import { G, LS, SetupState, saveState, calcRecruitingBudget } from '../state.js';
-import { renderPortal, genPortalEntrants, registerPortalCallbacks, portalPitch, advanceFromPortal, showMorePortal } from './portal.js';
+import { renderPortal, genPortalEntrants, registerPortalCallbacks, adjustOffer, pivotOffer, advancePortalStage, advanceFromPortal, showMorePortal, PORTAL_OFFER_STEP } from './portal.js';
+import { genPlayer } from '../simulation.js';
 import { teamLogo } from '../ui.js';
+import * as Battle from './battle.js';
 
 var _ext = { toast: null, addLog: null, updateAll: null };
 export function registerRecruitingCallbacks(cb) {
@@ -43,10 +45,16 @@ var _boardShown = 30; // R5: cap rendered board rows
 // ═══════════════════════════════════════════════════════════
 //  PHASE CONFIG
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
+//  STAGE CONFIG — unified 3-stage battle machine (views/battle.js)
+//  Stage 1 "Open": allocate points across targets (dump or spread)
+//  Stage 2 "Vibe Check": trends + invest more / hold / pivot
+//  Stage 3 "Signing Day": final investments, then everyone decides
+// ═══════════════════════════════════════════════════════════
 var PHASES = {
-  1: { name: 'Evaluation Period', tag: 'PHASE 1 OF 3', desc: 'Browse and target recruits. No decisions yet.', btnLabel: 'ADVANCE TO EARLY SIGNING', final: false, decisionRate: 0.30, cpuAgg: 0.8 },
-  2: { name: 'Early Signing Period', tag: 'PHASE 2 OF 3', desc: 'Top prospects decide. Refunded points can be reinvested.', btnLabel: 'ADVANCE TO LATE SIGNING', final: false, decisionRate: 0.55, cpuAgg: 1.1 },
-  3: { name: 'Late Signing Period', tag: 'PHASE 3 OF 3', desc: 'All remaining recruits make their decision.', btnLabel: 'FINALIZE CLASS & START SEASON', final: true, decisionRate: 1.0, cpuAgg: 1.4 }
+  1: { name: 'Open', tag: 'STAGE 1 OF 3', desc: 'Cast a wide net — dump points on a star or spread them across the board.', btnLabel: 'ADVANCE TO VIBE CHECK', final: false, decideFrac: 0.30, cpuAgg: 0.8 },
+  2: { name: 'Vibe Check', tag: 'STAGE 2 OF 3', desc: 'Movement check — invest more, hold your ground, or pivot to a backup.', btnLabel: 'ADVANCE TO SIGNING DAY', final: false, decideFrac: 0.60, cpuAgg: 1.1 },
+  3: { name: 'Signing Day', tag: 'STAGE 3 OF 3', desc: 'Final investments — then everyone decides.', btnLabel: 'FINALIZE CLASS & START SEASON', final: true, decideFrac: 1.0, cpuAgg: 1.4 }
 };
 
 // ═══════════════════════════════════════════════════════════
@@ -141,6 +149,11 @@ export function adjustPoints(rid, delta) {
   var nv = (r.points || 0) + delta; if (nv < 0) return;
   var left = G.recruitingBudget - G.recruitingSpent;
   if (delta > 0 && left < delta) return;
+  if (delta < 0 && (G.recruitPhase || 1) >= 2) {
+    // Pulling out after the Open stage sinks 25% — pivoting has a cost.
+    var sunk = Math.round(-delta * (1 - Battle.PIVOT_REFUND));
+    if (sunk > 0) G.recruitingBudget = Math.max(0, G.recruitingBudget - sunk);
+  }
   r.points = nv; delete r._schools; delete r._schoolsPhase;
   recalcSpent(); saveState();
   updateRecruitRow(rid); // in-place: no full re-render
@@ -156,7 +169,18 @@ window.addTarget = addTarget;
 export function removeTarget(rid) {
   G.recruitTargets = G.recruitTargets.filter(function(x) { return x !== rid; });
   var r = G.recruits.find(function(x) { return x.id === rid; });
-  if (r) { r.points = 0; delete r._schools; delete r._schoolsPhase; }
+  if (r) {
+    // Pivot: pull out of a lost cause. After the Open stage, 25% is sunk.
+    var pts = r.points || 0;
+    if (pts > 0 && (G.recruitPhase || 1) >= 2) {
+      var sunk = Math.round(pts * (1 - Battle.PIVOT_REFUND));
+      if (sunk > 0) {
+        G.recruitingBudget = Math.max(0, G.recruitingBudget - sunk);
+        toast('Pivot cost: ' + sunk + ' pts sunk.', 'var(--gld)');
+      }
+    }
+    r.points = 0; delete r._schools; delete r._schoolsPhase;
+  }
   recalcSpent(); saveState(); renderOffseason();
 }
 window.removeTarget = removeTarget;
@@ -184,6 +208,14 @@ export function proceedToRecruiting() {
   genRecruitsFn();
   // R9: transfer portal step sits between turnover and recruiting
   genPortalEntrants();
+  // Offseason NIL bonus lands here (moved up from doOffseason): it funds
+  // the portal battle, so the Open stage is "dump or spread" for real.
+  var ranked = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; });
+  var orank = ranked.findIndex(function(x) { return x.id === G.tid; }) + 1;
+  var bonus = orank <= 10 ? 200 : orank <= 25 ? 150 : orank <= 64 ? 100 : orank <= 150 ? 70 : 40;
+  G.pts += bonus;
+  addLog('ev', G.gi, 'Offseason NIL bonus: <b>+' + bonus + '</b> (ranked #' + orank + ') — spend it in the portal.');
+  toast('Offseason NIL bonus: +' + bonus + ' NIL (ranked #' + orank + ')', 'var(--grn)');
   G.offseasonStep = 'portal';
   saveState(); renderOffseason();
 }
@@ -193,43 +225,121 @@ window.proceedToRecruiting = proceedToRecruiting;
 function genRecruitsFn() { if (window._genRecruits) window._genRecruits(); }
 
 // ═══════════════════════════════════════════════════════════
-//  PHASE RESOLUTION (unchanged logic)
+//  STAGE RESOLUTION — early-decision rounds (stages 1→2, 2→3)
+//  Only a fraction of the most-contended board decides each stage;
+//  heavily-leading targets can sign early (never guaranteed).
+//  Signing Day (stage 3) resolves everyone via the final logic.
 // ═══════════════════════════════════════════════════════════
 
+function userPctOf(r) {
+  var schools = getSchoolChances(r);
+  for (var i = 0; i < schools.length; i++) if (schools[i].isUser) return schools[i].pct;
+  return 0;
+}
+
+function refundRecruitPoints(r) {
+  // Points on a decided recruit flow back to the budget automatically:
+  // recalcSpent only counts open recruits.
+  r.points = 0;
+  delete r._schools; delete r._schoolsPhase;
+}
+
+function cpuWeightedSign(r) {
+  var schools = getSchoolChances(r).filter(function(s) { return !s.isUser; });
+  if (!schools.length) return null;
+  var tot = 0, i;
+  for (i = 0; i < schools.length; i++) tot += schools[i].bid;
+  var roll = Math.random() * tot, acc = 0, win = schools[0];
+  for (i = 0; i < schools.length; i++) { acc += schools[i].bid; if (roll <= acc) { win = schools[i]; break; } }
+  return win;
+}
+
+// Late risers: if the user's class is thin on Signing Day, 2 unheralded
+// recruits emerge that they can take a flier on.
+function maybeLateRecruits() {
+  var commits = G.recruits.filter(function(r) { return r.status === 'committed'; }).length;
+  var pursuits = G.recruits.filter(function(r) { return r.status === 'open' && (r.points || 0) > 0; }).length;
+  if (!Battle.boardIsThin(commits, pursuits)) return;
+  var maxId = 0, maxRank = 0;
+  G.recruits.forEach(function(r) { if (r.id > maxId) maxId = r.id; if (r.natRank > maxRank) maxRank = r.natRank; });
+  var ranked = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; });
+  var weakPool = ranked.slice(Math.floor(ranked.length / 2));
+  for (var i = 0; i < weakPool.length - 1; i++) {
+    var k = ri(0, weakPool.length - 1 - i) + i, tmp = weakPool[i];
+    weakPool[i] = weakPool[k]; weakPool[k] = tmp;
+  }
+  var POSL = ['PG', 'SG', 'SF', 'PF', 'C'];
+  for (var n = 0; n < 2; n++) {
+    var ovr = ri(66, 76);
+    var p = genPlayer(ovr, POSL[ri(0, 4)], 'FR');
+    p.id = maxId + 1 + n;
+    p.stars = 3;
+    p.interest = ri(10, 25);
+    p.signed = -1; p.points = 0; p.status = 'open';
+    p.homeState = RECRUIT_STATE_POOL[ri(0, RECRUIT_STATE_POOL.length - 1)];
+    p.natRank = maxRank + 1 + n;
+    p.posRank = 999;
+    p.late = true;
+    p.rivals = weakPool.slice(0, 3).map(function(t) { return { tid: t.id, name: t.name }; });
+    G.recruits.push(p);
+  }
+  addLog('ev', G.gi, '<b>Two late risers hit the board</b> — unheralded prospects worth a flier.');
+  toast('Late risers: 2 new recruits available.', 'var(--blu)');
+}
+
 export function advanceRecruitPhase() {
-  var phase = PHASES[G.recruitPhase]; if (!phase) return;
-  var open = G.recruits.filter(function(r) { return r.status === 'open'; });
-  var num = Math.max(1, Math.round(open.length * phase.decisionRate));
-  open.sort(function(a, b) { return ((b.points || 0) + b.interest) - ((a.points || 0) + a.interest); });
-  var deciding = open.slice(0, num);
-  var newC = [], newG = [], refund = 0;
-  deciding.forEach(function(r) {
-    var ub = calcUserBid(r);
-    var schools = calcSchoolChances(r);
-    var bestCPU = schools.filter(function(s) { return !s.isUser; }).sort(function(a, b) { return b.bid - a.bid; })[0];
-    var bestBid = bestCPU ? bestCPU.bid : 0;
-    if (r.points >= 10 && ub > bestBid) { r.signed = G.tid; r.status = 'committed'; newC.push(r); }
-    else if (r.points >= 5 && ub > bestBid * 0.85 && Math.random() < 0.35) { r.signed = G.tid; r.status = 'committed'; newC.push(r); }
-    else if (r.points > 0 && ub > bestBid * 0.7 && Math.random() < 0.15) { r.signed = G.tid; r.status = 'committed'; newC.push(r); }
-    else if (bestCPU) {
-      var ch = r.stars >= 5 ? 0.80 : r.stars >= 4 ? 0.70 : r.stars >= 3 ? 0.55 : 0.40;
-      ch *= phase.cpuAgg;
-      if (Math.random() < ch) { r.signed = bestCPU.tid; r.status = 'gone'; r.goneTo = bestCPU.name; newG.push(r); }
+  var phase = PHASES[G.recruitPhase]; if (!phase || phase.final) return;
+  // Snapshot trends BEFORE the phase++ raises cpuAgg, so Vibe Check
+  // shows real movement.
+  G.recruits.forEach(function(r) {
+    if (r.status === 'open') r._prevPct = userPctOf(r);
+  });
+  var res = Battle.runEarlyRound({
+    targets: G.recruits,
+    isOpen: function(r) { return r.status === 'open'; },
+    decideFrac: phase.decideFrac,
+    invested: function(r) { return (r.points || 0) > 0; },
+    userLead: function(r) {
+      var schools = getSchoolChances(r), user = null, best = 0, i;
+      for (i = 0; i < schools.length; i++) {
+        if (schools[i].isUser) user = schools[i];
+        else best = Math.max(best, schools[i].pct);
+      }
+      return user ? user.pct - best : 0;
+    },
+    contention: function(r) { return (r.points || 0) + r.interest; },
+    cpuLead: function(r) {
+      var schools = getSchoolChances(r).filter(function(s) { return !s.isUser; });
+      var tot = 0, i;
+      for (i = 0; i < schools.length; i++) tot += schools[i].bid;
+      if (tot <= 0) return 0;
+      if (schools.length < 2) return 100;
+      return (schools[0].bid - schools[1].bid) / tot * 100;
+    },
+    userSign: function(r) {
+      r.signed = G.tid; r.status = 'committed';
+      refundRecruitPoints(r);
+      addLog('ev', G.gi, r.name + ' (' + r.stars + '★) <b>commits early!</b>');
+    },
+    cpuSign: function(r) {
+      var win = cpuWeightedSign(r);
+      if (!win) { r.status = 'gone'; r.signed = -1; return; }
+      r.signed = win.tid; r.status = 'gone'; r.goneTo = win.name;
+      refundRecruitPoints(r);
+      addLog('ev', G.gi, r.name + ' (' + r.stars + '★) signed early with <b>' + win.name + '</b>.');
     }
-    if (r.status !== 'open' && r.points > 0) { refund += r.points; r.points = 0; }
   });
   G.recruitTargets = G.recruitTargets.filter(function(id) { var r = G.recruits.find(function(x) { return x.id === id; }); return r && r.status === 'open'; });
   G.recruits.forEach(function(r) { delete r._schools; delete r._schoolsPhase; });
   recalcSpent();
-  newC.forEach(function(r) { addLog('ev', G.gi, r.name + ' (' + r.stars + '\u2605) <b>commits!</b>'); });
-  newG.forEach(function(r) { addLog('ev', G.gi, r.name + ' signed with <b>' + (r.goneTo || 'another school') + '</b>.'); });
+  G.recruitPhase++;
+  // Late risers surface on Signing Day if the class is thin
+  if (G.recruitPhase === 3) maybeLateRecruits();
   var parts = [];
-  if (newC.length) parts.push(newC.length + ' commit' + (newC.length > 1 ? 's' : ''));
-  if (newG.length) parts.push(newG.length + ' lost');
-  if (refund > 0) parts.push(refund + ' pts refunded');
+  if (res.userSigned.length) parts.push(res.userSigned.length + ' commit' + (res.userSigned.length > 1 ? 's' : '') + ' early');
+  if (res.cpuSigned.length) parts.push(res.cpuSigned.length + ' signed elsewhere');
   parts.push(G.recruits.filter(function(r) { return r.status === 'open'; }).length + ' still open');
-  toast(phase.name + ': ' + parts.join(' \u00b7 '), newC.length ? 'var(--grn)' : 'var(--gld)');
-  if (G.recruitPhase < 3) G.recruitPhase++;
+  toast(Battle.ACQ_STAGES[G.recruitPhase - 1].name + ': ' + parts.join(' · '), res.userSigned.length ? 'var(--grn)' : 'var(--gld)');
   saveState(); updateAll(); renderOffseason();
 }
 window.advanceRecruitPhase = advanceRecruitPhase;
@@ -287,6 +397,8 @@ export function renderOffseason() {
   // ── Header ──
   h += '<div style="margin-bottom:12px;"><div class="sec-head">Recruiting ' + G.yr + '</div>'
     + '<div class="sec-sub">' + phase.name + ' — ' + phase.desc + '</div></div>';
+
+  h += Battle.stageStepperHTML(G.recruitPhase - 1);
 
   // ── Stats bar ──
   var leftCol = left > 30 ? 'var(--grn2)' : left > 0 ? 'var(--gld2)' : 'var(--red)';
@@ -368,9 +480,11 @@ function bindOffseason(el) {
     if (q('[data-stay]')) { stayAtSchool(); return; }
     if (q('[data-fired-go]')) { proceedFromFired(); return; }
     // Portal rows (portal.js HTML lives in this container)
-    if ((m = q('[data-ppitch]'))) { portalPitch(parseInt(m.getAttribute('data-ppitch'), 10)); return; }
+    if ((m = q('[data-poff-dec]'))) { adjustOffer(parseInt(m.getAttribute('data-poff-dec'), 10), -PORTAL_OFFER_STEP); return; }
+    if ((m = q('[data-poff-inc]'))) { adjustOffer(parseInt(m.getAttribute('data-poff-inc'), 10), PORTAL_OFFER_STEP); return; }
+    if ((m = q('[data-ppivot]'))) { pivotOffer(parseInt(m.getAttribute('data-ppivot'), 10)); return; }
     if (q('[data-pshowmore]')) { showMorePortal(); return; }
-    if (q('[data-padvance]')) { advanceFromPortal(); return; }
+    if (q('[data-pstage]')) { advancePortalStage(); return; }
     // Board row → detail (checked last; steppers/target buttons win)
     if ((m = q('[data-rid]'))) { showDetail(parseInt(m.getAttribute('data-rid'), 10)); return; }
   };
@@ -477,7 +591,7 @@ function stepperRow(r, left, removable) {
     + '<button class="stepper plus' + (left >= 5 ? '' : ' off') + '" data-pt-inc="' + r.id + '" aria-label="Add 5 points to ' + r.name + '" aria-disabled="' + (left >= 5 ? 'false' : 'true') + '">+</button>'
     + '<span style="font-size:11px;color:var(--txt3);">pts</span>'
     + '<div style="flex:1;"></div>';
-  if (removable) h += '<button class="btn-quiet" data-rem-target="' + r.id + '">Remove</button>';
+  if (removable) h += '<button class="btn-quiet" data-rem-target="' + r.id + '" aria-label="Pivot away from ' + r.name + '">Pivot</button>';
   return h + '</div>';
 }
 
@@ -1002,8 +1116,10 @@ function renderTargets(left) {
       + '<div class="leader-rank">#' + r.natRank + '</div>'
       + '<span class="pos-chip">' + r.pos + '</span>'
       + '<div class="leader-name" style="flex:1;">' + r.name + (leading ? ' <span class="tag t-ok">Leading</span>' : '')
+      + (r.late ? ' <span class="tag t-ok">Late</span>' : '')
       + '<small><span style="color:var(--gld2);">' + starStr(r.stars) + '</span> · OVR ' + r.ovr + ' · ' + (STATE_NAMES[r.homeState] || r.homeState) + '</small></div>'
-      + '<div class="leader-val" data-user-pct="' + r.id + '" style="color:' + pctCol + ';">' + userPct + '%</div></div>';
+      + '<div style="text-align:right;"><div class="leader-val" data-user-pct="' + r.id + '" style="color:' + pctCol + ';">' + userPct + '%</div>'
+      + '<div style="margin-top:2px;">' + Battle.trendHTML(userPct, r._prevPct) + '</div></div></div>';
 
     h += '<div style="margin-bottom:10px;">' + stepperRow(r, left, true) + '</div>';
 

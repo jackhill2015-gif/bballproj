@@ -8,10 +8,11 @@
 // ═══════════════════════════════════════════════════════════
 
 import { G, saveState } from '../state.js';
-import { ri, freshS, clamp } from '../utils.js';
+import { ri, freshS, clamp, fixMins } from '../utils.js';
 import { CLS, TEAM_STATES, STATE_TO_REGION, RECRUIT_STATE_POOL } from '../constants.js';
 import { portalEntryChance, moralePortalReason, MORALE_DEFAULT } from '../morale.js';
 import { teamLogo } from '../ui.js';
+import * as Battle from './battle.js';
 
 // ── Callbacks registered by views/recruiting.js (avoids an import cycle) ──
 var _ext = { render: null, toast: null, addLog: null };
@@ -23,14 +24,18 @@ function toast(m, c) { if (_ext.toast) _ext.toast(m, c); }
 function addLog(t, w, x) { if (_ext.addLog) _ext.addLog(t, w, x); }
 
 // ═══════════════════════════════════════════════════════════
-//  LOGIC (unchanged)
+//  LOGIC — 3-stage battle system (see views/battle.js)
+//  Stage 1 "Open": place NIL offers across targets (dump or spread)
+//  Stage 2 "Vibe Check": trends + invest more / hold / pivot
+//  Stage 3 "Signing Day": final offers, then everyone decides
 // ═══════════════════════════════════════════════════════════
 
-export var PORTAL_PICK_LIMIT = 2;    // user pickups per offseason
 export var PORTAL_MAX_ENTRANTS = 160;
+export var PORTAL_OFFER_STEP = 10;   // NIL per stepper click
 
 var _nextPid = 1;
 var _portalShown = 30;
+var _portalTouchedUser = false;      // user's roster poached this stage
 
 function portalReason(p) {
   return moralePortalReason(p);
@@ -41,11 +46,17 @@ function getTeamState(t) { return TEAM_STATES[t.name] || 'XX'; }
 function getGeoBonus(ts, rs) { if (!ts || !rs || ts === 'XX') return 0; if (ts === rs) return 0.20; var tr = STATE_TO_REGION[ts], rr = STATE_TO_REGION[rs]; if (tr && tr === rr) return 0.10; return 0; }
 
 // ── Portal economy ──
-// NIL cost to pitch an entrant, scaled by OVR. Weekly NIL earnings run
-// ~14-40 and the shop sells boosts for 50-80, so a 45-135 pitch is a real
-// investment without being out of reach.
+// NIL offer steppers move in PORTAL_OFFER_STEP chunks. portalCost is the
+// "standard" reference offer for an entrant (shown on the row); any offer
+// above 0 puts you in the race, and bigger offers bid harder.
+// CPU suitors heat up as stages advance — your % decays unless you
+// invest more. That's the Vibe Check drama.
 export function portalCost(e) {
   return 20 + Math.max(0, e.ovr - 65) * 5;
+}
+
+function portalEsc() {
+  return [1.0, 1.2, 1.45][Math.max(0, Math.min(2, G.portalStage || 0))];
 }
 
 // Prestige gate by entrant quality (mirrors SCHOOL_RECRUIT_GATES philosophy):
@@ -60,25 +71,28 @@ function portalGate(ovr) {
 
 // Assign persistent suitors to an entrant. Better entrants attract better
 // programs — top-25 schools chase the 84+ guys, everyone fights over the rest.
-function assignSuitors(e) {
+function assignSuitors(e, maxN) {
   var ranked = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; });
   var poolSize = e.ovr >= 84 ? 25 : e.ovr >= 79 ? 60 : e.ovr >= 74 ? 120 : ranked.length;
   var pool = ranked.slice(0, poolSize).filter(function(t) { return t.id !== e.fromTid && t.id !== G.tid; });
   for (var j = pool.length - 1; j > 0; j--) { var k = ri(0, j); var tmp = pool[j]; pool[j] = pool[k]; pool[k] = tmp; }
-  e.suitors = pool.slice(0, ri(3, 6)).map(function(t) { return { tid: t.id, name: t.name }; });
+  e.suitors = pool.slice(0, maxN || ri(3, 6)).map(function(t) { return { tid: t.id, name: t.name }; });
 }
 
 // Defensive defaults for entrants from old saves (pre-suitor era).
 function ensureEntrant(e) {
   if (!e.homeState) e.homeState = RECRUIT_STATE_POOL[ri(0, RECRUIT_STATE_POOL.length - 1)];
   if (!e.suitors) assignSuitors(e);
+  if (typeof e.offer !== 'number') e.offer = 0;
   return e;
 }
 
 // Deterministic suitor bids (seeded by entrant + school, like recruiting's
 // rival bids): prestige dominates, geography and entrant quality nudge it.
+// Bids escalate by stage — CPU suitors heat up on their targets.
 function calcSuitorBids(e) {
   var desir = 1 + Math.max(0, e.ovr - 70) / 60; // elite transfers get pursued harder
+  var esc = portalEsc();
   var out = [];
   (e.suitors || []).forEach(function(s) {
     var team = G.teams[s.tid];
@@ -86,7 +100,7 @@ function calcSuitorBids(e) {
     var sp = team.schoolPrestige || 50;
     var seed = ((e.pid * 7 + s.tid * 13) % 100) / 100;
     var geo = getGeoBonus(getTeamState(team), e.homeState);
-    var bid = (seed * 30 + 25) * (0.35 + sp / 55) * desir * (1 + geo);
+    var bid = (seed * 30 + 25) * (0.35 + sp / 55) * desir * (1 + geo) * esc;
     out.push({ tid: s.tid, name: s.name, bid: Math.max(1, bid) });
   });
   out.sort(function(a, b) { return b.bid - a.bid; });
@@ -95,25 +109,27 @@ function calcSuitorBids(e) {
 
 // User's pitch strength: school prestige + NIL offer + playing time at the
 // entrant's position + geography + coach recruiting chops, gated by prestige.
+// Bigger offers bid harder — dump on a star or spread it around.
 export function calcUserPortalBid(e) {
   var t = G.teams[G.tid];
   var sp = (t && t.schoolPrestige) || 50;
-  var cost = portalCost(e);
+  var offer = e.offer || 0;
   var posCount = 0;
   (t.rost || []).forEach(function(p) { if (p.pos === e.pos) posCount++; });
   var ptBonus = posCount < 2 ? 30 : posCount === 2 ? 12 : posCount === 3 ? 0 : -18;
   var geo = getGeoBonus(getTeamState(t), e.homeState);
   var coachMod = 0.7 + ((G.coach ? G.coach.rec : 70) / 100) * 0.6;
-  var bid = (sp + cost * 0.9 + ptBonus) * coachMod * (1 + geo);
+  var bid = (sp + offer * 0.9 + ptBonus) * coachMod * (1 + geo);
   var gate = portalGate(e.ovr);
   if (sp < gate) {
     var deficit = gate - sp;
     bid *= Math.max(0.12, 1 - deficit / 45);
   }
-  return { bid: Math.max(1, bid), cost: cost };
+  return { bid: Math.max(1, bid) };
 }
 
-// User's win % against the suitor field, shown BEFORE committing.
+// User's win % against the suitor field at the current offer, shown BEFORE
+// committing. inRace is false until an offer is placed.
 export function portalChance(e) {
   ensureEntrant(e);
   var u = calcUserPortalBid(e);
@@ -121,7 +137,7 @@ export function portalChance(e) {
   var total = u.bid;
   suitors.forEach(function(s) { total += s.bid; });
   var pct = total > 0 ? Math.round(u.bid / total * 100) : 50;
-  return { pct: clamp(pct, 1, 99), cost: u.cost, bid: u.bid, suitors: suitors };
+  return { pct: clamp(pct, 1, 99), bid: u.bid, suitors: suitors, inRace: (e.offer || 0) > 0 };
 }
 
 // Weighted draw over [{key, bid}] entries.
@@ -163,7 +179,7 @@ export function genPortalEntrants() {
         pid: pid, name: p.name, pos: p.pos, ovr: p.ovr, pot: p.pot || p.ovr,
         cls: p.cls, fromTid: tm.id, fromName: tm.name, mins: p.mins || 0,
         sht: p.sht, fin: p.fin, def: p.def, reb: p.reb, ply: p.ply,
-        reason: portalReason(p), pickedBy: -1
+        reason: portalReason(p), pickedBy: -1, offer: 0
       });
       count++;
     });
@@ -180,7 +196,10 @@ export function genPortalEntrants() {
     });
   }
   _portalShown = 30;
-  G.portalPicksLeft = PORTAL_PICK_LIMIT;
+  G.portalStage = 0;
+  G.portalCpuTakes = {};
+  G.portalUserSigns = 0;
+  _portalTouchedUser = false;
   // Persistent suitor schools per entrant — the competition for each player.
   // (Entrants stay on their old rosters until claimed, so this is save-safe.)
   G.portalEntrants.forEach(function(e) {
@@ -222,52 +241,261 @@ function entrantToPlayer(e) {
   };
 }
 
-// User pitches an entrant: pays the NIL cost up front, then the entrant picks
-// a winner by weighted draw among the user and the suitor schools. Win the
-// draw and they're yours; lose and the NIL is refunded (like recruiting
-// point refunds) and the player signs with the winning suitor.
-export function portalPitch(pid) {
-  if ((G.portalPicksLeft || 0) <= 0) { toast('No portal pitches remaining.', 'var(--gld)'); return false; }
+// ── Offer management ──
+// NIL offers are escrowed per entrant (deducted from G.pts up front).
+// Adding is always free; pulling out after the Open stage sinks 25% —
+// pivoting has a cost.
+export function adjustOffer(pid, delta) {
   var t = G.teams[G.tid];
-  if (!t || t.rost.length >= 15) { toast('Roster is full (15).', 'var(--gld)'); return false; }
   var f = findEntrant(pid);
   if (!f || f.e.pickedBy !== -1) return false;
-  if (f.e.fromTid === G.tid) { toast("You can't re-sign your own transfer.", 'var(--gld)'); return false; }
+  if (f.e.fromTid === G.tid) { toast("You can't offer your own transfer.", 'var(--gld)'); return false; }
   var e = ensureEntrant(f.e);
-  var u = calcUserPortalBid(e);
-  if ((G.pts || 0) < u.cost) { toast('Not enough NIL (' + u.cost + ' needed).', 'var(--gld)'); return false; }
-  G.pts -= u.cost;
-  G.portalPicksLeft--;
-
-  var suitors = calcSuitorBids(e);
-  var entries = [{ key: 'user', bid: u.bid, name: t.name }];
-  suitors.forEach(function(s) {
-    var wt = G.teams[s.tid];
-    if (wt && wt.rost.length < 15) entries.push({ key: s.tid, bid: s.bid, name: s.name });
-  });
-  var winner = weightedWinner(entries);
-
-  if (winner.key === 'user') {
-    e.pickedBy = G.tid;
-    takeFromOldRoster(e);
-    var np = entrantToPlayer(e);
-    t.rost.push(np);
-    G.portalEntrants.splice(f.i, 1);
-    addLog('ev', G.gi, '<b>' + np.name + '</b> (' + np.pos + ', ' + np.ovr + ' OVR) transfers in from ' + e.fromName + '.');
-    toast(np.name + ' commits from the portal!', 'var(--grn)');
-  } else {
-    var wt2 = G.teams[winner.key];
-    takeFromOldRoster(e);
-    if (wt2) wt2.rost.push(entrantToPlayer(e));
-    G.portalEntrants.splice(f.i, 1);
-    G.pts += u.cost; // refund on loss — matches recruiting point refunds
-    addLog('ev', G.gi, '<b>' + e.name + '</b> (' + e.pos + ', ' + e.ovr + ' OVR) chose <b>' + winner.name + '</b> over you.');
-    toast(e.name + ' chose ' + winner.name + '.', 'var(--gld)');
+  var cur = e.offer || 0;
+  var nv = cur + delta;
+  if (nv < 0) return false;
+  if (delta > 0) {
+    if (!t || t.rost.length >= 15) { toast('Roster is full (15).', 'var(--gld)'); return false; }
+    if ((G.pts || 0) < delta) { toast('Not enough NIL (' + delta + ' needed).', 'var(--gld)'); return false; }
+    G.pts -= delta;
+  } else if (delta < 0) {
+    var back = (G.portalStage || 0) >= 1 ? Math.round(-delta * Battle.PIVOT_REFUND) : -delta;
+    G.pts += back;
+    if (back < -delta) toast('Pivot cost: ' + (-delta - back) + ' NIL sunk.', 'var(--gld)');
   }
+  e.offer = nv;
   saveState(); rerender();
   return true;
 }
-window.portalPitch = portalPitch;
+window.adjustOffer = adjustOffer;
+
+// Pivot: pull out of a lost cause entirely (partial refund after Open stage).
+export function pivotOffer(pid) {
+  var f = findEntrant(pid);
+  if (!f || f.e.pickedBy !== -1) return false;
+  var e = ensureEntrant(f.e);
+  if ((e.offer || 0) <= 0) return false;
+  return adjustOffer(pid, -(e.offer || 0));
+}
+window.pivotOffer = pivotOffer;
+
+// ── Awards ──
+function removeEntrant(e) {
+  var list = G.portalEntrants || [];
+  for (var i = 0; i < list.length; i++) {
+    if (list[i].pid === e.pid) { list.splice(i, 1); return; }
+  }
+}
+
+// Release an unclaimed entrant: drop them from the pool AND clear the
+// _portalPid flag off their roster player, so no flags leak onto rosters.
+function releaseUnclaimed(e) {
+  var ot = G.teams[e.fromTid];
+  if (ot && ot.rost) {
+    for (var i = 0; i < ot.rost.length; i++) {
+      if (ot.rost[i]._portalPid === e.pid) { delete ot.rost[i]._portalPid; break; }
+    }
+  }
+  removeEntrant(e);
+}
+
+function awardPortalToUser(e, early) {
+  var t = G.teams[G.tid];
+  if (!t || t.rost.length >= 15) {
+    // Roster filled mid-battle — refund the escrowed offer instead.
+    G.pts += (e.offer || 0); e.offer = 0; return false;
+  }
+  e.pickedBy = G.tid;
+  takeFromOldRoster(e);
+  var np = entrantToPlayer(e);
+  np.portalYr = G.yr;
+  t.rost.push(np);
+  e.offer = 0;
+  G.portalUserSigns = (G.portalUserSigns || 0) + 1;
+  removeEntrant(e);
+  addLog('ev', G.gi, '<b>' + np.name + '</b> (' + np.pos + ', ' + np.ovr + ' OVR) transfers in from ' + e.fromName + (early ? ' <b>(early)</b>' : '') + '.');
+  toast(np.name + ' commits from the portal' + (early ? ' early!' : '!'), 'var(--grn)');
+  return true;
+}
+
+function awardPortalToTeam(e, tid) {
+  var wt = G.teams[tid];
+  if (!wt) return false;
+  e.pickedBy = tid;
+  G.portalCpuTakes[tid] = (G.portalCpuTakes[tid] || 0) + 1;
+  var taken = takeFromOldRoster(e);
+  if (taken && e.fromTid === G.tid) _portalTouchedUser = true;
+  var np = entrantToPlayer(e);
+  np.portalYr = G.yr;
+  wt.rost.push(np);
+  removeEntrant(e);
+  return true;
+}
+
+// CPU suitors with room and need. Teams only take transfers they actually
+// have room for (roster < 15, fewer than 3 portal takes, and either a thin
+// roster or a positional need / elite talent).
+function eligiblePortalSuitors(e) {
+  return calcSuitorBids(e).filter(function(s) {
+    var wt = G.teams[s.tid];
+    if (!wt || wt.id === G.tid || wt.rost.length >= 15) return false;
+    if ((G.portalCpuTakes[wt.id] || 0) >= 3) return false;
+    if (wt.rost.length < 13) return true;
+    var pc = 0;
+    wt.rost.forEach(function(p) { if (p.pos === e.pos) pc++; });
+    return pc < 2 || e.ovr >= 82;
+  });
+}
+
+function drawPortalWinner(e, includeUser) {
+  var entries = [];
+  if (includeUser) {
+    var u = calcUserPortalBid(e);
+    entries.push({ key: 'user', bid: u.bid });
+  }
+  eligiblePortalSuitors(e).forEach(function(s) {
+    entries.push({ key: s.tid, bid: s.bid, name: s.name });
+  });
+  if (!entries.length) return null;
+  return weightedWinner(entries);
+}
+
+// ── Early-decision round (stages 1→2 and 2→3) ──
+function portalEarlyRound(decideFrac) {
+  return Battle.runEarlyRound({
+    targets: portalBoard(),
+    isOpen: function(e) { return e.pickedBy === -1; },
+    decideFrac: decideFrac,
+    invested: function(e) { return (e.offer || 0) > 0; },
+    userLead: function(e) {
+      var ch = portalChance(e);
+      var tot = ch.bid, i, best = 0;
+      for (i = 0; i < ch.suitors.length; i++) { tot += ch.suitors[i].bid; best = Math.max(best, ch.suitors[i].bid); }
+      if (tot <= 0) return 0;
+      return (ch.bid - best) / tot * 100;
+    },
+    contention: function(e) { return (e.offer || 0) + e.ovr; },
+    cpuLead: function(e) {
+      var bids = calcSuitorBids(e), tot = 0, i;
+      for (i = 0; i < bids.length; i++) tot += bids[i].bid;
+      if (tot <= 0) return 0;
+      if (bids.length < 2) return 100;
+      return (bids[0].bid - bids[1].bid) / tot * 100;
+    },
+    userSign: function(e) { awardPortalToUser(e, true); },
+    cpuSign: function(e) {
+      var w = drawPortalWinner(e, false);
+      if (w && w.key !== 'user') {
+        awardPortalToTeam(e, w.key);
+        addLog('ev', G.gi, '<b>' + e.name + '</b> (' + e.pos + ', ' + e.ovr + ' OVR) signed early with <b>' + w.name + '</b>.');
+      }
+    }
+  });
+}
+
+// ── Late entries: if the user's board is thin on Signing Day, 1-2
+// overlooked bench players enter the portal late ──
+function maybeLatePortalEntries() {
+  var signs = G.portalUserSigns || 0;
+  var openOffers = (G.portalEntrants || []).filter(function(e) { return e.pickedBy === -1 && (e.offer || 0) > 0; }).length;
+  if (!Battle.boardIsThin(signs, openOffers)) return;
+  var maxPid = 0;
+  (G.portalEntrants || []).forEach(function(e) { if (e.pid > maxPid) maxPid = e.pid; });
+  _nextPid = Math.max(_nextPid, maxPid + 1);
+  var cands = [];
+  G.teams.forEach(function(tm) {
+    (tm.rost || []).forEach(function(p) {
+      if (p.cls === 'SR' || p._portalPid) return;
+      if ((p.mins || 0) > 8) return;
+      if (p.ovr < 64 || p.ovr > 80) return;
+      cands.push({ tm: tm, p: p });
+    });
+  });
+  cands.sort(function(a, b) { return b.p.ovr - a.p.ovr; });
+  var added = 0;
+  for (var i = 0; i < cands.length && added < 2; i++) {
+    var c = cands[i], dup = false, k;
+    for (k = 0; k < (G.portalEntrants || []).length; k++) {
+      var x = G.portalEntrants[k];
+      if (x.name === c.p.name && x.fromTid === c.tm.id) { dup = true; break; }
+    }
+    if (dup) continue;
+    var pid = _nextPid++;
+    c.p._portalPid = pid;
+    var e = {
+      pid: pid, name: c.p.name, pos: c.p.pos, ovr: c.p.ovr, pot: c.p.pot || c.p.ovr,
+      cls: c.p.cls, fromTid: c.tm.id, fromName: c.tm.name, mins: c.p.mins || 0,
+      sht: c.p.sht, fin: c.p.fin, def: c.p.def, reb: c.p.reb, ply: c.p.ply,
+      reason: 'Late entry', pickedBy: -1, offer: 0, late: true,
+      homeState: RECRUIT_STATE_POOL[ri(0, RECRUIT_STATE_POOL.length - 1)]
+    };
+    assignSuitors(e, 3); // small, overlooked pool
+    G.portalEntrants.push(e);
+    added++;
+  }
+  if (added) {
+    addLog('ev', G.gi, '<b>' + added + ' late entr' + (added > 1 ? 'ies hit' : 'y hits') + ' the portal</b> — overlooked players looking for a home.');
+    toast('Late portal entries: ' + added + ' new transfer' + (added > 1 ? 's' : '') + ' available.', 'var(--blu)');
+  }
+}
+
+// ── Stage advancement: one button per stage ──
+export function advancePortalStage() {
+  var stage = G.portalStage || 0;
+  if (stage >= 2) { finalizePortal(); return; }
+  // Snapshot trends BEFORE CPU escalation so Vibe Check shows movement.
+  portalBoard().forEach(function(e) {
+    if (e.pickedBy === -1) e._prevPct = portalChance(e).pct;
+  });
+  _portalTouchedUser = false;
+  G.portalStage = stage + 1;
+  if (G.portalStage === 2) maybeLatePortalEntries();
+  var res = portalEarlyRound(Battle.ACQ_STAGES[stage].decideFrac);
+  var parts = [];
+  if (res.userSigned.length) parts.push(res.userSigned.length + ' commit' + (res.userSigned.length > 1 ? 's' : '') + ' early');
+  if (res.cpuSigned.length) parts.push(res.cpuSigned.length + ' signed elsewhere');
+  parts.push(portalBoard().filter(function(e) { return e.pickedBy === -1; }).length + ' still available');
+  toast(Battle.ACQ_STAGES[G.portalStage].name + ': ' + parts.join(' · '), res.userSigned.length ? 'var(--grn)' : 'var(--gld)');
+  if (_portalTouchedUser) { var t = G.teams[G.tid]; if (t) fixMins(t.rost); }
+  saveState(); rerender();
+}
+window.advancePortalStage = advancePortalStage;
+
+// ── Signing Day: every remaining entrant decides ──
+export function finalizePortal() {
+  _portalTouchedUser = false;
+  var list = portalBoard().filter(function(e) { return e.pickedBy === -1; });
+  list.sort(function(a, b) { return b.ovr - a.ovr; });
+  var won = 0, lost = 0;
+  list.forEach(function(e) {
+    if ((e.offer || 0) > 0) {
+      var w = drawPortalWinner(e, true);
+      if (w && w.key === 'user') { if (awardPortalToUser(e, false)) won++; }
+      else {
+        var off = e.offer || 0; e.offer = 0;
+        G.pts += off; // refund on loss — matches recruiting point refunds
+        if (w && w.key !== 'user') {
+          awardPortalToTeam(e, w.key);
+          addLog('ev', G.gi, '<b>' + e.name + '</b> (' + e.pos + ', ' + e.ovr + ' OVR) chose <b>' + w.name + '</b> over you.');
+        } else {
+          releaseUnclaimed(e); // nobody with room wanted them — they stay put
+        }
+        lost++;
+      }
+    } else {
+      var w2 = drawPortalWinner(e, false);
+      if (w2 && w2.key !== 'user') awardPortalToTeam(e, w2.key);
+      else releaseUnclaimed(e);
+    }
+  });
+  if (_portalTouchedUser) { var t = G.teams[G.tid]; if (t) fixMins(t.rost); }
+  var msg = 'Portal closed: ' + won + ' transfer' + (won === 1 ? '' : 's') + ' in'
+    + (lost ? ' · ' + lost + ' chose elsewhere' : '');
+  toast(msg, won ? 'var(--grn)' : 'var(--gld)');
+  addLog('ev', G.gi, '<b>Transfer portal closes.</b> ' + msg + '.');
+  saveState();
+  advanceFromPortal();
+}
 
 // Leave the portal step and continue to recruiting
 export function advanceFromPortal() {
@@ -327,7 +555,7 @@ export function clearPortalState() {
     (tm.rost || []).forEach(function(p) { if (p._portalPid) delete p._portalPid; });
   });
   G.portalEntrants = [];
-  G.portalPicksLeft = 0;
+  G.portalStage = 0; G.portalCpuTakes = {}; G.portalUserSigns = 0;
 }
 window._clearPortalState = clearPortalState;
 
@@ -344,25 +572,43 @@ function chanceColor(pct) {
   return pct >= 60 ? 'var(--grn2)' : pct >= 30 ? 'var(--gld2)' : 'var(--red)';
 }
 
-function entrantRow(e, picksLeft) {
+function entrantRow(e, stage) {
   var ch = portalChance(e);
   var nil = G.pts || 0;
-  var action;
-  if (picksLeft <= 0) {
-    action = '<div style="font-size:11px;color:var(--txt3);">No pitches left</div>';
-  } else if (nil < ch.cost) {
-    action = '<div style="font-size:11px;color:var(--txt3);"><b style="color:' + chanceColor(ch.pct) + ';">' + ch.pct + '%</b> · need ' + ch.cost + ' NIL</div>';
+  var offer = e.offer || 0;
+  var std = portalCost(e);
+  var trend = Battle.trendHTML(ch.pct, e._prevPct);
+  var pctCol = chanceColor(ch.pct);
+
+  var offerLine;
+  if (offer > 0) {
+    offerLine = '<div style="font-size:11px;margin-top:2px;"><b style="color:var(--blu);">' + offer + ' NIL</b> offered · '
+      + '<b style="color:' + pctCol + ';">' + ch.pct + '%</b> ' + trend + '</div>';
   } else {
-    action = '<button class="btn-quiet" data-ppitch="' + e.pid + '" aria-label="Pitch ' + e.name + '">'
-      + '<b style="color:' + chanceColor(ch.pct) + ';">' + ch.pct + '%</b> · Pitch ' + ch.cost + ' NIL</button>';
+    offerLine = '<div style="font-size:11px;color:var(--txt3);margin-top:2px;">std offer ' + std + ' NIL · not in the race</div>';
+  }
+
+  var action;
+  if (e.fromTid === G.tid) {
+    action = '<div style="font-size:11px;color:var(--txt3);">Your player</div>';
+  } else {
+    var canAdd = nil >= PORTAL_OFFER_STEP;
+    var canSub = offer > 0;
+    action = '<div style="display:flex;align-items:center;gap:6px;">'
+      + '<button class="stepper' + (canSub ? '' : ' off') + '" data-poff-dec="' + e.pid + '" aria-label="Withdraw 10 NIL from ' + e.name + '" style="width:34px;height:34px;font-size:15px;">−</button>'
+      + '<button class="stepper plus' + (canAdd ? '' : ' off') + '" data-poff-inc="' + e.pid + '" aria-label="Offer 10 more NIL to ' + e.name + '" style="width:34px;height:34px;font-size:15px;">+</button>'
+      + (offer > 0 && stage >= 1 ? '<button class="btn-quiet" data-ppivot="' + e.pid + '">Pivot</button>' : '')
+      + '</div>';
   }
   var chase = ch.suitors.slice(0, 2).map(function(s) { return s.name; }).join(', ');
   return '<div class="pl-row">'
     + teamLogo(e.fromName, 'sm')
     + '<span class="pos-chip">' + e.pos + '</span>'
-    + '<div class="pl-body"><div class="pl-name">' + e.name + ' <span style="font-size:11px;font-weight:700;color:var(--txt3);">' + e.cls + '</span></div>'
+    + '<div class="pl-body"><div class="pl-name">' + e.name + ' <span style="font-size:11px;font-weight:700;color:var(--txt3);">' + e.cls + '</span>'
+    + (e.late ? ' <span class="tag t-ok">Late</span>' : '') + '</div>'
     + '<div class="pl-desc">from ' + e.fromName + ' · ' + e.reason + ' · ' + e.mins + ' min last season'
-    + (chase ? ' · <span style="color:var(--txt3);">also: ' + chase + '</span>' : '') + '</div></div>'
+    + (chase ? ' · <span style="color:var(--txt3);">also: ' + chase + '</span>' : '') + '</div>'
+    + offerLine + '</div>'
     + '<div class="pl-ovr"><b>' + e.ovr + '</b><small>POT ' + (e.pot || e.ovr) + '</small></div>'
     + action + '</div>';
 }
@@ -371,16 +617,20 @@ export function renderPortal() {
   var board = portalBoard();
   var mine = board.filter(function(e) { return e.fromTid === G.tid; });
   var avail = board.filter(function(e) { return e.fromTid !== G.tid; });
-  var picks = G.portalPicksLeft || 0;
+  var stage = G.portalStage || 0;
+  var stg = Battle.stageOf(stage);
+  var offersOut = avail.filter(function(e) { return (e.offer || 0) > 0; }).length;
 
   var h = '<div class="portal-wrap">';
 
   h += '<div style="margin-bottom:14px;"><div class="sec-head">Transfer Portal</div>'
-    + '<div class="sec-sub">Offseason ' + G.yr + ' · unhappy players looking for a new home</div></div>';
+    + '<div class="sec-sub">' + stg.name + ' · ' + stg.desc + '</div></div>';
+
+  h += Battle.stageStepperHTML(stage);
 
   h += '<div class="stat-strip" style="grid-template-columns:1fr 1fr 1fr;">'
-    + '<div class="stat-cell' + (picks > 0 ? ' hot' : '') + '"><div class="sv">' + picks + '</div><div class="sl">Pitches left</div></div>'
-    + '<div class="stat-cell"><div class="sv">' + (G.pts || 0) + '</div><div class="sl">NIL</div></div>'
+    + '<div class="stat-cell' + (offersOut > 0 ? ' hot' : '') + '"><div class="sv">' + offersOut + '</div><div class="sl">Offers out</div></div>'
+    + '<div class="stat-cell"><div class="sv" data-nil-left>' + (G.pts || 0) + '</div><div class="sl">NIL</div></div>'
     + '<div class="stat-cell"><div class="sv">' + avail.length + '</div><div class="sl">Available</div></div></div>';
 
   if (mine.length) {
@@ -394,7 +644,7 @@ export function renderPortal() {
   h += '<div class="strat-sec-label">Available transfers</div>';
 
   var shown = avail.slice(0, _portalShown);
-  shown.forEach(function(e) { h += entrantRow(e, picks); });
+  shown.forEach(function(e) { h += entrantRow(e, stage); });
   if (!avail.length) {
     h += '<div class="empty-state">The portal is quiet this year.</div>';
   }
@@ -402,7 +652,7 @@ export function renderPortal() {
     h += '<button class="btn-quiet" data-pshowmore>Show more (' + (avail.length - _portalShown) + ' remaining)</button>';
   }
 
-  h += '<button class="btn-big btn-full" style="margin-top:16px;" data-padvance>CONTINUE TO RECRUITING</button>';
+  h += '<button class="btn-big btn-full" style="margin-top:16px;" data-pstage>' + stg.btn + '</button>';
 
   h += '</div>';
   return h;

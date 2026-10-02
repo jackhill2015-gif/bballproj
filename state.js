@@ -7,7 +7,7 @@ import { getTOvr } from './utils.js';
 import { RECRUIT_STATE_POOL, calcSchoolPrestige, COACH_FN, COACH_LN } from './constants.js';
 
 // ── Current save version — bump this when adding new fields ──
-var SAVE_VERSION = 8;
+var SAVE_VERSION = 9;
 var SAVE_KEY = 'hoops_os_v3';
 
 // ── Main Game State ──
@@ -22,6 +22,9 @@ export const G = {
   recruitPhase: 0, recruitingBudget: 0, recruitingSpent: 0,
   recruitTargets: [], departingPlayers: [],
   offseasonStep: 'turnover',
+  // Transfer portal battle state (3-stage machine, views/battle.js).
+  // Entrants persist so mid-battle reloads keep escrowed NIL offers.
+  portalEntrants: [], portalStage: 0, portalCpuTakes: {}, portalUserSigns: 0,
   // Coach
   coach: {
     firstName: '', lastName: '', age: 30,
@@ -164,6 +167,14 @@ var MIGRATIONS = {
   8: function(s) {
     if (!s.records) s.records = null;
     return s;
+  },
+  // v8→v9: Portal battle state — persist entrants/offers mid-battle
+  9: function(s) {
+    if (!Array.isArray(s.portalEntrants)) s.portalEntrants = [];
+    if (typeof s.portalStage !== 'number') s.portalStage = 0;
+    if (!s.portalCpuTakes) s.portalCpuTakes = {};
+    if (typeof s.portalUserSigns !== 'number') s.portalUserSigns = 0;
+    return s;
   }
 };
 
@@ -272,6 +283,8 @@ function _writeSave() {
       recruitPhase:G.recruitPhase,recruitingBudget:G.recruitingBudget,
       recruitingSpent:G.recruitingSpent,recruitTargets:G.recruitTargets||[],
       departingPlayers:G.departingPlayers||[],offseasonStep:G.offseasonStep||'turnover',
+      portalEntrants:G.portalEntrants||[],portalStage:G.portalStage||0,
+      portalCpuTakes:G.portalCpuTakes||{},portalUserSigns:G.portalUserSigns||0,
       coach:G.coach,
       seasonAchievements:G.seasonAchievements,
       expectations:G.expectations,
@@ -372,6 +385,10 @@ export function loadState() {
     G.recruitTargets=s.recruitTargets||[];
     G.departingPlayers=s.departingPlayers||[];
     G.offseasonStep=s.offseasonStep||'turnover';
+    G.portalEntrants=s.portalEntrants||[];
+    G.portalStage=s.portalStage||0;
+    G.portalCpuTakes=s.portalCpuTakes||{};
+    G.portalUserSigns=s.portalUserSigns||0;
     G.coach=s.coach||G.coach;
     G.seasonAchievements=s.seasonAchievements||G.seasonAchievements;
     G.expectations=s.expectations||null;

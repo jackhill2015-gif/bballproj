@@ -1,9 +1,12 @@
-// HOOPS OS — portal pitch competition test
-// Proves the transfer portal is no longer a free supermarket:
-//  (a) a low-prestige school can't reliably land top-5 OVR entrants
-//  (b) top entrants disproportionately land at high-prestige schools
-//  (c) user pitch % chances behave sanely
-//  (d) old-save entrants (no suitors/homeState) backfill cleanly
+// HOOPS OS — portal battle (3-stage) test
+// Proves the staged portal battle works:
+//  (a) a low-prestige school can't vacuum the top of the board
+//  (b) prestige gradient: high-prestige schools convert better
+//  (c) % chances behave sanely; offer validations hold
+//  (d) early signings happen sometimes but not always
+//  (e) pivot refunds 75% after the Open stage (100% during it)
+//  (f) thin board → late entries surface on Signing Day
+//  (g) old-save entrants (no suitors/homeState/offer) backfill cleanly
 // Usage: node test-harness/portal-pitch-test.mjs
 const REPO = '/home/hatch/workspace/bballproj';
 
@@ -35,6 +38,7 @@ const ST = await import(REPO + '/state.js');
 const U  = await import(REPO + '/utils.js');
 const R  = await import(REPO + '/views/recruiting.js');
 const P  = await import(REPO + '/views/portal.js');
+const B  = await import(REPO + '/views/battle.js');
 const { G } = ST;
 
 S.registerSeasonCallbacks({ addLog(){}, updateAll(){}, navTo(){}, toast(){}, startConfTourney(){}, playTournamentGame(){}, openModal(){} });
@@ -59,8 +63,7 @@ function mkTeam(id, name, conf, prestige, baseOvr) {
   const rost = [];
   for (let j = 0; j < 13; j++) {
     const p = mkPlayer(baseOvr + ((j * 7 + id) % 9) - 4, POSA[j % 5], j < 3 ? 'SR' : CLSA[(j + id) % 4]);
-    // make some rotation players unhappy enough to enter the portal
-    if (j % 4 === 0) { p.mins = 4; p.morale = 20; }
+    if (j % 4 === 0) { p.mins = 4; p.morale = 20; } // unhappy enough to enter
     rost.push(p);
   }
   U.fixMins(rost);
@@ -87,131 +90,178 @@ function freshUniverse(userPrestige) {
     titles: 0, confTitles: 0, finalFours: 0, tourneyApps: 0, awards: [], history: [] };
   G.seasonAchievements = { confTitleThisYear: false, madeNCAA: false, sweet16: false, finalFour: false, champGame: false, natChamp: false };
   G.expectations = null; G.skillPointsEarned = 3; G.skillPointsToSpend = 3;
-  G.portalEntrants = []; G.portalPicksLeft = 0;
+  G.portalEntrants = []; G.portalStage = 0; G.portalCpuTakes = {}; G.portalUserSigns = 0;
   ST.resetLS();
 }
+function runFullBattle() {
+  P.advancePortalStage(); // → Vibe Check
+  P.advancePortalStage(); // → Signing Day
+  P.advancePortalStage(); // → finalize
+}
 
-// ── (c) % chances behave sanely ──
-console.log('── pitch % sanity ──');
+// ── (c) % sanity + offer validations ──
+console.log('── chance % sanity ──');
 freshUniverse(55);
 P.genPortalEntrants();
 let avail = P.portalBoard().filter(e => e.fromTid !== G.tid);
 check(avail.length > 0, 'portal board has entrants', 'n=' + avail.length);
 const sample = avail[0];
-const ch = P.portalChance(sample);
-check(ch.pct >= 1 && ch.pct <= 99, '% chance within [1,99]', 'pct=' + ch.pct);
-check(ch.cost > 0 && Number.isFinite(ch.cost), 'NIL cost positive', 'cost=' + ch.cost);
-check(ch.suitors.length >= 3 && ch.suitors.length <= 6, '3-6 suitors per entrant', 'n=' + ch.suitors.length);
-check(ch.suitors.every(s => s.tid !== G.tid && s.tid !== sample.fromTid),
+const ch0 = P.portalChance(sample);
+check(ch0.pct >= 1 && ch0.pct <= 99, '% chance within [1,99]', 'pct=' + ch0.pct);
+check(ch0.inRace === false, 'not in race before any offer');
+check(ch0.suitors.length >= 3 && ch0.suitors.length <= 6, '3-6 suitors per entrant', 'n=' + ch0.suitors.length);
+check(ch0.suitors.every(s => s.tid !== G.tid && s.tid !== sample.fromTid),
   'user and old school excluded from suitors');
 const cheap = P.portalCost({ ovr: 68 }), pricey = P.portalCost({ ovr: 86 });
-check(pricey > cheap, 'NIL cost scales with OVR', cheap + ' vs ' + pricey);
+check(pricey > cheap, 'reference NIL cost scales with OVR', cheap + ' vs ' + pricey);
+// bigger offer → higher %
+P.adjustOffer(sample.pid, 10);
+const chSmall = P.portalChance(sample);
+P.adjustOffer(sample.pid, 90);
+const chBig = P.portalChance(sample);
+check(chBig.pct >= chSmall.pct, 'bigger offer → higher or equal %', chSmall.pct + '% vs ' + chBig.pct + '%');
+check(chBig.inRace === true, 'in race after placing an offer');
 // same entrant, higher prestige → higher %
+P.adjustOffer(sample.pid, -100); // reset
 G.teams[G.tid].schoolPrestige = 90;
+P.adjustOffer(sample.pid, 50);
 const chHigh = P.portalChance(sample);
+P.adjustOffer(sample.pid, -50);
 G.teams[G.tid].schoolPrestige = 40;
+P.adjustOffer(sample.pid, 50);
 const chLow = P.portalChance(sample);
-check(chHigh.pct > chLow.pct, 'higher prestige → higher %', chLow.pct + '% vs ' + chHigh.pct + '%');
+P.adjustOffer(sample.pid, -50);
 G.teams[G.tid].schoolPrestige = 55;
-// pitch validations
-G.portalPicksLeft = 0;
-check(P.portalPitch(sample.pid) === false, 'pitch refused with no pitches left');
-G.portalPicksLeft = 2; G.pts = 0;
-check(P.portalPitch(sample.pid) === false, 'pitch refused with insufficient NIL');
+check(chHigh.pct > chLow.pct, 'higher prestige → higher %', chLow.pct + '% vs ' + chHigh.pct + '%');
+
+console.log('── offer validations ──');
+G.pts = 5;
+check(P.adjustOffer(sample.pid, 10) === false, 'offer refused with insufficient NIL');
 G.pts = 10000;
 const ownE = P.portalBoard().find(e => e.fromTid === G.tid);
-if (ownE) check(P.portalPitch(ownE.pid) === false, "can't pitch your own transfer");
+if (ownE) check(P.adjustOffer(ownE.pid, 10) === false, "can't offer your own transfer");
+check(P.adjustOffer(sample.pid, -10) === false, "can't withdraw below zero");
+check(P.pivotOffer(sample.pid) === false, "can't pivot with no offer");
 
-// ── (d) old-save backfill ──
+// ── (e) pivot refunds ──
+console.log('── pivot refunds ──');
+freshUniverse(55);
+P.genPortalEntrants();
+const pe = P.portalBoard().filter(e => e.fromTid !== G.tid)[0];
+G.pts = 1000;
+P.adjustOffer(pe.pid, 100); // stage 0: full refund
+const ptsAfterAdd = G.pts;
+P.adjustOffer(pe.pid, -100);
+check(G.pts === ptsAfterAdd + 100, 'full refund when pulling out during Open stage',
+  'pts=' + G.pts + ' expected=' + (ptsAfterAdd + 100));
+P.adjustOffer(pe.pid, 100);
+P.advancePortalStage(); // → Vibe Check (stage 1): 25% sunk
+const beforePivot = G.pts;
+P.pivotOffer(pe.pid);
+const refunded = G.pts - beforePivot;
+check(refunded === 75, 'pivot after Open stage refunds 75%', 'refunded=' + refunded);
+check((pe.offer || 0) === 0, 'offer zeroed after pivot');
+
+// ── (d) early signings: sometimes, not always ──
+console.log('── early signing frequency ──');
+let earlyTrials = 0, earlyUserSigns = 0, earlyCpuSigns = 0;
+for (let t = 0; t < 24; t++) {
+  freshUniverse(70);
+  P.genPortalEntrants();
+  const top3 = P.portalBoard().filter(e => e.fromTid !== G.tid).slice(0, 3);
+  for (const e of top3) P.adjustOffer(e.pid, 120);
+  const signsBefore = G.portalUserSigns || 0;
+  const cpuBefore = Object.keys(G.portalCpuTakes || {}).length;
+  P.advancePortalStage(); // early round 1
+  earlyUserSigns += (G.portalUserSigns || 0) - signsBefore;
+  earlyCpuSigns += Object.keys(G.portalCpuTakes || {}).length - cpuBefore;
+  earlyTrials++;
+}
+console.log('    early user signs: ' + earlyUserSigns + '/' + (earlyTrials * 3)
+  + ' · early CPU signs: ' + earlyCpuSigns);
+check(earlyUserSigns > 0, 'early signings happen sometimes', 'n=' + earlyUserSigns);
+check(earlyUserSigns < earlyTrials * 3, 'not every target signs early',
+  earlyUserSigns + '/' + (earlyTrials * 3));
+
+// ── (a)+(b) prestige gradient on the real universe ──
+console.log('── low-prestige top-5 conversion (real universe) ──');
+const mkCoach = () => ({ firstName: 'T', lastName: 'C', age: 40, off: 70, def: 70, dev: 70, rec: 70,
+  xp: 0, level: 1, careerWins: 20, careerLoss: 10, tenure: 2, hotSeat: false,
+  titles: 0, confTitles: 0, finalFours: 0, tourneyApps: 0, awards: [], history: [] });
+function battleTrials(userPrestige, trials) {
+  let signs = 0, att = 0;
+  for (let t = 0; t < trials; t++) {
+    S.buildUniverse();
+    G.tid = 0; G.yr = 2025; G.pts = 10000; G.gi = 29; G.phase = 'reg';
+    G.coach = mkCoach();
+    G.teams[0].schoolPrestige = userPrestige;
+    G.portalEntrants = []; G.portalStage = 0; G.portalCpuTakes = {}; G.portalUserSigns = 0;
+    G.offseasonStep = 'portal';
+    P.genPortalEntrants();
+    const top5 = P.portalBoard().filter(e => e.fromTid !== G.tid).slice(0, 5);
+    for (const e of top5) { P.adjustOffer(e.pid, 100); att++; }
+    runFullBattle();
+    signs += (G.portalUserSigns || 0);
+  }
+  return { signs, att };
+}
+const lo = battleTrials(50, 24);
+const loRate = lo.signs / lo.att;
+console.log('    prestige-50: ' + lo.signs + '/' + lo.att + ' (' + (loRate * 100).toFixed(1) + '%)');
+check(lo.att > 50, 'enough battle trials ran', 'att=' + lo.att);
+check(loRate < 0.45, 'low-prestige school wins well under half of top-5 battles',
+  (loRate * 100).toFixed(1) + '%');
+const hi = battleTrials(90, 24);
+const hiRate = hi.signs / hi.att;
+console.log('    prestige-90: ' + hi.signs + '/' + hi.att + ' (' + (hiRate * 100).toFixed(1) + '%)');
+check(hiRate > loRate, 'prestige gradient: 90-prestige converts better than 50-prestige',
+  (loRate * 100).toFixed(1) + '% vs ' + (hiRate * 100).toFixed(1) + '%');
+
+// ── (f) thin board → late entries ──
+console.log('── thin board late entries ──');
+freshUniverse(55);
+P.genPortalEntrants();
+G.portalUserSigns = 0; // thin: nothing signed, nothing pursued
+G.portalStage = 1;
+P.advancePortalStage(); // → Signing Day triggers maybeLatePortalEntries
+const lates = P.portalBoard().filter(e => e.late);
+check(lates.length >= 1 && lates.length <= 2, '1-2 late entries surface on thin board',
+  'n=' + lates.length);
+
+// ── (g) old-save backfill ──
 console.log('── old-save entrant backfill ──');
 freshUniverse(55);
 G.portalEntrants = [{
   pid: 4242, name: 'OldTimer', pos: 'SG', ovr: 78, pot: 80, cls: 'JR',
   fromTid: 5, fromName: 'Team5', mins: 12, sht: 78, fin: 78, def: 78, reb: 78, ply: 78,
   reason: 'Playing time', pickedBy: -1
-  // NOTE: no suitors, no homeState — pre-pitch-competition save
+  // NOTE: no suitors, no homeState, no offer — pre-battle save
 }];
 let threw = false, chOld = null;
 try {
   const b = P.portalBoard();
   chOld = P.portalChance(b[0]);
+  P.adjustOffer(b[0].pid, 10);
 } catch (err) { threw = true; console.log('    threw: ' + err.message); }
-check(!threw, 'old entrants render/pitch-chance without crashing');
+check(!threw, 'old entrants work without crashing');
 check(chOld && chOld.suitors.length >= 3 && typeof chOld.pct === 'number',
-  'suitors + homeState backfilled on old entrants');
+  'suitors + homeState + offer backfilled on old entrants');
 
-// ── (a) low-prestige school can't vacuum the top of the board ──
-console.log('── low-prestige top-5 conversion ──');
-let attempts = 0, wins = 0;
-const TRIALS = 40;
-for (let tI = 0; tI < TRIALS; tI++) {
-  freshUniverse(50);
-  P.genPortalEntrants();
-  const top5 = P.portalBoard().filter(e => e.fromTid !== G.tid).slice(0, 5);
-  for (const e of top5) {
-    G.portalPicksLeft = 10; G.pts = 10000;
-    const before = G.teams[G.tid].rost.length;
-    if (P.portalPitch(e.pid)) {
-      attempts++;
-      if (G.teams[G.tid].rost.length > before) wins++;
-    }
-  }
-}
-const rate = attempts ? wins / attempts : 0;
-console.log('    prestige-50 user: ' + wins + '/' + attempts + ' top-5 pitches won (' + (rate * 100).toFixed(1) + '%)');
-check(attempts > 50, 'enough pitch trials ran', 'attempts=' + attempts);
-check(rate < 0.45, 'low-prestige school wins well under half of top-5 pitches', (rate * 100).toFixed(1) + '%');
-
-// ── (b) top entrants land at prestigious programs ──
-// Measured on the REAL 365-team universe: elite entrants only draw suitors
-// from the top 25 programs, so the prestige gradient should be stark.
-console.log('── suitor resolution prestige gradient (real universe) ──');
-let topPrest = [], restPrest = [];
-const BTRIALS = 10;
-const mkCoach = () => ({ firstName: 'T', lastName: 'C', age: 40, off: 70, def: 70, dev: 70, rec: 70,
-  xp: 0, level: 1, careerWins: 20, careerLoss: 10, tenure: 2, hotSeat: false,
-  titles: 0, confTitles: 0, finalFours: 0, tourneyApps: 0, awards: [], history: [] });
-for (let tI = 0; tI < BTRIALS; tI++) {
-  S.buildUniverse();
-  G.tid = 0; G.yr = 2025; G.pts = 10000; G.coach = mkCoach();
-  const donorTeam = G.teams[200];
-  // thin out some low-prestige rosters so mediocre transfers have somewhere to go
-  G.teams.forEach(tm => { if ((tm.schoolPrestige || 50) < 40 && tm.id !== G.tid) tm.rost = tm.rost.slice(0, 11); });
-  G.portalEntrants = [];
-  for (let i = 0; i < 16; i++) {
-    const ovr = i < 8 ? 86 : 70;
-    G.portalEntrants.push({
-      pid: 7000 + i, name: 'Pool' + tI + '_' + i, pos: POSA[i % 5], ovr, pot: ovr + 2,
-      cls: 'JR', fromTid: donorTeam.id, fromName: donorTeam.name, mins: 10,
-      sht: ovr, fin: ovr, def: ovr, reb: ovr, ply: ovr,
-      reason: 'Playing time', pickedBy: -1
-    });
-  }
-  P.resolvePortalCPU();
-  G.teams.forEach(tm => {
-    tm.rost.forEach(p => {
-      if (p.transfer && p.name.indexOf('Pool' + tI + '_') === 0) {
-        if (p.ovr >= 84) topPrest.push(tm.schoolPrestige || 50);
-        else restPrest.push(tm.schoolPrestige || 50);
-      }
-    });
-  });
-}
-const mean = a => a.length ? a.reduce((s, x) => s + x, 0) / a.length : 0;
-const mTop = mean(topPrest), mRest = mean(restPrest);
-console.log('    elite-transfer landing prestige: ' + mTop.toFixed(1) + ' (n=' + topPrest.length + ')'
-  + ' vs mediocre: ' + mRest.toFixed(1) + ' (n=' + restPrest.length + ')');
-check(topPrest.length > 20, 'elite transfers landed somewhere', 'n=' + topPrest.length);
-check(mTop > mRest + 8, 'elite transfers land at more prestigious schools', mTop.toFixed(1) + ' vs ' + mRest.toFixed(1));
-
-// ── resolution leaves rosters sane ──
-console.log('── roster sanity after resolution ──');
+// ── roster sanity after a full battle ──
+console.log('── roster sanity ──');
 freshUniverse(60);
 P.genPortalEntrants();
-P.resolvePortalCPU();
-let badRoster = 0;
-G.teams.forEach(tm => { if (tm.rost.length > 15) badRoster++; });
-check(badRoster === 0, 'no roster exceeds 15 after CPU resolution', 'bad=' + badRoster);
+const some = P.portalBoard().filter(e => e.fromTid !== G.tid).slice(0, 6);
+some.forEach(e => P.adjustOffer(e.pid, 40));
+runFullBattle();
+let badRoster = 0, dupPortal = 0;
+G.teams.forEach(tm => {
+  if (tm.rost.length > 15) badRoster++;
+  tm.rost.forEach(p => { if (p._portalPid) dupPortal++; });
+});
+check(badRoster === 0, 'no roster exceeds 15 after full battle', 'bad=' + badRoster);
+check(dupPortal === 0, 'no _portalPid flags leak onto rosters', 'leaked=' + dupPortal);
+check(G.offseasonStep === 'recruiting', 'battle ends by advancing to recruiting');
 
 console.log('\n' + (failures ? failures + ' FAILURES' : 'ALL PASS'));
 process.exit(failures ? 1 : 0);

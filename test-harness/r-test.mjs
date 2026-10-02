@@ -111,34 +111,42 @@ R.proceedToRecruiting();
 check(G.offseasonStep === 'portal', 'proceedToRecruiting now routes to portal (R9)');
 check(Array.isArray(G.portalEntrants) && G.portalEntrants.length > 0,
   'portal entrants generated', 'count=' + (G.portalEntrants || []).length);
-check(G.portalPicksLeft === P.PORTAL_PICK_LIMIT, 'user gets ' + P.PORTAL_PICK_LIMIT + ' portal pickups');
+check(G.portalStage === 0, 'portal battle starts at stage 0 (Open)');
 check(G.portalEntrants.every(e => isNum(e.pid) && isNum(e.ovr) && isNum(e.fromTid) && e.name && e.pos),
   'entrant records have name/pos/ovr/old school, no NaN');
 check(G.portalEntrants.length <= P.PORTAL_MAX_ENTRANTS, 'entrant cap respected');
 
-console.log('── R9: user portal pitches (competitive) ──');
-G.pts = 500; // afford any pitch
+console.log('── R9: user portal battle (3-stage offers) ──');
+G.pts = 500; // afford any offer
 const board = P.portalBoard().filter(e => e.fromTid !== G.tid);
 check(board.length > 0, 'board has available transfers');
 const pick1 = board[0], pick2 = board[1];
 const p1from = pick1.fromTid, p1name = pick1.name;
 const beforeLen = G.teams[p1from].rost.length;
 const ch1 = P.portalChance(pick1);
-check(ch1.pct >= 1 && ch1.pct <= 99 && ch1.cost > 0 && ch1.suitors.length >= 3,
-  'pitch shows sane % chance, NIL cost, and suitors', 'pct=' + ch1.pct + ' cost=' + ch1.cost);
-check(P.portalPitch(pick1.pid) === true, 'pitch 1 executes (win or lose)');
-check(P.portalPitch(pick2.pid) === true, 'pitch 2 executes (win or lose)');
-check(P.portalPitch(board[2].pid) === false, 'pitch 3 refused (limit)');
-check(G.portalPicksLeft === 0, 'pitches exhausted');
-check(!G.portalEntrants.some(e => e.pid === pick1.pid), 'pitched entrant leaves the pool');
+check(ch1.pct >= 1 && ch1.pct <= 99 && ch1.suitors.length >= 3 && ch1.inRace === false,
+  'chance shows sane % and suitors; not in race before offering', 'pct=' + ch1.pct);
+check(P.adjustOffer(pick1.pid, 50) === true, 'offer 1 placed (NIL escrowed)');
+check(P.adjustOffer(pick2.pid, 30) === true, 'offer 2 placed (NIL escrowed)');
+check(P.portalChance(pick1).inRace === true, 'in race after placing an offer');
+check(G.pts === 500 - 80, 'NIL escrowed up front', 'pts=' + G.pts);
+// run the full 3-stage battle to resolution
+P.advancePortalStage(); // → Vibe Check
+check(G.portalStage === 1, 'battle advances to stage 1 (Vibe Check)');
+P.advancePortalStage(); // → Signing Day
+check(G.portalStage === 2, 'battle advances to stage 2 (Signing Day)');
+P.advancePortalStage(); // → finalize → recruiting
+check(G.offseasonStep === 'recruiting', 'finalize routes to recruiting');
+check(!G.portalEntrants.some(e => e.pid === pick1.pid), 'offered entrant leaves the pool');
 const onUser = G.teams[G.tid].rost.some(p => p.name === p1name);
 const onCpu = G.teams.some(tm => tm.id !== G.tid && tm.rost.some(p => p.name === p1name));
-check(onUser || onCpu, 'pitched entrant landed on the user or a CPU roster');
-check(G.teams[p1from].rost.length === beforeLen - 1, 'pitched entrant removed from old roster');
-// NIL: charged on pitch, refunded on loss — net is 0 or the pitch cost
-const c1 = P.portalCost(pick1), c2 = P.portalCost(pick2);
-check(G.pts <= 500 && G.pts >= 500 - c1 - c2 && Number.isFinite(G.pts),
-  'NIL accounting sane after two pitches', 'pts=' + G.pts);
+const stayed = G.teams[p1from].rost.some(p => p.name === p1name);
+check(onUser || onCpu || stayed, 'offered entrant landed somewhere or stayed put');
+check(G.teams[p1from].rost.length <= beforeLen, 'old roster never grows from the portal');
+check(Number.isFinite(G.pts) && G.pts <= 500, 'NIL accounting sane after battle', 'pts=' + G.pts);
+let leaked = 0;
+G.teams.forEach(tm => tm.rost.forEach(p => { if (p._portalPid) leaked++; }));
+check(leaked === 0, 'no _portalPid flags leak after battle', 'leaked=' + leaked);
 
 console.log('── R9: portal → recruiting via doPlay router ──');
 S.doPlay('sim');
