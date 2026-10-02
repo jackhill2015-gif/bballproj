@@ -210,7 +210,7 @@ function _slimBracket(bracket) {
     var t = b.team;
     return {
       team: (t === null || t === undefined) ? null : (typeof t === 'number' ? t : t.id),
-      seed: b.seed, active: !!b.active, score: b.score, won: !!b.won
+      seed: b.seed, region: b.region, active: !!b.active, score: b.score, won: !!b.won
     };
   });
 }
@@ -227,6 +227,7 @@ function _slimConfTourneys(cts) {
           return { t1: idOf(m.t1), t2: idOf(m.t2), s1: m.s1, s2: m.s2, winner: idOf(m.winner) };
         });
       }),
+      carry: (ct.carry || []).map(idOf), // T3: teams holding a bye into the next round
       done: !!ct.done,
       champ: idOf(ct.champ)
     };
@@ -303,7 +304,7 @@ function _teamRef(x) {
 
 function _fattenBracket(slim) {
   return (slim || []).map(function(b) {
-    return { team: _teamRef(b.team), seed: b.seed, active: !!b.active, score: b.score, won: !!b.won };
+    return { team: _teamRef(b.team), seed: b.seed, region: b.region, active: !!b.active, score: b.score, won: !!b.won };
   });
 }
 
@@ -318,6 +319,7 @@ function _fattenConfTourneys(slim) {
           return { t1: _teamRef(m.t1), t2: _teamRef(m.t2), s1: m.s1, s2: m.s2, winner: _teamRef(m.winner) };
         });
       }),
+      carry: (ct.carry || []).map(_teamRef), // T3: restore bye teams
       done: !!ct.done,
       champ: _teamRef(ct.champ)
     };
