@@ -12,6 +12,10 @@ import { G, LS, SetupState, saveState } from './state.js';
 import { genPlayer, simGame, calcGrowth } from './simulation.js';
 import { recordGameMorale } from './morale.js';
 import { rollEvents } from './events.js';
+import {
+  snapRoster, userLinesFromRes, surfaceUserGameRecords,
+  processSeasonRecords, clearSeasonBreaks
+} from './records.js';
 
 // ── Late-Binding Registry ────────────────────────────────
 // To avoid circular imports (season ↔ tournament ↔ ui),
@@ -434,6 +438,8 @@ export function recordResult() {
     '<b>' + (won ? 'W' : 'L') + '</b> vs <b>' + opp.name + '</b>  ' + uScore + '\u2013' + oScore);
   toast((won ? 'W ' : 'L ') + uScore + '-' + oScore + ' vs ' + opp.name,
     won ? 'var(--grn)' : 'var(--red)');
+  // Records: surface any broken single-game school records (no-op if none).
+  surfaceUserGameRecords();
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -483,10 +489,14 @@ export function launchSim(watch) {
     // Increment GP for live sim (simGame does this internally for quick sim)
     tH.rost.forEach(function(p) { if (p.mins > 0) p.s.gp++; });
     tA.rost.forEach(function(p) { if (p.mins > 0) p.s.gp++; });
+    // Records: snapshot for the post-game diff (live games accumulate
+    // possession-by-possession, so there's no simGame result to read).
+    LS._recPre = { h: snapRoster(tH), a: snapRoster(tA), hid: tH.id, aid: tA.id };
     if (_ext.openModal) _ext.openModal(tH, tA);
   } else {
     var res = simGame(tH, tA, game.home);
     LS.hs = res.homeScore; LS.as = res.awayScore;
+    LS._recLines = userLinesFromRes(res);
     recordResult();
     simCPUWeek();
     advanceWeek();
@@ -721,6 +731,10 @@ export function endSeason() {
   }
   recordSeasonHistory('ncaa');
 
+  // Records: season/career record checks + Hall of Fame inductions.
+  // Runs while p.s still holds the finished season.
+  processSeasonRecords();
+
   // Calculate skill points
   var t = G.teams[G.tid];
   var sa = G.seasonAchievements;
@@ -915,6 +929,8 @@ export function doOffseason() {
   // Advance year
   G.yr++; G.wk = 0; G.gi = 0; G.phase = 'reg';
   G.bracket = []; G.confTourneys = {};
+  // Records: fresh highlight reel for the new season
+  clearSeasonBreaks();
 
   // Reset recruiting budget for next cycle
   G.recruitingBudget = 0;

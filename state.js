@@ -7,7 +7,7 @@ import { getTOvr } from './utils.js';
 import { RECRUIT_STATE_POOL, calcSchoolPrestige, COACH_FN, COACH_LN } from './constants.js';
 
 // ── Current save version — bump this when adding new fields ──
-var SAVE_VERSION = 7;
+var SAVE_VERSION = 8;
 var SAVE_KEY = 'hoops_os_v3';
 
 // ── Main Game State ──
@@ -37,6 +37,9 @@ export const G = {
     sweet16: false, finalFour: false,
     champGame: false, natChamp: false
   },
+  // Record book + Hall of Fame (records.js). Null until first ensured;
+  // old saves migrate cleanly via v8.
+  records: null,
   expectations: null,
   skillPointsEarned: 0, skillPointsToSpend: 0
 };
@@ -156,6 +159,11 @@ var MIGRATIONS = {
       s.prestige = Math.max(1, Math.round(sp / 20));
     }
     return s;
+  },
+  // v7→v8: Record book + Hall of Fame — start empty, fill as you play
+  8: function(s) {
+    if (!s.records) s.records = null;
+    return s;
   }
 };
 
@@ -260,6 +268,7 @@ function _writeSave() {
       phase:G.phase,difficulty:G.difficulty,
       confTitles:G.confTitles,championships:G.championships,prestige:G.prestige,
       logs:G.logs.slice(0,30),history:G.history||[],leagueChamps:G.leagueChamps||[],
+      records:G.records||null,
       recruitPhase:G.recruitPhase,recruitingBudget:G.recruitingBudget,
       recruitingSpent:G.recruitingSpent,recruitTargets:G.recruitTargets||[],
       departingPlayers:G.departingPlayers||[],offseasonStep:G.offseasonStep||'turnover',
@@ -348,6 +357,7 @@ export function loadState() {
     G.phase=s.phase;G.difficulty=s.difficulty||'normal';
     G.confTitles=s.confTitles||0;G.championships=s.championships||0;
     G.logs=s.logs||[];G.history=s.history||[];G.leagueChamps=s.leagueChamps||[];
+    G.records=s.records||null;
     G.recruits=s.recruits||[];
     // S9: restore persisted prestige (v7+); older saves get the v7 migration,
     // and anything else falls back to the new-game derivation

@@ -42,6 +42,7 @@ import {
   submitCoachName, submitDifficulty, selectJob, goBackToJobs,
   registerSetupCallbacks
 } from './views/setup.js';
+import { registerRecordsCallbacks } from './records.js';
 
 // ═══════════════════════════════════════════════════════════
 //  WIRE CALLBACK REGISTRIES
@@ -96,6 +97,12 @@ registerRecruitingCallbacks({
 registerSetupCallbacks({
   addLog: addLog,
   updateAll: updateAll
+});
+
+// Records stay UI-free: inject the quiet notifiers (log line + toast)
+registerRecordsCallbacks({
+  log: addLog,
+  toast: toast
 });
 
 // ═══════════════════════════════════════════════════════════

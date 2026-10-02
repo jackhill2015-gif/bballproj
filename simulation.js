@@ -9,6 +9,7 @@ import { COM, DIFF_MOD } from './constants.js';
 import { ri, clamp, gn, getOvr, getTOvr, pick, freshS } from './utils.js';
 import { moraleAttrMod, MORALE_DEFAULT } from './morale.js';
 import { G, LS } from './state.js';
+import { snapRoster, diffRoster } from './records.js';
 
 // ── Player Generation ────────────────────────────────────
 export function genPlayer(base, pos, cls) {
@@ -391,6 +392,11 @@ export function simGame(home, away, userIsHome) {
   // involvement from team ids vs G.tid.
   var userInvolved = (home.id === G.tid) || (away.id === G.tid);
   var userIsHomeActual = userInvolved && (home.id === G.tid);
+  // Records: snapshot the user's team's per-player stats before the sim so
+  // single-game record checks can diff afterwards. CPU-only games skip it.
+  var _recSnap = userInvolved
+    ? { h: snapRoster(home), a: snapRoster(away), hid: home.id, aid: away.id }
+    : null;
   var dm = userInvolved ? (DIFF_MOD[G.difficulty] || 0) : 0;
   var userT = userIsHomeActual ? home : away;
   var cpuBoost = Math.round(-dm * 0.5);
@@ -690,5 +696,12 @@ export function simGame(home, away, userIsHome) {
   away.rost.forEach(function(p, i) { p.sht = aOrig[i].sht; p.fin = aOrig[i].fin; p.def = aOrig[i].def; });
   home.rost.forEach(function(p) { if (origMins.has(p)) p.mins = origMins.get(p); });
   away.rost.forEach(function(p) { if (origMins.has(p)) p.mins = origMins.get(p); });
-  return { homeScore: hScore, awayScore: aScore };
+  var res = { homeScore: hScore, awayScore: aScore };
+  if (_recSnap) {
+    res.plines = {
+      h: { tid: _recSnap.hid, lines: diffRoster(home, _recSnap.h) },
+      a: { tid: _recSnap.aid, lines: diffRoster(away, _recSnap.a) }
+    };
+  }
+  return res;
 }

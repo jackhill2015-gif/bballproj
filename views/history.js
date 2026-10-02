@@ -8,6 +8,7 @@
 
 import { ge, fR } from '../utils.js';
 import { G } from '../state.js';
+import { bookFor, ensureRecords, STAT_LABELS } from '../records.js';
 
 function finishBadge(tf) {
   if (tf === 'CHAMP') return '<span class="tag t-cf">National Champion</span>';
@@ -129,6 +130,41 @@ export function renderHistory() {
     });
     h += '</div>';
   }
+
+  // ── Player record book (single game / season / career) ──
+  var pb = bookFor(G.tid);
+  h += '<div class="sec-block"><div class="card-title">Player Record Book</div>'
+    + '<div style="font-size:12px;color:var(--txt3);margin-bottom:6px;">' + G.teams[G.tid].name + ' all-time marks. First seasons write the history.</div>';
+  [['game', 'Single Game'], ['season', 'Single Season'], ['career', 'Career']].forEach(function(sc) {
+    h += '<div style="font-size:11px;font-weight:800;color:var(--txt3);text-transform:uppercase;letter-spacing:.4px;margin:10px 0 2px;">' + sc[1] + '</div>';
+    ['pts', 'reb', 'ast', 'stl', 'blk'].forEach(function(st) {
+      var e = pb[sc[0]][st];
+      h += '<div class="leader-row"><div class="leader-name">' + STAT_LABELS[st]
+        + (e
+          ? '<small>' + e.name + ' · ' + e.yr + '</small>'
+          : '<small>No record yet</small>')
+        + '</div><div class="leader-val" style="font-size:15px;">' + (e ? e.v : '—') + '</div></div>';
+    });
+  });
+  h += '</div>';
+
+  // ── Hall of Fame ──
+  var hof = ensureRecords().hof.filter(function(x) { return x.tid === G.tid; });
+  hof.sort(function(a, b) { return b.yr - a.yr; });
+  h += '<div class="sec-block"><div class="card-title">Hall of Fame</div>';
+  if (!hof.length) {
+    h += '<div style="font-size:13px;color:var(--txt3);">No legends yet. All-Americans, 2,000-point scorers, and players of the year get inducted when they leave.</div>';
+  } else {
+    hof.forEach(function(x) {
+      var tags = x.honors.map(function(hh) { return '<span class="tag t-home">' + hh + '</span>'; }).join(' ');
+      if (x.retired) tags += ' <span class="tag t-cf">Jersey Retired</span>';
+      h += '<div class="leader-row"><div class="leader-name" style="font-weight:800;">' + x.name
+        + '<small>' + x.pos + ' · ' + x.yrs + (x.yrs === 1 ? ' yr' : ' yrs') + ' · ' + x.yr
+        + ' · ' + x.pts + ' pts, ' + x.reb + ' reb, ' + x.ast + ' ast</small></div>'
+        + '<div style="text-align:right;max-width:45%;">' + tags + '</div></div>';
+    });
+  }
+  h += '</div>';
 
   // ── National champions ──
   if (G.leagueChamps && G.leagueChamps.length) {

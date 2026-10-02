@@ -8,6 +8,7 @@ import { ge, txt } from './utils.js';
 import { G, LS, SetupState, saveState } from './state.js';
 import { simGame } from './simulation.js';
 import { recordGameMorale } from './morale.js';
+import { snapRoster, userLinesFromRes, surfaceUserGameRecords } from './records.js';
 
 // ── Late-Binding Registry ────────────────────────────────
 var _ext = {
@@ -664,10 +665,13 @@ export function playTournamentGame(watch) {
           m.t1._seed = um.ct.seeds.findIndex(function(t) { return t.id === m.t1.id; }) + 1;
           m.t2._seed = um.ct.seeds.findIndex(function(t) { return t.id === m.t2.id; }) + 1;
         }
+        // Records: snapshot for the post-game diff (live path)
+        LS._recPre = { h: snapRoster(m.t1), a: snapRoster(m.t2), hid: m.t1.id, aid: m.t2.id };
         if (_ext.openModal) _ext.openModal(m.t1, m.t2, true, rn);
       } else {
         var res = simGame(m.t1, m.t2, true);
         LS.hs = res.homeScore; LS.as = res.awayScore;
+        LS._recLines = userLinesFromRes(res);
         resolveTournamentGame();
       }
     } else {
@@ -687,10 +691,13 @@ export function playTournamentGame(watch) {
       if (watch) {
         um2.b1.team._seed = um2.b1.seed;
         um2.b2.team._seed = um2.b2.seed;
+        // Records: snapshot for the post-game diff (live path)
+        LS._recPre = { h: snapRoster(um2.b1.team), a: snapRoster(um2.b2.team), hid: um2.b1.team.id, aid: um2.b2.team.id };
         if (_ext.openModal) _ext.openModal(um2.b1.team, um2.b2.team, true, getNCAAroundName());
       } else {
         var res2 = simGame(um2.b1.team, um2.b2.team, true);
         LS.hs = res2.homeScore; LS.as = res2.awayScore;
+        LS._recLines = userLinesFromRes(res2);
         resolveTournamentGame();
       }
     } else {
@@ -812,6 +819,8 @@ export function resolveTournamentGame() {
 
     checkNCAAdone();
   }
+  // Records: surface any broken single-game school records (no-op if none).
+  surfaceUserGameRecords();
   saveState(); updateAll();
   if (SetupState.ACTIVE_VIEW === 'bracket' && _ext.renderBracket) _ext.renderBracket();
 }

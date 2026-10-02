@@ -171,6 +171,14 @@ export function renderSeasonRecap() {
     h += '</div>';
   }
 
+  // Record book: everything that fell this season + HOF inductions
+  var _rb = G._recBreaks || [];
+  if (_rb.length) {
+    h += '<div class="sec-block"><div class="card-title">Record Book</div>';
+    _rb.forEach(function(b) { h += b.line; });
+    h += '</div>';
+  }
+
   h += '<div class="sec-block">'
     + '<div class="card-title">Coaching XP Earned</div>'
     + '<div style="font-family:var(--mono);font-size:26px;font-weight:900;margin-bottom:8px;">' + skillPts.length + ' <span style="font-size:13px;font-weight:700;color:var(--txt2);">skill point' + (skillPts.length !== 1 ? 's' : '') + '</span></div>';
