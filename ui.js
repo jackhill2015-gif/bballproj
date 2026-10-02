@@ -60,7 +60,11 @@ function pumpToasts() {
       d.style.borderLeftColor = item.col;
       d.textContent = item.msg;
       stack.appendChild(d);
-      requestAnimationFrame(function() { d.classList.add('show'); });
+      if (typeof requestAnimationFrame === 'function') {
+        requestAnimationFrame(function() { d.classList.add('show'); });
+      } else {
+        d.classList.add('show');
+      }
       setTimeout(function() {
         d.classList.remove('show');
         setTimeout(function() {
@@ -94,11 +98,20 @@ export function addLog(type, wk, text) {
   }
   G.logs.unshift({ type: type, wk: wk, text: text });
   if (G.logs.length > 60) G.logs.pop();
-  // O(1) DOM prepend — never a full re-render per log line
+  // O(1) DOM prepend — never a full re-render per log line.
+  // addLog is called from sim logic, so it must never crash on
+  // minimal DOM shims: feature-check everything DOM-specific.
   var el = ge('game-log');
   if (el) {
-    el.insertAdjacentHTML('afterbegin', logNode(type, wk, text));
-    while (el.children.length > LOG_CAP) el.removeChild(el.lastChild);
+    var node = logNode(type, wk, text);
+    if (typeof el.insertAdjacentHTML === 'function') {
+      el.insertAdjacentHTML('afterbegin', node);
+    } else if (typeof el.innerHTML === 'string') {
+      el.innerHTML = node + el.innerHTML;
+    }
+    if (el.children && typeof el.children.length === 'number') {
+      while (el.children.length > LOG_CAP) el.removeChild(el.lastChild);
+    }
   }
 }
 
@@ -154,7 +167,9 @@ function narrateResult(type, text) {
     else if (!won && streak <= -2) streakTxt = ' Losers of ' + Math.abs(streak) + ' straight.';
 
     var star = best ? ' ' + best.name.split(' ').slice(-1)[0] + ' (' + bestPpg.toFixed(1) + ' ppg) led the way.' : '';
-    var tour = suffix.indexOf('Conf Tourney') >= 0 ? (won ? ' On to the next round.' : ' The run ends here.') : '';
+    var tour = '';
+    if (suffix.indexOf('Conf Tourney') >= 0) tour = won ? ' On to the next round.' : ' The run ends here.';
+    else if (suffix.indexOf('NCAA') >= 0) tour = won ? ' Survive and advance.' : ' The dream dies here.';
     var narr = ' ' + t.name.split(' ').slice(-1)[0] + ' ' + verb + ' ' + oppName + '.' + star + ctx + streakTxt + tour;
     return { text: text + '<br><span style="color:var(--txt3);font-size:11px;">' + narr + '</span>' };
   } catch (e) { return null; }
@@ -270,6 +285,7 @@ function checkMilestones(rank) {
 
 export function navTo(v) {
   SetupState.ACTIVE_VIEW = v;
+  closeMoreSheet();
   document.querySelectorAll('.nav-btn').forEach(function(b) {
     b.classList.toggle('on', b.getAttribute('data-view') === v);
   });
@@ -292,6 +308,60 @@ export function refreshView() {
   else if (v === 'history' && _views.renderHistory) _views.renderHistory();
   else if (v === 'bracket' && _views.renderBracket) _views.renderBracket();
   else if (v === 'offseason' && _views.renderOffseason) _views.renderOffseason();
+  else if (v === 'strategy') loadStrategyView();
+}
+
+// Strategy view is owned by views/strategy.js and loaded on demand so
+// main.js needs no new static import or registry wiring.
+var _strategyMod = null;
+function loadStrategyView() {
+  if (_strategyMod) { _strategyMod.renderStrategy(); return; }
+  import('./views/strategy.js').then(function(m) {
+    _strategyMod = m;
+    if (SetupState.ACTIVE_VIEW === 'strategy') m.renderStrategy();
+  }).catch(function(e) { console.error('strategy view failed to load', e); });
+}
+
+// ── More sheet (mobile 5-icon nav overflow) ──
+export function toggleMoreSheet() {
+  var sh = ge('more-sheet'), sc = ge('sheet-scrim');
+  var open = sh && !sh.classList.contains('open');
+  if (sh) sh.classList.toggle('open', !!open);
+  if (sc) sc.classList.toggle('on', !!open);
+}
+function closeMoreSheet() {
+  var sh = ge('more-sheet'), sc = ge('sheet-scrim');
+  if (sh) sh.classList.remove('open');
+  if (sc) sc.classList.remove('on');
+}
+
+// ── Notifications (collapsible dashboard row) ──
+var _notifOpen = false;
+var _notifSeen = 0;
+export function notifState() {
+  return { open: _notifOpen, unread: Math.max(0, G.logs.length - _notifSeen) };
+}
+export function toggleNotif() {
+  _notifOpen = !_notifOpen;
+  if (_notifOpen) _notifSeen = G.logs.length;
+  if (SetupState.ACTIVE_VIEW === 'dashboard' && _views.renderDashboard) _views.renderDashboard();
+}
+
+// ── Circular initial team logos (Campus Dynasty pattern) ──
+var LOGO_COLORS = ['#0a4fc4', '#1e8e3e', '#d32f2f', '#6d3fc0', '#e67e22', '#0e7c7b', '#b7791f', '#c2185b'];
+export function teamColor(name) {
+  var h = 0, s = String(name || '?');
+  for (var i = 0; i < s.length; i++) h = ((h * 31) + s.charCodeAt(i)) >>> 0;
+  return LOGO_COLORS[h % LOGO_COLORS.length];
+}
+export function teamInitial(name) {
+  return (String(name || '?').trim().charAt(0) || '?').toUpperCase();
+}
+export function teamLogo(name, cls) {
+  return '<div class="team-logo' + (cls ? ' ' + cls : '') + '" style="background:' + teamColor(name) + '" aria-hidden="true">' + teamInitial(name) + '</div>';
+}
+export function teamAbbr(name) {
+  return String(name || '???').replace(/[^A-Za-z]/g, '').slice(0, 4).toUpperCase() || '???';
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -447,11 +517,17 @@ function handleAction(el) {
       if (_actions.doPlay) _actions.doPlay(el.getAttribute('data-mode'));
       break;
     }
-    case 'timeout':
-      callTimeout();
-      break;
     case 'skip':
       skipGame();
+      break;
+    case 'gcast-tab':
+      switchGcastTab(el.getAttribute('data-tab'));
+      break;
+    case 'more':
+      toggleMoreSheet();
+      break;
+    case 'notif-toggle':
+      toggleNotif();
       break;
     case 'nil-buy':
       buyBoost(el.getAttribute('data-item'), el);
@@ -575,7 +651,13 @@ export function buyBoost(itemId, btnEl) {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  GAME MODAL — Live Simulation
+// ═══════════════════════════════════════════════════════════
+//  GAMECAST — Live game view (WATCH-ONLY, per jack)
+//  Campus Dynasty pattern: matchup header, team rows with
+//  circular logos and big scores, Gamecast / Team Stats /
+//  Box Score tabs, speed slider, timestamped feed with
+//  running score, big blue Sim Game button pinned at bottom.
+//  All strategy happens BEFORE the game (Strategy screen).
 // ═══════════════════════════════════════════════════════════
 
 export function openModal(tH, tA, isTournament, roundName) {
@@ -589,31 +671,30 @@ export function openModal(tH, tA, isTournament, roundName) {
   LS.h1 = null; LS.a1 = null; LS.poss = 'A';
   if (typeof LS.possCount !== 'undefined') LS.possCount = 0;
 
-  // Timeout state: 3 per game, sets G.timeoutBoost for the sim to consume
-  G._timeoutsLeft = 3;
-  G.timeoutBoost = false;
-  updateTimeoutBtn();
+  // Box-score snapshots: per-game deltas = live p.s minus snapshot.
+  // Pure presentation — no sim changes.
+  LS._boxSnap = {
+    h: tH.rost.map(function(p) { return Object.assign({}, p.s); }),
+    a: tA.rost.map(function(p) { return Object.assign({}, p.s); })
+  };
 
   ge('gmod').classList.add('open');
-  if (isTournament && roundName) {
-    txt('gmod-title', roundName); txt('gmod-wk', 'TOURNAMENT GAME');
-  } else {
-    txt('gmod-title', 'LIVE SIMULATION'); txt('gmod-wk', 'GAME ' + (G.gi + 1) + ' of 30');
-  }
+  txt('gmod-title', teamAbbr(tA.name) + ' vs. ' + teamAbbr(tH.name) + (roundName ? '  ·  ' + roundName : ''));
+
   var ae = ge('sb-away'), he = ge('sb-home');
-  var aName = tA.name + (isTournament && tA._seed ? ' #' + tA._seed : '');
-  var hName = tH.name + (isTournament && tH._seed ? ' #' + tH._seed : '');
-  ae.textContent = aName; ae.className = 'sb-t a' + (tA.id === G.tid ? ' u' : '');
-  he.textContent = hName; he.className = 'sb-t h' + (tH.id === G.tid ? ' u' : '');
-  ge('sb-score').textContent = '0 \u2013 0';
-  txt('sb-clk', '20:00'); txt('sb-per', '1ST HALF');
-  var momFill = ge('mom-fill'); if (momFill) momFill.style.width = '50%';
-  ge('pbplog').innerHTML = '<span style="color:var(--txt3)">\u25b6 TIP OFF</span>';
-  ge('lplay').textContent = 'Tip off...'; ge('lplay').className = 'lplay';
-  ['hc-a1', 'hc-h1', 'hc-a2', 'hc-h2', 'hc-aot', 'hc-hot', 'hc-af', 'hc-hf'].forEach(function(id) {
-    var el = ge(id);
-    if (el) { el.textContent = '\u2013'; el.className = 'hcell'; }
-  });
+  ae.textContent = tA.name + (isTournament && tA._seed ? '  #' + tA._seed : '');
+  ae.className = 'gc-name' + (tA.id === G.tid ? ' u' : '');
+  he.textContent = tH.name + (isTournament && tH._seed ? '  #' + tH._seed : '');
+  he.className = 'gc-name' + (tH.id === G.tid ? ' u' : '');
+  var la = ge('gc-logo-a'), lh = ge('gc-logo-h');
+  if (la) { la.textContent = teamInitial(tA.name); la.style.background = teamColor(tA.name); }
+  if (lh) { lh.textContent = teamInitial(tH.name); lh.style.background = teamColor(tH.name); }
+  txt('gc-score-a', '0'); txt('gc-score-h', '0');
+  txt('sb-clk', '20:00'); txt('sb-per', 'Half 1');
+
+  switchGcastTab('cast');
+  var log = ge('pbplog');
+  if (log) log.innerHTML = pbpRow('20:00', 'Jump ball.', '0-0', '');
 
   var spd = ge('spd');
   function startInterval() {
@@ -635,27 +716,94 @@ export function openModal(tH, tA, isTournament, roundName) {
   startInterval();
 }
 
-// ── Timeout: 3 per game. Sets G.timeoutBoost for the sim
-//    agent to consume (kills opponent momentum).
-export function callTimeout() {
-  var left = G._timeoutsLeft || 0;
-  if (left <= 0) return;
-  G._timeoutsLeft = left - 1;
-  G.timeoutBoost = true;
-  var log = ge('pbplog');
-  if (log) {
-    var who = (LS.userTeam && LS.userTeam.name) || 'Coach';
-    log.innerHTML = '<div style="background:var(--blu);color:#fff;font-weight:800;font-size:11px;padding:4px 8px;border-radius:4px;margin:2px 0;letter-spacing:.5px;">⏸ TIMEOUT — ' + who + ' (' + G._timeoutsLeft + ' left)</div>' + log.innerHTML;
-  }
-  updateTimeoutBtn();
+// ── Feed row: timestamp | play text | running score ──────
+function pbpRow(ts, text, score, cls) {
+  return '<div class="pbp-row' + (cls ? ' ' + cls : '') + '">'
+    + '<span class="p-ts">' + ts + '</span>'
+    + '<span class="p-tx">' + text + '</span>'
+    + '<span class="p-sc">' + score + '</span></div>';
 }
 
-function updateTimeoutBtn() {
-  var btn = ge('timeout-btn');
-  var cnt = ge('timeout-count');
-  var left = (typeof G._timeoutsLeft === 'number') ? G._timeoutsLeft : 3;
-  if (cnt) cnt.textContent = '(' + left + ')';
-  if (btn) btn.disabled = left <= 0;
+// ── Gamecast tabs ───────────────────────────────────────
+export function switchGcastTab(tab) {
+  var tabs = document.querySelectorAll ? document.querySelectorAll('.gc-tab') : [];
+  for (var i = 0; i < tabs.length; i++) {
+    tabs[i].classList.toggle('on', tabs[i].getAttribute('data-tab') === tab);
+  }
+  ['cast', 'team', 'box'].forEach(function(k) {
+    var p = ge('gc-pane-' + k);
+    if (p) p.classList.toggle('on', k === tab);
+  });
+  if (tab === 'team') renderGcastTeam();
+  if (tab === 'box') renderGcastBox();
+}
+
+function boxDeltas(team, snap) {
+  var out = [];
+  team.rost.forEach(function(p, i) {
+    var s0 = (snap && snap[i]) || {};
+    var d = function(k) { return (p.s[k] || 0) - (s0[k] || 0); };
+    out.push({ p: p, pts: d('pts'), reb: d('reb'), ast: d('ast'), fgm: d('fgm'), fga: d('fga'), stl: d('stl'), blk: d('blk') });
+  });
+  return out;
+}
+
+function renderGcastTeam() {
+  var el = ge('gc-pane-team');
+  if (!el || !LS._boxSnap) return;
+  function totals(team, snap) {
+    var t = { pts: 0, fgm: 0, fga: 0, reb: 0, ast: 0, stl: 0, blk: 0 };
+    boxDeltas(team, snap).forEach(function(r) {
+      t.pts += r.pts; t.fgm += r.fgm; t.fga += r.fga;
+      t.reb += r.reb; t.ast += r.ast; t.stl += r.stl; t.blk += r.blk;
+    });
+    return t;
+  }
+  var a = totals(LS.tA, LS._boxSnap.a), h = totals(LS.tH, LS._boxSnap.h);
+  function fg(t) { return t.fga > 0 ? (t.fgm / t.fga * 100).toFixed(1) + '%' : '--'; }
+  var rows = [
+    ['PTS', a.pts, h.pts], ['FG', a.fgm + '/' + a.fga, h.fgm + '/' + h.fga],
+    ['FG%', fg(a), fg(h)], ['REB', a.reb, h.reb], ['AST', a.ast, h.ast],
+    ['STL', a.stl, h.stl], ['BLK', a.blk, h.blk]
+  ];
+  var html = '<table><thead><tr><th></th><th style="text-align:right;">' + teamAbbr(LS.tA.name) + '</th>'
+    + '<th style="text-align:right;">' + teamAbbr(LS.tH.name) + '</th></tr></thead><tbody>';
+  rows.forEach(function(r) {
+    html += '<tr><td style="color:var(--txt3);font-size:11px;font-weight:800;">' + r[0] + '</td>'
+      + '<td style="text-align:right;font-family:var(--mono);font-weight:700;">' + r[1] + '</td>'
+      + '<td style="text-align:right;font-family:var(--mono);font-weight:700;">' + r[2] + '</td></tr>';
+  });
+  el.innerHTML = html + '</tbody></table>';
+}
+
+function renderGcastBox() {
+  var el = ge('gc-pane-box');
+  if (!el || !LS._boxSnap) return;
+  function teamTable(team, snap) {
+    var rows = boxDeltas(team, snap)
+      .filter(function(r) { return r.p.mins > 0; })
+      .sort(function(x, y) { return y.pts - x.pts; });
+    var html = '<div style="display:flex;align-items:center;gap:8px;margin:10px 0 6px;">'
+      + teamLogo(team.name, 'sm')
+      + '<span style="font-size:13px;font-weight:800;">' + team.name + '</span></div>'
+      + '<table><thead><tr><th>Player</th><th style="text-align:right;">PTS</th>'
+      + '<th style="text-align:right;">REB</th><th style="text-align:right;">AST</th></tr></thead><tbody>';
+    rows.forEach(function(r) {
+      html += '<tr><td style="font-weight:600;">' + r.p.name
+        + ' <span style="font-weight:400;color:var(--txt3);font-size:11px;">' + r.p.pos + '</span></td>'
+        + '<td style="text-align:right;font-family:var(--mono);font-weight:800;">' + r.pts + '</td>'
+        + '<td style="text-align:right;font-family:var(--mono);">' + r.reb + '</td>'
+        + '<td style="text-align:right;font-family:var(--mono);">' + r.ast + '</td></tr>';
+    });
+    return html + '</tbody></table>';
+  }
+  el.innerHTML = teamTable(LS.tA, LS._boxSnap.a) + teamTable(LS.tH, LS._boxSnap.h);
+}
+
+function refreshGcastTabs() {
+  var tp = ge('gc-pane-team'), bp = ge('gc-pane-box');
+  if (tp && tp.classList.contains('on')) renderGcastTeam();
+  if (bp && bp.classList.contains('on')) renderGcastBox();
 }
 
 // ── Step Sim (one possession tick) ───────────────────────
@@ -663,13 +811,10 @@ export function stepSim() {
   if (LS.clock <= 0) {
     if (LS.half === 1) {
       LS.h1 = LS.hs; LS.a1 = LS.as; LS.half = 2; LS.clock = 1200;
-      var h1e = ge('hc-h1'), a1e = ge('hc-a1');
-      if (h1e) { h1e.textContent = LS.hs; h1e.className = 'hcell act'; }
-      if (a1e) { a1e.textContent = LS.as; a1e.className = 'hcell act'; }
-      txt('sb-per', '2ND HALF');
+      txt('sb-per', 'Half 2');
       G.momentum = { tid: -1, pts: 0 };
       var log = ge('pbplog');
-      if (log) log.innerHTML = '<span style="color:var(--txt2)">\u2500\u2500 HALFTIME \u2500\u2500</span><br>' + log.innerHTML;
+      if (log) log.innerHTML = '<div class="pbp-banner" style="background:var(--s3);color:var(--txt2);">── HALFTIME ──</div>' + log.innerHTML;
       return true;
     } else if (LS.half === 2) {
       if (LS.hs === LS.as) { LS.half = 3; LS.clock = 300; txt('sb-per', 'OT'); return true; }
@@ -690,29 +835,27 @@ export function stepSim() {
   LS.poss = LS.poss === 'H' ? 'A' : 'H';
   var m = Math.max(0, Math.floor(LS.clock / 60));
   var s = ('0' + Math.max(0, LS.clock % 60)).slice(-2);
-  ge('sb-score').textContent = LS.as + ' \u2013 ' + LS.hs;
-  txt('sb-clk', m + ':' + s);
-  ge('mom-fill').style.width = (LS.hs / Math.max(1, LS.hs + LS.as) * 100) + '%';
+  var ts = m + ':' + s;
+  var score = LS.as + '-' + LS.hs;
+  txt('gc-score-a', String(LS.as));
+  txt('gc-score-h', String(LS.hs));
+  txt('sb-clk', ts);
 
   if (res.pbp) {
-    var lp = ge('lplay');
-    if (lp) {
-      lp.innerHTML = res.pbp;
-      lp.className = 'lplay' + (res.big ? ' big' : res.type === 'turn' || res.type === 'block' ? ' bad' : '');
-    }
     var logEl = ge('pbplog');
     if (logEl) {
-      var _entry = '<span class="p-ts">' + m + ':' + s + '</span>' + res.pbp + '<br>';
+      var entry = '';
       if (res.run) {
-        var _bc = res.run.isUser ? 'var(--gld)' : '#fc8181';
-        _entry = '<div style="background:' + _bc + ';color:#000;font-weight:900;font-size:10px;padding:3px 8px;border-radius:3px;margin:2px 0;letter-spacing:.5px;">' + res.run.text + '</div>' + _entry;
+        var bc = res.run.isUser ? 'var(--gld)' : '#fc8181';
+        entry += '<div class="pbp-banner" style="background:' + bc + ';color:#000;">' + res.run.text + '</div>';
       }
-      // Cap PBP DOM nodes so long games don't bloat the page
-      if (logEl.childNodes.length > 220) {
+      entry += pbpRow(ts, res.pbp, score, res.big ? 'big' : (res.type === 'turn' || res.type === 'block' ? 'bad' : ''));
+      if (logEl.childNodes && logEl.childNodes.length > 220) {
         while (logEl.childNodes.length > 220) logEl.removeChild(logEl.lastChild);
       }
-      logEl.innerHTML = _entry + logEl.innerHTML;
+      logEl.innerHTML = entry + logEl.innerHTML;
     }
+    refreshGcastTabs();
   }
   return true;
 }
@@ -747,11 +890,9 @@ export function skipGame() {
 // ── Finalize Modal ───────────────────────────────────────
 export function finalizeModal() {
   if (G.simInterval) { clearInterval(G.simInterval); G.simInterval = null; }
-  var hf = ge('hc-hf'), af = ge('hc-af');
-  if (hf) { hf.textContent = LS.hs; hf.className = 'hcell act'; }
-  if (af) { af.textContent = LS.as; af.className = 'hcell act'; }
-  ge('sb-score').textContent = LS.as + ' \u2013 ' + LS.hs;
   txt('sb-clk', 'FINAL');
+  renderGcastTeam();
+  renderGcastBox();
 
   if ((G.phase === 'conf_tourn' && LS.game && LS.game._type === 'conf') ||
       (G.phase === 'ncaa' && LS.game && LS.game._type === 'ncaa')) {

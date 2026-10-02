@@ -1,15 +1,21 @@
 // ═══════════════════════════════════════════════════════════
 //  HOOPS OS — views/dashboard.js
-//  Dashboard-as-digest: identity strip, weekly briefing,
-//  next-game card (rivalry hooks), NIL boost shop, coach XP,
-//  award races, headlines. Delegated actions, no inline onclick.
+//  Dashboard-as-digest in the Campus Dynasty rhythm (from
+//  jack's screenshots): school identity card, collapsible
+//  Notifications row, Season Expectations card, game card
+//  with two big blue buttons (Play Game / Sim Game), then
+//  briefing, NIL shop, coach XP, award races, standings.
+//  Delegated actions, no inline onclick.
 // ═══════════════════════════════════════════════════════════
 
 import { DIFF_MOD } from '../constants.js';
 import { ge, clamp, getTOvr, fR } from '../utils.js';
 import { G } from '../state.js';
 import { getUserConfMatchup, getUserNCAAmatchup, getConfRoundName } from '../tournament.js';
-import { userRank, rankDelta, currentStreak, coachXpToNext, NIL_SHOP, shopBoughtThisWeek } from '../ui.js';
+import {
+  userRank, rankDelta, currentStreak, coachXpToNext,
+  NIL_SHOP, shopBoughtThisWeek, teamLogo, teamColor, notifState
+} from '../ui.js';
 
 // ── Cached POY race (recomputed when week/phase changes) ──
 var _raceCache = { key: '', rows: [] };
@@ -20,7 +26,7 @@ function poyRace() {
   G.teams.forEach(function(tm) {
     tm.rost.forEach(function(p) {
       var gp = p.s.gp || 0;
-      if (gp < 8) return;
+      if (gp < 3) return;
       rows.push({
         name: p.name, pos: p.pos, cls: p.cls, team: tm.name, tid: tm.id,
         ppg: p.s.pts / gp,
@@ -50,13 +56,6 @@ function revengeIds() {
   });
   return ids;
 }
-function gameFlags(oppId) {
-  var r = rivalIds(), rev = revengeIds();
-  var h = '';
-  if (r[oppId]) h += '<span class="tag t-rival">🏆 Rivalry</span>';
-  if (rev[oppId]) h += '<span class="tag t-revenge">😤 Revenge</span>';
-  return h;
-}
 
 function winProb(t, opp, home) {
   var dm = DIFF_MOD[G.difficulty] || 0;
@@ -64,47 +63,179 @@ function winProb(t, opp, home) {
 }
 function wpColor(wp) { return wp >= 55 ? 'var(--grn2)' : wp >= 40 ? 'var(--gld2)' : 'var(--red)'; }
 
-function rankArrowHTML() {
-  var d = rankDelta();
-  if (!d.prev) return '';
-  if (d.delta > 0) return ' <span class="arrow-up">▲' + d.delta + '</span>';
-  if (d.delta < 0) return ' <span class="arrow-dn">▼' + Math.abs(d.delta) + '</span>';
-  return ' <span class="arrow-flat">–</span>';
-}
-
 // ═══════════════════════════════════════════════════════════
-//  STAT STRIP (kept as a named export for main.js compat)
+//  SCHOOL IDENTITY CARD (CD pattern)
 // ═══════════════════════════════════════════════════════════
 
-export function renderStatsBanner() {
+function renderSchoolCard() {
   var t = G.teams[G.tid];
   var netRank = userRank();
   var confTeams = G.teams.filter(function(x) { return x.conf === t.conf; });
   confTeams.sort(function(a, b) { return (b.cWins / Math.max(1, b.cWins + b.cLoss)) - (a.cWins / Math.max(1, a.cWins + a.cLoss)) || b.pts - a.pts; });
   var confRank = confTeams.findIndex(function(x) { return x.id === G.tid; }) + 1;
-  var st = currentStreak();
-  var streakTxt = st > 0 ? 'W' + st : st < 0 ? 'L' + Math.abs(st) : '–';
-  var seed = netRank <= 64 ? Math.ceil(netRank / 4) : 0;
-  var pulse = seed >= 1 && seed <= 4 ? 'LOCK' : seed <= 8 ? 'BUBBLE IN' : seed <= 16 ? 'IN' : 'OUT';
-  var pulseCol = seed >= 1 && seed <= 4 ? 'var(--grn2)' : seed <= 8 ? 'var(--gld2)' : seed <= 16 ? 'var(--txt2)' : 'var(--txt3)';
+  // Seed projection appears once the season takes shape (CD shows N/A early)
+  var seed = G.gi >= 8 && netRank <= 64 ? Math.ceil(netRank / 4) : 0;
 
-  var cells = [
-    { l: 'Overall', v: fR(t.wins, t.loss) },
-    { l: t.conf, v: fR(t.cWins, t.cLoss) },
-    { l: 'NET Rank', v: '#' + netRank + rankArrowHTML(), hot: netRank <= 25 },
-    { l: 'Conf Rank', v: '#' + confRank + '/' + confTeams.length },
-    { l: 'Streak', v: streakTxt, hot: st >= 3 },
-    { l: 'Seed Pulse', v: (seed ? '#' + seed : '—') + ' <span style="font-size:9px;font-weight:800;color:' + pulseCol + ';">' + pulse + '</span>' }
-  ];
-  var h = '<div class="stat-strip">';
-  cells.forEach(function(c) {
-    h += '<div class="stat-cell' + (c.hot ? ' hot' : '') + '"><div class="sv">' + c.v + '</div><div class="sl">' + c.l + '</div></div>';
-  });
+  var d = rankDelta();
+  var arrow = '';
+  if (d.prev) {
+    arrow = d.delta > 0 ? ' <span class="arrow-up">▲' + d.delta + '</span>'
+      : d.delta < 0 ? ' <span class="arrow-dn">▼' + Math.abs(d.delta) + '</span>' : '';
+  }
+
+  return '<div class="card school-card">'
+    + '<div class="sc-top">' + teamLogo(t.name, 'lg')
+    + '<div class="sc-id"><div class="sc-name">' + t.name + '</div></div>'
+    + '<div class="sc-conf">' + t.conf + '</div></div>'
+    + '<div class="sc-record">' + fR(t.wins, t.loss) + '</div>'
+    + '<div class="sc-cols">'
+    + '<div><div class="sc-lab">National</div><div class="sc-val">' + netRank + arrow + '</div></div>'
+    + '<div><div class="sc-lab">Conference</div><div class="sc-val">' + confRank + '</div></div>'
+    + '<div><div class="sc-lab">Seed</div><div class="sc-val">' + (seed || 'N/A') + '</div></div>'
+    + '</div></div>';
+}
+
+// ═══════════════════════════════════════════════════════════
+//  NOTIFICATIONS (collapsible row, CD pattern)
+// ═══════════════════════════════════════════════════════════
+
+function renderNotifications() {
+  var ns = notifState();
+  var h = '<div class="card notif-card" data-action="notif-toggle" role="button" tabindex="0" aria-expanded="' + ns.open + '">'
+    + '<div class="notif-row"><span class="ni">🔔</span><span class="notif-label">Notifications</span>'
+    + (ns.unread ? '<span class="notif-badge">' + ns.unread + '</span>' : '')
+    + '<span class="notif-chev">' + (ns.open ? '▲' : '▼') + '</span></div>';
+  if (ns.open) {
+    h += '<div class="notif-body">';
+    var logs = (G.logs || []).slice(0, 10);
+    if (!logs.length) h += '<div style="font-size:13px;color:var(--txt3);padding:8px 0;">Nothing yet — sim your first game.</div>';
+    logs.forEach(function(lg) {
+      var badge = lg.type === 'w' ? 'W' : lg.type === 'l' ? 'L' : '•';
+      h += '<div class="headline"><span class="hbadge ' + lg.type + '">' + badge + '</span><span>' + lg.text + '</span></div>';
+    });
+    h += '</div>';
+  }
   return h + '</div>';
 }
 
 // ═══════════════════════════════════════════════════════════
-//  WEEKLY BRIEFING (P2: rank move, scout note, headline, nudge)
+//  SEASON EXPECTATIONS (CD card + visible hot-seat tie-in)
+// ═══════════════════════════════════════════════════════════
+
+function renderExpectations() {
+  var exp = G.expectations;
+  var t = G.teams[G.tid];
+  var c = G.coach;
+  if (!exp) return '';
+  var wins = t.wins;
+  var job, cls;
+  if (c.hotSeat) {
+    job = '🔥 HOT SEAT';
+    cls = 'danger';
+  } else if (wins < exp.danger) {
+    job = '⚠️ Job in danger';
+    cls = 'warn';
+  } else if (wins < exp.low) {
+    job = '😐 Below expectations';
+    cls = 'warn';
+  } else {
+    job = '✅ Job safe';
+    cls = 'safe';
+  }
+  return '<div class="card exp-card">'
+    + '<div class="exp-record">Record: ' + exp.low + '–' + exp.high + '</div>'
+    + '<div class="exp-label">Season Expectations</div>'
+    + '<div class="exp-job ' + cls + '">' + job
+    + '<small>' + wins + ' wins so far · firing line: under ' + exp.danger + ' wins</small></div></div>';
+}
+
+// ═══════════════════════════════════════════════════════════
+//  GAME CARD — two big blue buttons (CD pattern)
+// ═══════════════════════════════════════════════════════════
+
+function renderGameCard() {
+  var t = G.teams[G.tid];
+
+  function bigButtons() {
+    return '<div class="big-btn-row">'
+      + '<button class="btn-big" data-action="play" data-mode="live">▶ Play Game</button>'
+      + '<button class="btn-big" data-action="play" data-mode="quick">⏩ Sim Game</button></div>';
+  }
+
+  if (G.phase === 'reg' && G.gi < 30) {
+    var ng = t.sched[G.gi];
+    var no = ng && ng.opp !== undefined && ng.opp !== null ? G.teams[ng.opp] : null;
+    if (ng && no) {
+      var wp = winProb(t, no, ng.home);
+      var r = rivalIds(), rev = revengeIds();
+      var flags = (r[no.id] ? '<span class="tag t-rival">🏆 Rivalry</span> ' : '')
+        + (rev[no.id] ? '<span class="tag t-revenge">😤 Revenge</span>' : '');
+      return '<div class="card game-card">'
+        + '<div class="gc-opp-row">' + teamLogo(no.name)
+        + '<div class="gc-opp-id"><div class="gc-opp-name">' + (ng.home ? 'vs ' : '@ ') + no.name + '</div>'
+        + '<div class="gc-opp-sub">Week ' + (G.gi + 1) + ' · ' + (ng.conf ? t.conf : 'Non-conference') + '</div></div>'
+        + '<div class="gc-opp-rec">' + no.wins + '-' + no.loss + '</div></div>'
+        + (flags ? '<div style="margin-top:10px;">' + flags + '</div>' : '')
+        + '<div class="prob-row"><span>Win probability</span><span style="color:' + wpColor(wp) + ';font-weight:800;">' + wp + '%</span></div>'
+        + '<div class="prob-bar"><div class="prob-fill" style="width:' + wp + '%;background:' + wpColor(wp) + ';"></div></div>'
+        + bigButtons()
+        + '<button class="btn btn-ghost btn-sm btn-full" style="margin-top:8px;" data-action="nav" data-view="strategy">🧠 GAMEPLAN</button></div>';
+    }
+    return '<div class="card game-card"><div class="gc-opp-name">Bye week</div>'
+      + '<div class="gc-opp-sub">Week ' + (G.gi + 1) + ' — rest up.</div>'
+      + '<div class="big-btn-row"><button class="btn-big" data-action="play" data-mode="quick">▶ Sim Week</button></div></div>';
+  }
+
+  if (G.phase === 'reg') {
+    return '<div class="card game-card"><div class="card-title">Regular season complete</div>'
+      + '<button class="btn btn-red btn-full" data-action="play" data-mode="quick">BEGIN CONFERENCE TOURNAMENT</button></div>';
+  }
+
+  if (G.phase === 'conf_tourn') {
+    var cm = getUserConfMatchup();
+    if (cm) {
+      var m = cm.matchup;
+      var opp = m.t1.id === G.tid ? m.t2 : m.t1;
+      var seeds = cm.ct.seeds || [];
+      var us = seeds.findIndex(function(x) { return x.id === G.tid; }) + 1;
+      var os = seeds.findIndex(function(x) { return x.id === opp.id; }) + 1;
+      return '<div class="card game-card"><div class="card-title">' + getConfRoundName(cm.ct, cm.conf) + '</div>'
+        + '<div class="gc-opp-row">' + teamLogo(opp.name)
+        + '<div class="gc-opp-id"><div class="gc-opp-name">#' + os + ' ' + opp.name + '</div>'
+        + '<div class="gc-opp-sub">You are #' + us + '</div></div>'
+        + '<div class="gc-opp-rec">' + opp.wins + '-' + opp.loss + '</div></div>'
+        + bigButtons() + '</div>';
+    }
+    return '<div class="card game-card"><div class="card-title">Conference tournament</div>'
+      + '<div style="font-size:13px;color:var(--txt2);margin-bottom:12px;">Your run is over. Simming the rest of the field…</div>'
+      + '<button class="btn btn-red btn-full" data-action="play" data-mode="quick">ADVANCE</button></div>';
+  }
+
+  if (G.phase === 'ncaa') {
+    var nm = getUserNCAAmatchup();
+    if (nm) {
+      var uIsB1 = nm.b1.team.id === G.tid;
+      var ue = uIsB1 ? nm.b1 : nm.b2, oe = uIsB1 ? nm.b2 : nm.b1;
+      var nopp = oe.team;
+      return '<div class="card game-card" style="border:2px solid var(--gld);"><div class="card-title">March Madness · you are #' + ue.seed + '</div>'
+        + '<div class="gc-opp-row">' + teamLogo(nopp.name)
+        + '<div class="gc-opp-id"><div class="gc-opp-name">#' + oe.seed + ' ' + nopp.name + '</div>'
+        + '<div class="gc-opp-sub">Win or go home</div></div>'
+        + '<div class="gc-opp-rec">' + nopp.wins + '-' + nopp.loss + '</div></div>'
+        + bigButtons() + '</div>';
+    }
+    return '<div class="card game-card"><div class="card-title">NCAA Tournament</div>'
+      + '<div style="font-size:13px;color:var(--txt2);margin-bottom:12px;">Your run is over. Watch the rest unfold.</div>'
+      + '<button class="btn btn-red btn-full" data-action="play" data-mode="quick">SIM NEXT ROUND</button></div>';
+  }
+
+  return '<div class="card game-card"><div class="card-title">Offseason</div>'
+    + '<div style="font-size:13px;color:var(--txt2);margin-bottom:12px;">Recruit, develop, and reload for next season.</div>'
+    + '<button class="btn btn-red btn-full" data-action="nav" data-view="offseason">OPEN OFFSEASON HQ</button></div>';
+}
+
+// ═══════════════════════════════════════════════════════════
+//  WEEKLY BRIEFING
 // ═══════════════════════════════════════════════════════════
 
 function renderBriefing() {
@@ -124,106 +255,13 @@ function renderBriefing() {
       var scout = oppRank <= 25 ? 'Ranked #' + oppRank + ' — bring your best.' : oppRank <= 64 ? 'A winnable resume game.' : 'Take care of business.';
       rows += '<div class="brief-row"><span class="bi">🔍</span><span>Scout: <b>' + (ng.home ? 'vs' : '@') + ' ' + opp.name + '</b> (' + opp.wins + '-' + opp.loss + '). ' + scout + '</span></div>';
     }
-  } else {
-    rows += '<div class="brief-row"><span class="bi">🔍</span><span>Bye week — rest up and hit the film room.</span></div>';
   }
-  var hl = (G.logs || [])[0];
-  if (hl) rows += '<div class="brief-row"><span class="bi">📰</span><span>' + hl.text.replace(/<[^>]*>/g, '').slice(0, 90) + '</span></div>';
   rows += '<div class="brief-row"><span class="bi">💰</span><span><b>' + (G.pts || 0) + ' NIL</b> in the bank — spend it in the boost shop below.</span></div>';
   return '<div class="brief-card"><div class="bk">Week ' + (G.gi + 1) + ' Briefing</div>' + rows + '</div>';
 }
 
 // ═══════════════════════════════════════════════════════════
-//  NEXT-GAME CARD
-// ═══════════════════════════════════════════════════════════
-
-function renderGameCard() {
-  var t = G.teams[G.tid];
-  var h = '';
-
-  function simButtons(modePrefix) {
-    return '<div class="action-btns">'
-      + '<button class="btn btn-red btn-full" data-action="play" data-mode="quick">⚡ QUICK SIM</button>'
-      + '<button class="btn btn-ghost btn-full" data-action="play" data-mode="live">▶ LIVE SIM</button></div>';
-  }
-  function oppLine(opp, home, seedTxt) {
-    var oppRank = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; }).findIndex(function(x) { return x.id === opp.id; }) + 1;
-    var rankStr = oppRank <= 25 ? '<span style="font-size:12px;color:var(--gld2);font-weight:800;">#' + oppRank + ' </span>' : '';
-    var wp = winProb(t, opp, home);
-    return '<div class="matchup-opp">' + rankStr + opp.name + '</div>'
-      + '<div class="matchup-meta">'
-      + '<span class="tag ' + (home ? 't-home' : 't-away') + '">' + (home ? 'Home' : 'Away') + '</span>'
-      + (seedTxt ? '<span class="tag t-cf">' + seedTxt + '</span>' : '')
-      + gameFlags(opp.id)
-      + '<span style="color:var(--txt2);">OVR ' + getTOvr(opp) + ' · ' + opp.wins + '-' + opp.loss + '</span></div>'
-      + '<div class="prob-row"><span>Win probability</span><span style="color:' + wpColor(wp) + ';font-weight:800;">' + wp + '%</span></div>'
-      + '<div class="prob-bar"><div class="prob-fill" style="width:' + wp + '%;background:' + wpColor(wp) + ';"></div></div>';
-  }
-
-  if (G.phase === 'reg' && G.gi < 30) {
-    var ng = t.sched[G.gi];
-    var no = ng && ng.opp !== undefined && ng.opp !== null ? G.teams[ng.opp] : null;
-    if (ng && no) {
-      var flags = gameFlags(no.id);
-      h += '<div class="matchup-card"><div class="card-title">Game ' + (G.gi + 1) + ' of 30' + (ng.conf ? ' · ' + t.conf : ' · Non-conf') + '</div>'
-        + oppLine(no, ng.home) + simButtons() + '</div>';
-    } else {
-      h += '<div class="matchup-card"><div class="card-title">Game ' + (G.gi + 1) + ' of 30</div>'
-        + '<div style="font-size:14px;font-weight:700;">Bye week</div>'
-        + '<div class="action-btns"><button class="btn btn-red btn-full" data-action="play" data-mode="quick">▶ SIM WEEK</button></div></div>';
-    }
-  } else if (G.phase === 'reg') {
-    h += '<div class="matchup-card"><div class="card-title">Regular season complete</div>'
-      + '<button class="btn btn-red btn-full" data-action="play" data-mode="quick">BEGIN CONFERENCE TOURNAMENT</button></div>';
-  } else if (G.phase === 'conf_tourn') {
-    var cm = getUserConfMatchup();
-    if (cm) {
-      var m = cm.matchup;
-      var opp = m.t1.id === G.tid ? m.t2 : m.t1;
-      var seeds = cm.ct.seeds || [];
-      var us = seeds.findIndex(function(x) { return x.id === G.tid; }) + 1;
-      var os = seeds.findIndex(function(x) { return x.id === opp.id; }) + 1;
-      h += '<div class="matchup-card" style="border-left-color:var(--gld);"><div class="card-title">' + getConfRoundName(cm.ct, cm.conf) + ' · You are #' + us + '</div>'
-        + '<div class="matchup-opp">#' + os + ' ' + opp.name + '</div>'
-        + '<div class="matchup-meta"><span class="tag t-cf">Conf Tourney</span>' + gameFlags(opp.id)
-        + '<span style="color:var(--txt2);">OVR ' + getTOvr(opp) + ' · ' + opp.wins + '-' + opp.loss + '</span></div>'
-        + '<div class="prob-row"><span>Win probability</span><span style="color:' + wpColor(winProb(t, opp, true)) + ';font-weight:800;">' + winProb(t, opp, true) + '%</span></div>'
-        + '<div class="prob-bar"><div class="prob-fill" style="width:' + winProb(t, opp, true) + '%;background:' + wpColor(winProb(t, opp, true)) + ';"></div></div>'
-        + simButtons() + '</div>';
-    } else {
-      h += '<div class="matchup-card"><div class="card-title">Conference tournament</div>'
-        + '<div style="font-size:13px;color:var(--txt2);margin-bottom:12px;">Your run is over. Simming the rest of the field…</div>'
-        + '<button class="btn btn-red btn-full" data-action="play" data-mode="quick">ADVANCE</button></div>';
-    }
-  } else if (G.phase === 'ncaa') {
-    var nm = getUserNCAAmatchup();
-    if (nm) {
-      var uIsB1 = nm.b1.team.id === G.tid;
-      var ue = uIsB1 ? nm.b1 : nm.b2, oe = uIsB1 ? nm.b2 : nm.b1;
-      var nopp = oe.team;
-      var nwp = winProb(t, nopp, true);
-      h += '<div class="matchup-card" style="border-left-color:var(--gld);"><div class="card-title">March Madness · You are #' + ue.seed + '</div>'
-        + '<div class="matchup-opp">#' + oe.seed + ' ' + nopp.name + '</div>'
-        + '<div class="matchup-meta"><span class="tag t-cf">NCAA Tournament</span>' + gameFlags(nopp.id)
-        + '<span style="color:var(--txt2);">OVR ' + getTOvr(nopp) + ' · ' + nopp.wins + '-' + nopp.loss + '</span></div>'
-        + '<div class="prob-row"><span>Win probability</span><span style="color:' + wpColor(nwp) + ';font-weight:800;">' + nwp + '%</span></div>'
-        + '<div class="prob-bar"><div class="prob-fill" style="width:' + nwp + '%;background:' + wpColor(nwp) + ';"></div></div>'
-        + simButtons() + '</div>';
-    } else {
-      h += '<div class="matchup-card"><div class="card-title">NCAA Tournament</div>'
-        + '<div style="font-size:13px;color:var(--txt2);margin-bottom:12px;">Your run is over. Watch the rest unfold.</div>'
-        + '<button class="btn btn-red btn-full" data-action="play" data-mode="quick">SIM NEXT ROUND</button></div>';
-    }
-  } else if (G.phase === 'offseason') {
-    h += '<div class="matchup-card"><div class="card-title">Offseason</div>'
-      + '<div style="font-size:13px;color:var(--txt2);margin-bottom:12px;">Recruit, develop, and reload for next season.</div>'
-      + '<button class="btn btn-red btn-full" data-action="nav" data-view="offseason">OPEN OFFSEASON HQ</button></div>';
-  }
-  return h;
-}
-
-// ═══════════════════════════════════════════════════════════
-//  NIL BOOST SHOP (P2)
+//  NIL BOOST SHOP
 // ═══════════════════════════════════════════════════════════
 
 function renderShop() {
@@ -244,7 +282,7 @@ function renderShop() {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  COACH CARD + XP BAR (P2)
+//  COACH CARD + XP BAR
 // ═══════════════════════════════════════════════════════════
 
 function renderCoach() {
@@ -259,18 +297,12 @@ function renderCoach() {
     + '<div class="xp-wrap"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;">'
     + '<span style="font-weight:800;color:var(--blu);">LEVEL ' + lvl + '</span><span style="color:var(--txt3);">' + xp + ' / ' + need + ' XP</span></div>'
     + '<div class="xp-bar"><div class="xp-fill" style="width:' + pct + '%;"></div></div>'
-    + '<div class="xp-lbl"><span>Wins, upsets & titles earn XP</span><span>Level-up: +1 all attrs</span></div></div>'
-    + '<div class="grid-2" style="grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px;">';
-  [['off', 'OFF'], ['def', 'DEF'], ['dev', 'DEV'], ['rec', 'REC']].forEach(function(r) {
-    h += '<div style="text-align:center;padding:6px;background:var(--s2);border-radius:6px;">'
-      + '<div style="font-family:var(--mono);font-size:16px;font-weight:900;color:var(--blu);">' + (c[r[0]] || 70) + '</div>'
-      + '<div style="font-size:9px;color:var(--txt3);font-weight:700;">' + r[1] + '</div></div>';
-  });
-  return h + '</div></div>';
+    + '<div class="xp-lbl"><span>Wins, upsets & titles earn XP</span><span>Level-up: +1 all attrs</span></div></div></div>';
+  return h;
 }
 
 // ═══════════════════════════════════════════════════════════
-//  AWARD RACES (P2: POY watch, user's players flagged)
+//  AWARD RACES
 // ═══════════════════════════════════════════════════════════
 
 function renderRaces() {
@@ -283,21 +315,6 @@ function renderRaces() {
       + '<div class="leader-name">' + r.name + (yours ? ' <span class="yours-pill">YOURS</span>' : '')
       + '<small>' + r.pos + ' · ' + r.cls + ' · ' + r.team + '</small></div>'
       + '<div class="leader-val">' + r.ppg.toFixed(1) + '</div></div>';
-  });
-  return h + '</div>';
-}
-
-// ═══════════════════════════════════════════════════════════
-//  HEADLINES + MINI STANDINGS
-// ═══════════════════════════════════════════════════════════
-
-function renderHeadlines() {
-  var logs = (G.logs || []).slice(0, 6);
-  var h = '<div class="card"><div class="card-title">📰 Headlines</div>';
-  if (!logs.length) return h + '<div style="font-size:12px;color:var(--txt3);">No news yet — sim your first game.</div></div>';
-  logs.forEach(function(lg) {
-    var badge = lg.type === 'w' ? 'W' : lg.type === 'l' ? 'L' : '•';
-    h += '<div class="headline"><span class="hbadge ' + lg.type + '">' + badge + '</span><span>' + lg.text + '</span></div>';
   });
   return h + '</div>';
 }
@@ -317,19 +334,6 @@ function renderMiniStandings() {
   return h + '</div>';
 }
 
-function renderExpectations() {
-  var exp = G.expectations;
-  if (!exp) return '';
-  var wins = G.teams[G.tid].wins;
-  var pct = clamp(Math.round(wins / Math.max(1, exp.high) * 100), 0, 100);
-  var col = wins >= exp.low ? 'var(--grn2)' : wins >= exp.danger ? 'var(--gld2)' : 'var(--red)';
-  return '<div class="card"><div class="card-title">🎯 Season Expectations</div>'
-    + '<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;">'
-    + '<span style="color:var(--txt2);">Target ' + exp.low + '–' + exp.high + ' wins</span>'
-    + '<span style="font-weight:800;color:' + col + ';">' + wins + ' W</span></div>'
-    + '<div class="xp-bar"><div class="xp-fill" style="width:' + pct + '%;background:' + col + ';"></div></div></div>';
-}
-
 // ═══════════════════════════════════════════════════════════
 //  MAIN RENDER
 // ═══════════════════════════════════════════════════════════
@@ -345,16 +349,19 @@ export function renderDashboard() {
   if (!t) return;
 
   var h = '';
-  h += '<div style="margin-bottom:14px;"><div class="sec-head">' + t.name + '</div>'
-    + '<div class="sec-sub">' + t.conf + ' · Season ' + G.yr + ' · Prestige ' + (t.schoolPrestige || '—') + '</div></div>';
-
-  h += renderStatsBanner();
+  h += renderSchoolCard();
+  h += renderNotifications();
+  h += renderExpectations();
+  h += renderGameCard();
   h += renderBriefing();
 
   h += '<div class="grid-2">';
-  h += '<div>' + renderGameCard() + renderCoach() + '</div>';
-  h += '<div>' + renderShop() + renderRaces() + renderExpectations() + renderMiniStandings() + renderHeadlines() + '</div>';
+  h += '<div>' + renderShop() + renderCoach() + '</div>';
+  h += '<div>' + renderRaces() + renderMiniStandings() + '</div>';
   h += '</div>';
 
   el.innerHTML = h;
 }
+
+// Kept for main.js import compat (unused by the new dashboard).
+export function renderStatsBanner() { return ''; }

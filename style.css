@@ -454,3 +454,190 @@ tbody tr.hl td { background: var(--blu-soft); font-weight: 700; }
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   CAMPUS DYNASTY REFERENCE PATTERNS (from jack's screenshots)
+   White cards, blue accents, circular initial logos.
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Circular initial team logos ── */
+.team-logo {
+  width: 44px; height: 44px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 20px; font-weight: 900; flex-shrink: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+.team-logo.lg { width: 56px; height: 56px; font-size: 26px; }
+.team-logo.sm { width: 32px; height: 32px; font-size: 15px; }
+
+/* ── School identity card (dashboard) ── */
+.school-card { padding: 20px; }
+.sc-top { display: flex; align-items: center; gap: 14px; }
+.sc-id { flex: 1; min-width: 0; }
+.sc-name { font-size: 20px; font-weight: 900; letter-spacing: -.3px; }
+.sc-conf { font-size: 13px; color: var(--txt3); text-align: right; }
+.sc-record { font-size: 44px; font-weight: 900; text-align: center; margin: 10px 0 12px; letter-spacing: -1px; }
+.sc-cols { display: grid; grid-template-columns: 1fr 1fr 1fr; text-align: center; }
+.sc-lab { font-size: 12px; color: var(--txt3); margin-bottom: 2px; }
+.sc-val { font-size: 24px; font-weight: 900; }
+
+/* ── Collapsible notifications row ── */
+.notif-card { padding: 0; overflow: hidden; cursor: pointer; }
+.notif-row {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 18px; min-height: 60px;
+}
+.notif-row .ni { font-size: 22px; color: var(--txt3); }
+.notif-label { flex: 1; font-size: 16px; font-weight: 600; }
+.notif-badge {
+  background: var(--blu); color: #fff; font-size: 11px; font-weight: 800;
+  min-width: 22px; height: 22px; border-radius: 11px;
+  display: flex; align-items: center; justify-content: center; padding: 0 6px;
+}
+.notif-chev { color: var(--txt3); font-size: 14px; }
+.notif-body { border-top: 1px solid var(--bdr); padding: 6px 18px 12px; max-height: 300px; overflow-y: auto; }
+
+/* ── Season expectations card ── */
+.exp-card { text-align: center; padding: 22px 16px; }
+.exp-record { font-size: 24px; font-weight: 900; }
+.exp-label { font-size: 14px; color: var(--txt3); margin-top: 4px; }
+.exp-job {
+  margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--bdr);
+  font-size: 13px; font-weight: 700;
+}
+.exp-job.safe { color: var(--grn2); }
+.exp-job.warn { color: var(--gld2); }
+.exp-job.danger { color: var(--red); }
+.exp-job small { display: block; font-weight: 500; color: var(--txt3); font-size: 11px; margin-top: 2px; }
+
+/* ── Game card (CD rhythm) ── */
+.game-card { padding: 18px; }
+.gc-opp-row { display: flex; align-items: center; gap: 14px; }
+.gc-opp-id { flex: 1; min-width: 0; }
+.gc-opp-name { font-size: 18px; font-weight: 800; }
+.gc-opp-sub { font-size: 12px; color: var(--txt3); margin-top: 2px; }
+.gc-opp-rec { font-size: 15px; color: var(--txt3); font-family: var(--mono); }
+.big-btn-row { display: flex; gap: 12px; margin-top: 16px; }
+.btn-big {
+  flex: 1; border-radius: 999px; padding: 16px 12px; font-size: 16px; font-weight: 800;
+  background: var(--blu2); color: #fff; border: none; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 56px; box-shadow: 0 4px 12px rgba(47,128,237,.35);
+}
+.btn-big:hover { background: var(--blu); }
+.btn-big:active { transform: scale(.98); }
+
+/* ── Gamecast modal ── */
+.gc-teams { padding: 18px 18px 6px; }
+.gc-team { display: flex; align-items: center; gap: 12px; padding: 8px 0; }
+.gc-name { flex: 1; font-size: 17px; font-weight: 800; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gc-name.u { color: var(--blu); }
+.gc-score { font-size: 34px; font-weight: 900; font-family: var(--mono); min-width: 60px; text-align: right; }
+.gc-clock { text-align: right; font-size: 13px; color: var(--txt3); font-weight: 600; padding: 2px 0 6px; }
+.gc-tabs { display: flex; border-bottom: 2px solid var(--bdr); padding: 0 12px; }
+.gc-tab {
+  flex: 1; background: none; border: none; padding: 12px 4px; min-height: 48px;
+  font-size: 14px; font-weight: 600; color: var(--txt3); cursor: pointer;
+  border-bottom: 3px solid transparent; margin-bottom: -2px;
+}
+.gc-tab.on { color: var(--txt); font-weight: 800; border-bottom-color: var(--txt); }
+.gc-pane { display: none; }
+.gc-pane.on { display: block; }
+#gc-pane-team, #gc-pane-box { padding: 12px 18px; max-height: 320px; overflow-y: auto; }
+.pbplog { max-height: 320px; }
+.pbp-row {
+  display: flex; gap: 10px; align-items: baseline;
+  padding: 10px 14px; border-bottom: 1px solid var(--bdr); font-size: 13px;
+}
+.pbp-row .p-ts { font-family: var(--mono); color: var(--txt3); font-size: 12px; width: 44px; flex-shrink: 0; }
+.pbp-row .p-tx { flex: 1; min-width: 0; }
+.pbp-row .p-tx b { color: var(--blu); }
+.pbp-row .p-sc { font-family: var(--mono); color: var(--txt3); font-size: 12px; flex-shrink: 0; }
+.pbp-row.big .p-tx { font-weight: 800; }
+.pbp-row.bad .p-tx { color: var(--txt2); }
+.pbp-banner {
+  font-weight: 900; font-size: 11px; padding: 4px 14px; letter-spacing: .5px;
+  border-radius: 4px; margin: 4px 14px;
+}
+
+/* ── Strategy screen ── */
+.strat-tabs { display: flex; gap: 8px; margin-bottom: 14px; }
+.strat-tab {
+  flex: 1; background: #fff; border: 1px solid var(--bdr2); border-radius: 8px;
+  padding: 12px 8px; min-height: 48px; font-size: 13px; font-weight: 700; color: var(--txt2); cursor: pointer;
+}
+.strat-tab.on { background: var(--blu-soft); border-color: var(--blu); color: var(--blu); }
+.scheme-row {
+  display: flex; align-items: center; gap: 14px; width: 100%;
+  background: #fff; border: 1px solid var(--bdr); border-radius: 10px;
+  padding: 14px 16px; margin-bottom: 8px; cursor: pointer; text-align: left;
+  min-height: 64px;
+}
+.scheme-row:hover { border-color: var(--blu2); }
+.scheme-row .sm-body { flex: 1; min-width: 0; }
+.scheme-row .sm-name { font-size: 15px; font-weight: 800; }
+.scheme-row .sm-desc { font-size: 12px; color: var(--txt3); margin-top: 2px; }
+.scheme-check {
+  width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+  border: 2px solid var(--bdr2); display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 15px; font-weight: 900;
+}
+.scheme-row.picked .scheme-check { background: var(--blu2); border-color: var(--blu2); }
+.scheme-row.picked { border-color: var(--blu2); background: var(--blu-soft); }
+.strat-sec-label { font-size: 11px; font-weight: 800; letter-spacing: 1.5px; color: var(--txt3); text-transform: uppercase; margin: 18px 0 10px; }
+
+/* Usage sliders */
+.usage-row {
+  display: flex; align-items: center; gap: 12px;
+  background: #fff; border: 1px solid var(--bdr); border-radius: 10px;
+  padding: 10px 14px; margin-bottom: 8px;
+}
+.usage-row .u-id { flex: 1; min-width: 0; }
+.usage-row .u-name { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.usage-row .u-sub { font-size: 11px; color: var(--txt3); }
+.usage-row input[type="range"] { flex: 1.4; min-height: 44px; accent-color: var(--blu2); }
+.usage-row .u-val { width: 44px; text-align: right; font-family: var(--mono); font-weight: 800; font-size: 14px; }
+.usage-total {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 4px; font-size: 13px; color: var(--txt2);
+}
+
+/* Rotation tab */
+.rot-row {
+  display: flex; align-items: center; gap: 12px;
+  background: #fff; border: 1px solid var(--bdr); border-radius: 10px;
+  padding: 10px 14px; margin-bottom: 6px;
+}
+.rot-rank { width: 26px; font-family: var(--mono); font-weight: 800; color: var(--txt3); font-size: 13px; }
+.rot-name { flex: 1; font-size: 14px; font-weight: 700; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rot-meta { font-size: 12px; color: var(--txt3); font-family: var(--mono); }
+
+/* ── More sheet (mobile) ── */
+#more-sheet {
+  display: none; position: fixed; left: 0; right: 0; bottom: 0; z-index: 900;
+  background: #fff; border-top: 1px solid var(--bdr2); border-radius: 16px 16px 0 0;
+  padding: 8px 12px calc(16px + env(safe-area-inset-bottom));
+  box-shadow: 0 -8px 32px rgba(0,0,0,.15);
+}
+#more-sheet.open { display: block; }
+#sheet-scrim {
+  display: none; position: fixed; inset: 0; z-index: 850; background: rgba(10,25,50,.4);
+}
+#sheet-scrim.on { display: block; }
+.more-handle { width: 40px; height: 4px; border-radius: 2px; background: var(--bdr2); margin: 6px auto 10px; }
+#more-sheet .nav-btn { min-height: 52px; }
+
+/* ── 5-icon mobile nav ── */
+@media (max-width: 860px) {
+  #main-nav .nav-btn { display: none; }
+  #main-nav .nav-btn.nav-main, #main-nav .nav-btn.nav-more-btn { display: flex; }
+  .nav-btn.nav-main[data-view="roster"] { order: 1; }
+  .nav-btn.nav-main[data-view="schedule"] { order: 2; }
+  .nav-btn.nav-main[data-view="dashboard"] { order: 3; }
+  .nav-btn.nav-main[data-view="bracket"] { order: 4; }
+  .nav-btn.nav-more-btn { order: 5; }
+}
+@media (min-width: 861px) {
+  .nav-btn.nav-more-btn { display: none; }
+  #more-sheet, #sheet-scrim { display: none !important; }
+}

@@ -82,15 +82,19 @@
   </header>
 
   <div id="app-body">
-    <!-- Desktop sidebar / mobile bottom bar -->
+    <!-- Desktop sidebar / mobile 5-icon bottom bar.
+         Mobile shows: Roster · Schedule · Dashboard · Bracket · More.
+         The rest live in the More sheet (mobile) / sidebar (desktop). -->
     <nav id="main-nav" aria-label="Primary">
-      <button class="nav-btn on" data-view="dashboard" data-action="nav"><span class="ni">🏠</span><span>Home</span></button>
-      <button class="nav-btn" data-view="schedule" data-action="nav"><span class="ni">📅</span><span>Schedule</span></button>
-      <button class="nav-btn" data-view="roster" data-action="nav"><span class="ni">👥</span><span>Roster</span></button>
-      <button class="nav-btn" data-view="stats" data-action="nav"><span class="ni">📊</span><span>Stats</span></button>
-      <button class="nav-btn" data-view="standings" data-action="nav"><span class="ni">📋</span><span>Ranks</span></button>
-      <button class="nav-btn" data-view="history" data-action="nav"><span class="ni">📜</span><span>History</span></button>
-      <button class="nav-btn" data-view="bracket" data-action="nav"><span class="ni">🏆</span><span>Bracket</span></button>
+      <button class="nav-btn nav-main" data-view="roster" data-action="nav"><span class="ni">👥</span><span>Roster</span></button>
+      <button class="nav-btn nav-main" data-view="schedule" data-action="nav"><span class="ni">📅</span><span>Schedule</span></button>
+      <button class="nav-btn nav-main on" data-view="dashboard" data-action="nav"><span class="ni">🏠</span><span>Home</span></button>
+      <button class="nav-btn nav-main" data-view="bracket" data-action="nav"><span class="ni">🏆</span><span>Bracket</span></button>
+      <button class="nav-btn nav-more-btn" data-action="more" aria-haspopup="true"><span class="ni">⋯</span><span>More</span></button>
+      <button class="nav-btn nav-extra" data-view="strategy" data-action="nav"><span class="ni">🧠</span><span>Strategy</span></button>
+      <button class="nav-btn nav-extra" data-view="stats" data-action="nav"><span class="ni">📊</span><span>Stats</span></button>
+      <button class="nav-btn nav-extra" data-view="standings" data-action="nav"><span class="ni">📈</span><span>Ranks</span></button>
+      <button class="nav-btn nav-extra" data-view="history" data-action="nav"><span class="ni">📜</span><span>History</span></button>
       <div class="nav-sep"></div>
       <div id="game-log-panel">
         <div class="log-head">Latest</div>
@@ -98,6 +102,17 @@
       </div>
       <button class="nav-new" data-action="new-dynasty">↺ New Dynasty</button>
     </nav>
+
+    <!-- More sheet (mobile): destinations beyond the 5-icon bar -->
+    <div id="sheet-scrim" data-action="more"></div>
+    <div id="more-sheet" role="dialog" aria-label="More">
+      <div class="more-handle"></div>
+      <button class="nav-btn" data-view="strategy" data-action="nav"><span class="ni">🧠</span><span>Strategy</span></button>
+      <button class="nav-btn" data-view="stats" data-action="nav"><span class="ni">📊</span><span>Stats</span></button>
+      <button class="nav-btn" data-view="standings" data-action="nav"><span class="ni">📈</span><span>Ranks</span></button>
+      <button class="nav-btn" data-view="history" data-action="nav"><span class="ni">📜</span><span>History</span></button>
+      <button class="nav-btn" data-action="new-dynasty"><span class="ni">↺</span><span>New Dynasty</span></button>
+    </div>
 
     <main id="center">
       <section id="v-dashboard" class="view on" aria-label="Dashboard"><div id="dash-content"></div></section>
@@ -108,48 +123,45 @@
       <section id="v-history" class="view" aria-label="History"><div id="history-content"></div></section>
       <section id="v-bracket" class="view" aria-label="Bracket"><div id="bracket-content"></div></section>
       <section id="v-offseason" class="view" aria-label="Offseason"><div id="offseason-content"></div></section>
+      <section id="v-strategy" class="view" aria-label="Strategy"><div id="strategy-content"></div></section>
     </main>
   </div>
 </div>
 
-<!-- ═══ LIVE SIM MODAL ═══ -->
-<div id="gmod" role="dialog" aria-label="Live game simulation">
+<!-- ═══ LIVE GAMECAST (watch-only, per jack) ═══ -->
+<div id="gmod" role="dialog" aria-label="Live gamecast">
   <div class="gpanel">
     <div class="ghead">
-      <div class="ghead-t" id="gmod-title">LIVE SIMULATION</div>
-      <div id="gmod-wk"></div>
+      <div class="ghead-t" id="gmod-title">GAMECAST</div>
     </div>
-    <div class="scoreboard">
-      <div class="sb-t a" id="sb-away">AWAY</div>
-      <div class="sb-mid">
-        <div class="sb-score" id="sb-score">0 – 0</div>
-        <div class="sb-clk" id="sb-clk">20:00</div>
-        <div class="sb-per" id="sb-per">1ST HALF</div>
+    <div class="gc-teams">
+      <div class="gc-team">
+        <div class="team-logo" id="gc-logo-a">A</div>
+        <div class="gc-name" id="sb-away">AWAY</div>
+        <div class="gc-score" id="gc-score-a">0</div>
       </div>
-      <div class="sb-t h" id="sb-home">HOME</div>
+      <div class="gc-team">
+        <div class="team-logo" id="gc-logo-h">H</div>
+        <div class="gc-name" id="sb-home">HOME</div>
+        <div class="gc-score" id="gc-score-h">0</div>
+      </div>
+      <div class="gc-clock"><span id="sb-per">Half 1</span> · <span id="sb-clk">20:00</span></div>
     </div>
-    <div class="hrow">
-      <span class="hcell lbl">1H</span>
-      <div class="hcell" id="hc-a1">–</div><div class="hcell" id="hc-h1">–</div>
-      <span class="hcell lbl">2H</span>
-      <div class="hcell" id="hc-a2">–</div><div class="hcell" id="hc-h2">–</div>
-      <span class="hcell lbl">OT</span>
-      <div class="hcell" id="hc-aot">–</div><div class="hcell" id="hc-hot">–</div>
-      <span class="hcell lbl">FIN</span>
-      <div class="hcell" id="hc-af">–</div>
-      <div class="hcell" id="hc-hf">–</div>
+    <div class="gc-tabs" role="tablist" aria-label="Gamecast views">
+      <button class="gc-tab on" role="tab" data-action="gcast-tab" data-tab="cast">Gamecast</button>
+      <button class="gc-tab" role="tab" data-action="gcast-tab" data-tab="team">Team Stats</button>
+      <button class="gc-tab" role="tab" data-action="gcast-tab" data-tab="box">Box Score</button>
     </div>
-    <div class="mom-bar-wrap"><div class="mom-bar"><div class="mom-fill" id="mom-fill" style="width:50%"></div></div></div>
     <div class="spd-row">
       <div class="spd-lbl">SPEED</div>
       <input type="range" id="spd" min="1" max="5" value="3" aria-label="Simulation speed">
       <div class="spd-v" id="spd-v">MED</div>
     </div>
-    <div class="lplay" id="lplay" aria-live="polite">Tip off...</div>
-    <div class="pbplog" id="pbplog"></div>
+    <div class="gc-pane on" id="gc-pane-cast"><div class="pbplog" id="pbplog" aria-live="polite"></div></div>
+    <div class="gc-pane" id="gc-pane-team"></div>
+    <div class="gc-pane" id="gc-pane-box"></div>
     <div class="gfoot">
-      <button class="btn" id="timeout-btn" data-action="timeout" aria-label="Call timeout">⏸ TIMEOUT <span class="to-count" id="timeout-count">(3)</span></button>
-      <button class="btn btn-ghost" data-action="skip">SKIP TO FINAL</button>
+      <button class="btn btn-big btn-full" data-action="skip">⏩ SIM GAME</button>
     </div>
   </div>
 </div>
