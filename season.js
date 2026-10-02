@@ -103,7 +103,10 @@ export function buildSchedules() {
 
   Object.keys(confs).forEach(function(conf) {
     var ids = confs[conf];
-    // For each team, schedule 20 conference games against conference opponents
+    // Odd-sized conferences can't fill 20 games (bye each week); cap at 18.
+    // The 2 open weeks become cross-conference games via Step 3.
+    var maxConf = ids.length % 2 === 1 && ids.length > 2 ? (ids.length <= 9 ? 16 : 18) : 20;
+    // For each team, schedule conference games against conference opponents
     ids.forEach(function(teamId) {
       var opponents = ids.filter(function(x) { return x !== teamId; });
       // Shuffle opponents
@@ -114,7 +117,7 @@ export function buildSchedules() {
       var oppIdx = 0;
       for (var w = 10; w < 30; w++) {
         if (G.teams[teamId].sched[w]) continue; // already filled by a paired matchup
-        if (gameCount >= 20) break;
+        if (gameCount >= maxConf) break;
         // Find an opponent that's free this week
         var found = false;
         for (var attempt = 0; attempt < opponents.length; attempt++) {
@@ -132,21 +135,8 @@ export function buildSchedules() {
           }
         }
         if (!found) {
-          // Force fill — pick any opponent and write BOTH sides mutually.
-          // The displaced opponent's old week-w game is voided (bye week) so
-          // no one-sided entry survives to generate phantom results.
-          var forceOpp = opponents[oppIdx % opponents.length];
-          var home2 = gameCount % 2 === 0;
-          var displaced = G.teams[forceOpp].sched[w];
-          if (displaced && displaced.opp !== undefined && displaced.opp !== teamId) {
-            var orphan = G.teams[displaced.opp];
-            if (orphan && orphan.sched[w] && orphan.sched[w].opp === forceOpp) {
-              orphan.sched[w] = null;
-            }
-          }
-          G.teams[teamId].sched[w] = { opp: forceOpp, home: home2, conf: true, played: false, uScore: 0, oScore: 0 };
-          G.teams[forceOpp].sched[w] = { opp: teamId, home: !home2, conf: true, played: false, uScore: 0, oScore: 0 };
-          gameCount++;
+          // No free opponent (odd conference bye week) — leave the bye.
+          // Step 3 pairs bye weeks across conferences as OOC games.
           oppIdx++;
         }
       }
@@ -172,22 +162,29 @@ export function buildSchedules() {
   });
 
   // ── STEP 3: Fill any remaining nulls ──
-  // Any team with empty slots gets a cross-conf game forced
-  G.teams.forEach(function(tm) {
-    if (tm.id === tid) return;
-    for (var w = 0; w < 30; w++) {
-      if (tm.sched[w]) continue;
-      // Find any opponent from a different conf
-      for (var j = 0; j < G.teams.length; j++) {
-        var other = G.teams[j];
-        if (other.id === tm.id || other.id === tid) continue;
-        if (other.sched[w]) continue;
-        tm.sched[w] = { opp: other.id, home: ri(0,1)===0, conf: false, played: false, uScore: 0, oScore: 0 };
-        other.sched[w] = { opp: tm.id, home: !tm.sched[w].home, conf: false, played: false, uScore: 0, oScore: 0 };
-        break;
-      }
+  // Pair bye weeks week-by-week: collect all teams with a null in week w,
+  // shuffle, and pair them as cross-conf OOC games. If the count is odd,
+  // one team keeps the bye (unavoidable with 99 odd-conf teams).
+  for (var w = 0; w < 30; w++) {
+    var needGame = [];
+    for (var ti = 0; ti < G.teams.length; ti++) {
+      var t = G.teams[ti];
+      if (t.id === tid) continue;
+      if (!t.sched[w]) needGame.push(t);
     }
-  });
+    // Shuffle
+    for (var a = needGame.length - 1; a > 0; a--) {
+      var b = ri(0, a);
+      var tmpT = needGame[a]; needGame[a] = needGame[b]; needGame[b] = tmpT;
+    }
+    // Pair up (leave last unpaired if odd)
+    for (var p = 0; p + 1 < needGame.length; p += 2) {
+      var t1 = needGame[p], t2 = needGame[p + 1];
+      var h = ri(0, 1) === 0;
+      t1.sched[w] = { opp: t2.id, home: h, conf: false, played: false, uScore: 0, oScore: 0 };
+      t2.sched[w] = { opp: t1.id, home: !h, conf: false, played: false, uScore: 0, oScore: 0 };
+    }
+  }
 
   G.gi = 0;
 }
