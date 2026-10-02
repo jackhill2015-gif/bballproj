@@ -54,10 +54,13 @@ export function gn() {
 }
 
 // ── Commentary Picker ────────────────────────────────────
-// pick(array, ...args) — picks a random function from array and calls it
+// pick(array, ...args) — picks a random element from array; if it's a function,
+// calls it with args (commentary templates), otherwise returns it as-is
+// (e.g. pick(['man','2-3']) for scheme selection).
 export function pick(arr) {
   var a = Array.prototype.slice.call(arguments, 1);
-  return arr[ri(0, arr.length - 1)].apply(null, a);
+  var el = arr[ri(0, arr.length - 1)];
+  return (typeof el === 'function') ? el.apply(null, a) : el;
 }
 
 // ── Tier Lookup ──────────────────────────────────────────
@@ -107,25 +110,27 @@ export function freshS() {
 
 // ── Team Style / Identity ────────────────────────────────
 export function getTeamStyle(conf, ovr) {
-  var c = conf.toLowerCase();
-  var style = { pace: 'balanced', focus: 'balanced', def: 'man', identity: 'Standard' };
-
+  // Scheme identities (Campus Dynasty parity). Every team — CPU included —
+  // gets an offensive and defensive scheme with REAL sim effects (see
+  // simulation.js: schemePaceMod/schemeThreeMod/shooterWeight/runOnePoss).
+  // Stored on team as t.strat = { off, def, identity }.
+  var c = (conf || '').toLowerCase();
+  var off = pick(['balanced', 'balanced', 'motion', 'drive', 'set', 'early']);
+  var def = pick(['man', 'man', 'man', '2-3', '3-2', '1-3-1', 'box1']);
+  // conference flavor
   if (c === 'acc' || c === 'big ten') {
-    style.pace = 'slow'; style.def = 'man'; style.identity = 'Hardwood Grind';
-    style.focus = ovr > 82 ? 'perimeter' : 'balanced';
+    off = pick(['set', 'set', 'balanced', 'motion']); def = pick(['man', 'man', '3-2', '2-3']);
   } else if (c === 'big 12' || c === 'sec') {
-    style.pace = 'fast'; style.focus = 'paint'; style.def = 'press'; style.identity = 'Power & Pressure';
-  } else if (c === 'wcc' || c === 'a-10') {
-    style.pace = 'fast'; style.focus = 'perimeter'; style.def = 'man'; style.identity = 'Run & Gun';
-  } else if (c === 'mw' || c === 'mountain west') {
-    style.pace = 'fast'; style.focus = 'perimeter'; style.def = 'man'; style.identity = 'Run & Gun';
+    off = pick(['early', 'early', 'drive', 'balanced']); def = pick(['man', 'man', '1-3-1', 'box1']);
   } else if (c === 'big east') {
-    style.pace = 'slow'; style.focus = 'paint'; style.def = 'man'; style.identity = 'Physical East';
+    off = pick(['set', 'drive', 'balanced', 'balanced']); def = pick(['man', 'man', '2-3']);
+  } else if (c === 'wcc' || c === 'a-10' || c === 'mw' || c === 'mountain west') {
+    off = pick(['early', 'motion', 'balanced', 'drive']); def = pick(['man', 'man', '1-3-1', '3-2']);
   } else if (ovr < 70) {
-    style.pace = 'slow'; style.focus = 'perimeter'; style.def = 'zone'; style.identity = 'Cinderella Tactics';
-  } else if (ovr < 78) {
-    style.pace = 'balanced'; style.focus = 'perimeter'; style.def = 'zone'; style.identity = 'Grind & Grind';
+    off = pick(['early', 'motion', 'balanced']); def = pick(['2-3', '2-3', '1-3-1', 'man']);
   }
-  if (ovr > 90) { style.identity = 'The Machine'; style.focus = 'balanced'; }
-  return style;
+  if (ovr > 90 && ri(1, 100) <= 40) { off = 'balanced'; def = 'man'; }
+  var onames = { balanced: 'Balanced', motion: 'Motion', drive: 'Drive & Kick', set: 'Set Play', early: 'Early Offense' };
+  var dnames = { 'man': 'Man-to-Man', '2-3': '2-3 Zone', '3-2': '3-2 Zone', '1-3-1': '1-3-1 Zone', 'box1': 'Box-and-One' };
+  return { off: off, def: def, identity: onames[off] + ' / ' + dnames[def] };
 }
