@@ -72,9 +72,9 @@ console.log('\n── S5: ALL_TEAMS dedupe ──');
   const seen = {};
   teams.forEach(t => { seen[t.n] = (seen[t.n] || 0) + 1; });
   const dups = Object.keys(seen).filter(n => seen[n] > 1);
-  check(teams.length === 324, `ALL_TEAMS has 324 entries (got ${teams.length})`);
+  check(teams.length === 365, `ALL_TEAMS has 365 entries (got ${teams.length})`); // full 2025-26 D1 universe
   check(dups.length === 0, `no duplicated schools (dups: ${dups.join(', ') || 'none'})`);
-  const expect = { SMU: 'ACC', Hawaii: 'Big West', 'James Madison': 'Sun Belt', UMKC: 'Summit', 'Stony Brook': 'CAA', Bellarmine: 'ASUN', 'Austin Peay': 'ASUN', Mercer: 'SoCon' };
+  const expect = { SMU: 'ACC', Hawaii: 'Big West', 'James Madison': 'Sun Belt', Omaha: 'Summit', 'Stony Brook': 'CAA', Bellarmine: 'ASUN', 'Austin Peay': 'ASUN', Mercer: 'SoCon' }; // UMKC slot repurposed to Omaha in the 365-team expansion
   let confOk = true;
   for (const n of Object.keys(expect)) {
     const t = teams.find(x => x.n === n);
@@ -135,7 +135,7 @@ function auditMutuality(label) {
 
 console.log('\n── S2/S3: schedule build mutuality ──');
 resetG();
-check(G.teams.length === 324, `universe has 324 teams (got ${G.teams.length})`);
+check(G.teams.length === 365, `universe has 365 teams (got ${G.teams.length})`);
 auditMutuality('post-build');
 // user OOC filled + mutual
 {
