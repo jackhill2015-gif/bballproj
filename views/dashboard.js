@@ -11,7 +11,7 @@
 import { DIFF_MOD } from '../constants.js';
 import { ge, clamp, getTOvr, fR } from '../utils.js';
 import { G } from '../state.js';
-import { getUserConfMatchup, getUserNCAAmatchup, getConfRoundName } from '../tournament.js';
+import { bracketHubHTML } from './bracket.js';
 import {
   userRank, rankDelta, currentStreak, coachXpToNext,
   NIL_SHOP, shopBoughtThisWeek, teamLogo, teamColor, notifState
@@ -191,44 +191,6 @@ function renderGameCard() {
       + '<button class="btn btn-red btn-full" data-action="play" data-mode="quick">BEGIN CONFERENCE TOURNAMENT</button></div>';
   }
 
-  if (G.phase === 'conf_tourn') {
-    var cm = getUserConfMatchup();
-    if (cm) {
-      var m = cm.matchup;
-      var opp = m.t1.id === G.tid ? m.t2 : m.t1;
-      var seeds = cm.ct.seeds || [];
-      var us = seeds.findIndex(function(x) { return x.id === G.tid; }) + 1;
-      var os = seeds.findIndex(function(x) { return x.id === opp.id; }) + 1;
-      return '<div class="card game-card"><div class="card-title">' + getConfRoundName(cm.ct, cm.conf) + '</div>'
-        + '<div class="gc-opp-row">' + teamLogo(opp.name)
-        + '<div class="gc-opp-id"><div class="gc-opp-name">#' + os + ' ' + opp.name + '</div>'
-        + '<div class="gc-opp-sub">You are #' + us + '</div></div>'
-        + '<div class="gc-opp-rec">' + opp.wins + '-' + opp.loss + '</div></div>'
-        + bigButtons() + '</div>';
-    }
-    return '<div class="card game-card"><div class="card-title">Conference tournament</div>'
-      + '<div style="font-size:13px;color:var(--txt2);margin-bottom:12px;">Your run is over. Simming the rest of the field…</div>'
-      + '<button class="btn btn-red btn-full" data-action="play" data-mode="quick">ADVANCE</button></div>';
-  }
-
-  if (G.phase === 'ncaa') {
-    var nm = getUserNCAAmatchup();
-    if (nm) {
-      var uIsB1 = nm.b1.team.id === G.tid;
-      var ue = uIsB1 ? nm.b1 : nm.b2, oe = uIsB1 ? nm.b2 : nm.b1;
-      var nopp = oe.team;
-      return '<div class="card game-card" style="border:2px solid var(--gld);"><div class="card-title">March Madness · you are #' + ue.seed + '</div>'
-        + '<div class="gc-opp-row">' + teamLogo(nopp.name)
-        + '<div class="gc-opp-id"><div class="gc-opp-name">#' + oe.seed + ' ' + nopp.name + '</div>'
-        + '<div class="gc-opp-sub">Win or go home</div></div>'
-        + '<div class="gc-opp-rec">' + nopp.wins + '-' + nopp.loss + '</div></div>'
-        + bigButtons() + '</div>';
-    }
-    return '<div class="card game-card"><div class="card-title">NCAA Tournament</div>'
-      + '<div style="font-size:13px;color:var(--txt2);margin-bottom:12px;">Your run is over. Watch the rest unfold.</div>'
-      + '<button class="btn btn-red btn-full" data-action="play" data-mode="quick">SIM NEXT ROUND</button></div>';
-  }
-
   return '<div class="card game-card"><div class="card-title">Offseason</div>'
     + '<div style="font-size:13px;color:var(--txt2);margin-bottom:12px;">Recruit, develop, and reload for next season.</div>'
     + '<button class="btn btn-red btn-full" data-action="nav" data-view="offseason">OPEN OFFSEASON HQ</button></div>';
@@ -347,6 +309,15 @@ export function renderDashboard() {
   }
   var t = G.teams[G.tid];
   if (!t) return;
+
+  // Tournament immersion: when the postseason begins, the home page swaps
+  // to the tournament bracket view (user's games highlighted) instead of
+  // the regular-season dashboard. Falls back to the dashboard if no
+  // tournament data is present yet. New season (phase 'reg') reverts.
+  if (G.phase === 'conf_tourn' || G.phase === 'ncaa') {
+    var hub = bracketHubHTML();
+    if (hub) { el.innerHTML = hub; return; }
+  }
 
   var h = '';
   h += renderSchoolCard();

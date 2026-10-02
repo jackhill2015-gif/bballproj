@@ -14,7 +14,7 @@ import {
 } from './season.js';
 import {
   startConfTourney, simConfRoundAll, simNCAAround,
-  playTournamentGame, buildNCAA, closeBracketReveal, revealNextRegion,
+  playTournamentGame, buildNCAA, closeBracketReveal, revealFullBracket,
   showTournamentResult, closeTournamentResult, resolveTournamentGame,
   registerTournamentCallbacks
 } from './tournament.js';
@@ -126,7 +126,7 @@ window.simConfRoundAll = simConfRoundAll;
 window.simNCAAround = simNCAAround;
 window.buildNCAA = buildNCAA;
 window.closeBracketReveal = closeBracketReveal;
-window.revealNextRegion = revealNextRegion;
+window.revealFullBracket = revealFullBracket;
 window.closeTournamentResult = closeTournamentResult;
 
 // Setup / Home screen

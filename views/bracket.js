@@ -12,18 +12,18 @@ import { allConfDone, getUserNCAAmatchup, getUserConfMatchup, getConfRoundName }
 export function renderBracket() {
   var el = ge('bracket-content');
   if (!el) return;
-
-  if (G.phase === 'conf_tourn' && G.confTourneys) {
-    el.innerHTML = renderConfHub();
-    return;
-  }
-  if ((G.phase === 'ncaa' || (G.bracket && G.bracket.length === 1)) && G.bracket && G.bracket.length) {
-    el.innerHTML = renderNCAA_Hub();
-    return;
-  }
-  el.innerHTML = '<div class="card" style="text-align:center;padding:48px;color:var(--txt3);">'
+  var hub = bracketHubHTML();
+  el.innerHTML = hub || '<div class="card" style="text-align:center;padding:48px;color:var(--txt3);">'
     + '<div style="font-size:32px;margin-bottom:8px;">🏆</div>'
     + '<div style="font-size:14px;font-weight:700;">Complete the regular season to unlock the bracket.</div></div>';
+}
+
+// Tournament hub HTML for embedding (home page auto-swaps to this in
+// tournament phases). Returns '' when no tournament is active.
+export function bracketHubHTML() {
+  if (G.phase === 'conf_tourn' && G.confTourneys) return renderConfHub();
+  if ((G.phase === 'ncaa' || (G.bracket && G.bracket.length === 1)) && G.bracket && G.bracket.length) return renderNCAA_Hub();
+  return '';
 }
 
 // ═══════════════════════════════════════════════════════════

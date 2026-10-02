@@ -404,7 +404,6 @@ export function showBracketReveal(userSeed) {
   var rev = ge('bracket-reveal');
   if (!rev) return;
   rev.style.display = 'block';
-  G._revealStep = 0; // Track which region we're revealing
 
   // Bid split: every conference champ is an automatic bid, the rest are at-large
   var autoCount = 0;
@@ -491,23 +490,18 @@ export function showBracketReveal(userSeed) {
     bubble.style.display = 'block';
   }
 
-  // Clear bracket — will fill region by region
+  // Clear bracket — one click reveals the entire field at once
   var wrap = ge('br-bracket');
   if (wrap) wrap.innerHTML = '';
 
-  // Set first reveal button
+  // Single reveal button: one action spawns all four regions immediately
   var btn = ge('br-reveal-btn');
-  if (btn) { btn.textContent = 'REVEAL EAST REGION \u25b6'; btn.onclick = function() { revealNextRegion(); }; }
+  if (btn) { btn.textContent = 'REVEAL THE FIELD \u25b6'; btn.onclick = function() { revealFullBracket(); }; }
 }
 
-export function revealNextRegion() {
-  var step = G._revealStep || 0;
-  var wrap = ge('br-bracket');
-  var btn = ge('br-reveal-btn');
-  if (!wrap || step >= 4) return;
-
-  // Build region card — read teams by (region, seed) from the same
-  // G.bracket layout the sim plays, so the reveal always matches the games.
+// Builds one region's reveal card from G.bracket layout — the same layout
+// the sim plays, so the reveal always matches the games.
+function buildRevealRegionCard(step) {
   var col = document.createElement('div');
   col.style.cssText = 'background:var(--s1);border:1px solid var(--bdr);border-radius:8px;overflow:hidden;opacity:0;transition:opacity 0.6s;';
 
@@ -541,22 +535,30 @@ export function revealNextRegion() {
     col.appendChild(matchup);
   });
 
-  wrap.appendChild(col);
-  // Fade in
-  setTimeout(function() { col.style.opacity = '1'; }, 50);
-
   // If user's region, add gold pulse
   if (hasUser) {
     col.style.border = '2px solid var(--gld)';
     col.style.boxShadow = '0 0 12px rgba(214,158,46,.2)';
   }
+  return col;
+}
 
-  G._revealStep = step + 1;
-
-  // Update button
-  if (step + 1 < 4) {
-    btn.textContent = 'REVEAL ' + NCAA_REGIONS[step + 1].toUpperCase() + ' REGION \u25b6';
-  } else {
+// Full-field reveal: ONE click spawns the entire bracket at once — all four
+// regions, immediately. No region-by-region stepping.
+export function revealFullBracket() {
+  var wrap = ge('br-bracket');
+  var btn = ge('br-reveal-btn');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  for (var step = 0; step < 4; step++) {
+    wrap.appendChild(buildRevealRegionCard(step));
+  }
+  // Simultaneous fade-in for the dramatic full reveal
+  var cols = wrap.children;
+  for (var i = 0; i < cols.length; i++) {
+    (function(col) { setTimeout(function() { col.style.opacity = '1'; }, 60); })(cols[i]);
+  }
+  if (btn) {
     btn.textContent = "LET\u2019S DANCE \u25b6";
     btn.onclick = function() { closeBracketReveal(); };
   }
@@ -565,7 +567,8 @@ export function revealNextRegion() {
 export function closeBracketReveal() {
   var rev = ge('bracket-reveal');
   if (rev) rev.style.display = 'none';
-  navTo('bracket');
+  // Home page auto-shows the tournament in ncaa phase — land there.
+  navTo('dashboard');
 }
 
 // ═══════════════════════════════════════════════════════════
