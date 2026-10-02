@@ -36,8 +36,6 @@ function depthRow(p, i) {
     : 'no games yet';
   var pot = p.pot || p.ovr;
   var potCol = pot > p.ovr + 8 ? 'var(--grn2)' : pot > p.ovr + 3 ? 'var(--gld2)' : 'var(--txt3)';
-  var clsBg = { FR: '#dbeafe', SO: '#f3e8ff', JR: '#ffedd5', SR: '#fce7f3' };
-  var clsTx = { FR: '#1e40af', SO: '#6b21a8', JR: '#9a3412', SR: '#9d174d' };
   var benched = p.mins === 0;
   // Mood tag — roster page only, per jack (no dashboard meter)
   var _mor = (typeof p.morale === 'number') ? p.morale : MORALE_DEFAULT;
@@ -53,7 +51,7 @@ function depthRow(p, i) {
     + '<button class="nudge-btn" data-rmove="' + i + '" data-dir="1" aria-label="Move ' + p.name + ' down">▼</button>'
     + '</div>'
     + '<span class="pos-chip">' + p.pos + '</span>'
-    + '<div class="dr-name">' + p.name + ' <span class="cls-badge" style="background:' + (clsBg[p.cls] || '#f1f5f9') + ';color:' + (clsTx[p.cls] || '#64748b') + ';">' + p.cls + '</span>' + moodPill
+    + '<div class="dr-name">' + p.name + ' <span class="cls-txt">' + p.cls + '</span>' + moodPill
     + '<div class="dr-sub">' + line + '</div></div>'
     + '<div class="dr-ovr"><b>' + p.ovr + '</b><small style="color:' + potCol + ';">POT ' + pot + '</small></div>'
     + '</div>'
@@ -77,10 +75,9 @@ export function renderRoster() {
   var h = '<div style="margin-bottom:12px;"><div class="sec-head">Depth Chart</div>'
     + '<div class="sec-sub">Top 5 = starters · drag on desktop, ▲▼ buttons on touch · sliders set minutes</div></div>';
 
-  h += '<div class="card" style="display:flex;align-items:center;justify-content:space-between;">'
-    + '<div><div style="font-size:10px;font-weight:800;color:var(--txt3);letter-spacing:1px;">TOTAL MINUTES</div>'
-    + '<div style="font-family:var(--mono);font-size:20px;font-weight:900;color:' + totalCol + ';" data-min-total>' + total + '/200</div></div>'
-    + '<button class="btn btn-red btn-sm" data-roster-auto>AUTO SET</button></div>';
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bdr);margin-bottom:4px;">'
+    + '<div style="font-size:12px;color:var(--txt2);">Total minutes <b style="font-family:var(--mono);font-size:15px;color:' + totalCol + ';" data-min-total>' + total + '/200</b></div>'
+    + '<button class="btn-quiet" data-roster-auto>Auto set</button></div>';
 
   t.rost.forEach(function(p, i) {
     if (i === 0) h += '<div class="tier-label">Starters</div>';

@@ -164,13 +164,11 @@ function bindSetup(el) {
 function renderCoachName() {
   return '<div class="setup-wrap">'
     + stepHeader('Create your coach', 'Your legacy starts on the sideline.')
-    + '<div class="card">'
     + '<div style="margin-bottom:16px;"><div class="field-label">First Name</div>'
     + '<input id="coach-first" class="setup-input" type="text" placeholder="John" maxlength="20" autocomplete="off"></div>'
-    + '<div style="margin-bottom:4px;"><div class="field-label">Last Name</div>'
+    + '<div style="margin-bottom:20px;"><div class="field-label">Last Name</div>'
     + '<input id="coach-last" class="setup-input" type="text" placeholder="Smith" maxlength="20" autocomplete="off"></div>'
-    + '</div>'
-    + '<button class="btn-big btn-full" data-setup="coach-name-submit">CONTINUE ›</button>'
+    + '<button class="btn-big btn-full" data-setup="coach-name-submit">Continue ›</button>'
     + '</div>';
 }
 
@@ -207,7 +205,7 @@ function renderDifficulty() {
       + '<span class="sm-desc" style="display:block;">' + DIFF_DESC[key] + '</span></span>'
       + '<span class="scheme-check">' + (on ? '✓' : '') + '</span></button>';
   });
-  h += '<button class="btn-big btn-full" style="margin-top:16px;" data-setup="diff-submit">FIND A JOB ›</button>'
+  h += '<button class="btn-big btn-full" style="margin-top:16px;" data-setup="diff-submit">Find a job ›</button>'
     + '</div>';
   return h;
 }
@@ -318,12 +316,12 @@ function renderNCSchedule() {
       + teamLogo(opp.name, 'sm')
       + '<div style="flex:1;min-width:0;"><div style="font-size:13px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + opp.name + '</div>'
       + '<div style="font-size:11px;color:var(--txt3);">' + (i % 2 === 0 ? 'HOME' : 'AWAY') + ' · ' + opp.conf + ' · OVR ' + getTOvr(opp) + ' <span style="color:' + diffCol + ';font-weight:800;">(' + diffStr + ')</span></div></div>'
-      + '<button class="btn btn-ghost btn-sm" data-swapnc="' + i + '">SWAP</button></div>';
+      + '<button class="btn-quiet" data-swapnc="' + i + '">Swap</button></div>';
   });
   h += '</div>'
-    + '<div style="display:flex;gap:8px;margin-top:20px;">'
-    + '<button class="btn btn-ghost" style="min-height:56px;" data-setup="back-jobs" aria-label="Back to job offers">‹ Back</button>'
-    + '<button class="btn-big" style="flex:1;" data-setup="start-dynasty">START SEASON</button></div>'
+    + '<div style="display:flex;gap:8px;margin-top:20px;align-items:center;">'
+    + '<button class="btn-quiet" data-setup="back-jobs" aria-label="Back to job offers">‹ Back</button>'
+    + '<button class="btn-big" style="flex:1;" data-setup="start-dynasty">Start season</button></div>'
     + '</div>';
   return h;
 }

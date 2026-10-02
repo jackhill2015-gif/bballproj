@@ -83,15 +83,14 @@ function renderSchoolCard() {
       : d.delta < 0 ? ' <span class="arrow-dn">▼' + Math.abs(d.delta) + '</span>' : '';
   }
 
-  return '<div class="card school-card">'
-    + '<div class="sc-top"><div class="sc-id"><div class="sc-name">' + t.name + '</div>'
-    + '<div class="sc-conf">' + t.conf + '</div></div></div>'
+  return '<div class="school-card">'
+    + '<div class="sc-name">' + t.name + '</div>'
+    + '<div class="sc-conf">' + t.conf + '</div>'
     + '<div class="sc-record">' + fR(t.wins, t.loss) + '</div>'
-    + '<div class="sc-cols">'
-    + '<div><div class="sc-lab">National</div><div class="sc-val">' + netRank + arrow + '</div></div>'
-    + '<div><div class="sc-lab">Conference</div><div class="sc-val">' + confRank + '</div></div>'
-    + '<div><div class="sc-lab">Seed</div><div class="sc-val">' + (seed || 'N/A') + '</div></div>'
-    + '</div></div>';
+    + '<div class="sc-meta"><b>#' + netRank + '</b> NET' + arrow
+    + ' · <b>#' + confRank + '</b> ' + t.conf
+    + ' · Proj seed <b>' + (seed || 'N/A') + '</b></div>'
+    + '</div>';
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -100,7 +99,7 @@ function renderSchoolCard() {
 
 function renderNotifications() {
   var ns = notifState();
-  var h = '<div class="card notif-card" data-action="notif-toggle" role="button" tabindex="0" aria-expanded="' + ns.open + '">'
+  return '<div class="notif-card" data-action="notif-toggle" role="button" tabindex="0" aria-expanded="' + ns.open + '">'
     + '<div class="notif-row"><span class="notif-label">Notifications</span>'
     + (ns.unread ? '<span class="notif-badge">' + ns.unread + '</span>' : '')
     + '<span class="notif-chev">' + (ns.open ? '▲' : '▼') + '</span></div>';
@@ -141,11 +140,10 @@ function renderExpectations() {
     job = 'Job safe';
     cls = 'safe';
   }
-  return '<div class="card exp-card">'
-    + '<div class="exp-record">Record: ' + exp.low + '–' + exp.high + '</div>'
-    + '<div class="exp-label">Season Expectations</div>'
-    + '<div class="exp-job ' + cls + '">' + job
-    + '<small>' + wins + ' wins so far · firing line: under ' + exp.danger + ' wins</small></div></div>';
+  return '<div class="exp-card">'
+    + '<div class="exp-line">Expect <b>' + exp.low + '–' + exp.high + ' wins</b>'
+    + ' · <span class="' + cls + '">' + job + '</span>'
+    + ' <span style="color:var(--txt3);">(' + wins + ' wins so far · firing line: under ' + exp.danger + ')</span></div></div>';
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -169,7 +167,7 @@ function renderGameCard() {
       var r = rivalIds(), rev = revengeIds();
       var flags = (r[no.id] ? '<span class="tag t-rival">Rivalry</span> ' : '')
         + (rev[no.id] ? '<span class="tag t-revenge">Revenge</span> ' : '');
-      return '<div class="card game-card">'
+      return '<div class="game-card">'
         + '<div class="gc-opp-row">' + teamLogo(no.name)
         + '<div class="gc-opp-id"><div class="gc-opp-name">' + (ng.home ? 'vs ' : '@ ') + no.name + '</div>'
         + '<div class="gc-opp-sub">Week ' + (G.gi + 1) + ' · ' + (ng.conf ? t.conf : 'Non-conference') + '</div></div>'
@@ -178,21 +176,21 @@ function renderGameCard() {
         + '<div class="prob-row"><span>Win probability</span><span style="color:' + wpColor(wp) + ';font-weight:800;">' + wp + '%</span></div>'
         + '<div class="prob-bar"><div class="prob-fill" style="width:' + wp + '%;background:' + wpColor(wp) + ';"></div></div>'
         + bigButtons()
-        + '<button class="btn btn-ghost btn-sm btn-full" style="margin-top:8px;" data-action="nav" data-view="strategy">Gameplan</button></div>';
+        + '<button class="btn-quiet" style="margin-top:4px;" data-action="nav" data-view="strategy">Gameplan ›</button></div>';
     }
-    return '<div class="card game-card"><div class="gc-opp-name">Bye week</div>'
+    return '<div class="game-card"><div class="gc-opp-name">Bye week</div>'
       + '<div class="gc-opp-sub">Week ' + (G.gi + 1) + ' — rest up.</div>'
       + '<div class="big-btn-row"><button class="btn-big" data-action="play" data-mode="quick">Sim Week</button></div></div>';
   }
 
   if (G.phase === 'reg') {
-    return '<div class="card game-card"><div class="card-title">Regular season complete</div>'
-      + '<button class="btn btn-red btn-full" data-action="play" data-mode="quick">BEGIN CONFERENCE TOURNAMENT</button></div>';
+    return '<div class="game-card"><div class="card-title">Regular season complete</div>'
+      + '<button class="btn-big" data-action="play" data-mode="quick">Begin Conference Tournament</button></div>';
   }
 
-  return '<div class="card game-card"><div class="card-title">Offseason</div>'
+  return '<div class="game-card"><div class="card-title">Offseason</div>'
     + '<div style="font-size:13px;color:var(--txt2);margin-bottom:12px;">Recruit, develop, and reload for next season.</div>'
-    + '<button class="btn btn-red btn-full" data-action="nav" data-view="offseason">OPEN OFFSEASON HQ</button></div>';
+    + '<button class="btn-big" data-action="nav" data-view="offseason">Open Offseason HQ</button></div>';
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -227,14 +225,14 @@ function renderBriefing() {
 
 function renderShop() {
   var bought = shopBoughtThisWeek();
-  var h = '<div class="card"><div class="card-title">NIL Boost Shop <span style="float:right;color:var(--txt2);">' + (G.pts || 0) + ' PTS</span></div>';
+  var h = '<div class="sec-block"><div class="card-title">NIL Boost Shop <span style="float:right;color:var(--txt2);">' + (G.pts || 0) + ' PTS</span></div>';
   NIL_SHOP.forEach(function(item) {
     var isB = !!bought[item.id];
     h += '<div class="shop-item' + (isB ? ' bought' : '') + '">'
       + '<div class="si-body"><div class="si-name">' + item.name + '</div><div class="si-desc">' + item.desc + '</div></div>'
       + '<div style="text-align:right;"><div class="si-cost">' + item.cost + ' pts</div>'
       + (isB ? '<div style="font-size:10px;color:var(--grn2);font-weight:800;">ACTIVE</div>'
-             : '<button class="btn btn-sm btn-ghost" style="margin-top:4px;" data-action="nil-buy" data-item="' + item.id + '">BUY</button>')
+             : '<button class="btn-quiet" style="margin-top:2px;min-height:36px;" data-action="nil-buy" data-item="' + item.id + '">Buy</button>')
       + '</div></div>';
   });
   h += '<div style="font-size:11px;color:var(--txt3);">One of each per week. Earn NIL by winning — ranked teams earn more.</div></div>';
@@ -251,7 +249,7 @@ function renderCoach() {
   var lvl = c.level || 1, xp = c.xp || 0, need = coachXpToNext();
   var pct = clamp(Math.round(xp / need * 100), 0, 100);
   var hot = c.hotSeat ? ' <span class="tag t-rival">Hot Seat</span>' : '';
-  var h = '<div class="card"><div class="card-title">Coach</div>'
+  var h = '<div class="sec-block"><div class="card-title">Coach</div>'
     + '<div style="font-size:15px;font-weight:900;">' + c.firstName + ' ' + c.lastName + hot + '</div>'
     + '<div style="font-size:12px;color:var(--txt2);margin:2px 0 8px;">Year ' + (c.tenure + 1) + ' · Career ' + c.careerWins + '-' + c.careerLoss + '</div>'
     + '<div class="xp-wrap"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;">'
@@ -268,11 +266,11 @@ function renderCoach() {
 function renderRaces() {
   var rows = poyRace();
   if (!rows.length) return '';
-  var h = '<div class="card"><div class="card-title">POY Watch</div>';
+  var h = '<div class="sec-block"><div class="card-title">POY Watch</div>';
   rows.forEach(function(r, i) {
     var yours = r.tid === G.tid;
-    h += '<div class="leader-row"><div class="leader-rank">' + (i + 1) + '</div>'
-      + '<div class="leader-name">' + r.name + (yours ? ' <span class="yours-pill">YOURS</span>' : '')
+    h += '<div class="leader-row' + (yours ? ' is-user' : '') + '"><div class="leader-rank">' + (i + 1) + '</div>'
+      + '<div class="leader-name">' + r.name + (yours ? ' <span class="tag t-home">Yours</span>' : '')
       + '<small>' + r.pos + ' · ' + r.cls + ' · ' + r.team + '</small></div>'
       + '<div class="leader-val">' + r.ppg.toFixed(1) + '</div></div>';
   });
@@ -283,12 +281,12 @@ function renderMiniStandings() {
   var t = G.teams[G.tid];
   var conf = G.teams.filter(function(x) { return x.conf === t.conf; });
   conf.sort(function(a, b) { return (b.cWins / Math.max(1, b.cWins + b.cLoss)) - (a.cWins / Math.max(1, a.cWins + a.cLoss)) || b.pts - a.pts; });
-  var h = '<div class="card"><div class="card-title">' + t.conf + ' Standings</div>';
+  var h = '<div class="sec-block"><div class="card-title">' + t.conf + ' Standings</div>';
   conf.slice(0, 8).forEach(function(tm, i) {
     var isU = tm.id === G.tid;
-    h += '<div class="leader-row"' + (isU ? ' style="background:var(--blu-soft);border-radius:6px;padding-left:8px;padding-right:8px;"' : '') + '>'
+    h += '<div class="leader-row' + (isU ? ' is-user' : '') + '">'
       + '<div class="leader-rank">' + (i + 1) + '</div>'
-      + '<div class="leader-name"' + (isU ? ' style="font-weight:900;color:var(--blu);"' : '') + '>' + tm.name + '</div>'
+      + '<div class="leader-name">' + tm.name + '</div>'
       + '<div style="font-family:var(--mono);font-size:12px;color:var(--txt3);">' + tm.cWins + '-' + tm.cLoss + '</div></div>';
   });
   return h + '</div>';

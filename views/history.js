@@ -10,13 +10,13 @@ import { ge, fR } from '../utils.js';
 import { G } from '../state.js';
 
 function finishBadge(tf) {
-  if (tf === 'CHAMP') return '<span class="tag" style="background:var(--gld-soft);color:var(--gld2);">National Champion</span>';
-  if (tf === 'Runner-Up') return '<span class="tag" style="background:var(--s3);color:var(--txt2);">Runner-Up</span>';
-  if (tf === 'Final Four') return '<span class="tag" style="background:rgba(128,90,213,.10);color:#6d3fc0;">Final Four</span>';
-  if (tf === 'Elite Eight') return '<span class="tag" style="background:var(--s3);color:var(--txt2);">Elite 8</span>';
-  if (tf === 'Sweet 16') return '<span class="tag" style="background:var(--s3);color:var(--txt2);">Sweet 16</span>';
-  if (tf === 'Round of 32') return '<span class="tag" style="background:var(--s3);color:var(--txt3);">Round of 32</span>';
-  if (tf === 'Round of 64') return '<span class="tag" style="background:var(--s3);color:var(--txt3);">Round of 64</span>';
+  if (tf === 'CHAMP') return '<span class="tag t-cf">National Champion</span>';
+  if (tf === 'Runner-Up') return '<span class="tag">Runner-Up</span>';
+  if (tf === 'Final Four') return '<span class="tag t-home">Final Four</span>';
+  if (tf === 'Elite Eight') return '<span class="tag">Elite 8</span>';
+  if (tf === 'Sweet 16') return '<span class="tag">Sweet 16</span>';
+  if (tf === 'Round of 32') return '<span style="font-size:11px;color:var(--txt3);">Round of 32</span>';
+  if (tf === 'Round of 64') return '<span style="font-size:11px;color:var(--txt3);">Round of 64</span>';
   if (tf === 'Conf Tourney') return '<span class="tag t-cf">Conf Tourney</span>';
   return '';
 }
@@ -74,11 +74,11 @@ export function renderHistory() {
     + '<div class="sec-sub">Every season, every title, every milestone — the permanent record.</div></div>';
 
   // ── Coach resume ──
-  h += '<div class="card"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:12px;">'
+  h += '<div class="sec-block"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:12px;">'
     + '<div><div style="font-size:19px;font-weight:900;">Coach ' + (c.firstName || '') + ' ' + (c.lastName || '') + '</div>'
     + '<div style="font-size:12px;color:var(--txt2);margin-top:2px;">Age ' + (c.age || '—') + ' · Level ' + (c.level || 1) + ' · ' + (hist.length + 1) + 'th season · ' + G.teams[G.tid].name + '</div></div>'
     + '<div style="font-family:var(--mono);font-size:22px;font-weight:900;color:' + (totalW >= totalL ? 'var(--grn2)' : 'var(--red)') + ';">' + fR(totalW, totalL) + '</div></div>'
-    + '<div class="grid-2" style="grid-template-columns:repeat(5,1fr);gap:8px;">';
+    + '<div class="stat-strip" style="grid-template-columns:repeat(5,1fr);">';
   [
     { l: 'Seasons', v: hist.length },
     { l: 'Nat Titles', v: titles },
@@ -86,26 +86,24 @@ export function renderHistory() {
     { l: 'Career Wins', v: c.careerWins || 0 },
     { l: 'Win %', v: (totalW + totalL) ? Math.round(totalW / (totalW + totalL) * 100) + '%' : '—' }
   ].forEach(function(s) {
-    h += '<div style="text-align:center;padding:10px;background:var(--s2);border-radius:8px;">'
-      + '<div style="font-family:var(--mono);font-size:19px;font-weight:900;">' + s.v + '</div>'
-      + '<div style="font-size:9px;color:var(--txt3);font-weight:700;letter-spacing:.5px;">' + s.l.toUpperCase() + '</div></div>';
+    h += '<div class="stat-cell"><div class="sv">' + s.v + '</div><div class="sl">' + s.l + '</div></div>';
   });
   h += '</div></div>';
 
   // ── Trophy case ──
   var tr = trophies();
   if (tr.length) {
-    h += '<div class="card"><div class="card-title">Trophy Case</div><div class="grid-3">';
+    h += '<div class="sec-block"><div class="card-title">Trophy Case</div>';
     tr.forEach(function(t2) {
-      h += '<div style="padding:10px;background:var(--s2);border:1px solid var(--bdr);border-radius:4px;">'
-        +         + '<div><div style="font-size:13px;font-weight:800;">' + t2.name + '</div>'
-        + '<div style="font-size:11px;color:var(--txt3);">' + t2.desc + '</div></div></div>';
+      // Bugfix: this was a `+ +` typo that rendered literal NaN in the UI
+      h += '<div class="leader-row"><div class="leader-name" style="font-weight:800;">' + t2.name
+        + '<small>' + t2.desc + '</small></div></div>';
     });
-    h += '</div></div>';
+    h += '</div>';
   }
 
   // ── Season timeline ──
-  h += '<div class="card"><div class="card-title">Season History</div>';
+  h += '<div class="sec-block"><div class="card-title">Season History</div>';
   if (!hist.length) {
     h += '<div style="font-size:13px;color:var(--txt3);">No completed seasons yet. Your story starts now.</div>';
   } else {
@@ -124,7 +122,7 @@ export function renderHistory() {
   // ── Record book ──
   var rb = recordBook();
   if (rb.length) {
-    h += '<div class="card"><div class="card-title">Program Record Book</div>';
+    h += '<div class="sec-block"><div class="card-title">Program Record Book</div>';
     rb.forEach(function(r) {
       h += '<div class="leader-row"><div class="leader-name">' + r.label + '<small>' + r.note + '</small></div>'
         + '<div class="leader-val" style="font-size:15px;">' + r.val + '</div></div>';
@@ -134,12 +132,12 @@ export function renderHistory() {
 
   // ── National champions ──
   if (G.leagueChamps && G.leagueChamps.length) {
-    h += '<div class="card"><div class="card-title">National Champions</div>';
+    h += '<div class="sec-block"><div class="card-title">National Champions</div>';
     G.leagueChamps.slice().reverse().slice(0, 20).forEach(function(ch) {
       var isU = ch.tid === G.tid;
       h += '<div class="leader-row"><div class="leader-rank" style="width:44px;color:var(--gld2);">' + ch.year + '</div>'
         + '<div class="leader-name" style="' + (isU ? 'font-weight:900;color:var(--gld2);' : '') + '">' + ch.name
-        + (isU ? ' <span class="yours-pill">YOURS</span>' : '') + '</div></div>';
+        + (isU ? ' <span class="tag t-home">Yours</span>' : '') + '</div></div>';
     });
     h += '</div>';
   }

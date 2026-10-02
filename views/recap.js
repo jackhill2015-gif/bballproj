@@ -97,28 +97,27 @@ export function renderSeasonRecap() {
   var lastHistory = G.history && G.history.length ? G.history[G.history.length - 1] : null;
   var tf = lastHistory ? lastHistory.tourneyFinish : 'N/A';
 
-  function awardCard(kicker, name, sub, accent, yours) {
-    return '<div class="card" style="border-left:4px solid ' + accent + ';">'
+  function awardCard(kicker, name, sub, yours) {
+    return '<div class="sec-block">'
       + '<div class="card-title">' + kicker + '</div>'
       + '<div style="font-size:18px;font-weight:900;' + (yours ? 'color:var(--blu);' : '') + '">' + name
-      + (yours ? ' <span class="yours-pill">YOURS</span>' : '') + '</div>'
+      + (yours ? ' <span class="tag t-home">Yours</span>' : '') + '</div>'
       + '<div style="font-size:12px;color:var(--txt2);margin-top:4px;">' + sub + '</div></div>';
   }
 
-  var h = '<div style="text-align:center;margin-bottom:24px;">'
-    + '<div style="font-size:11px;color:var(--gld2);letter-spacing:4px;font-weight:800;text-transform:uppercase;margin-bottom:6px;">Official Recap</div>'
-    + '<div style="font-size:38px;font-weight:900;line-height:1;letter-spacing:-1px;">Season ' + year + '</div>'
-    + '<div style="height:3px;width:64px;background:var(--blu);margin:14px auto;border-radius:2px;"></div></div>';
+  var h = '<div style="margin-bottom:20px;">'
+    + '<div class="sec-head">Season ' + year + ' Recap</div>'
+    + '<div class="sec-sub">National champion · awards · your program</div></div>';
 
   h += '<div class="grid-2">';
 
   // LEFT — league
   h += '<div>';
-  h += '<div class="card" style="border-left:4px solid var(--gld);">'
+  h += '<div class="sec-block">'
     + '<div class="card-title">National Champion</div>'
-    + '<div class="br-champ-kicker">National Champion</div><div class="br-champ-team">' + natChamp.name + '</div></div>';
+    + '<div class="br-champ-team">' + natChamp.name + '</div></div>';
 
-  h += '<div class="card"><div class="card-title">Final Top 10</div>';
+  h += '<div class="sec-block"><div class="card-title">Final Top 10</div>';
   topTeams.forEach(function(tm, i) {
     var isU = tm.id === G.tid;
     h += '<div class="leader-row"><div class="leader-rank">' + (i + 1) + '</div>'
@@ -129,30 +128,29 @@ export function renderSeasonRecap() {
 
   if (awards.poy) h += awardCard('Player of the Year', awards.poy.name,
     awards.poy.team + ' · ' + awards.poy.pos + ' · ' + awards.poy.ppg + ' PPG / ' + awards.poy.rpg + ' RPG / ' + awards.poy.apg + ' APG',
-    'var(--blu)', awards.poy.tid === G.tid);
+    awards.poy.tid === G.tid);
   if (awards.foy) h += awardCard('Freshman of the Year', awards.foy.name,
-    awards.foy.team + ' · ' + awards.foy.ppg + ' PPG', 'var(--grn)', awards.foy.tid === G.tid);
+    awards.foy.team + ' · ' + awards.foy.ppg + ' PPG', awards.foy.tid === G.tid);
   if (awards.coy) {
     var cn = awards.coy.coach ? awards.coy.coach.firstName + ' ' + awards.coy.coach.lastName : 'Staff';
     h += awardCard('Coach of the Year', cn, awards.coy.name + ' (' + awards.coy.wins + '-' + awards.coy.loss + ')',
-      'var(--gld)', awards.coy.id === G.tid);
+      awards.coy.id === G.tid);
   }
   h += '</div>';
 
   // RIGHT — your program
   h += '<div>';
-  h += '<div class="card"><div class="card-title">Your Season</div>'
-    + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">'
+  h += '<div class="sec-block"><div class="card-title">Your Season</div>'
+    + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">'
     + '<div><div style="font-size:22px;font-weight:900;">' + t.name + '</div>'
     + '<div style="font-size:13px;color:var(--blu);font-weight:700;margin-top:2px;">' + t.wins + '-' + t.loss + ' (' + t.cWins + '-' + t.cLoss + ' ' + t.conf + ')</div></div>'
     + '<div style="text-align:right;"><div style="font-size:10px;color:var(--txt3);font-weight:700;">NET</div><div style="font-family:var(--mono);font-size:24px;font-weight:900;">#' + rank + '</div></div></div>'
-    + '<div class="grid-2" style="gap:8px;">'
-    + '<div style="background:var(--s2);padding:10px;border-radius:8px;"><div style="font-size:9px;color:var(--txt3);font-weight:700;">TOURNAMENT</div><div style="font-size:14px;font-weight:800;margin-top:2px;">' + tf + '</div></div>'
-    + '<div style="background:var(--s2);padding:10px;border-radius:8px;"><div style="font-size:9px;color:var(--txt3);font-weight:700;">PRESTIGE</div><div style="font-size:14px;font-weight:800;margin-top:2px;">' + (t.schoolPrestige || '—') + '</div></div>'
-    + '</div></div>';
+    + '<div class="leader-row"><div class="leader-name">Tournament finish</div><div class="leader-val" style="font-size:14px;">' + tf + '</div></div>'
+    + '<div class="leader-row"><div class="leader-name">Prestige</div><div class="leader-val" style="font-size:14px;">' + (t.schoolPrestige || '—') + '</div></div>'
+    + '</div>';
 
   if (awards.allAmerican.length) {
-    h += '<div class="card"><div class="card-title">All-American Team</div>';
+    h += '<div class="sec-block"><div class="card-title">All-American Team</div>';
     awards.allAmerican.forEach(function(p) {
       var isU = p.tid === G.tid;
       h += '<div class="leader-row"><div class="leader-name" style="' + (isU ? 'font-weight:900;color:var(--blu);' : '') + '">' + p.name
@@ -163,7 +161,7 @@ export function renderSeasonRecap() {
   }
 
   if (awards.userAllConf.length) {
-    h += '<div class="card"><div class="card-title">All-' + awards.userConf + ' Team</div>';
+    h += '<div class="sec-block"><div class="card-title">All-' + awards.userConf + ' Team</div>';
     awards.userAllConf.forEach(function(p) {
       var isU = p.tid === G.tid;
       h += '<div class="leader-row"><div class="leader-name" style="' + (isU ? 'font-weight:900;color:var(--blu);' : '') + '">' + p.name
@@ -173,9 +171,9 @@ export function renderSeasonRecap() {
     h += '</div>';
   }
 
-  h += '<div class="card" style="border-left:4px solid var(--grn);">'
+  h += '<div class="sec-block">'
     + '<div class="card-title">Coaching XP Earned</div>'
-    + '<div style="font-family:var(--mono);font-size:30px;font-weight:900;color:var(--grn2);margin-bottom:8px;">' + skillPts.length + ' <span style="font-size:14px;">skill point' + (skillPts.length !== 1 ? 's' : '') + '</span></div>';
+    + '<div style="font-family:var(--mono);font-size:26px;font-weight:900;margin-bottom:8px;">' + skillPts.length + ' <span style="font-size:13px;font-weight:700;color:var(--txt2);">skill point' + (skillPts.length !== 1 ? 's' : '') + '</span></div>';
   if (skillPts.length) {
     skillPts.forEach(function(label) {
       h += '<div style="font-size:12px;color:var(--grn2);padding:3px 0;">✓ ' + label + '</div>';
@@ -188,7 +186,7 @@ export function renderSeasonRecap() {
   h += '</div></div>';
 
   h += '<div style="margin-top:20px;text-align:center;">'
-    + '<button class="btn btn-red" data-action="begin-offseason">BEGIN OFFSEASON</button></div>';
+    + '<button class="btn-big" data-action="begin-offseason">Begin offseason</button></div>';
 
   return h;
 }

@@ -443,10 +443,10 @@ function starStr(n) { var s = ''; for (var i = 0; i < 5; i++) s += i < n ? '\u26
 function geoBadges(r, sp) {
   var h = '';
   var userGeo = getGeoLabel(getTeamState(G.teams[G.tid]), r.homeState);
-  if (userGeo === 'HOME') h += '<span class="geo-badge geo-home">HOME</span>';
-  else if (userGeo === 'REGION') h += '<span class="geo-badge geo-region">REGION</span>';
+  if (userGeo === 'HOME') h += '<span class="tag t-ok">Home</span>';
+  else if (userGeo === 'REGION') h += '<span class="tag t-home">Region</span>';
   var gatePrestige = SCHOOL_RECRUIT_GATES[r.stars] || 0;
-  if (sp < gatePrestige) h += '<span class="geo-badge geo-long">LONG SHOT</span>';
+  if (sp < gatePrestige) h += '<span class="tag t-rival">Long shot</span>';
   return h;
 }
 
@@ -477,7 +477,7 @@ function stepperRow(r, left, removable) {
     + '<button class="stepper plus' + (left >= 5 ? '' : ' off') + '" data-pt-inc="' + r.id + '" aria-label="Add 5 points to ' + r.name + '" aria-disabled="' + (left >= 5 ? 'false' : 'true') + '">+</button>'
     + '<span style="font-size:11px;color:var(--txt3);">pts</span>'
     + '<div style="flex:1;"></div>';
-  if (removable) h += '<button class="btn btn-ghost btn-sm" data-rem-target="' + r.id + '">REMOVE</button>';
+  if (removable) h += '<button class="btn-quiet" data-rem-target="' + r.id + '">Remove</button>';
   return h + '</div>';
 }
 
@@ -510,14 +510,14 @@ function renderTurnover() {
     + '<div class="stat-cell"><div class="sv">' + lostMins + '</div><div class="sl">Mins to replace</div></div></div>';
 
   if (needs.length) {
-    h += '<div class="card" style="border-left:4px solid var(--red);font-size:13px;font-weight:700;color:var(--red);">'
-      + 'Position needs: ' + needs.join(', ') + ' <span style="font-weight:500;color:var(--txt2);">— target these in recruiting</span></div>';
+    h += '<div style="font-size:13px;margin-bottom:12px;"><b style="color:var(--red);">Position needs: ' + needs.join(', ') + '</b>'
+      + ' <span style="color:var(--txt2);">— target these in recruiting</span></div>';
   }
 
   h += '<div class="grid-2">';
 
   // Departing
-  h += '<div class="card"><div class="card-title">Departing · ' + dep.length + '</div>';
+  h += '<div class="sec-block"><div class="card-title">Departing · ' + dep.length + '</div>';
   if (dep.length) {
     dep.forEach(function(d) {
       var reasonCol = d.reason === 'Graduated' ? 'var(--txt3)' : 'var(--gld2)';
@@ -533,7 +533,7 @@ function renderTurnover() {
 
   // Returning — FULL roster, no truncation
   returning.sort(function(a, b) { return b.ovr - a.ovr; });
-  h += '<div class="card"><div class="card-title">Returning · ' + returning.length + '</div>';
+  h += '<div class="sec-block"><div class="card-title">Returning · ' + returning.length + '</div>';
   returning.forEach(function(p) {
     var gp = p.s.gp || 0;
     var ppg = gp ? (p.s.pts / gp).toFixed(1) : '--';
@@ -566,12 +566,11 @@ function renderFired() {
   var record = lastJob ? lastJob.wins + '-' + lastJob.loss : '?-?';
 
   var h = '<div style="max-width:600px;margin:0 auto;padding:24px 4px;text-align:center;">'
-    + '<div style="font-size:48px;margin-bottom:12px;">\ud83d\udea8</div>'
     + '<div class="tag t-rival" style="margin-bottom:10px;">End of the road</div>'
     + '<div style="font-size:30px;font-weight:900;color:var(--red);margin:8px 0;">YOU\'VE BEEN FIRED</div>'
     + '<div style="font-size:13px;color:var(--txt2);margin-bottom:20px;">' + schoolName + ' has relieved you of your duties after a ' + record + ' season.</div>';
 
-  h += '<div class="card" style="text-align:left;margin-bottom:16px;">'
+  h += '<div class="sec-block" style="text-align:left;margin-bottom:16px;">'
     + '<div class="card-title">Coach ' + c.firstName + ' ' + c.lastName + '</div>'
     + '<div class="stat-strip" style="grid-template-columns:repeat(4,1fr);margin-bottom:0;">'
     + '<div class="stat-cell"><div class="sv">' + c.age + '</div><div class="sl">Age</div></div>'
@@ -622,7 +621,7 @@ function renderSkillPoints() {
     + '<div style="font-size:26px;font-weight:900;margin:8px 0 4px;">Skill Points</div>'
     + '<div style="font-size:12px;color:var(--txt2);">You earned <b style="color:var(--grn2);">' + G.skillPointsEarned + '</b> skill point' + (G.skillPointsEarned !== 1 ? 's' : '') + ' this season.</div></div>';
 
-  h += '<div class="card" style="text-align:center;"><div style="font-size:34px;font-weight:900;color:' + (pts > 0 ? 'var(--grn2)' : 'var(--txt3)') + ';">' + pts + '</div>'
+  h += '<div style="text-align:center;margin-bottom:16px;"><div style="font-size:34px;font-weight:900;color:' + (pts > 0 ? 'var(--grn2)' : 'var(--txt3)') + ';">' + pts + '</div>'
     + '<div style="font-size:11px;color:var(--txt3);font-weight:700;letter-spacing:1px;">POINTS REMAINING</div></div>';
 
   var ratings = [
@@ -748,11 +747,10 @@ function renderCarousel() {
 
   // Stay option — hidden for fired coaches (R4)
   if (!fired) {
-    h += '<div class="card" style="border-left:4px solid var(--grn);">'
-      + '<div style="display:flex;align-items:center;gap:12px;">' + teamLogo(currentTeam.name, 'sm')
+    h += '<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bdr);margin-bottom:8px;">' + teamLogo(currentTeam.name, 'sm')
       + '<div style="flex:1;min-width:0;"><div style="font-size:15px;font-weight:800;">Stay at ' + currentTeam.name + '</div>'
       + '<div style="font-size:12px;color:var(--txt3);margin-top:2px;">' + currentTeam.conf + ' · Prestige ' + (currentTeam.schoolPrestige || '?') + ' · Year ' + (c.tenure + 1) + ' tenure</div></div>'
-      + '<button class="btn btn-ghost" data-stay>STAY</button></div></div>';
+      + '<button class="btn btn-ghost" data-stay>Stay</button></div>';
   }
 
   if (jobs.length) {
@@ -762,19 +760,19 @@ function renderCarousel() {
       if (_rejectedJobs.indexOf(jobId) >= 0) return; // hide rejected jobs by stable team id (R3)
       var chance = calcOfferChance(job);
       var t = job.team;
-      h += '<div class="card" style="margin-bottom:0;">'
+      h += '<div style="padding:10px 0;border-bottom:1px solid var(--bdr);">'
         + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">' + teamLogo(t.name, 'sm')
         + '<div style="flex:1;min-width:0;"><div style="font-size:15px;font-weight:800;">' + t.name + '</div>'
         + '<div style="font-size:11px;color:var(--txt3);">' + t.conf + ' · OVR ' + (t.baseOvr || '?') + ' · Prestige ' + (t.schoolPrestige || '?') + '</div></div></div>'
         + '<div style="font-size:11px;color:var(--txt3);margin-bottom:10px;">Previous: ' + job.firedCoach + ' · ' + job.reason + '</div>'
         + '<div style="display:flex;justify-content:space-between;align-items:center;">'
         + '<div class="chance" style="color:' + chanceColor(chance) + ';">' + chance + '% chance</div>'
-        + '<button class="btn btn-red btn-sm" data-apply-job="' + jobId + '">APPLY</button>'
+        + '<button class="btn btn-red btn-sm" data-apply-job="' + jobId + '">Apply</button>'
         + '</div></div>';
     });
     h += '</div>';
   } else {
-    h += '<div class="card" style="text-align:center;color:var(--txt3);font-size:13px;">No coaching vacancies this year.</div>';
+    h += '<div class="empty-state">No coaching vacancies this year.</div>';
   }
 
   if (!fired) {
@@ -944,9 +942,9 @@ function renderBoard(open, left) {
       + '<div class="rc-ovr"><b style="color:var(--blu);">' + r.ovr + '</b><small style="color:' + potCol + ';">POT ' + (r.pot || r.ovr) + '</small></div>'
       + '</div>';
   });
-  if (!filtered.length) h += '<div class="card" style="text-align:center;color:var(--txt3);font-size:13px;">No recruits match filters.</div>';
+  if (!filtered.length) h += '<div class="empty-state">No recruits match filters.</div>';
   else if (filtered.length > _boardShown) {
-    h += '<button class="btn btn-ghost btn-full" style="margin-top:6px;" data-show-more>SHOW MORE (' + (filtered.length - _boardShown) + ' remaining)</button>';
+    h += '<button class="btn-quiet" style="margin-top:6px;" data-show-more>Show more (' + (filtered.length - _boardShown) + ' remaining)</button>';
   }
   return h;
 }
@@ -960,15 +958,15 @@ function renderDetailPanel(r, left) {
   var isTarget = G.recruitTargets.indexOf(r.id) >= 0;
   var sp = (G.teams[G.tid] && G.teams[G.tid].schoolPrestige) || 50;
 
-  var h = '<div class="card" style="border-color:var(--blu2);">';
+  var h = '<div style="padding-bottom:12px;margin-bottom:12px;border-bottom:1px solid var(--bdr2);">';
   h += '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">'
     + '<div><div style="font-size:17px;font-weight:900;">' + r.name + '</div>'
     + '<div style="font-size:12px;color:var(--gld2);font-weight:700;margin-top:2px;">' + starStr(r.stars) + ' · #' + r.natRank + ' National · #' + r.posRank + ' ' + r.pos + '</div>'
-    + '<div style="font-size:12px;color:var(--txt2);margin-top:2px;">OVR ' + r.ovr + ' · POT ' + (r.pot || r.ovr) + ' · ' + stName + geoBadges(r, sp) + '</div></div>'
-    + '<button class="btn btn-ghost btn-sm" data-close-detail aria-label="Close details">✕</button></div>';
+    + '<div style="font-size:12px;color:var(--txt2);margin-top:2px;">OVR ' + r.ovr + ' · POT ' + (r.pot || r.ovr) + ' · ' + stName + ' ' + geoBadges(r, sp) + '</div></div>'
+    + '<button class="btn-quiet" data-close-detail aria-label="Close details">✕</button></div>';
 
   if (!isTarget) {
-    h += '<button class="btn btn-red" style="margin-bottom:12px;" data-add-target="' + r.id + '">+ ADD TO TARGETS</button>';
+    h += '<button class="btn btn-red" style="margin-bottom:12px;" data-add-target="' + r.id + '">+ Add to targets</button>';
   } else {
     h += '<div style="font-size:11px;font-weight:800;color:var(--blu);letter-spacing:1px;margin-bottom:8px;">TARGETED</div>';
     h += '<div style="margin-bottom:12px;">' + stepperRow(r, left, true) + '</div>';
@@ -986,7 +984,7 @@ function renderDetailPanel(r, left) {
 
 function renderTargets(left) {
   if (!G.recruitTargets.length) {
-    return '<div class="card" style="text-align:center;color:var(--txt3);font-size:13px;">No targets yet. Browse the Board and add recruits you want to pursue.</div>';
+    return '<div class="empty-state">No targets yet. Browse the Board and add recruits you want to pursue.</div>';
   }
   var h = '';
   G.recruitTargets.forEach(function(rid) {
@@ -999,11 +997,11 @@ function renderTargets(left) {
     var leading = schools.length && schools[0].isUser;
     var pctCol = userPct >= 60 ? 'var(--grn2)' : userPct >= 30 ? 'var(--gld2)' : 'var(--red)';
 
-    h += '<div class="card"' + (leading ? ' style="border-left:3px solid var(--grn);"' : '') + '>';
+    h += '<div style="padding-bottom:12px;margin-bottom:12px;border-bottom:1px solid var(--bdr);">';
     h += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">'
       + '<div class="leader-rank">#' + r.natRank + '</div>'
       + '<span class="pos-chip">' + r.pos + '</span>'
-      + '<div class="leader-name" style="flex:1;">' + r.name
+      + '<div class="leader-name" style="flex:1;">' + r.name + (leading ? ' <span class="tag t-ok">Leading</span>' : '')
       + '<small><span style="color:var(--gld2);">' + starStr(r.stars) + '</span> · OVR ' + r.ovr + ' · ' + (STATE_NAMES[r.homeState] || r.homeState) + '</small></div>'
       + '<div class="leader-val" data-user-pct="' + r.id + '" style="color:' + pctCol + ';">' + userPct + '%</div></div>';
 
@@ -1020,11 +1018,11 @@ function renderTargets(left) {
 // ═══════════════════════════════════════════════════════════
 
 function renderCommits(commits) {
-  if (!commits.length) return '<div class="card" style="text-align:center;color:var(--txt3);font-size:13px;">No commits yet. Target recruits and advance phases.</div>';
+  if (!commits.length) return '<div class="empty-state">No commits yet. Target recruits and advance phases.</div>';
   var avgOvr = Math.round(commits.reduce(function(s, r) { return s + r.ovr; }, 0) / commits.length);
   var h = '<div style="margin-bottom:10px;font-size:12px;color:var(--txt2);">' + commits.length + ' commit' + (commits.length > 1 ? 's' : '') + ' · Avg OVR ' + avgOvr + '</div>';
   commits.forEach(function(r) {
-    h += '<div class="leader-row" style="background:#fff;border:1px solid var(--bdr);border-left:3px solid var(--grn);border-radius:10px;padding:10px 14px;margin-bottom:6px;">'
+    h += '<div class="leader-row">'
       + '<span class="pos-chip">' + r.pos + '</span>'
       + '<div class="leader-name">' + r.name
       + '<small><span style="color:var(--gld2);">' + starStr(r.stars) + '</span> · ' + (STATE_NAMES[r.homeState] || r.homeState) + '</small></div>'

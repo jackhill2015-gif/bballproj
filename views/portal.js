@@ -203,7 +203,7 @@ window.showMorePortal = showMorePortal;
 
 function entrantRow(e, picksLeft) {
   var action = picksLeft > 0
-    ? '<button class="btn btn-red btn-sm" data-ppick="' + e.pid + '" aria-label="Pick up ' + e.name + '">PICK UP</button>'
+    ? '<button class="btn-quiet" data-ppick="' + e.pid + '" aria-label="Pick up ' + e.name + '">Pick up</button>'
     : '<div style="font-size:11px;color:var(--txt3);">No picks left</div>';
   return '<div class="pl-row">'
     + teamLogo(e.fromName, 'sm')
@@ -230,7 +230,7 @@ export function renderPortal() {
     + '<div class="stat-cell"><div class="sv">' + avail.length + '</div><div class="sl">Available</div></div></div>';
 
   if (mine.length) {
-    h += '<div class="card" style="border-left:4px solid var(--red);font-size:13px;color:var(--txt2);">'
+    h += '<div style="font-size:13px;color:var(--txt2);margin-bottom:10px;">'
       + '<b style="color:var(--red);">' + mine.length + '</b> of your player' + (mine.length > 1 ? 's' : '')
       + ' entered the portal: '
       + mine.map(function(e) { return '<b>' + e.name + '</b> (' + e.pos + ', ' + e.ovr + ')'; }).join(', ')
@@ -242,10 +242,10 @@ export function renderPortal() {
   var shown = avail.slice(0, _portalShown);
   shown.forEach(function(e) { h += entrantRow(e, picks); });
   if (!avail.length) {
-    h += '<div class="card" style="text-align:center;color:var(--txt3);font-size:13px;">The portal is quiet this year.</div>';
+    h += '<div class="empty-state">The portal is quiet this year.</div>';
   }
   if (avail.length > _portalShown) {
-    h += '<button class="btn btn-ghost btn-full" data-pshowmore>SHOW MORE (' + (avail.length - _portalShown) + ' remaining)</button>';
+    h += '<button class="btn-quiet" data-pshowmore>Show more (' + (avail.length - _portalShown) + ' remaining)</button>';
   }
 
   h += '<button class="btn-big btn-full" style="margin-top:16px;" data-padvance>CONTINUE TO RECRUITING</button>';

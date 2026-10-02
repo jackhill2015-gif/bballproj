@@ -51,7 +51,7 @@ function renderConfHub() {
   }
 
   if (allConfDone() && (!G.bracket || !G.bracket.length)) {
-    h += '<div class="card" style="text-align:center;margin-top:12px;">'
+    h += '<div class="sec-block" style="text-align:center;margin-top:12px;">'
       + '<div style="font-size:13px;font-weight:800;margin-bottom:10px;">All conference tournaments complete</div>'
       + '<button class="btn btn-red" data-action="build-ncaa">Selection Sunday</button>'
       + '<div style="font-size:11px;color:var(--txt3);margin-top:8px;">Use the Advance button up top to build the NCAA field.</div></div>';
@@ -116,7 +116,7 @@ function renderScoutingCard(confMatch) {
   var opp = m.t1.id === G.tid ? m.t2 : m.t1;
   var wp = clamp(Math.round(50 + (getTOvr(G.teams[G.tid]) - getTOvr(opp)) * 1.3), 5, 95);
   var col = wp >= 55 ? 'var(--grn2)' : wp >= 40 ? 'var(--gld2)' : 'var(--red)';
-  return '<div class="matchup-card"><div class="card-title">Your next game · ' + getConfRoundName(confMatch.ct, confMatch.conf) + '</div>'
+  return '<div class="sec-block"><div class="card-title">Your next game · ' + getConfRoundName(confMatch.ct, confMatch.conf) + '</div>'
     + '<div class="matchup-opp">' + opp.name + '</div>'
     + '<div class="matchup-meta"><span class="tag t-cf">Conf Tourney</span>'
     + '<span>OVR ' + getTOvr(opp) + ' · ' + opp.wins + '-' + opp.loss + '</span></div>'
@@ -163,7 +163,7 @@ function renderNCAA_Hub() {
     var wp = clamp(Math.round(50 + (getTOvr(ue.team) - getTOvr(opp)) * 1.3), 5, 95);
     var col = wp >= 55 ? 'var(--grn2)' : wp >= 40 ? 'var(--gld2)' : 'var(--red)';
     var stars = opp.rost.filter(function(p) { return p.mins > 0; }).sort(function(a, b) { return b.ovr - a.ovr; }).slice(0, 3);
-    h2 += '<div class="matchup-card"><div class="card-title">Scouting report · ' + currentRound + '</div>'
+    h2 += '<div class="sec-block"><div class="card-title">Scouting report · ' + currentRound + '</div>'
       + '<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:6px;">'
       + '<div style="flex:1;min-width:0;"><div class="sc-lab">#' + ue.seed + ' seed</div>'
       + '<div class="matchup-opp" style="font-size:16px;">' + ue.team.name + '</div>'
@@ -186,7 +186,7 @@ function renderNCAA_Hub() {
     h2 += '<div class="action-btns"><button class="btn btn-red btn-full" data-action="play" data-mode="quick">QUICK SIM</button>'
       + '<button class="btn btn-ghost btn-full" data-action="play" data-mode="live">LIVE SIM</button></div></div>';
   } else if (active.length > 1) {
-    h2 += '<div class="card" style="text-align:center;"><div style="font-size:14px;font-weight:800;margin-bottom:4px;">Your run is over.</div>'
+    h2 += '<div class="sec-block" style="text-align:center;"><div style="font-size:14px;font-weight:800;margin-bottom:4px;">Your run is over.</div>'
       + '<div style="font-size:12px;color:var(--txt2);margin-bottom:10px;">Watch the rest of the tournament unfold.</div>'
       + '<button class="btn btn-red" data-action="play" data-mode="quick">Sim Next Round</button></div>';
   }
@@ -227,7 +227,7 @@ function renderCinderellaTracker() {
     return active.some(function(b) { return b.team.id === c.tid; });
   });
   if (!alive.length) return '';
-  var h = '<div class="card"><div class="card-title">Cinderella Watch</div><div style="display:flex;flex-wrap:wrap;gap:6px;">';
+  var h = '<div class="sec-block"><div class="card-title">Cinderella Watch</div><div style="display:flex;flex-wrap:wrap;gap:6px;">';
   alive.forEach(function(c) {
     var isU = c.tid === G.tid;
     h += '<span class="tag' + (isU ? ' t-home' : '') + '">#' + c.seed + ' ' + c.name + '</span>';

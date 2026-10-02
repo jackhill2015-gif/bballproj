@@ -58,14 +58,14 @@ export function renderStats() {
     + '<div class="sec-sub">Season ' + G.yr + ' · Top 10 in each category</div></div>';
 
   if (!cats[0].rows.length) {
-    el.innerHTML = h + '<div class="card"><div style="font-size:13px;color:var(--txt3);">Play some games and the leaderboards will fill in.</div></div>';
+    el.innerHTML = h + '<div class="empty-state">Play some games and the leaderboards will fill in.</div>';
     return;
   }
 
   h += '<div class="grid-2">';
   cats.forEach(function(entry) {
-    h += '<div class="card" style="padding:0;overflow:hidden;"><div class="card-title" style="margin:0;padding:14px 16px 10px;border:none;">' + entry.cat.label + '</div>'
-      + '<div class="tbl-wrap" style="border:none;border-radius:0;"><table><thead><tr>'
+    h += '<div class="sec-block"><div class="card-title">' + entry.cat.label + '</div>'
+      + '<div class="tbl-wrap"><table><thead><tr>'
       + '<th style="width:36px;">RK</th><th>Player</th><th>Team</th><th style="text-align:right;">' + entry.cat.id.toUpperCase() + '</th>'
       + '</tr></thead><tbody>';
     entry.rows.forEach(function(r, i) {
