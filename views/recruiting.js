@@ -17,7 +17,7 @@ import { ge, clamp } from '../utils.js';
 import { hasRestlessStarAt } from '../morale.js';
 import { TEAM_STATES, STATE_TO_REGION, STATE_NAMES, SCHOOL_RECRUIT_GATES, COACH_FN, COACH_LN } from '../constants.js';
 import { G, LS, SetupState, saveState, calcRecruitingBudget } from '../state.js';
-import { renderPortal, genPortalEntrants, registerPortalCallbacks, portalPickup, advanceFromPortal, showMorePortal } from './portal.js';
+import { renderPortal, genPortalEntrants, registerPortalCallbacks, portalPitch, advanceFromPortal, showMorePortal } from './portal.js';
 import { teamLogo } from '../ui.js';
 
 var _ext = { toast: null, addLog: null, updateAll: null };
@@ -368,7 +368,7 @@ function bindOffseason(el) {
     if (q('[data-stay]')) { stayAtSchool(); return; }
     if (q('[data-fired-go]')) { proceedFromFired(); return; }
     // Portal rows (portal.js HTML lives in this container)
-    if ((m = q('[data-ppick]'))) { portalPickup(parseInt(m.getAttribute('data-ppick'), 10)); return; }
+    if ((m = q('[data-ppitch]'))) { portalPitch(parseInt(m.getAttribute('data-ppitch'), 10)); return; }
     if (q('[data-pshowmore]')) { showMorePortal(); return; }
     if (q('[data-padvance]')) { advanceFromPortal(); return; }
     // Board row → detail (checked last; steppers/target buttons win)

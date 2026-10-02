@@ -116,21 +116,29 @@ check(G.portalEntrants.every(e => isNum(e.pid) && isNum(e.ovr) && isNum(e.fromTi
   'entrant records have name/pos/ovr/old school, no NaN');
 check(G.portalEntrants.length <= P.PORTAL_MAX_ENTRANTS, 'entrant cap respected');
 
-console.log('── R9: user portal pickups ──');
+console.log('── R9: user portal pitches (competitive) ──');
+G.pts = 500; // afford any pitch
 const board = P.portalBoard().filter(e => e.fromTid !== G.tid);
 check(board.length > 0, 'board has available transfers');
 const pick1 = board[0], pick2 = board[1];
 const p1from = pick1.fromTid, p1name = pick1.name;
 const beforeLen = G.teams[p1from].rost.length;
-check(P.portalPickup(pick1.pid) === true, 'pickup 1 succeeds');
-check(P.portalPickup(pick2.pid) === true, 'pickup 2 succeeds');
-check(P.portalPickup(board[2].pid) === false, 'pickup 3 refused (limit)');
-check(G.portalPicksLeft === 0, 'picks exhausted');
-const added = G.teams[G.tid].rost.filter(p => p.name === p1name);
-check(added.length === 1 && added[0].transfer === true && isNum(added[0].ovr),
-  'pickup lands on user roster with valid ratings');
-const fromCount = [pick1, pick2].filter(e => e.fromTid === p1from).length;
-check(G.teams[p1from].rost.length === beforeLen - fromCount, 'pickup removed from old roster');
+const ch1 = P.portalChance(pick1);
+check(ch1.pct >= 1 && ch1.pct <= 99 && ch1.cost > 0 && ch1.suitors.length >= 3,
+  'pitch shows sane % chance, NIL cost, and suitors', 'pct=' + ch1.pct + ' cost=' + ch1.cost);
+check(P.portalPitch(pick1.pid) === true, 'pitch 1 executes (win or lose)');
+check(P.portalPitch(pick2.pid) === true, 'pitch 2 executes (win or lose)');
+check(P.portalPitch(board[2].pid) === false, 'pitch 3 refused (limit)');
+check(G.portalPicksLeft === 0, 'pitches exhausted');
+check(!G.portalEntrants.some(e => e.pid === pick1.pid), 'pitched entrant leaves the pool');
+const onUser = G.teams[G.tid].rost.some(p => p.name === p1name);
+const onCpu = G.teams.some(tm => tm.id !== G.tid && tm.rost.some(p => p.name === p1name));
+check(onUser || onCpu, 'pitched entrant landed on the user or a CPU roster');
+check(G.teams[p1from].rost.length === beforeLen - 1, 'pitched entrant removed from old roster');
+// NIL: charged on pitch, refunded on loss — net is 0 or the pitch cost
+const c1 = P.portalCost(pick1), c2 = P.portalCost(pick2);
+check(G.pts <= 500 && G.pts >= 500 - c1 - c2 && Number.isFinite(G.pts),
+  'NIL accounting sane after two pitches', 'pts=' + G.pts);
 
 console.log('── R9: portal → recruiting via doPlay router ──');
 S.doPlay('sim');
@@ -214,9 +222,9 @@ G.teams.forEach(tm => {
   if (tm.rost.length > 15) badRoster++;
 });
 check(shortRosters === 0 && badRoster === 0, 'all rosters 10–15 players', 'short=' + shortRosters + ' ' + shortNames.join(',') + ' over=' + badRoster);
-// R9: CPU portal pickups fill gaps BEFORE walk-ons — deterministic unit test
+// R9: global suitor resolution — deterministic unit test
 // (e2e signee volume varies; test the mechanism directly)
-console.log('── R9: cpuPortalFill unit test ──');
+console.log('── R9: resolvePortalCPU unit test ──');
 const needy = G.teams[3];
 needy.rost = needy.rost.filter(p => p.pos !== 'PG').slice(0, 7); // gap, no PGs
 const donor = G.teams[5];
@@ -230,18 +238,18 @@ entDefs.forEach((d, i) => {
   G.portalEntrants.push({ pid: 9000 + i, name: dp.name, pos: d.pos, ovr: d.ovr, pot: d.ovr + 4,
     cls: dp.cls, fromTid: donor.id, fromName: donor.name, mins: dp.mins,
     sht: d.ovr, fin: d.ovr, def: d.ovr, reb: d.ovr, ply: d.ovr,
-    reason: 'Playing time', pickedBy: -1 });
+    reason: 'Playing time', pickedBy: -1, homeState: 'CA',
+    suitors: [{ tid: needy.id, name: needy.name }] });
 });
 const needyBefore = needy.rost.length, donorBefore = donor.rost.length;
-P.cpuPortalFill(needy);
+const touched = P.resolvePortalCPU();
 const took = needy.rost.length - needyBefore;
-check(took === 3, 'cpuPortalFill takes up to 3 to fill toward 10', 'took=' + took);
+check(took === 3, 'resolvePortalCPU: needy team takes up to 3 (cap)', 'took=' + took);
 const newGuys = needy.rost.slice(needyBefore);
 check(newGuys.every(p => p.transfer === true && isNum(p.ovr) && CLSA.indexOf(p.cls) >= 0),
   'portal pickups flagged transfer, valid ovr/cls');
-check(newGuys.some(p => p.pos === 'PG'), 'scarce position (PG) preferred over higher-ovr Cs');
-check(donor.rost.length === donorBefore - 3, 'picked entrants removed from old roster');
-check(G.portalEntrants.length === 1, 'entrant pool shrinks as teams pick');
+check(donor.rost.length === donorBefore - 3, 'claimed entrants removed from old roster');
+check(G.portalEntrants.length === 1, 'unwanted entrant stays in pool when winner is capped');
 P.clearPortalState();
 check((G.portalEntrants || []).length === 0, 'portal state cleared after offseason');
 // NaN sweep

@@ -964,15 +964,21 @@ export function doOffseason() {
         _np.s = freshS(); _np.cls = 'FR'; _np.mins = 0;
         tm.rost.push(_np);
       });
-      // R9: CPU portal pickups fill roster gaps BEFORE walk-ons
-      if (window._cpuPortalFill && window._cpuPortalFill(tm)) _userTouchedByPortal = true;
-      while (tm.rost.length < 10) {
-        var np2 = genPlayer(tm.baseOvr, POS[ri(0, 4)], 'FR');
-        np2.s = freshS();
-        tm.rost.push(np2);
-      }
-      fixMins(tm.rost);
+      // R9: portal pickups resolve globally AFTER all CPU rosters are rebuilt
     }
+  });
+  // Every remaining entrant resolves through its suitor field in one global
+  // pass (user pitches resolved immediately at pitch time). Teams only take
+  // transfers they need; unclaimed entrants stay on their old rosters.
+  if (window._resolvePortalCPU && window._resolvePortalCPU()) _userTouchedByPortal = true;
+  G.teams.forEach(function(tm) {
+    if (tm.id === G.tid) return;
+    while (tm.rost.length < 10) {
+      var np2 = genPlayer(tm.baseOvr, POS[ri(0, 4)], 'FR');
+      np2.s = freshS();
+      tm.rost.push(np2);
+    }
+    fixMins(tm.rost);
   });
   if (_userTouchedByPortal) fixMins(G.teams[G.tid].rost);
   // R9 repair: portal poaching may have shrunk already-processed CPU rosters — refill them
