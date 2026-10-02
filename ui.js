@@ -370,6 +370,13 @@ export function teamAbbr(name) {
 
 export function updateAll() {
   if (!G.teams.length) return;
+
+  // Reveal the app shell on first render. #app starts display:none in CSS and
+  // the setup/continue paths hide the wizard without ever showing it —
+  // without this the game renders into a hidden shell (white screen).
+  var _app = ge('app');
+  if (_app && _app.style.display !== 'block') _app.style.display = 'block';
+
   var t = G.teams[G.tid];
 
   var rank = userRank();
