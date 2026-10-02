@@ -7,7 +7,7 @@ import { getTOvr } from './utils.js';
 import { RECRUIT_STATE_POOL, calcSchoolPrestige, COACH_FN, COACH_LN } from './constants.js';
 
 // ── Current save version — bump this when adding new fields ──
-var SAVE_VERSION = 6;
+var SAVE_VERSION = 7;
 var SAVE_KEY = 'hoops_os_v3';
 
 // ── Main Game State ──
@@ -16,7 +16,7 @@ export const G = {
   momentum: { tid: -1, pts: 0 },
   phase: 'reg', difficulty: 'normal',
   teams: [], recruits: [], bracket: [], confTourneys: {},
-  confTitles: 0, championships: 0,
+  confTitles: 0, championships: 0, prestige: 3,
   logs: [], history: [], leagueChamps: [], simInterval: null,
   // Recruiting
   recruitPhase: 0, recruitingBudget: 0, recruitingSpent: 0,
@@ -147,6 +147,15 @@ var MIGRATIONS = {
     if (!s.buffs) s.buffs = [];
     if (typeof s.nextHomeBonus !== 'number') s.nextHomeBonus = 0;
     return s;
+  },
+  // v6→v7: Persist coach prestige (S9) — derive from user's school prestige like a new game does
+  7: function(s) {
+    if (typeof s.prestige !== 'number') {
+      var ut = s.teams && s.teams[s.tid];
+      var sp = (ut && ut.schoolPrestige) || 50;
+      s.prestige = Math.max(1, Math.round(sp / 20));
+    }
+    return s;
   }
 };
 
@@ -167,13 +176,88 @@ function runMigrations(s) {
 //  SAVE
 // ═══════════════════════════════════════════════════════════
 
+// ── S10: saveState is internally debounced (trailing ~1s) so rapid successive
+// calls (advanceWeek, sim ticks) batch into a single write. saveStateNow()
+// performs an immediate checkpoint write. loadState()/getRawSave() flush any
+// pending debounced save first, so a read always sees the latest state.
+var _saveTimer = null;
+
 export function saveState() {
+  if (_saveTimer) clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(function() {
+    _saveTimer = null;
+    _writeSave();
+  }, 1000);
+  // Don't hold the node event loop open for the trailing write alone
+  if (_saveTimer && typeof _saveTimer.unref === 'function') _saveTimer.unref();
+}
+
+export function saveStateNow() {
+  if (_saveTimer) { clearTimeout(_saveTimer); _saveTimer = null; }
+  _writeSave();
+}
+
+function _flushPendingSave() {
+  if (_saveTimer) saveStateNow();
+}
+
+// ── S10: slim serializers. bracket/confTourneys embed full team objects
+// (with 13-player rosters) — serialize them as team IDs and rehydrate on load.
+// Recruits persist fully while unsigned, but finalized (signed) recruits only
+// keep outcome data; transient UI caches (_schools) are never persisted.
+function _slimBracket(bracket) {
+  return (bracket || []).map(function(b) {
+    var t = b.team;
+    return {
+      team: (t === null || t === undefined) ? null : (typeof t === 'number' ? t : t.id),
+      seed: b.seed, active: !!b.active, score: b.score, won: !!b.won
+    };
+  });
+}
+
+function _slimConfTourneys(cts) {
+  var out = {};
+  Object.keys(cts || {}).forEach(function(conf) {
+    var ct = cts[conf];
+    var idOf = function(t) { return (t === null || t === undefined) ? null : (typeof t === 'number' ? t : t.id); };
+    out[conf] = {
+      seeds: (ct.seeds || []).map(idOf),
+      rounds: (ct.rounds || []).map(function(rd) {
+        return rd.map(function(m) {
+          return { t1: idOf(m.t1), t2: idOf(m.t2), s1: m.s1, s2: m.s2, winner: idOf(m.winner) };
+        });
+      }),
+      done: !!ct.done,
+      champ: idOf(ct.champ)
+    };
+  });
+  return out;
+}
+
+function _slimRecruits(recruits) {
+  return (recruits || []).map(function(r) {
+    var slim = {};
+    Object.keys(r).forEach(function(k) {
+      if (k === '_schools' || k === '_schoolsPhase') return; // transient UI cache
+      slim[k] = r[k];
+    });
+    if (r.signed >= 0) {
+      // Finalized recruit: recruiting is over, drop per-school bidding state.
+      // (interest is kept — calcUserBid reads it unguarded.)
+      delete slim.rivals;
+      delete slim.points;
+    }
+    return slim;
+  });
+}
+
+function _writeSave() {
   try {
     var lean = {
       _saveVersion: SAVE_VERSION,
       tid:G.tid,yr:G.yr,gi:G.gi,wk:G.wk,pts:G.pts,
       phase:G.phase,difficulty:G.difficulty,
-      confTitles:G.confTitles,championships:G.championships,
+      confTitles:G.confTitles,championships:G.championships,prestige:G.prestige,
       logs:G.logs.slice(0,30),history:G.history||[],leagueChamps:G.leagueChamps||[],
       recruitPhase:G.recruitPhase,recruitingBudget:G.recruitingBudget,
       recruitingSpent:G.recruitingSpent,recruitTargets:G.recruitTargets||[],
@@ -192,7 +276,9 @@ export function saveState() {
         });}
         return b;
       }),
-      recruits:G.recruits,bracket:G.bracket,confTourneys:G.confTourneys,
+      recruits:_slimRecruits(G.recruits),
+      bracket:_slimBracket(G.bracket),
+      confTourneys:_slimConfTourneys(G.confTourneys),
       injuries:G.injuries||[],buffs:G.buffs||[],nextHomeBonus:G.nextHomeBonus||0
     };
     var str=JSON.stringify(lean);
@@ -205,8 +291,43 @@ export function saveState() {
 //  LOAD (with automatic migration)
 // ═══════════════════════════════════════════════════════════
 
+// ── S10: rehydrate slimmed tournament data. Team refs may already be full
+// objects (legacy saves) or team ids (v7+) — accept both.
+function _teamRef(x) {
+  if (x === null || x === undefined) return null;
+  if (typeof x === 'number') return G.teams[x] || null;
+  // Legacy full team object: re-resolve to the live team by id
+  if (typeof x.id === 'number' && G.teams[x.id]) return G.teams[x.id];
+  return x;
+}
+
+function _fattenBracket(slim) {
+  return (slim || []).map(function(b) {
+    return { team: _teamRef(b.team), seed: b.seed, active: !!b.active, score: b.score, won: !!b.won };
+  });
+}
+
+function _fattenConfTourneys(slim) {
+  var out = {};
+  Object.keys(slim || {}).forEach(function(conf) {
+    var ct = slim[conf];
+    out[conf] = {
+      seeds: (ct.seeds || []).map(_teamRef),
+      rounds: (ct.rounds || []).map(function(rd) {
+        return rd.map(function(m) {
+          return { t1: _teamRef(m.t1), t2: _teamRef(m.t2), s1: m.s1, s2: m.s2, winner: _teamRef(m.winner) };
+        });
+      }),
+      done: !!ct.done,
+      champ: _teamRef(ct.champ)
+    };
+  });
+  return out;
+}
+
 export function loadState() {
   try {
+    _flushPendingSave();
     var raw=localStorage.getItem(SAVE_KEY);if(!raw)return false;
     var s=JSON.parse(raw);
 
@@ -225,8 +346,15 @@ export function loadState() {
     G.phase=s.phase;G.difficulty=s.difficulty||'normal';
     G.confTitles=s.confTitles||0;G.championships=s.championships||0;
     G.logs=s.logs||[];G.history=s.history||[];G.leagueChamps=s.leagueChamps||[];
-    G.bracket=s.bracket||[];G.confTourneys=s.confTourneys||{};
     G.recruits=s.recruits||[];
+    // S9: restore persisted prestige (v7+); older saves get the v7 migration,
+    // and anything else falls back to the new-game derivation
+    if (typeof s.prestige === 'number') {
+      G.prestige = s.prestige;
+    } else {
+      var _ut = G.teams[G.tid || s.tid];
+      G.prestige = _ut ? Math.max(1, Math.round(((_ut.schoolPrestige) || 50) / 20)) : 3;
+    }
     G.recruitPhase=s.recruitPhase||0;G.recruitingBudget=s.recruitingBudget||0;
     G.recruitingSpent=s.recruitingSpent||0;
     G.recruitTargets=s.recruitTargets||[];
@@ -267,14 +395,21 @@ export function loadState() {
         });
       }
     });}
+    // S10: rehydrate slimmed tournament data (team IDs → team objects)
+    G.bracket=_fattenBracket(s.bracket);
+    G.confTourneys=_fattenConfTourneys(s.confTourneys);
     console.log('[Load] v'+(s._saveVersion||1)+' Season '+G.yr+' gi='+G.gi);
     return true;
   }catch(e){console.error('Load failed',e);return false;}
 }
 
-export function deleteSave(){localStorage.removeItem(SAVE_KEY);}
+export function deleteSave(){
+  if (_saveTimer) { clearTimeout(_saveTimer); _saveTimer = null; }
+  localStorage.removeItem(SAVE_KEY);
+}
 export function hasSave(){return!!localStorage.getItem(SAVE_KEY);}
 export function getRawSave(){
+  _flushPendingSave();
   var r=localStorage.getItem(SAVE_KEY);if(!r)return null;
   try{return JSON.parse(r);}catch(e){return null;}
 }

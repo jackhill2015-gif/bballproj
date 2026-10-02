@@ -49,6 +49,19 @@ export function loadAndPlay() {
   buildUniverse();
   var loaded = loadState();
   if (loaded) {
+    // S9: prestige must survive the continue path — default it if missing/NaN
+    if (typeof G.prestige !== 'number' || isNaN(G.prestige)) {
+      var _pt = G.teams[G.tid];
+      G.prestige = Math.max(1, Math.round(((_pt && _pt.schoolPrestige) || 50) / 20));
+    }
+    // R4: a fired coach can never resume at the old school — bounce a stale
+    // save (fired, but past the carousel without a new job) back to the carousel
+    var _ch = (G.coach && G.coach.history && G.coach.history.length) ? G.coach.history[G.coach.history.length - 1] : null;
+    if (_ch && _ch.action === 'Fired' &&
+        (G.offseasonStep === 'turnover' || G.offseasonStep === 'portal' ||
+         G.offseasonStep === 'recruiting' || G.offseasonStep === 'skillpoints')) {
+      G.offseasonStep = 'carousel';
+    }
     addLog('ev', G.gi, 'Dynasty restored. Season ' + G.yr + '.');
     updateAll();
   }

@@ -131,10 +131,20 @@ export function buildSchedules() {
           }
         }
         if (!found) {
-          // Force fill — pick any opponent even if they already have a game this week
+          // Force fill — pick any opponent and write BOTH sides mutually.
+          // The displaced opponent's old week-w game is voided (bye week) so
+          // no one-sided entry survives to generate phantom results.
           var forceOpp = opponents[oppIdx % opponents.length];
           var home2 = gameCount % 2 === 0;
+          var displaced = G.teams[forceOpp].sched[w];
+          if (displaced && displaced.opp !== undefined && displaced.opp !== teamId) {
+            var orphan = G.teams[displaced.opp];
+            if (orphan && orphan.sched[w] && orphan.sched[w].opp === forceOpp) {
+              orphan.sched[w] = null;
+            }
+          }
           G.teams[teamId].sched[w] = { opp: forceOpp, home: home2, conf: true, played: false, uScore: 0, oScore: 0 };
+          G.teams[forceOpp].sched[w] = { opp: teamId, home: !home2, conf: true, played: false, uScore: 0, oScore: 0 };
           gameCount++;
           oppIdx++;
         }
@@ -196,11 +206,21 @@ export function setupUserOOC() {
       assigned++;
       return;
     }
-    // If no shared free week, find any free user week and force it
+    // If no shared free week, take a free user week and displace the
+    // opponent's existing game (their old opponent gets a bye) so the new
+    // game is still written on BOTH sides. Never create a one-sided game.
     for (var w2 = 0; w2 < 10; w2++) {
       if (!G.teams[tid].sched[w2]) {
         var home2 = assigned % 2 === 0;
+        var oppOld = G.teams[oppId].sched[w2];
+        if (oppOld && oppOld.opp !== undefined && oppOld.opp !== tid) {
+          var orphan2 = G.teams[oppOld.opp];
+          if (orphan2 && orphan2.sched[w2] && orphan2.sched[w2].opp === oppId) {
+            orphan2.sched[w2] = null;
+          }
+        }
         G.teams[tid].sched[w2] = { opp: oppId, home: home2, conf: false, played: false, uScore: 0, oScore: 0 };
+        G.teams[oppId].sched[w2] = { opp: tid, home: !home2, conf: false, played: false, uScore: 0, oScore: 0 };
         assigned++;
         return;
       }
@@ -216,8 +236,40 @@ export function getAutoOOC() {
 
 export function swapOOC(slot, newTeamId) {
   if (slot < 0 || slot > 9) return;
-  G.teams[G.tid].sched[slot] = {
-    opp: newTeamId, home: slot % 2 === 0,
+  var tid = G.tid;
+  var newOpp = G.teams[newTeamId];
+  if (!newOpp || newTeamId === tid) return;
+  var oldEntry = G.teams[tid].sched[slot];
+  var oldOppId = oldEntry ? oldEntry.opp : null;
+
+  // 1. Orphan handling: the previous opponent's mirrored entry becomes a bye
+  if (oldOppId !== null && oldOppId !== undefined && oldOppId !== newTeamId) {
+    var oldOpp = G.teams[oldOppId];
+    if (oldOpp && oldOpp.sched[slot] && oldOpp.sched[slot].opp === tid) {
+      oldOpp.sched[slot] = null;
+    }
+  }
+
+  // 2. If the new opponent already had a game this week, void it (their old
+  //    opponent gets a bye) so we don't orphan a third team
+  if (newOpp.sched[slot]) {
+    var displacedId = newOpp.sched[slot].opp;
+    if (displacedId !== undefined && displacedId !== null && displacedId !== tid) {
+      var displaced = G.teams[displacedId];
+      if (displaced && displaced.sched[slot] && displaced.sched[slot].opp === newTeamId) {
+        displaced.sched[slot] = null;
+      }
+    }
+  }
+
+  // 3. Write both sides of the new matchup
+  var home = slot % 2 === 0;
+  G.teams[tid].sched[slot] = {
+    opp: newTeamId, home: home,
+    conf: false, played: false, uScore: 0, oScore: 0
+  };
+  newOpp.sched[slot] = {
+    opp: tid, home: !home,
     conf: false, played: false, uScore: 0, oScore: 0
   };
   saveState();
@@ -262,7 +314,7 @@ export function genRecruits() {
   G.recruits.forEach(function(r) {
     var rivalCount = ri(3, 5);
     // Higher-star recruits attract higher-ranked schools
-    var poolSize = r.stars >= 5 ? 25 : r.stars >= 4 ? 50 : r.stars >= 3 ? 100 : r.stars >= 2 ? 200 : 332;
+    var poolSize = r.stars >= 5 ? 25 : r.stars >= 4 ? 50 : r.stars >= 3 ? 100 : r.stars >= 2 ? 200 : G.teams.length;
     var pool = ranked.slice(0, poolSize).filter(function(t) { return t.id !== G.tid; });
     // Shuffle and pick
     for (var j = pool.length - 1; j > 0; j--) {
@@ -353,6 +405,14 @@ export function recordResult() {
   game.oScore = oScore;
   var won = uScore > oScore;
   var t = G.teams[G.tid], opp = uHome ? LS.tA : LS.tH;
+  // S1: mirror the result onto the OPPONENT's schedule entry so their
+  // played-games count stays in sync with wins+losses
+  var oppEntry = opp.sched[G.gi];
+  if (oppEntry && oppEntry.opp === G.tid) {
+    oppEntry.played = true;
+    oppEntry.uScore = oScore;
+    oppEntry.oScore = uScore;
+  }
   if (won) {
     t.wins++; opp.loss++; opp.pts -= 15;
     if (game.conf) { t.cWins++; opp.cLoss++; }
@@ -483,6 +543,8 @@ export function doPlay(mode) {
       if (window.stayAtSchool) window.stayAtSchool();
     } else if (G.offseasonStep === 'turnover') {
       if (window.proceedToRecruiting) window.proceedToRecruiting();
+    } else if (G.offseasonStep === 'portal') {
+      if (window.advanceFromPortal) window.advanceFromPortal();
     } else if (G.recruitPhase < 3) {
       if (window.advanceRecruitPhase) window.advanceRecruitPhase();
     } else {
@@ -577,19 +639,68 @@ export function autoSimNext() {
 //  END OF SEASON
 // ═══════════════════════════════════════════════════════════
 
+// Team refs may be full objects (live) or ids (slimmed save) — resolve either
+function teamIdOf(ref) {
+  if (ref === null || ref === undefined) return null;
+  return typeof ref === 'number' ? ref : ref.id;
+}
+
+function userWonNatChamp() {
+  if (!G.bracket || !G.bracket.length) return false;
+  var still = G.bracket.filter(function(b) { return b.active; });
+  return still.length === 1 && teamIdOf(still[0].team) === G.tid;
+}
+
+// ── S8: wire the skill-point achievement flags from tournament outcomes ──
+// tournament.js records G.seasonAchievements.tourneyFinish at NCAA elimination;
+// this derives every flag that endSeason's skill-point calc reads (conf title,
+// NCAA appearance, Sweet 16 / Final Four / title game / championship) from the
+// conference tourneys + NCAA bracket, so the points are actually winnable.
+export function wireSeasonAchievements() {
+  var sa = G.seasonAchievements || (G.seasonAchievements = {});
+  var tid = G.tid;
+  var t = G.teams[tid];
+
+  // Conference title: user won their own conference tournament
+  if (!sa.confTitleThisYear && G.confTourneys && t) {
+    var uct = G.confTourneys[t.conf];
+    if (uct && uct.done && teamIdOf(uct.champ) === tid) sa.confTitleThisYear = true;
+  }
+
+  // NCAA appearance + progress
+  var inField = false;
+  if (G.bracket && G.bracket.length) {
+    inField = G.bracket.some(function(b) { return teamIdOf(b.team) === tid; });
+  }
+  if (inField) sa.madeNCAA = true;
+
+  if (userWonNatChamp()) {
+    sa.madeNCAA = true; sa.sweet16 = true; sa.finalFour = true;
+    sa.champGame = true; sa.natChamp = true;
+    // The champion is never "eliminated", so record the finish for history
+    if (!sa.tourneyFinish) sa.tourneyFinish = 'CHAMP';
+  } else if (sa.tourneyFinish) {
+    var tf = sa.tourneyFinish;
+    if (tf === 'Sweet 16' || tf === 'Elite Eight' || tf === 'Final Four' || tf === 'Championship Game') sa.sweet16 = true;
+    if (tf === 'Final Four' || tf === 'Championship Game') sa.finalFour = true;
+    if (tf === 'Championship Game') sa.champGame = true;
+  }
+  return sa;
+}
+
 export function recordSeasonHistory(source) {
   if (!G.history) G.history = [];
   var t = G.teams[G.tid];
   var sorted = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; });
   var rank = sorted.findIndex(function(x) { return x.id === G.tid; }) + 1;
+  // S7: trust the recorded tournament finish (set at NCAA elimination in
+  // tournament.js, 'CHAMP' wired for the champion). The old bracket-count
+  // heuristic always resolved to "Runner-Up" for non-champions.
+  var sa = G.seasonAchievements || {};
+  var inField = G.bracket && G.bracket.some(function(b) { return teamIdOf(b.team) === G.tid; });
   var tf = source === 'conf_elim' ? 'Conf Tourney' :
-    G.championships > 0 ? 'CHAMP' :
-    G.bracket && G.bracket.filter(function(b) { return b.active; }).length <= 2 ? 'Runner-Up' :
-    G.bracket && G.bracket.filter(function(b) { return b.active; }).length <= 4 ? 'Final Four' :
-    G.bracket && G.bracket.filter(function(b) { return b.active; }).length <= 8 ? 'Elite Eight' :
-    G.bracket && G.bracket.filter(function(b) { return b.active; }).length <= 16 ? 'Sweet 16' :
-    G.bracket && G.bracket.filter(function(b) { return b.active; }).length <= 32 ? 'Round of 32' :
-    rank <= 64 ? 'Round of 64' : 'Did Not Qualify';
+    sa.tourneyFinish ? sa.tourneyFinish :
+    inField ? 'Round of 64' : 'Did Not Qualify';
   // Don't duplicate
   if (G.history.find(function(h) { return h.year === G.yr; })) return;
   G.history.push({
@@ -601,6 +712,7 @@ export function recordSeasonHistory(source) {
 }
 
 export function endSeason() {
+  wireSeasonAchievements();
   var still = G.bracket.filter(function(b) { return b.active; });
   if (still.length === 1) {
     if (!G.leagueChamps) G.leagueChamps = [];
@@ -751,6 +863,7 @@ export function beginOffseason() {
   G.offseasonStep = 'skillpoints';
   G.recruitPhase = 0;
   G.recruitTargets = [];
+  G.portalEntrants = []; G.portalPicksLeft = 0;
   saveState(); updateAll(); navTo('offseason');
 }
 
@@ -782,8 +895,11 @@ export function doOffseason() {
   // Remove seniors
   t.rost = t.rost.filter(function(p) { return p.cls !== 'SR'; });
 
-  // Add commits
-  commits.forEach(function(r) {
+  // Add commits (R6: class-size cap enforced)
+  var CLASS_SIZE_CAP = 8;
+  commits.sort(function(a, b) { return b.ovr - a.ovr; });
+  var _croom = Math.max(0, 15 - t.rost.length);
+  commits.slice(0, Math.min(CLASS_SIZE_CAP, _croom)).forEach(function(r) {
     var np = JSON.parse(JSON.stringify(r));
     np.s = freshS(); np.cls = 'FR';
     t.rost.push(np);
@@ -812,6 +928,7 @@ export function doOffseason() {
   G.pts += _osBonus;
 
   // Reset all teams for new season
+  var _userTouchedByPortal = false;
   G.teams.forEach(function(tm) {
     tm.wins = 0; tm.loss = 0; tm.cWins = 0; tm.cLoss = 0; tm.sched = [];
     tm.ts = { pts: 0, opp: 0, fgm: 0, fga: 0, games: 0 }; tm.streak = 0;
@@ -823,6 +940,17 @@ export function doOffseason() {
         if (i < 3) p.cls = CLS[i + 1];
         p.s = freshS();
       });
+      // R2: CPU-signed recruits join their rosters (R6: class-size capped)
+      var _sig = G.recruits.filter(function(r) { return r.signed === tm.id && r.status === 'gone'; });
+      _sig.sort(function(a, b) { return b.ovr - a.ovr; });
+      var _sroom = Math.max(0, 15 - tm.rost.length);
+      _sig.slice(0, Math.min(CLASS_SIZE_CAP, _sroom)).forEach(function(r) {
+        var _np = JSON.parse(JSON.stringify(r));
+        _np.s = freshS(); _np.cls = 'FR'; _np.mins = 0;
+        tm.rost.push(_np);
+      });
+      // R9: CPU portal pickups fill roster gaps BEFORE walk-ons
+      if (window._cpuPortalFill && window._cpuPortalFill(tm)) _userTouchedByPortal = true;
       while (tm.rost.length < 10) {
         var np2 = genPlayer(tm.baseOvr, POS[ri(0, 4)], 'FR');
         np2.s = freshS();
@@ -831,6 +959,18 @@ export function doOffseason() {
       fixMins(tm.rost);
     }
   });
+  if (_userTouchedByPortal) fixMins(G.teams[G.tid].rost);
+  // R9 repair: portal poaching may have shrunk already-processed CPU rosters — refill them
+  G.teams.forEach(function(tm) {
+    if (tm.id === G.tid || tm.rost.length >= 10) return;
+    while (tm.rost.length < 10) {
+      var _w = genPlayer(tm.baseOvr, POS[ri(0, 4)], 'FR');
+      _w.s = freshS();
+      tm.rost.push(_w);
+    }
+    fixMins(tm.rost);
+  });
+  if (window._clearPortalState) window._clearPortalState();
 
   buildSchedules();
   // Auto-generate user's OOC opponents for new season

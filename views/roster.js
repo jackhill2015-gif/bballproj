@@ -254,7 +254,8 @@ export function updateMinsSlider(input) {
     }
     val = oldVal + (delta - needed);
   } else {
-    var freed = -delta;
+    var origFreed = -delta;
+    var freed = origFreed;
     // Give to same-pos (highest OVR first)
     samePos.sort(function(a, b) { return b.ovr - a.ovr; });
     samePos.forEach(function(sp) {
@@ -270,6 +271,8 @@ export function updateMinsSlider(input) {
         pl.mins += give; freed -= give;
       });
     }
+    // R8: only shrink by what could actually be redistributed — never silently drop minutes
+    val = oldVal - (origFreed - freed);
   }
 
   p.mins = val;

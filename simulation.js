@@ -147,6 +147,10 @@ export function updateMomentum(scoringTeamId, pts) {
 // Play types, defensive schemes, clutch, fouls, steals, blocks.
 // Returns: { pts, time, pbp, big, type, run }
 export function simPoss(offT, defT) {
+  // Timeout boost (UI live-sim button): +5 make% on the user's team's next
+  // offensive possession only, then auto-cleared. No-op in CPU-vs-CPU games.
+  var toBoost = false;
+  if (offT.id === G.tid && G.timeoutBoost) { toBoost = true; G.timeoutBoost = false; }
   var time = ri(12, 22);
   var pts = 0;
   var pbp = '';
@@ -213,6 +217,7 @@ export function simPoss(offT, defT) {
     var made = 0;
     for (var f = 0; f < 2; f++) { if (ri(1, 100) <= ftPct) made++; }
     off.s.pts += made;
+    off.s.fta = (off.s.fta || 0) + 2; off.s.ftm = (off.s.ftm || 0) + made;
     return { pts: made, time: time, pbp: '<span class="p-foul">Foul on ' + def.name + '. ' + off.name + ' to the line \u2014 ' + made + ' of 2.</span>', big: made === 2, type: 'foul', run: null };
   }
 
@@ -222,6 +227,7 @@ export function simPoss(offT, defT) {
   if (defScheme === 'zone') toChance -= 3;
   if (isClutch) toChance += 3;
   if (ri(1, 100) <= toChance) {
+    off.s.to = (off.s.to || 0) + 1;
     if (ri(1, 100) <= 62) {
       if (typeof def.s.stl !== 'number') def.s.stl = 0;
       def.s.stl++;
@@ -257,17 +263,20 @@ export function simPoss(offT, defT) {
   if (isClutch) makePct -= 4;
   makePct = Math.round(makePct * (1 - tiredness));
   makePct = clamp(makePct, 26, 78);
+  if (toBoost) makePct = clamp(makePct + 5, 26, 85); // timeout boost: +5 make%
 
   off.s.fga++;
+  if (isThree) off.s.tpa = (off.s.tpa || 0) + 1;
   if (ri(1, 100) <= makePct) {
     pts = isThree ? 3 : 2;
     off.s.fgm++; off.s.pts += pts;
+    if (isThree) off.s.tpm = (off.s.tpm || 0) + 1;
     if (ri(1, 100) <= assistPct) {
       var at = 0; var asst = getFloor(offT);
       while (asst === off && at < 4) { asst = getFloor(offT); at++; }
       if (asst !== off) asst.s.ast++;
     }
-    if (!isThree && ri(1, 100) <= 9) { pts += 1; off.s.pts++; big = true; }
+    if (!isThree && ri(1, 100) <= 9) { pts += 1; off.s.pts++; off.s.fta = (off.s.fta || 0) + 1; off.s.ftm = (off.s.ftm || 0) + 1; big = true; }
     var txt;
     if (isClutch && ri(1, 100) <= 40) txt = pick(COM.clutch, off.name);
     else if (playType === 'fastbreak' || (isRim && off.fin > 84)) txt = pick(COM.dunk, off.name, def.name);
@@ -277,7 +286,8 @@ export function simPoss(offT, defT) {
     return { pts: pts, time: time, pbp: '<span class="p-mk">' + txt + '</span>', big: big || playType === 'fastbreak', type: 'make', run: run };
   } else {
     if (ri(1, 100) <= 23) {
-      off.s.reb++; off.s.pts += 2; off.s.fgm++;
+      // M5 FIX: putback credits the FGA with the FGM (was inflating FG%).
+      off.s.reb++; off.s.oreb = (off.s.oreb || 0) + 1; off.s.pts += 2; off.s.fgm++; off.s.fga++;
       run = updateMomentum(offT.id !== undefined ? offT.id : -1, 2);
       return { pts: 2, time: time + 4, pbp: '<span class="p-mk">' + pick(COM.putback, off.name) + '</span>', big: false, type: 'make', run: run };
     }
@@ -293,9 +303,17 @@ export function simPoss(offT, defT) {
 export function simGame(home, away, userIsHome) {
   var hScore = 0, aScore = 0;
   var hOrig = [], aOrig = [];
-  var dm = DIFF_MOD[G.difficulty] || 0;
-  var userT = userIsHome ? home : away;
+  // M2 FIX: difficulty modifiers apply ONLY when the user's team is in the game.
+  // userIsHome is unreliable (tournament CPU-vs-CPU games pass true), so derive
+  // involvement from team ids vs G.tid.
+  var userInvolved = (home.id === G.tid) || (away.id === G.tid);
+  var userIsHomeActual = userInvolved && (home.id === G.tid);
+  var dm = userInvolved ? (DIFF_MOD[G.difficulty] || 0) : 0;
+  var userT = userIsHomeActual ? home : away;
   var cpuBoost = Math.round(-dm * 0.5);
+  // Timeout flag must never leak into CPU-vs-CPU games: drop it when the user
+  // isn't playing. (When the user IS playing it's consumed possession-by-possession.)
+  if (!userInvolved) G.timeoutBoost = false;
   home.rost.forEach(function(p, i) {
     hOrig[i] = { sht: p.sht, fin: p.fin, def: p.def };
     var mod = (userT === home) ? dm : cpuBoost;
@@ -306,26 +324,37 @@ export function simGame(home, away, userIsHome) {
     var mod = (userT === away) ? dm : cpuBoost;
     p.sht = clamp(p.sht + mod, 30, 99); p.fin = clamp(p.fin + mod, 30, 99); p.def = clamp(p.def + mod, 30, 99);
   });
+  // M8 FIX: wire the sellout-crowd event (events.js sets G.nextHomeBonus=3).
+  // Applies to the user's next home game only, consumed once.
   var homeBonus = 1;
+  if (userIsHomeActual && (G.nextHomeBonus || 0) > 0) {
+    homeBonus += G.nextHomeBonus;
+    G.nextHomeBonus = 0;
+  }
   var hStrat = getEngineStrat(home), aStrat = getEngineStrat(away);
   var paceMod = 0;
   if (hStrat === 'Pace & Space' || aStrat === 'Pace & Space') paceMod += 4;
   if (hStrat === 'Grit & Grind' && aStrat === 'Grit & Grind') paceMod -= 4;
   var possPerTeam = clamp(76 + paceMod + ri(-3, 3), 68, 84);
+  // M1 NOTE: simGame owns the single per-game GP increment for both teams.
+  // Callers must NOT increment GP again for the same game (season.js
+  // recordResult currently does for user games — that half is the S-team fix).
   home.rost.forEach(function(p) { if (p.mins > 0) p.s.gp++; });
   away.rost.forEach(function(p) { if (p.mins > 0) p.s.gp++; });
 
-  var fatigue = {}, playerFouls = {}, origMins = {};
+  // M7 FIX: key fatigue/fouls/minutes by player identity (Map on the player
+  // object), not by name — duplicate names used to scramble these.
+  var fatigue = new Map(), playerFouls = new Map(), origMins = new Map();
   home.rost.forEach(function(p) {
     if (p.mins > 0) {
-      fatigue[p.name] = 0; playerFouls[p.name] = 0; origMins[p.name] = p.mins;
+      fatigue.set(p, 0); playerFouls.set(p, 0); origMins.set(p, p.mins);
       if (typeof p.s.stl !== 'number') p.s.stl = 0;
       if (typeof p.s.blk !== 'number') p.s.blk = 0;
     }
   });
   away.rost.forEach(function(p) {
     if (p.mins > 0) {
-      fatigue[p.name] = 0; playerFouls[p.name] = 0; origMins[p.name] = p.mins;
+      fatigue.set(p, 0); playerFouls.set(p, 0); origMins.set(p, p.mins);
       if (typeof p.s.stl !== 'number') p.s.stl = 0;
       if (typeof p.s.blk !== 'number') p.s.blk = 0;
     }
@@ -336,14 +365,20 @@ export function simGame(home, away, userIsHome) {
 
   function runPoss(numPoss, offTeam, defTeam, isHomeOff) {
     var shotBonus = isHomeOff ? homeBonus : 0;
+    var offIsUser = (isHomeOff ? home : away).id === G.tid;
     for (var i = 0; i < numPoss; i++) {
+      // Timeout boost: the UI sets G.timeoutBoost=true; the user's team's next
+      // offensive possession gets +5 make%, then the flag auto-clears
+      // (consume-once). offIsUser is false in CPU-vs-CPU games, so it never fires there.
+      var toBoost = false;
+      if (offIsUser && G.timeoutBoost) { toBoost = true; G.timeoutBoost = false; }
       var isClutch = (i >= numPoss - 8);
       var off = getFloor(offTeam);
       var def = getFloor(defTeam);
-      fatigue[off.name] = (fatigue[off.name] || 0) + 1;
-      fatigue[def.name] = (fatigue[def.name] || 0) + 1;
+      fatigue.set(off, (fatigue.get(off) || 0) + 1);
+      fatigue.set(def, (fatigue.get(def) || 0) + 1);
       var defScheme = (defTeam.strat && defTeam.strat.def) ? defTeam.strat.def : 'man';
-      if (defScheme === 'press') fatigue[def.name] += 1;
+      if (defScheme === 'press') fatigue.set(def, (fatigue.get(def) || 0) + 1);
 
       var momMakeBonus = 0, momTOBonus = 0;
       var offMom = isHomeOff ? hMomentum : aMomentum;
@@ -358,12 +393,16 @@ export function simGame(home, away, userIsHome) {
       toChance += momTOBonus;
       toChance = clamp(toChance, 8, 30);
       if (ri(1, 100) <= toChance) {
+        off.s.to = (off.s.to || 0) + 1;
         if (ri(1, 100) <= 60) {
           if (typeof def.s.stl !== 'number') def.s.stl = 0;
           def.s.stl++;
         }
+        // M6 FIX: press-forced fastbreak points are credited to the defender who
+        // forced the turnover (FGA+FGM+PTS) — no more phantom points.
         if (defScheme === 'press' && ri(1, 100) <= 15) {
           if (isHomeOff) aScore += 2; else hScore += 2;
+          def.s.pts += 2; def.s.fgm++; def.s.fga++;
         }
         lastTransition = true;
         if (isHomeOff) { aMomentum++; hMomentum = 0; } else { hMomentum++; aMomentum = 0; }
@@ -419,27 +458,29 @@ export function simGame(home, away, userIsHome) {
       if (isClutch) foulChance += 4;
       foulChance = clamp(foulChance, 5, 22);
       if (ri(1, 100) <= foulChance) {
-        var dName = def.name;
-        playerFouls[dName] = (playerFouls[dName] || 0) + 1;
-        if (playerFouls[dName] >= 5) def.mins = 0;
+        var dFouls = (playerFouls.get(def) || 0) + 1;
+        playerFouls.set(def, dFouls);
+        if (dFouls >= 5) def.mins = 0;
         var ftPct = clamp(55 + Math.round(off.sht * 0.2), 65, 85);
-        var tiredness = Math.min((fatigue[off.name] || 0) / 80, 0.15);
+        var tiredness = Math.min((fatigue.get(off) || 0) / 80, 0.15);
         ftPct = Math.round(ftPct * (1 - tiredness * 0.5));
         ftPct = clamp(ftPct, 60, 90);
         for (var ft = 0; ft < 2; ft++) {
-          if (ri(1, 100) <= ftPct) { if (isHomeOff) hScore++; else aScore++; off.s.pts++; }
+          if (ri(1, 100) <= ftPct) { if (isHomeOff) hScore++; else aScore++; off.s.pts++; off.s.ftm = (off.s.ftm || 0) + 1; }
         }
+        off.s.fta = (off.s.fta || 0) + 2;
         if (isHomeOff) { aMomentum++; hMomentum = 0; } else { hMomentum++; aMomentum = 0; }
         continue;
       }
 
       if (ri(1, 100) <= 5) {
         var ftPct2 = clamp(55 + Math.round(off.sht * 0.2), 65, 85);
-        var tiredness2 = Math.min((fatigue[off.name] || 0) / 80, 0.15);
+        var tiredness2 = Math.min((fatigue.get(off) || 0) / 80, 0.15);
         ftPct2 = Math.round(ftPct2 * (1 - tiredness2 * 0.5));
         for (var ft2 = 0; ft2 < 2; ft2++) {
-          if (ri(1, 100) <= ftPct2) { if (isHomeOff) hScore++; else aScore++; off.s.pts++; }
+          if (ri(1, 100) <= ftPct2) { if (isHomeOff) hScore++; else aScore++; off.s.pts++; off.s.ftm = (off.s.ftm || 0) + 1; }
         }
+        off.s.fta = (off.s.fta || 0) + 2;
         if (isHomeOff) { aMomentum++; hMomentum = 0; } else { hMomentum++; aMomentum = 0; }
         continue;
       }
@@ -450,6 +491,7 @@ export function simGame(home, away, userIsHome) {
         if (ri(1, 100) <= blkChance) {
           if (typeof def.s.blk !== 'number') def.s.blk = 0;
           def.s.blk++; off.s.fga++;
+          if (isThree) off.s.tpa = (off.s.tpa || 0) + 1;
           if (isHomeOff) { aMomentum++; hMomentum = 0; } else { hMomentum++; aMomentum = 0; }
           continue;
         }
@@ -469,27 +511,30 @@ export function simGame(home, away, userIsHome) {
       }
       if (isClutch) makePct -= 3;
       makePct += momMakeBonus;
-      var tiredness3 = Math.min((fatigue[off.name] || 0) / 80, 0.15);
+      var tiredness3 = Math.min((fatigue.get(off) || 0) / 80, 0.15);
       makePct = Math.round(makePct * (1 - tiredness3));
       makePct = clamp(makePct, 25, 78);
+      if (toBoost) makePct = clamp(makePct + 5, 25, 85); // timeout boost: +5 make%
 
       off.s.fga++;
+      if (isThree) off.s.tpa = (off.s.tpa || 0) + 1;
       if (ri(1, 100) <= makePct) {
         var pts = isThree ? 3 : 2;
         if (isHomeOff) hScore += pts; else aScore += pts;
         off.s.pts += pts; off.s.fgm++;
+        if (isThree) off.s.tpm = (off.s.tpm || 0) + 1;
         if (ri(1, 100) <= assistPct) {
           var tries2 = 0;
           var asst = getFloor(offTeam);
           while (asst === off && tries2 < 5) { asst = getFloor(offTeam); tries2++; }
           if (asst !== off) asst.s.ast++;
         }
-        if (!isThree && ri(1, 100) <= 8) { if (isHomeOff) hScore++; else aScore++; off.s.pts++; }
+        if (!isThree && ri(1, 100) <= 8) { if (isHomeOff) hScore++; else aScore++; off.s.pts++; off.s.fta = (off.s.fta || 0) + 1; off.s.ftm = (off.s.ftm || 0) + 1; }
         if (isHomeOff) { hMomentum++; aMomentum = 0; } else { aMomentum++; hMomentum = 0; }
       } else {
         var oRebChance = 22;
         if (defScheme === 'zone') oRebChance += 5;
-        if (ri(1, 100) <= oRebChance) { var oReb = getFloor(offTeam); oReb.s.reb++; }
+        if (ri(1, 100) <= oRebChance) { var oReb = getFloor(offTeam); oReb.s.reb++; oReb.s.oreb = (oReb.s.oreb || 0) + 1; }
         else {
           var dReb = getFloor(defTeam); dReb.s.reb++; lastTransition = true;
           if (isHomeOff) { aMomentum++; hMomentum = 0; } else { hMomentum++; aMomentum = 0; }
@@ -500,20 +545,32 @@ export function simGame(home, away, userIsHome) {
 
   runPoss(possPerTeam, home, away, true);
   runPoss(possPerTeam, away, home, false);
-  if (G.coach) {
+  // M3 FIX: user coach bonuses apply ONLY when the user's team is playing —
+  // never in CPU-vs-CPU games.
+  if (G.coach && userInvolved) {
     var offBonus = Math.round((G.coach.off - 70) * 0.15);
     var defBonus = Math.round((G.coach.def - 70) * 0.15);
-    if (userIsHome) { hScore += offBonus; aScore -= defBonus; } else { aScore += offBonus; hScore -= defBonus; }
+    if (userIsHomeActual) { hScore += offBonus; aScore -= defBonus; } else { aScore += offBonus; hScore -= defBonus; }
   }
   var ot = 0;
   while (hScore === aScore && ot < 5) { ot++; runPoss(4, home, away, true); runPoss(4, away, home, false); }
-  if (hScore === aScore) hScore++;
+  // M6 FIX: no phantom OT tiebreak point — play extra possessions until the tie
+  // breaks. The credited fallback is a near-impossible safety net (and even it
+  // credits the point to a player rather than thin air).
+  var otx = 0;
+  while (hScore === aScore && otx < 10) { otx++; runPoss(1, home, away, true); runPoss(1, away, home, false); }
+  if (hScore === aScore) { hScore++; getFloor(home).s.pts++; }
   home.rost.forEach(function(p, i) { p.sht = hOrig[i].sht; p.fin = hOrig[i].fin; p.def = hOrig[i].def; });
   away.rost.forEach(function(p, i) { p.sht = aOrig[i].sht; p.fin = aOrig[i].fin; p.def = aOrig[i].def; });
-  home.rost.forEach(function(p) { if (origMins[p.name] !== undefined) p.mins = origMins[p.name]; });
-  away.rost.forEach(function(p) { if (origMins[p.name] !== undefined) p.mins = origMins[p.name]; });
+  home.rost.forEach(function(p) { if (origMins.has(p)) p.mins = origMins.get(p); });
+  away.rost.forEach(function(p) { if (origMins.has(p)) p.mins = origMins.get(p); });
   return { homeScore: hScore, awayScore: aScore };
 }
 
+// M9 NOTE: distributeStats is intentionally kept as a no-op for now.
+// Stats accumulate on player objects inside simGame, so it does nothing — but
+// season.js still imports it (line 12) and calls it (simCPUWeek). Deleting this
+// export before those call sites are removed would break module loading
+// entirely. S-team: remove the season.js import + calls first, then delete this.
 // distributeStats is no longer needed — kept as no-op for backward compat
 export function distributeStats(team, teamScore) {}

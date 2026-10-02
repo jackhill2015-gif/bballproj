@@ -69,6 +69,7 @@ export function startConfTourney() {
     G.confTourneys[conf] = {
       seeds: teams,
       rounds: [],
+      carry: [], // teams holding a bye into the next round
       done: false, champ: null
     };
     buildNextConfRound(conf);
@@ -82,12 +83,19 @@ export function startConfTourney() {
 function buildNextConfRound(conf) {
   var ct = G.confTourneys[conf];
   if (!ct || ct.done) return;
+  ct.carry = ct.carry || [];
   var survivors;
   if (ct.rounds.length === 0) {
     survivors = ct.seeds.slice();
   } else {
     var last = ct.rounds[ct.rounds.length - 1];
     survivors = last.map(function(m) { return m.winner; }).filter(Boolean);
+  }
+  // Fold in teams holding a bye — they advance without playing a game,
+  // so nobody is ever silently dropped when the count is odd.
+  if (ct.carry.length) {
+    survivors = ct.carry.concat(survivors);
+    ct.carry = [];
   }
   if (survivors.length <= 1) {
     ct.done = true;
@@ -104,9 +112,31 @@ function buildNextConfRound(conf) {
     }
     return;
   }
+  // Rank survivors by original tournament seed (ct.seeds is best-first)
+  var rank = {};
+  ct.seeds.forEach(function(t, i) { rank[t.id] = i; });
+  function seedRank(t) { return rank[t.id] === undefined ? 1e9 : rank[t.id]; }
+  var ranked = survivors.slice().sort(function(a, b) { return seedRank(a) - seedRank(b); });
+  // Byes: while the survivor count is odd, the best remaining seed
+  // advances automatically instead of dropping the last team.
+  while (survivors.length % 2 === 1) {
+    var byeTeam = ranked.shift();
+    var bi = survivors.findIndex(function(t) { return t.id === byeTeam.id; });
+    if (bi >= 0) survivors.splice(bi, 1);
+    ct.carry.push(byeTeam);
+  }
   var round = [];
-  for (var i = 0; i < survivors.length - 1; i += 2) {
-    round.push({ t1: survivors[i], t2: survivors[i + 1], s1: null, s2: null, winner: null });
+  if (ct.rounds.length === 0) {
+    // Opening round: proper seeding — 1vN, 2v(N-1), … (never #1 vs #2)
+    var n = ranked.length;
+    for (var i = 0; i < n / 2; i++) {
+      round.push({ t1: ranked[i], t2: ranked[n - 1 - i], s1: null, s2: null, winner: null });
+    }
+  } else {
+    // Later rounds: fixed bracket — winners meet in game order
+    for (var j = 0; j < survivors.length - 1; j += 2) {
+      round.push({ t1: survivors[j], t2: survivors[j + 1], s1: null, s2: null, winner: null });
+    }
   }
   ct.rounds.push(round);
 }
@@ -242,9 +272,27 @@ export function simConfRound(conf) {
   });
   buildNextConfRound(conf);
 }
-export function simConfBtn(el) {
-  var c = el.getAttribute('data-conf');
-  if (c) simConfFull(c);
+
+// ═══════════════════════════════════════════════════════════
+//  NCAA BRACKET MODEL (single source of truth)
+// ───────────────────────────────────────────────────────────
+// G.bracket is a flat 64-entry array in winner-advancement order:
+// region by region, each region stored as its 8 first-round games
+// [1v16, 8v9, 5v12, 4v13, 6v11, 3v14, 7v10, 2v15].
+// Adjacent entries ALWAYS play each other — in round 1 AND every later
+// round, because filtering to winners preserves order. `seed` is the
+// REGION seed (1-16). The sim (simNCAAround) and every display read this
+// same layout, so they cannot disagree with each other.
+// ═══════════════════════════════════════════════════════════
+var NCAA_REGIONS = ['East', 'West', 'South', 'Midwest'];
+var NCAA_FIRST_ROUND = [[1,16],[8,9],[5,12],[4,13],[6,11],[3,14],[7,10],[2,15]];
+
+function ncaaSeedEntry(region, seed) {
+  for (var i = 0; i < G.bracket.length; i++) {
+    var b = G.bracket[i];
+    if (b.region === region && b.seed === seed) return b;
+  }
+  return null;
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -309,19 +357,40 @@ export function buildNCAA() {
     inField[entry.team.id] = true;
   });
 
-  // Step 4: Seed by resume
+  // Step 4: Seed by resume → overall seeds 1..64, then deal them into
+  // 4 regions: overall seed i becomes region ((i-1)%4), region-seed
+  // floor((i-1)/4)+1. So the four #1 seeds are the top-4 overall teams,
+  // the four #2 seeds the next four, etc. (standard distribution —
+  // no more #1 playing #2 in round 1).
   field.sort(function(a, b) {
     var aResume = allTeams.find(function(e) { return e.team.id === a.id; });
     var bResume = allTeams.find(function(e) { return e.team.id === b.id; });
     return (bResume ? bResume.resume : 0) - (aResume ? aResume.resume : 0);
   });
-
-  G.bracket = field.slice(0, 64).map(function(t, i) {
-    return { team: t, seed: i + 1, active: true, score: null, won: false };
+  var overall = field.slice(0, 64);
+  var byRegion = [[], [], [], []];
+  overall.forEach(function(t, i) {
+    byRegion[i % 4][Math.floor(i / 4)] = t; // index = region seed - 1
   });
+
+  // Step 5: Lay out the bracket in winner-advancement order (see
+  // NCAA BRACKET MODEL above): region by region, each region stored as
+  // [1v16, 8v9, 5v12, 4v13, 6v11, 3v14, 7v10, 2v15].
+  G.bracket = [];
+  for (var r = 0; r < 4; r++) {
+    NCAA_FIRST_ROUND.forEach(function(pair) {
+      pair.forEach(function(s) {
+        G.bracket.push({ team: byRegion[r][s - 1], seed: s, region: r, active: true, score: null, won: false });
+      });
+    });
+  }
   G.phase = 'ncaa';
 
-  var userSeed = G.bracket.findIndex(function(b) { return b.team.id === G.tid; }) + 1;
+  var userEntry = null;
+  for (var bi = 0; bi < G.bracket.length; bi++) {
+    if (G.bracket[bi].team.id === G.tid) { userEntry = G.bracket[bi]; break; }
+  }
+  var userSeed = userEntry ? userEntry.seed : 0;
   if (userSeed > 0) {
     addLog('ev', G.gi, '<b>NCAA Tournament!</b> You are the #' + userSeed + ' seed.');
   } else {
@@ -337,24 +406,45 @@ export function showBracketReveal(userSeed) {
   rev.style.display = 'block';
   G._revealStep = 0; // Track which region we're revealing
 
+  // Bid split: every conference champ is an automatic bid, the rest are at-large
+  var autoCount = 0;
+  if (G.confTourneys) {
+    Object.keys(G.confTourneys).forEach(function(c) {
+      var cct = G.confTourneys[c];
+      if (cct && cct.champ) autoCount++;
+    });
+  }
+  var bidLine = autoCount + ' automatic bids, ' + (G.bracket.length - autoCount) + ' at-large bids';
+
   // User card
   if (userSeed > 0) {
     var uc = ge('br-user-card'); if (uc) uc.style.display = 'block';
     txt('br-user-team', G.teams[G.tid].name);
-    var seedDesc = userSeed <= 4 ? 'Top 4 seed! You could host.' :
-                   userSeed <= 8 ? 'Strong seed. Favorable draw.' :
-                   userSeed <= 12 ? 'Middle of the pack. Road gets tough.' :
+    var seedDesc = userSeed === 1 ? 'Top seed. The road runs through you.' :
+                   userSeed <= 4 ? 'Strong seed. Favorable draw.' :
+                   userSeed <= 8 ? 'Middle of the pack. Road gets tough.' :
                    'Low seed \u2014 the country loves an underdog.';
     txt('br-user-seed', '#' + userSeed + ' Seed \u2014 ' + seedDesc);
-    var idx = userSeed - 1;
-    var oppIdx = idx % 2 === 0 ? idx + 1 : idx - 1;
-    var opp = G.bracket[oppIdx];
-    var userRegion = Math.floor(idx / 16);
-    var regions = ['East', 'West', 'South', 'Midwest'];
-    txt('br-user-opp', opp ? regions[userRegion] + ' Region \u2014 First Round vs #' + opp.seed + ' ' + opp.team.name : '');
-    txt('br-seed-line', '32 automatic bids confirmed. 32 at-large bids decided.');
+    // Find the user's entry, then its real first-round opponent: the team
+    // holding the paired seed in the same region — the exact game the sim
+    // will play (see NCAA BRACKET MODEL above).
+    var userEntry = null;
+    for (var bi2 = 0; bi2 < G.bracket.length; bi2++) {
+      if (G.bracket[bi2].team.id === G.tid) { userEntry = G.bracket[bi2]; break; }
+    }
+    var opp = null, userRegionName = '';
+    if (userEntry) {
+      userRegionName = NCAA_REGIONS[userEntry.region];
+      for (var mi = 0; mi < NCAA_FIRST_ROUND.length; mi++) {
+        var pair = NCAA_FIRST_ROUND[mi];
+        if (pair[0] === userEntry.seed) opp = ncaaSeedEntry(userEntry.region, pair[1]);
+        else if (pair[1] === userEntry.seed) opp = ncaaSeedEntry(userEntry.region, pair[0]);
+      }
+    }
+    txt('br-user-opp', opp ? userRegionName + ' Region \u2014 First Round vs #' + opp.seed + ' ' + opp.team.name : '');
+    txt('br-seed-line', bidLine.charAt(0).toUpperCase() + bidLine.slice(1) + ' confirmed.');
   } else {
-    txt('br-seed-line', 'The field of 64 is set. Your program did not qualify.');
+    txt('br-seed-line', 'The field of 64 is set (' + bidLine + '). Your program did not qualify.');
     var uc2 = ge('br-user-card'); if (uc2) uc2.style.display = 'none';
   }
 
@@ -412,29 +502,24 @@ export function showBracketReveal(userSeed) {
 
 export function revealNextRegion() {
   var step = G._revealStep || 0;
-  var regions = ['East', 'West', 'South', 'Midwest'];
   var wrap = ge('br-bracket');
   var btn = ge('br-reveal-btn');
   if (!wrap || step >= 4) return;
 
-  // Build region card
-  var regionStart = step * 16;
-  var matchupSeeds = [[1,16],[8,9],[5,12],[4,13],[6,11],[3,14],[7,10],[2,15]];
-
+  // Build region card — read teams by (region, seed) from the same
+  // G.bracket layout the sim plays, so the reveal always matches the games.
   var col = document.createElement('div');
   col.style.cssText = 'background:var(--s1);border:1px solid var(--bdr);border-radius:8px;overflow:hidden;opacity:0;transition:opacity 0.6s;';
 
   var header = document.createElement('div');
   header.style.cssText = 'font-size:12px;font-weight:800;color:var(--red);letter-spacing:1.5px;text-transform:uppercase;padding:10px 14px;border-bottom:1px solid var(--bdr);text-align:center;background:var(--s2);';
-  header.textContent = regions[step] + ' Region';
+  header.textContent = NCAA_REGIONS[step] + ' Region';
   col.appendChild(header);
 
   var hasUser = false;
-  matchupSeeds.forEach(function(pair) {
+  NCAA_FIRST_ROUND.forEach(function(pair) {
     var s1 = pair[0], s2 = pair[1];
-    var idx1 = regionStart + s1 - 1;
-    var idx2 = regionStart + s2 - 1;
-    var b1 = G.bracket[idx1], b2 = G.bracket[idx2];
+    var b1 = ncaaSeedEntry(step, s1), b2 = ncaaSeedEntry(step, s2);
     if (!b1 || !b2) return;
 
     var isU1 = b1.team.id === G.tid, isU2 = b2.team.id === G.tid;
@@ -470,7 +555,7 @@ export function revealNextRegion() {
 
   // Update button
   if (step + 1 < 4) {
-    btn.textContent = 'REVEAL ' + regions[step + 1].toUpperCase() + ' REGION \u25b6';
+    btn.textContent = 'REVEAL ' + NCAA_REGIONS[step + 1].toUpperCase() + ' REGION \u25b6';
   } else {
     btn.textContent = "LET\u2019S DANCE \u25b6";
     btn.onclick = function() { closeBracketReveal(); };
@@ -503,6 +588,10 @@ export function simNCAAround() {
 }
 
 function simNCAArimExceptUser() {
+  // Sim every game of the current round except the user's. MUST be called
+  // while the user's pair is still adjacent in the active order (i.e. before
+  // the user's own game is resolved) — the id check below then skips exactly
+  // that pair and every other pairing stays bracket-correct.
   var active = G.bracket.filter(function(b) { return b.active; });
   for (var i = 0; i < active.length - 1; i += 2) {
     var b1 = active[i], b2 = active[i + 1];
@@ -660,11 +749,17 @@ export function resolveTournamentGame() {
     if (allConfDone() && !G.bracket.length) buildNCAA();
   } else if (game._type === 'ncaa') {
     var b1 = game._b1, b2 = game._b2;
+    // Sim the rest of the round FIRST, while the user's pair is still
+    // adjacent in the active order. Resolving the user's game first would
+    // drop its loser from the list, shifting every later pairing and even
+    // leaving one team with no game at all (T1).
+    simNCAArimExceptUser();
     b1.score = LS.hs; b2.score = LS.as;
     if (LS.hs > LS.as) { b1.won = true; b2.won = false; b2.active = false; }
     else { b2.won = true; b1.won = false; b1.active = false; }
     var userWon2 = (b1.team.id === G.tid) ? (LS.hs > LS.as) : (LS.as > LS.hs);
     var oppName2 = (b1.team.id === G.tid ? b2 : b1).team.name;
+    // Teams left AFTER the full round: 32 / 16 / 8 / 4 / 2 / 1
     var remaining = G.bracket.filter(function(b) { return b.active; }).length;
 
     if (userWon2) {
@@ -675,15 +770,15 @@ export function resolveTournamentGame() {
       var roundMsg = '';
       var prestigeGain = 0;
 
-      if (remaining <= 2) { roundMsg = 'CHAMPIONSHIP BOUND!'; prestigeGain = 8; }
-      else if (remaining <= 4) { roundMsg = 'FINAL FOUR!'; prestigeGain = 5; }
-      else if (remaining <= 8) { roundMsg = 'ELITE EIGHT!'; prestigeGain = 3; }
-      else if (remaining <= 16) { roundMsg = 'SWEET 16!'; prestigeGain = 2; }
-      else if (remaining <= 32) { roundMsg = 'Moving on!'; prestigeGain = 1; }
+      if (remaining <= 1) { roundMsg = 'CHAMPIONSHIP BOUND!'; prestigeGain = 8; }
+      else if (remaining <= 2) { roundMsg = 'FINAL FOUR!'; prestigeGain = 5; }
+      else if (remaining <= 4) { roundMsg = 'ELITE EIGHT!'; prestigeGain = 3; }
+      else if (remaining <= 8) { roundMsg = 'SWEET 16!'; prestigeGain = 2; }
+      else if (remaining <= 16) { roundMsg = 'Moving on!'; prestigeGain = 1; }
       else { roundMsg = 'ADVANCING!'; prestigeGain = 1; }
 
       // Cinderella bonus: 11+ seed reaching Sweet 16+
-      if (userSeed >= 11 && remaining <= 16) {
+      if (userSeed >= 11 && remaining <= 8) {
         prestigeGain += 5;
         if (!G.cinderellaRun) G.cinderellaRun = true;
         addLog('ev', G.gi, '\ud83d\udc60 <b>CINDERELLA ALERT!</b> #' + userSeed + ' ' + userTeam.name + ' keeps dancing! The country is watching.');
@@ -702,18 +797,17 @@ export function resolveTournamentGame() {
       toast(userTeam.name + ' ADVANCES! ' + roundMsg, 'var(--grn)');
       addLog('w', G.gi, '<b>W</b> vs <b>' + oppName2 + '</b> ' + uScore + '\u2013' + oScore + ' (NCAA \u2014 ' + roundMsg + ')');
     } else {
-      // Elimination — record how far we got
-      var finalRound = remaining <= 2 ? 'Championship Game' : remaining <= 4 ? 'Final Four' : remaining <= 8 ? 'Elite Eight' : remaining <= 16 ? 'Sweet 16' : remaining <= 32 ? 'Round of 32' : 'Round of 64';
+      // Elimination — record how far we got (post-round team counts)
+      var finalRound = remaining <= 1 ? 'Championship Game' : remaining <= 2 ? 'Final Four' : remaining <= 4 ? 'Elite Eight' : remaining <= 8 ? 'Sweet 16' : remaining <= 16 ? 'Round of 32' : 'Round of 64';
       toast('Season over. Eliminated in the ' + finalRound + '.', 'var(--red)');
       addLog('l', G.gi, '<b>L</b> vs <b>' + oppName2 + '</b> ' + uScore + '\u2013' + oScore + ' (NCAA \u2014 ' + finalRound + ')');
       G.seasonAchievements = G.seasonAchievements || {};
       G.seasonAchievements.tourneyFinish = finalRound;
     }
 
-    // Detect CPU Cinderellas and upsets
+    // Detect CPU Cinderellas now that the full round is decided
     detectCPUCinderellas();
 
-    simNCAArimExceptUser();
     checkNCAAdone();
   }
   saveState(); updateAll();

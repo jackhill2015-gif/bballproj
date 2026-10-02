@@ -55,7 +55,7 @@ export const TIERS = [
   { min: 0,  label: 'Small Program', col: '#b794f4', desc: 'Starting from scratch.' }
 ];
 
-// ── D1 Teams (364 programs) ──────────────────────────────
+// ── D1 Teams (324 programs) ──────────────────────────────
 export const ALL_TEAMS = [
   // ACC
   {n:"Duke",c:"ACC",o:94},{n:"UNC",c:"ACC",o:91},{n:"Virginia",c:"ACC",o:87},{n:"Syracuse",c:"ACC",o:82},
@@ -80,13 +80,13 @@ export const ALL_TEAMS = [
   {n:"Oklahoma",c:"SEC",o:82},{n:"LSU",c:"SEC",o:83},{n:"Missouri",c:"SEC",o:80},{n:"Georgia",c:"SEC",o:81},
   {n:"Ole Miss",c:"SEC",o:80},{n:"Miss State",c:"SEC",o:78},{n:"Vanderbilt",c:"SEC",o:76},{n:"South Carolina",c:"SEC",o:79},
   // American
-  {n:"Memphis",c:"American",o:84},{n:"Tulsa",c:"American",o:73},{n:"SMU",c:"American",o:79},{n:"East Carolina",c:"American",o:70},
+  {n:"Memphis",c:"American",o:84},{n:"Tulsa",c:"American",o:73},{n:"East Carolina",c:"American",o:70},
   {n:"South Florida",c:"American",o:68},{n:"Temple",c:"American",o:72},{n:"Wichita St",c:"American",o:77},{n:"UAB",c:"American",o:74},
   {n:"North Texas",c:"American",o:73},{n:"UTSA",c:"American",o:69},{n:"Rice",c:"American",o:68},{n:"Florida Atl",c:"American",o:72},
   // Mountain West
   {n:"San Diego St",c:"MW",o:84},{n:"Nevada",c:"MW",o:75},{n:"New Mexico",c:"MW",o:73},{n:"UNLV",c:"MW",o:76},
   {n:"Utah St",c:"MW",o:79},{n:"Boise St",c:"MW",o:74},{n:"Colorado St",c:"MW",o:73},{n:"Air Force",c:"MW",o:68},
-  {n:"Wyoming",c:"MW",o:67},{n:"Fresno St",c:"MW",o:72},{n:"San Jose St",c:"MW",o:64},{n:"Hawaii",c:"MW",o:66},
+  {n:"Wyoming",c:"MW",o:67},{n:"Fresno St",c:"MW",o:72},{n:"San Jose St",c:"MW",o:64},
   // WCC
   {n:"Gonzaga",c:"WCC",o:90},{n:"Saint Mary's",c:"WCC",o:81},{n:"San Francisco",c:"WCC",o:74},{n:"Pacific",c:"WCC",o:65},
   {n:"Pepperdine",c:"WCC",o:67},{n:"Santa Clara",c:"WCC",o:66},{n:"Portland",c:"WCC",o:63},{n:"Loyola Mary",c:"WCC",o:64},
@@ -110,7 +110,7 @@ export const ALL_TEAMS = [
   {n:"Georgia St",c:"Sun Belt",o:68},{n:"Marshall",c:"Sun Belt",o:71},{n:"Southern Ala",c:"Sun Belt",o:62},{n:"James Madison",c:"Sun Belt",o:70},
   // WAC
   {n:"Utah Valley",c:"WAC",o:71},{n:"Grand Canyon",c:"WAC",o:74},{n:"Cal Baptist",c:"WAC",o:68},{n:"Abilene Chr",c:"WAC",o:65},
-  {n:"Tarleton St",c:"WAC",o:63},{n:"Southern Utah",c:"WAC",o:62},{n:"Seattle U",c:"WAC",o:60},{n:"UMKC",c:"WAC",o:61},
+  {n:"Tarleton St",c:"WAC",o:63},{n:"Southern Utah",c:"WAC",o:62},{n:"Seattle U",c:"WAC",o:60},
   {n:"Chicago St",c:"WAC",o:56},{n:"Lamar",c:"WAC",o:60},
   // Big East
   {n:"UConn",c:"Big East",o:93},{n:"Marquette",c:"Big East",o:87},{n:"Creighton",c:"Big East",o:86},{n:"Providence",c:"Big East",o:82},
@@ -138,11 +138,11 @@ export const ALL_TEAMS = [
   {n:"Winthrop",c:"Big South",o:67},{n:"Gardner-Webb",c:"Big South",o:59},{n:"USC Upstate",c:"Big South",o:57},
   // Colonial (CAA)
   {n:"Towson",c:"CAA",o:69},{n:"Hofstra",c:"CAA",o:68},{n:"Drexel",c:"CAA",o:64},{n:"UNCW",c:"CAA",o:65},
-  {n:"Delaware",c:"CAA",o:66},{n:"Elon",c:"CAA",o:61},{n:"William & Mary",c:"CAA",o:63},{n:"James Madison",c:"CAA",o:69},
+  {n:"Delaware",c:"CAA",o:66},{n:"Elon",c:"CAA",o:61},{n:"William & Mary",c:"CAA",o:63},
   {n:"Charleston",c:"CAA",o:71},{n:"Stony Brook",c:"CAA",o:62},{n:"Hampton",c:"CAA",o:60},
   // OVC
-  {n:"Bellarmine",c:"OVC",o:63},{n:"Tennessee Tech",c:"OVC",o:62},{n:"E Kentucky",c:"OVC",o:60},{n:"E Tennessee",c:"OVC",o:65},
-  {n:"Morehead St",c:"OVC",o:61},{n:"Austin Peay",c:"OVC",o:59},{n:"SIUE",c:"OVC",o:58},{n:"Tennessee Martin",c:"OVC",o:57},
+  {n:"Tennessee Tech",c:"OVC",o:62},{n:"E Kentucky",c:"OVC",o:60},{n:"E Tennessee",c:"OVC",o:65},
+  {n:"Morehead St",c:"OVC",o:61},{n:"SIUE",c:"OVC",o:58},{n:"Tennessee Martin",c:"OVC",o:57},
   // Patriot
   {n:"Colgate",c:"Patriot",o:68},{n:"Lehigh",c:"Patriot",o:65},{n:"American",c:"Patriot",o:63},{n:"Navy",c:"Patriot",o:60},
   {n:"Army",c:"Patriot",o:62},{n:"Holy Cross",c:"Patriot",o:64},{n:"Bucknell",c:"Patriot",o:66},{n:"Lafayette",c:"Patriot",o:61},
@@ -160,11 +160,11 @@ export const ALL_TEAMS = [
   {n:"NC A&T",c:"MEAC",o:61},{n:"Norfolk St",c:"MEAC",o:65},{n:"SC State",c:"MEAC",o:55},{n:"Md Eastern Shore",c:"MEAC",o:52},
   // America East
   {n:"Vermont",c:"America East",o:71},{n:"UMBC",c:"America East",o:64},{n:"Albany",c:"America East",o:60},{n:"Hartford",c:"America East",o:58},
-  {n:"Binghamton",c:"America East",o:56},{n:"Maine",c:"America East",o:55},{n:"New Hampshire",c:"America East",o:57},{n:"Stony Brook",c:"America East",o:61},
+  {n:"Binghamton",c:"America East",o:56},{n:"Maine",c:"America East",o:55},{n:"New Hampshire",c:"America East",o:57},
   // Northeast (NEC)
   {n:"Merrimack",c:"NEC",o:60},{n:"Sacred Heart",c:"NEC",o:61},{n:"LIU",c:"NEC",o:58},{n:"Wagner",c:"NEC",o:57},
   {n:"Fairleigh Dick",c:"NEC",o:59},{n:"St Francis PA",c:"NEC",o:56},{n:"Central Conn",c:"NEC",o:55},{n:"Bryant",c:"NEC",o:57},
-  {n:"CCSU",c:"NEC",o:54},{n:"Mercer",c:"NEC",o:63},
+  {n:"CCSU",c:"NEC",o:54},
   // SoCon
   {n:"Furman",c:"SoCon",o:68},{n:"Chattanooga",c:"SoCon",o:67},{n:"Mercer",c:"SoCon",o:65},{n:"ETSU",c:"SoCon",o:64},
   {n:"Western Carolina",c:"SoCon",o:60},{n:"VMI",c:"SoCon",o:57},{n:"The Citadel",c:"SoCon",o:55},{n:"UNC Greensboro",c:"SoCon",o:65},

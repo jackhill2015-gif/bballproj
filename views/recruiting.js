@@ -6,6 +6,7 @@
 import { ge, clamp } from '../utils.js';
 import { TEAM_STATES, STATE_TO_REGION, STATE_NAMES, SCHOOL_RECRUIT_GATES, COACH_FN, COACH_LN } from '../constants.js';
 import { G, LS, SetupState, saveState, calcRecruitingBudget } from '../state.js';
+import { renderPortal, genPortalEntrants, registerPortalCallbacks } from './portal.js';
 
 var _ext = { toast: null, addLog: null, updateAll: null };
 export function registerRecruitingCallbacks(cb) {
@@ -15,10 +16,17 @@ function toast(m,c) { if(_ext.toast)_ext.toast(m,c); }
 function addLog(t,w,x) { if(_ext.addLog)_ext.addLog(t,w,x); }
 function updateAll() { if(_ext.updateAll)_ext.updateAll(); }
 
+// Wire portal logic → this view's render path (portal.js stays DOM-free)
+registerPortalCallbacks({
+  render: function(){ renderOffseason(); },
+  toast: toast, addLog: addLog, updateAll: updateAll
+});
+
 // ── Current recruiting tab ──
 var _tab = 'board';
 var _filter = { pos: 'All', stars: 0, sort: 'rank' };
 var _detailId = -1; // recruit ID shown in detail, -1 = none
+var _boardShown = 30; // R5: cap rendered board rows
 
 // ═══════════════════════════════════════════════════════════
 //  PHASE CONFIG
@@ -59,7 +67,7 @@ function calcSchoolChances(r) {
   var userBid = calcUserBid(r);
   if((r.points||0)>0) {
     var userGeo = getGeoLabel(getTeamState(G.teams[G.tid]),r.homeState);
-    schools.push({name:G.teams[G.tid].name,bid:userBid,isUser:true,geo:userGeo,rank:ranked.findIndex(function(t){return t.id===G.tid;})+1});
+    schools.push({tid:G.tid,name:G.teams[G.tid].name,bid:userBid,isUser:true,geo:userGeo,rank:ranked.findIndex(function(t){return t.id===G.tid;})+1});
   }
 
   // Use PERSISTENT rivals from recruit generation — never reshuffles
@@ -75,7 +83,7 @@ function calcSchoolChances(r) {
     var seed = ((r.id * 7 + rv.tid * 13) % 100) / 100;
     var bid = (seed*30+20)*pw*sb*cpuAgg*(1+geo);
     var geoL = getGeoLabel(getTeamState(team),r.homeState);
-    schools.push({name:rv.name,bid:bid,isUser:false,geo:geoL,rank:rk});
+    schools.push({tid:rv.tid,name:rv.name,bid:bid,isUser:false,geo:geoL,rank:rk});
   });
 
   // Convert to percentages
@@ -143,19 +151,24 @@ window.showDetail=showDetail;
 export function closeDetail(){_detailId=-1;renderOffseason();}
 window.closeDetail=closeDetail;
 
-export function setRecruitTab(tab){_tab=tab;_detailId=-1;renderOffseason();}
+export function setRecruitTab(tab){_tab=tab;_detailId=-1;_boardShown=30;renderOffseason();}
 window.setRecruitTab=setRecruitTab;
 
-export function setRecruitFilter(key,val){_filter[key]=val;renderOffseason();}
+export function setRecruitFilter(key,val){_filter[key]=val;_boardShown=30;renderOffseason();}
 window.setRecruitFilter=setRecruitFilter;
+
+export function showMoreBoard(){_boardShown+=30;renderOffseason();}
+window.showMoreBoard=showMoreBoard;
 
 export function proceedToRecruiting(){
   // Remove departing players from roster
   var t=G.teams[G.tid];
   var dominated=G.departingPlayers.map(function(d){return d.name;});
   t.rost=t.rost.filter(function(p){return dominated.indexOf(p.name)<0;});
-  G.offseasonStep='recruiting';
   genRecruitsFn();
+  // R9: transfer portal step sits between turnover and recruiting
+  genPortalEntrants();
+  G.offseasonStep='portal';
   saveState();renderOffseason();
 }
 window.proceedToRecruiting=proceedToRecruiting;
@@ -185,7 +198,7 @@ export function advanceRecruitPhase(){
     else if(bestCPU){
       var ch=r.stars>=5?0.80:r.stars>=4?0.70:r.stars>=3?0.55:0.40;
       ch*=phase.cpuAgg;
-      if(Math.random()<ch){r.signed=bestCPU.rank;r.status='gone';r.goneTo=bestCPU.name;newG.push(r);}
+      if(Math.random()<ch){r.signed=bestCPU.tid;r.status='gone';r.goneTo=bestCPU.name;newG.push(r);}
     }
     if(r.status!=='open'&&r.points>0){refund+=r.points;r.points=0;}
   });
@@ -213,7 +226,7 @@ export function resolveRecruitingClass(){
     var best=schools.filter(function(s){return!s.isUser;}).sort(function(a,b){return b.bid-a.bid;})[0];
     var bb=best?best.bid:0;
     if(r.points>=5&&ub>bb*0.7){r.signed=G.tid;r.status='committed';addLog('ev',G.gi,r.name+' ('+r.stars+'\u2605) <b>commits!</b> (late)');}
-    else if(best){r.signed=-1;r.status='gone';r.goneTo=best.name;}
+    else if(best){r.signed=best.tid;r.status='gone';r.goneTo=best.name;}
     else{r.status='gone';r.signed=-1;}
     r.points=0;
   });
@@ -248,6 +261,10 @@ export function renderOffseason(){
 
   if(G.offseasonStep==='carousel'){
     el.innerHTML=renderCarousel();return;
+  }
+
+  if(G.offseasonStep==='portal'){
+    el.innerHTML=renderPortal();return;
   }
 
   if(G.offseasonStep==='turnover'||!G.offseasonStep){
@@ -400,7 +417,7 @@ function renderTurnover(){
 
   // Proceed button
   h+='<div style="text-align:center;margin-top:20px;">'
-    +'<div class="btn btn-red" style="display:inline-block;padding:16px 48px;font-size:15px;font-weight:800;" onclick="proceedToRecruiting()">PROCEED TO RECRUITING \u25b6</div></div>';
+    +'<div class="btn btn-red" style="display:inline-block;padding:16px 48px;font-size:15px;font-weight:800;" onclick="proceedToRecruiting()">PROCEED TO TRANSFER PORTAL \u25b6</div></div>';
 
   return h;
 }
@@ -448,6 +465,7 @@ export function proceedFromFired() {
   // Skip skill points (you got fired, no development)
   // Go straight to carousel with limited options
   G.offseasonStep = 'carousel';
+  _rejectedJobs = [];
   // Temporarily reduce coach ratings as firing penalty
   G.coach.off = Math.max(50, G.coach.off - 3);
   G.coach.def = Math.max(50, G.coach.def - 3);
@@ -462,9 +480,12 @@ var _skillInitial = null;
 function renderSkillPoints() {
   var pts = G.skillPointsToSpend || 0;
   var c = G.coach;
-  // Snapshot initial values on first render
+  // Snapshot initial values on first render. R7: persisted on G.coach (which
+  // saveState serializes whole) so it survives reload; re-derived as a
+  // no-deallocate floor if an old save lacks it.
   if (!_skillInitial) {
-    _skillInitial = { off: c.off, def: c.def, dev: c.dev, rec: c.rec };
+    _skillInitial = (G.coach && G.coach.skillInitial) || { off: c.off, def: c.def, dev: c.dev, rec: c.rec };
+    if (G.coach) G.coach.skillInitial = _skillInitial;
   }
   var h = '<div style="max-width:600px;margin:0 auto;padding:20px;">';
 
@@ -530,6 +551,7 @@ window.deallocateSkillPoint = deallocateSkillPoint;
 
 export function finishSkillPoints() {
   _skillInitial = null;
+  if (G.coach) delete G.coach.skillInitial;
   G.offseasonStep = 'carousel';
   saveState(); renderOffseason();
 }
@@ -581,10 +603,18 @@ function calcOfferChance(job) {
   return Math.min(95, Math.max(5, base));
 }
 
+function isFiredCoach(){
+  // Derived from persisted coach history: last action 'Fired' with no new job since.
+  var hst = (G.coach && G.coach.history) ? G.coach.history : [];
+  var last = hst.length ? hst[hst.length-1] : null;
+  return !!(last && last.action === 'Fired');
+}
+
 function renderCarousel() {
   var jobs = generateOpenJobs();
   var c = G.coach;
   var currentTeam = G.teams[G.tid];
+  var fired = isFiredCoach();
 
   var h = '<div style="max-width:800px;margin:0 auto;padding:20px;">';
 
@@ -594,7 +624,8 @@ function renderCarousel() {
     + '<div style="font-size:12px;color:var(--txt2);margin-top:4px;">Coach ' + c.lastName + ' \u00b7 Age ' + c.age + ' \u00b7 Career ' + c.careerWins + '-' + c.careerLoss + ' \u00b7 OFF ' + c.off + ' DEF ' + c.def + ' DEV ' + c.dev + ' REC ' + c.rec + '</div>'
     + '</div>';
 
-  // Stay option
+  // Stay option — hidden for fired coaches (R4)
+  if (!fired) {
   h += '<div class="card" style="margin-bottom:16px;padding:16px;border-left:4px solid var(--grn);">'
     + '<div style="display:flex;justify-content:space-between;align-items:center;">'
     + '<div>'
@@ -603,13 +634,15 @@ function renderCarousel() {
     + '</div>'
     + '<div class="btn btn-ghost btn-sm" style="padding:8px 20px;" onclick="stayAtSchool()">STAY</div>'
     + '</div></div>';
+  }
 
   // Open jobs
   if (jobs.length) {
     h += '<div style="font-size:11px;font-weight:700;color:var(--txt3);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">' + jobs.length + ' Open Positions</div>';
     h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">';
-    jobs.forEach(function(job, idx) {
-      if (_rejectedJobs.indexOf(idx) >= 0) return; // hide rejected jobs
+    jobs.forEach(function(job) {
+      var jobId = job.team.id;
+      if (_rejectedJobs.indexOf(jobId) >= 0) return; // hide rejected jobs by stable team id (R3)
       var chance = calcOfferChance(job);
       var chanceCol = chance >= 60 ? 'var(--grn2)' : chance >= 30 ? 'var(--gld2)' : '#dc2626';
       var t = job.team;
@@ -619,7 +652,7 @@ function renderCarousel() {
         + '<div style="font-size:10px;color:var(--txt3);margin-bottom:8px;">Previous: ' + job.firedCoach + ' \u00b7 ' + job.reason + '</div>'
         + '<div style="display:flex;justify-content:space-between;align-items:center;">'
         + '<div style="font-size:12px;font-weight:800;color:' + chanceCol + ';">' + chance + '% chance</div>'
-        + '<div class="btn btn-red btn-sm" style="padding:6px 16px;" onclick="applyForJob(' + idx + ')">APPLY</div>'
+        + '<div class="btn btn-red btn-sm" style="padding:6px 16px;" onclick="applyForJob(' + jobId + ')">APPLY</div>'
         + '</div></div>';
     });
     h += '</div>';
@@ -638,9 +671,10 @@ function renderCarousel() {
 
 var _rejectedJobs = [];
 
-export function applyForJob(idx) {
+export function applyForJob(jobId) {
   var jobs = window._carouselJobs || [];
-  var job = jobs[idx];
+  var job = null;
+  for (var qi = 0; qi < jobs.length; qi++) { if (jobs[qi].team.id === jobId) { job = jobs[qi]; break; } }
   if (!job) return;
   var chance = calcOfferChance(job);
   var roll = Math.random() * 100;
@@ -696,8 +730,8 @@ export function applyForJob(idx) {
       saveState(); updateAll(); renderOffseason();
     });
   } else {
-    // Rejected — show modal and remove from list
-    _rejectedJobs.push(idx);
+    // Rejected — show modal and remove from list (by stable team id)
+    _rejectedJobs.push(jobId);
     showJobModal(job, false, function() {
       renderOffseason();
     });
@@ -734,6 +768,7 @@ function showJobModal(job, offered, onContinue) {
 }
 
 export function stayAtSchool() {
+  if (isFiredCoach()) { toast("You were fired \u2014 you can't stay. Find a new job.", 'var(--danger)'); return; }
   G.coach.history.push({ yr: G.yr, school: G.teams[G.tid].name, action: 'Stayed' });
   addLog('ev', G.gi, 'Coach ' + G.coach.lastName + ' returns to <b>' + G.teams[G.tid].name + '</b>.');
   G.offseasonStep = 'turnover';
@@ -773,8 +808,8 @@ function renderBoard(open,left){
     if(dr) h+=renderDetailPanel(dr,left);
   }
 
-  // List (max 30)
-  filtered.forEach(function(r){
+  // List (R5: capped at _boardShown rows with show-more)
+  filtered.slice(0,_boardShown).forEach(function(r){
     var stars='';for(var i=0;i<5;i++)stars+=i<r.stars?'\u2605':'\u2606';
     var isTarget=G.recruitTargets.indexOf(r.id)>=0;
     var stName=STATE_NAMES[r.homeState]||r.homeState;
@@ -800,6 +835,7 @@ function renderBoard(open,left){
       +'</div>';
   });
   if(!filtered.length) h+='<div style="padding:20px;text-align:center;color:var(--txt3);">No recruits match filters.</div>';
+  else if(filtered.length>_boardShown) h+='<div style="text-align:center;margin:12px 0;"><div class="btn btn-ghost" style="padding:10px 28px;" onclick="showMoreBoard()">SHOW MORE ('+(filtered.length-_boardShown)+' remaining)</div></div>';
   return h;
 }
 

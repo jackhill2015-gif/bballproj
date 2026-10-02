@@ -71,7 +71,9 @@ export function renderStandings() {
   h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">';
 
   sortedConfs.forEach(function(conf) {
-    var teams = confs[conf].slice().sort(function(a, b) { return b.cWins - a.cWins || a.cLoss - b.cLoss || b.pts - a.pts; });
+    // S6: sort by conference WIN PCT, not raw wins
+    var confPct = function(t) { var g = t.cWins + t.cLoss; return g > 0 ? t.cWins / g : 0; };
+    var teams = confs[conf].slice().sort(function(a, b) { return confPct(b) - confPct(a) || b.cWins - a.cWins || b.pts - a.pts; });
     var leaderWins = teams.length ? teams[0].cWins : 0;
     var isUserConf = conf === userConf;
 

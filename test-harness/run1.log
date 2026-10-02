@@ -1,0 +1,1174 @@
+hoops-fuzz harness — repo: /home/hatch/workspace/bballproj
+
+── stage: buildUniverse + buildSchedules + setupUserOOC + genRecruits ──
+[note] universe: 332 teams
+
+[BUG #1] one-sided user OOC game (opponent has no matching entry)
+    user vs Mercer week 0: opponent sched[0] = vs CCSU
+
+[BUG #2] one-sided user OOC game (opponent has no matching entry)
+    user vs CCSU week 1: opponent sched[1] = vs Mercer
+
+[BUG #3] one-sided user OOC game (opponent has no matching entry)
+    user vs South Alabama week 2: opponent sched[2] = vs Charlotte
+
+[BUG #4] one-sided user OOC game (opponent has no matching entry)
+    user vs Fordham week 3: opponent sched[3] = vs LMU
+
+[BUG #5] one-sided user OOC game (opponent has no matching entry)
+    user vs Quinnipiac week 4: opponent sched[4] = vs Stephen F Austin
+
+[BUG #6] one-sided user OOC game (opponent has no matching entry)
+    user vs Florida A&M week 5: opponent sched[5] = vs NC A&T
+
+[BUG #7] one-sided user OOC game (opponent has no matching entry)
+    user vs SIUE week 6: opponent sched[6] = vs American
+
+[BUG #8] one-sided user OOC game (opponent has no matching entry)
+    user vs James Madison week 7: opponent sched[7] = vs Bellarmine
+
+[BUG #9] one-sided user OOC game (opponent has no matching entry)
+    user vs San Diego week 8: opponent sched[8] = vs La Salle
+
+[BUG #10] one-sided user OOC game (opponent has no matching entry)
+    user vs East Carolina week 9: opponent sched[9] = vs New Mexico
+[Save] v6 978KB
+   ok: buildUniverse + buildSchedules + setupUserOOC + genRecruits
+
+── stage: season 1: full regular season ──
+[Save] v6 980KB
+[Save] v6 980KB
+[Save] v6 981KB
+[Save] v6 981KB
+[Save] v6 981KB
+[Save] v6 981KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 983KB
+[Save] v6 983KB
+[Save] v6 983KB
+[Save] v6 983KB
+[Save] v6 984KB
+[Save] v6 984KB
+[Save] v6 984KB
+[Save] v6 984KB
+[Save] v6 985KB
+[Save] v6 985KB
+[Save] v6 986KB
+[Save] v6 986KB
+[Save] v6 986KB
+[Save] v6 986KB
+[Save] v6 987KB
+[Save] v6 987KB
+[Save] v6 987KB
+[Save] v6 987KB
+[Save] v6 988KB
+[Save] v6 988KB
+[Save] v6 989KB
+[Save] v6 989KB
+[Save] v6 990KB
+[Save] v6 990KB
+[Save] v6 990KB
+[Save] v6 990KB
+[Save] v6 991KB
+[Save] v6 991KB
+[Save] v6 991KB
+[Save] v6 991KB
+[Save] v6 991KB
+[Save] v6 991KB
+[Save] v6 992KB
+[Save] v6 992KB
+[Save] v6 992KB
+[Save] v6 992KB
+[Save] v6 993KB
+[Save] v6 993KB
+[Save] v6 993KB
+[Save] v6 993KB
+[Save] v6 994KB
+[Save] v6 994KB
+[Save] v6 994KB
+[Save] v6 994KB
+[Save] v6 994KB
+[Save] v6 994KB
+[Save] v6 995KB
+[Save] v6 995KB
+[Save] v6 995KB
+[Save] v6 4513KB
+
+[BUG #11] standings mismatch: wins+loss != played games
+    season 1 reg: UNC is 22-8 (30 results) but schedule shows 29 played games
+
+[BUG #12] conf standings mismatch
+    season 1 reg: UNC conf 14-6 but 19 conf games played
+
+[BUG #13] standings mismatch: wins+loss != played games
+    season 1 reg: Virginia is 17-13 (30 results) but schedule shows 29 played games
+
+[BUG #14] conf standings mismatch
+    season 1 reg: Virginia conf 12-8 but 19 conf games played
+
+[BUG #15] standings mismatch: wins+loss != played games
+    season 1 reg: Syracuse is 17-13 (30 results) but schedule shows 29 played games
+
+[BUG #16] conf standings mismatch
+    season 1 reg: Syracuse conf 10-10 but 19 conf games played
+
+[BUG #17] standings mismatch: wins+loss != played games
+    season 1 reg: Miami FL is 13-17 (30 results) but schedule shows 29 played games
+
+[BUG #18] conf standings mismatch
+    season 1 reg: Miami FL conf 12-8 but 19 conf games played
+
+[BUG #19] standings mismatch: wins+loss != played games
+    season 1 reg: Florida St is 17-13 (30 results) but schedule shows 29 played games
+
+[BUG #20] conf standings mismatch
+    season 1 reg: Florida St conf 11-9 but 19 conf games played
+
+[BUG #21] standings mismatch: wins+loss != played games
+    season 1 reg: Louisville is 17-13 (30 results) but schedule shows 28 played games
+
+[BUG #22] conf standings mismatch
+    season 1 reg: Louisville conf 9-11 but 18 conf games played
+
+[BUG #23] standings mismatch: wins+loss != played games
+    season 1 reg: NC State is 16-15 (31 results) but schedule shows 29 played games
+
+[BUG #24] conf standings mismatch
+    season 1 reg: NC State conf 13-7 but 19 conf games played
+
+[BUG #25] standings mismatch: wins+loss != played games
+    season 1 reg: Clemson is 19-11 (30 results) but schedule shows 28 played games
+
+[BUG #26] conf standings mismatch
+    season 1 reg: Clemson conf 12-8 but 18 conf games played
+
+[BUG #27] conf standings mismatch
+    season 1 reg: Wake Forest conf 10-10 but 19 conf games played
+
+[BUG #28] conf standings mismatch
+    season 1 reg: Pitt conf 8-12 but 19 conf games played
+
+[BUG #29] conf standings mismatch
+    season 1 reg: Georgia Tech conf 10-10 but 19 conf games played
+
+[BUG #30] conf standings mismatch
+    season 1 reg: Notre Dame conf 10-10 but 18 conf games played
+
+[BUG #31] conf standings mismatch
+    season 1 reg: Boston Coll conf 4-16 but 19 conf games played
+
+[BUG #32] conf standings mismatch
+    season 1 reg: Virginia Tech conf 4-16 but 19 conf games played
+
+[BUG #33] conf standings mismatch
+    season 1 reg: SMU conf 7-13 but 19 conf games played
+
+[BUG #34] conf standings mismatch
+    season 1 reg: Stanford conf 10-10 but 19 conf games played
+
+[BUG #35] conf standings mismatch
+    season 1 reg: Cal conf 7-13 but 19 conf games played
+
+[BUG #36] conf standings mismatch
+    season 1 reg: UConn conf 12-9 but 20 conf games played
+
+[BUG #37] conf standings mismatch
+    season 1 reg: Creighton conf 15-6 but 20 conf games played
+
+[BUG #38] conf standings mismatch
+    season 1 reg: Providence conf 12-10 but 20 conf games played
+
+[BUG #39] conf standings mismatch
+    season 1 reg: Villanova conf 11-10 but 20 conf games played
+
+[BUG #40] conf standings mismatch
+    season 1 reg: Xavier conf 12-12 but 20 conf games played
+
+[BUG #41] conf standings mismatch
+    season 1 reg: Seton Hall conf 11-13 but 20 conf games played
+
+[BUG #42] conf standings mismatch
+    season 1 reg: Georgetown conf 12-11 but 20 conf games played
+
+[BUG #43] conf standings mismatch
+    season 1 reg: DePaul conf 4-17 but 20 conf games played
+
+[BUG #44] conf standings mismatch
+    season 1 reg: Butler conf 10-12 but 20 conf games played
+
+[BUG #45] conf standings mismatch
+    season 1 reg: St John's conf 11-10 but 20 conf games played
+
+[BUG #46] conf standings mismatch
+    season 1 reg: UNC Asheville conf 13-11 but 20 conf games played
+
+[BUG #47] conf standings mismatch
+    season 1 reg: High Point conf 15-7 but 20 conf games played
+
+[BUG #48] conf standings mismatch
+    season 1 reg: Longwood conf 13-10 but 20 conf games played
+
+[BUG #49] conf standings mismatch
+    season 1 reg: Charleston So conf 8-13 but 20 conf games played
+
+[BUG #50] conf standings mismatch
+    season 1 reg: Presbyterian conf 10-12 but 20 conf games played
+
+[BUG #51] conf standings mismatch
+    season 1 reg: Campbell conf 13-9 but 20 conf games played
+
+[BUG #52] conf standings mismatch
+    season 1 reg: Winthrop conf 16-6 but 20 conf games played
+
+[BUG #53] conf standings mismatch
+    season 1 reg: Gardner-Webb conf 9-14 but 20 conf games played
+
+[BUG #54] conf standings mismatch
+    season 1 reg: USC Upstate conf 3-18 but 20 conf games played
+
+[BUG #55] conf standings mismatch
+    season 1 reg: Towson conf 16-6 but 20 conf games played
+
+[BUG #56] conf standings mismatch
+    season 1 reg: Hofstra conf 11-10 but 20 conf games played
+
+[BUG #57] conf standings mismatch
+    season 1 reg: Drexel conf 13-9 but 20 conf games played
+
+[BUG #58] conf standings mismatch
+    season 1 reg: UNCW conf 11-12 but 20 conf games played
+
+[BUG #59] conf standings mismatch
+    season 1 reg: Delaware conf 12-11 but 20 conf games played
+
+[BUG #60] conf standings mismatch
+    season 1 reg: Elon conf 10-12 but 20 conf games played
+
+[BUG #61] conf standings mismatch
+    season 1 reg: William & Mary conf 11-10 but 20 conf games played
+
+[BUG #62] conf standings mismatch
+    season 1 reg: James Madison conf 12-10 but 20 conf games played
+
+[BUG #63] conf standings mismatch
+    season 1 reg: Charleston conf 13-10 but 20 conf games played
+
+[BUG #64] conf standings mismatch
+    season 1 reg: Hampton conf 3-18 but 20 conf games played
+
+[BUG #65] conf standings mismatch
+    season 1 reg: Colgate conf 12-12 but 20 conf games played
+
+[BUG #66] conf standings mismatch
+    season 1 reg: Lehigh conf 11-13 but 20 conf games played
+
+[BUG #67] conf standings mismatch
+    season 1 reg: American conf 10-11 but 20 conf games played
+
+[BUG #68] conf standings mismatch
+    season 1 reg: Navy conf 9-13 but 20 conf games played
+
+[BUG #69] conf standings mismatch
+    season 1 reg: Army conf 13-8 but 20 conf games played
+
+[BUG #70] conf standings mismatch
+    season 1 reg: Holy Cross conf 10-12 but 20 conf games played
+
+[BUG #71] conf standings mismatch
+    season 1 reg: Bucknell conf 14-8 but 20 conf games played
+
+[BUG #72] conf standings mismatch
+    season 1 reg: Lafayette conf 11-12 but 20 conf games played
+
+[BUG #73] conf standings mismatch
+    season 1 reg: Boston U conf 10-11 but 20 conf games played
+
+[BUG #74] conf standings mismatch
+    season 1 reg: South Dakota St conf 11-12 but 20 conf games played
+
+[BUG #75] conf standings mismatch
+    season 1 reg: South Dakota conf 12-11 but 20 conf games played
+
+[BUG #76] conf standings mismatch
+    season 1 reg: North Dakota St conf 11-13 but 20 conf games played
+
+[BUG #77] conf standings mismatch
+    season 1 reg: North Dakota conf 8-13 but 20 conf games played
+
+[BUG #78] conf standings mismatch
+    season 1 reg: Denver conf 12-12 but 20 conf games played
+
+[BUG #79] conf standings mismatch
+    season 1 reg: Oral Roberts conf 15-6 but 20 conf games played
+
+[BUG #80] conf standings mismatch
+    season 1 reg: UMKC conf 9-12 but 20 conf games played
+
+[BUG #81] conf standings mismatch
+    season 1 reg: W Illinois conf 10-12 but 20 conf games played
+
+[BUG #82] conf standings mismatch
+    season 1 reg: Kansas City conf 12-9 but 20 conf games played
+
+[BUG #83] conf standings mismatch
+    season 1 reg: UC Irvine conf 18-5 but 20 conf games played
+
+[BUG #84] conf standings mismatch
+    season 1 reg: UCSB conf 15-8 but 20 conf games played
+
+[BUG #85] conf standings mismatch
+    season 1 reg: Long Beach St conf 15-6 but 20 conf games played
+
+[BUG #86] conf standings mismatch
+    season 1 reg: UC San Diego conf 12-9 but 20 conf games played
+
+[BUG #87] conf standings mismatch
+    season 1 reg: Cal Poly conf 13-10 but 20 conf games played
+
+[BUG #88] conf standings mismatch
+    season 1 reg: Hawaii conf 11-11 but 20 conf games played
+
+[BUG #89] conf standings mismatch
+    season 1 reg: UC Davis conf 6-15 but 20 conf games played
+
+[BUG #90] conf standings mismatch
+    season 1 reg: UC Riverside conf 8-14 but 20 conf games played
+
+[BUG #91] conf standings mismatch
+    season 1 reg: CSU Fullerton conf 9-12 but 20 conf games played
+
+[BUG #92] conf standings mismatch
+    season 1 reg: CSU Bakersfield conf 8-13 but 20 conf games played
+
+[BUG #93] conf standings mismatch
+    season 1 reg: CSU Northridge conf 5-17 but 20 conf games played
+[note] season 1 reg: 83 total teams with wins+loss != played games (showing first 8)
+[Save] v6 4513KB
+[Load] v6 Season 2025 gi=30
+   ok: season 1: full regular season
+
+── stage: season 1: conference tournaments ──
+[Save] v6 6175KB
+[Save] v6 6934KB
+[Save] v6 7297KB
+[Save] v6 7685KB
+[Save] v6 7685KB
+
+[BUG #94] conf tourney dropped team(s) without a game
+    ACC: 18 teams, 4 rounds, only 16 games played (need 17); 1 team(s) vanished
+
+[BUG #95] conf tourney dropped team(s) without a game
+    Big Ten: 18 teams, 4 rounds, only 16 games played (need 17); 1 team(s) vanished
+
+[BUG #96] conf tourney dropped team(s) without a game
+    American: 12 teams, 3 rounds, only 10 games played (need 11); 1 team(s) vanished
+
+[BUG #97] conf tourney dropped team(s) without a game
+    MW: 12 teams, 3 rounds, only 10 games played (need 11); 1 team(s) vanished
+
+[BUG #98] conf tourney dropped team(s) without a game
+    WCC: 10 teams, 3 rounds, only 8 games played (need 9); 1 team(s) vanished
+
+[BUG #99] conf tourney dropped team(s) without a game
+    A-10: 14 teams, 3 rounds, only 11 games played (need 13); 2 team(s) vanished
+
+[BUG #100] conf tourney dropped team(s) without a game
+    MVC: 10 teams, 3 rounds, only 8 games played (need 9); 1 team(s) vanished
+
+[BUG #101] conf tourney dropped team(s) without a game
+    CUSA: 12 teams, 3 rounds, only 10 games played (need 11); 1 team(s) vanished
+
+[BUG #102] conf tourney dropped team(s) without a game
+    Sun Belt: 12 teams, 3 rounds, only 10 games played (need 11); 1 team(s) vanished
+
+[BUG #103] conf tourney dropped team(s) without a game
+    WAC: 10 teams, 3 rounds, only 8 games played (need 9); 1 team(s) vanished
+
+[BUG #104] conf tourney dropped team(s) without a game
+    Big East: 11 teams, 3 rounds, only 8 games played (need 10); 2 team(s) vanished
+
+[BUG #105] conf tourney dropped team(s) without a game
+    MAC: 12 teams, 3 rounds, only 10 games played (need 11); 1 team(s) vanished
+
+[BUG #106] conf tourney dropped team(s) without a game
+    Horizon: 10 teams, 3 rounds, only 8 games played (need 9); 1 team(s) vanished
+
+[BUG #107] conf tourney dropped team(s) without a game
+    MAAC: 10 teams, 3 rounds, only 8 games played (need 9); 1 team(s) vanished
+
+[BUG #108] conf tourney dropped team(s) without a game
+    Big South: 9 teams, 3 rounds, only 7 games played (need 8); 1 team(s) vanished
+
+[BUG #109] conf tourney dropped team(s) without a game
+    CAA: 11 teams, 3 rounds, only 8 games played (need 10); 2 team(s) vanished
+
+[BUG #110] conf tourney dropped team(s) without a game
+    Patriot: 9 teams, 3 rounds, only 7 games played (need 8); 1 team(s) vanished
+
+[BUG #111] conf tourney dropped team(s) without a game
+    Summit: 9 teams, 3 rounds, only 7 games played (need 8); 1 team(s) vanished
+
+[BUG #112] conf tourney dropped team(s) without a game
+    SWAC: 10 teams, 3 rounds, only 8 games played (need 9); 1 team(s) vanished
+
+[BUG #113] conf tourney dropped team(s) without a game
+    NEC: 10 teams, 3 rounds, only 8 games played (need 9); 1 team(s) vanished
+
+[BUG #114] conf tourney dropped team(s) without a game
+    SoCon: 10 teams, 3 rounds, only 8 games played (need 9); 1 team(s) vanished
+
+[BUG #115] conf tourney dropped team(s) without a game
+    Big West: 11 teams, 3 rounds, only 8 games played (need 10); 2 team(s) vanished
+
+[BUG #116] conf tourney dropped team(s) without a game
+    ASUN: 10 teams, 3 rounds, only 8 games played (need 9); 1 team(s) vanished
+   ok: season 1: conference tournaments
+
+── stage: season 1: NCAA tournament to champion ──
+[Save] v6 7685KB
+[Save] v6 7685KB
+[Save] v6 7685KB
+[Save] v6 7685KB
+[Save] v6 7685KB
+[Save] v6 7684KB
+[Save] v6 7684KB
+[note] NCAA champion: Iowa State (seed 41)
+   ok: season 1: NCAA tournament to champion
+
+── stage: season 1: beginOffseason + doOffseason ──
+[Save] v6 7685KB
+[Save] v6 982KB
+   ok: season 1: beginOffseason + doOffseason
+
+── stage: season 2: full run (reg + conf + ncaa + offseason) ──
+[Save] v6 983KB
+[Save] v6 983KB
+[Save] v6 984KB
+[Save] v6 984KB
+[Save] v6 984KB
+[Save] v6 984KB
+[Save] v6 985KB
+[Save] v6 985KB
+[Save] v6 985KB
+[Save] v6 985KB
+[Save] v6 985KB
+[Save] v6 985KB
+[Save] v6 986KB
+[Save] v6 986KB
+[Save] v6 986KB
+[Save] v6 986KB
+[Save] v6 986KB
+[Save] v6 986KB
+[Save] v6 987KB
+[Save] v6 987KB
+[Save] v6 988KB
+[Save] v6 988KB
+[Save] v6 988KB
+[Save] v6 988KB
+[Save] v6 988KB
+[Save] v6 988KB
+[Save] v6 989KB
+[Save] v6 989KB
+[Save] v6 989KB
+[Save] v6 989KB
+[Save] v6 990KB
+[Save] v6 990KB
+[Save] v6 990KB
+[Save] v6 990KB
+[Save] v6 991KB
+[Save] v6 991KB
+[Save] v6 991KB
+[Save] v6 991KB
+[Save] v6 991KB
+[Save] v6 991KB
+[Save] v6 992KB
+[Save] v6 992KB
+[Save] v6 992KB
+[Save] v6 992KB
+[Save] v6 993KB
+[Save] v6 993KB
+[Save] v6 993KB
+[Save] v6 993KB
+[Save] v6 993KB
+[Save] v6 993KB
+[Save] v6 994KB
+[Save] v6 994KB
+[Save] v6 994KB
+[Save] v6 994KB
+[Save] v6 994KB
+[Save] v6 994KB
+[Save] v6 995KB
+[Save] v6 995KB
+[Save] v6 995KB
+[Save] v6 4178KB
+
+[BUG #117] standings mismatch: wins+loss != played games
+    season 2 reg: UNC is 20-10 (30 results) but schedule shows 28 played games
+
+[BUG #118] conf standings mismatch
+    season 2 reg: UNC conf 13-7 but 18 conf games played
+
+[BUG #119] standings mismatch: wins+loss != played games
+    season 2 reg: Virginia is 20-10 (30 results) but schedule shows 29 played games
+
+[BUG #120] conf standings mismatch
+    season 2 reg: Virginia conf 16-4 but 19 conf games played
+
+[BUG #121] standings mismatch: wins+loss != played games
+    season 2 reg: Syracuse is 10-20 (30 results) but schedule shows 28 played games
+
+[BUG #122] conf standings mismatch
+    season 2 reg: Syracuse conf 8-12 but 18 conf games played
+
+[BUG #123] standings mismatch: wins+loss != played games
+    season 2 reg: Miami FL is 12-18 (30 results) but schedule shows 29 played games
+
+[BUG #124] conf standings mismatch
+    season 2 reg: Miami FL conf 8-12 but 19 conf games played
+
+[BUG #125] standings mismatch: wins+loss != played games
+    season 2 reg: Florida St is 13-17 (30 results) but schedule shows 29 played games
+
+[BUG #126] conf standings mismatch
+    season 2 reg: Florida St conf 8-12 but 19 conf games played
+
+[BUG #127] standings mismatch: wins+loss != played games
+    season 2 reg: Louisville is 14-16 (30 results) but schedule shows 29 played games
+
+[BUG #128] conf standings mismatch
+    season 2 reg: Louisville conf 9-11 but 19 conf games played
+
+[BUG #129] standings mismatch: wins+loss != played games
+    season 2 reg: NC State is 15-15 (30 results) but schedule shows 29 played games
+
+[BUG #130] conf standings mismatch
+    season 2 reg: NC State conf 12-8 but 19 conf games played
+
+[BUG #131] standings mismatch: wins+loss != played games
+    season 2 reg: Clemson is 14-16 (30 results) but schedule shows 29 played games
+
+[BUG #132] conf standings mismatch
+    season 2 reg: Clemson conf 12-8 but 19 conf games played
+
+[BUG #133] conf standings mismatch
+    season 2 reg: Wake Forest conf 11-9 but 19 conf games played
+
+[BUG #134] conf standings mismatch
+    season 2 reg: Pitt conf 8-12 but 18 conf games played
+
+[BUG #135] conf standings mismatch
+    season 2 reg: Georgia Tech conf 10-10 but 19 conf games played
+
+[BUG #136] conf standings mismatch
+    season 2 reg: Notre Dame conf 7-13 but 19 conf games played
+
+[BUG #137] conf standings mismatch
+    season 2 reg: Boston Coll conf 9-11 but 19 conf games played
+
+[BUG #138] conf standings mismatch
+    season 2 reg: Virginia Tech conf 9-11 but 19 conf games played
+
+[BUG #139] conf standings mismatch
+    season 2 reg: SMU conf 7-13 but 19 conf games played
+
+[BUG #140] conf standings mismatch
+    season 2 reg: Stanford conf 8-12 but 19 conf games played
+
+[BUG #141] conf standings mismatch
+    season 2 reg: Cal conf 10-10 but 19 conf games played
+
+[BUG #142] conf standings mismatch
+    season 2 reg: UConn conf 17-4 but 20 conf games played
+
+[BUG #143] conf standings mismatch
+    season 2 reg: Marquette conf 14-9 but 20 conf games played
+
+[BUG #144] conf standings mismatch
+    season 2 reg: Creighton conf 8-15 but 20 conf games played
+
+[BUG #145] conf standings mismatch
+    season 2 reg: Providence conf 10-13 but 20 conf games played
+
+[BUG #146] conf standings mismatch
+    season 2 reg: Villanova conf 12-10 but 20 conf games played
+
+[BUG #147] conf standings mismatch
+    season 2 reg: Xavier conf 13-9 but 20 conf games played
+
+[BUG #148] conf standings mismatch
+    season 2 reg: Georgetown conf 8-14 but 20 conf games played
+
+[BUG #149] conf standings mismatch
+    season 2 reg: DePaul conf 5-17 but 20 conf games played
+
+[BUG #150] conf standings mismatch
+    season 2 reg: Butler conf 9-12 but 20 conf games played
+
+[BUG #151] conf standings mismatch
+    season 2 reg: St John's conf 12-9 but 20 conf games played
+
+[BUG #152] conf standings mismatch
+    season 2 reg: UNC Asheville conf 16-6 but 20 conf games played
+
+[BUG #153] conf standings mismatch
+    season 2 reg: High Point conf 10-13 but 20 conf games played
+
+[BUG #154] conf standings mismatch
+    season 2 reg: Longwood conf 13-11 but 20 conf games played
+
+[BUG #155] conf standings mismatch
+    season 2 reg: Charleston So conf 9-14 but 20 conf games played
+
+[BUG #156] conf standings mismatch
+    season 2 reg: Presbyterian conf 7-14 but 20 conf games played
+
+[BUG #157] conf standings mismatch
+    season 2 reg: Campbell conf 10-11 but 20 conf games played
+
+[BUG #158] conf standings mismatch
+    season 2 reg: Winthrop conf 17-7 but 20 conf games played
+
+[BUG #159] conf standings mismatch
+    season 2 reg: Gardner-Webb conf 13-8 but 20 conf games played
+
+[BUG #160] conf standings mismatch
+    season 2 reg: USC Upstate conf 5-16 but 20 conf games played
+
+[BUG #161] conf standings mismatch
+    season 2 reg: Towson conf 10-13 but 20 conf games played
+
+[BUG #162] conf standings mismatch
+    season 2 reg: Hofstra conf 12-9 but 20 conf games played
+
+[BUG #163] conf standings mismatch
+    season 2 reg: Drexel conf 11-12 but 20 conf games played
+
+[BUG #164] conf standings mismatch
+    season 2 reg: UNCW conf 12-12 but 20 conf games played
+
+[BUG #165] conf standings mismatch
+    season 2 reg: Delaware conf 11-10 but 20 conf games played
+
+[BUG #166] conf standings mismatch
+    season 2 reg: Elon conf 12-10 but 20 conf games played
+
+[BUG #167] conf standings mismatch
+    season 2 reg: William & Mary conf 11-11 but 20 conf games played
+
+[BUG #168] conf standings mismatch
+    season 2 reg: James Madison conf 12-9 but 20 conf games played
+
+[BUG #169] conf standings mismatch
+    season 2 reg: Stony Brook conf 11-12 but 20 conf games played
+
+[BUG #170] conf standings mismatch
+    season 2 reg: Colgate conf 13-10 but 20 conf games played
+
+[BUG #171] conf standings mismatch
+    season 2 reg: Lehigh conf 13-8 but 20 conf games played
+
+[BUG #172] conf standings mismatch
+    season 2 reg: American conf 11-14 but 20 conf games played
+
+[BUG #173] conf standings mismatch
+    season 2 reg: Navy conf 14-9 but 20 conf games played
+
+[BUG #174] conf standings mismatch
+    season 2 reg: Army conf 14-8 but 20 conf games played
+
+[BUG #175] conf standings mismatch
+    season 2 reg: Holy Cross conf 11-11 but 20 conf games played
+
+[BUG #176] conf standings mismatch
+    season 2 reg: Bucknell conf 7-15 but 20 conf games played
+
+[BUG #177] conf standings mismatch
+    season 2 reg: Lafayette conf 7-14 but 20 conf games played
+
+[BUG #178] conf standings mismatch
+    season 2 reg: Boston U conf 10-11 but 20 conf games played
+
+[BUG #179] conf standings mismatch
+    season 2 reg: South Dakota St conf 13-9 but 20 conf games played
+
+[BUG #180] conf standings mismatch
+    season 2 reg: South Dakota conf 13-9 but 20 conf games played
+
+[BUG #181] conf standings mismatch
+    season 2 reg: North Dakota St conf 16-9 but 20 conf games played
+
+[BUG #182] conf standings mismatch
+    season 2 reg: North Dakota conf 9-12 but 20 conf games played
+
+[BUG #183] conf standings mismatch
+    season 2 reg: Denver conf 18-4 but 20 conf games played
+
+[BUG #184] conf standings mismatch
+    season 2 reg: Oral Roberts conf 10-12 but 20 conf games played
+
+[BUG #185] conf standings mismatch
+    season 2 reg: UMKC conf 7-15 but 20 conf games played
+
+[BUG #186] conf standings mismatch
+    season 2 reg: W Illinois conf 6-16 but 20 conf games played
+
+[BUG #187] conf standings mismatch
+    season 2 reg: Kansas City conf 8-14 but 20 conf games played
+
+[BUG #188] conf standings mismatch
+    season 2 reg: UC Irvine conf 14-8 but 20 conf games played
+
+[BUG #189] conf standings mismatch
+    season 2 reg: UCSB conf 18-6 but 20 conf games played
+
+[BUG #190] conf standings mismatch
+    season 2 reg: Long Beach St conf 12-12 but 20 conf games played
+
+[BUG #191] conf standings mismatch
+    season 2 reg: UC San Diego conf 11-11 but 20 conf games played
+
+[BUG #192] conf standings mismatch
+    season 2 reg: Cal Poly conf 13-9 but 20 conf games played
+
+[BUG #193] conf standings mismatch
+    season 2 reg: Hawaii conf 11-11 but 20 conf games played
+
+[BUG #194] conf standings mismatch
+    season 2 reg: UC Davis conf 9-12 but 20 conf games played
+
+[BUG #195] conf standings mismatch
+    season 2 reg: UC Riverside conf 12-9 but 20 conf games played
+
+[BUG #196] conf standings mismatch
+    season 2 reg: CSU Bakersfield conf 8-13 but 20 conf games played
+
+[BUG #197] conf standings mismatch
+    season 2 reg: CSU Northridge conf 3-18 but 20 conf games played
+[note] season 2 reg: 82 total teams with wins+loss != played games (showing first 8)
+[Save] v6 5681KB
+[Save] v6 6367KB
+[Save] v6 6695KB
+[Save] v6 7046KB
+[Save] v6 7046KB
+
+[BUG #198] conf tourney dropped team(s) without a game
+    ACC: 18 teams, 4 rounds, only 16 games played (need 17); 1 team(s) vanished
+
+[BUG #199] conf tourney dropped team(s) without a game
+    Big Ten: 18 teams, 4 rounds, only 16 games played (need 17); 1 team(s) vanished
+
+[BUG #200] conf tourney dropped team(s) without a game
+    American: 12 teams, 3 rounds, only 10 games played (need 11); 1 team(s) vanished
+
+[BUG #201] conf tourney dropped team(s) without a game
+    MW: 12 teams, 3 rounds, only 10 games played (need 11); 1 team(s) vanished
+
+[BUG #202] conf tourney dropped team(s) without a game
+    WCC: 10 teams, 3 rounds, only 8 games played (need 9); 1 team(s) vanished
+
+[BUG #203] conf tourney dropped team(s) without a game
+    A-10: 14 teams, 3 rounds, only 11 games played (need 13); 2 team(s) vanished
+
+[BUG #204] conf tourney dropped team(s) without a game
+    MVC: 10 teams, 3 rounds, only 8 games played (need 9); 1 team(s) vanished
+
+[BUG #205] conf tourney dropped team(s) without a game
+    CUSA: 12 teams, 3 rounds, only 10 games played (need 11); 1 team(s) vanished
+
+[BUG #206] conf tourney dropped team(s) without a game
+    Sun Belt: 12 teams, 3 rounds, only 10 games played (need 11); 1 team(s) vanished
+
+[BUG #207] conf tourney dropped team(s) without a game
+    WAC: 10 teams, 3 rounds, only 8 games played (need 9); 1 team(s) vanished
+
+[BUG #208] conf tourney dropped team(s) without a game
+    Big East: 11 teams, 3 rounds, only 8 games played (need 10); 2 team(s) vanished
+
+[BUG #209] conf tourney dropped team(s) without a game
+    MAC: 12 teams, 3 rounds, only 10 games played (need 11); 1 team(s) vanished
+
+[BUG #210] conf tourney dropped team(s) without a game
+    Horizon: 10 teams, 3 rounds, only 8 games played (need 9); 1 team(s) vanished
+
+[BUG #211] conf tourney dropped team(s) without a game
+    MAAC: 10 teams, 3 rounds, only 8 games played (need 9); 1 team(s) vanished
+
+[BUG #212] conf tourney dropped team(s) without a game
+    Big South: 9 teams, 3 rounds, only 7 games played (need 8); 1 team(s) vanished
+
+[BUG #213] conf tourney dropped team(s) without a game
+    CAA: 11 teams, 3 rounds, only 8 games played (need 10); 2 team(s) vanished
+
+[BUG #214] conf tourney dropped team(s) without a game
+    Patriot: 9 teams, 3 rounds, only 7 games played (need 8); 1 team(s) vanished
+
+[BUG #215] conf tourney dropped team(s) without a game
+    Summit: 9 teams, 3 rounds, only 7 games played (need 8); 1 team(s) vanished
+
+[BUG #216] conf tourney dropped team(s) without a game
+    SWAC: 10 teams, 3 rounds, only 8 games played (need 9); 1 team(s) vanished
+
+[BUG #217] conf tourney dropped team(s) without a game
+    NEC: 10 teams, 3 rounds, only 8 games played (need 9); 1 team(s) vanished
+
+[BUG #218] conf tourney dropped team(s) without a game
+    SoCon: 10 teams, 3 rounds, only 8 games played (need 9); 1 team(s) vanished
+
+[BUG #219] conf tourney dropped team(s) without a game
+    Big West: 11 teams, 3 rounds, only 8 games played (need 10); 2 team(s) vanished
+
+[BUG #220] conf tourney dropped team(s) without a game
+    ASUN: 10 teams, 3 rounds, only 8 games played (need 9); 1 team(s) vanished
+[Save] v6 7046KB
+[Save] v6 7046KB
+[Save] v6 7046KB
+[Save] v6 7046KB
+[Save] v6 7046KB
+[Save] v6 7053KB
+[Save] v6 7053KB
+[note] NCAA champion: Texas (seed 23)
+[Save] v6 7053KB
+[Save] v6 982KB
+   ok: season 2: full run (reg + conf + ncaa + offseason)
+
+── stage: simGame: 600 games across rating spreads ──
+[note] 600 games: avg total=137.4 min=30 max=111 ties=0
+   ok: simGame: 600 games across rating spreads
+
+── stage: simGame: weird inputs ──
+
+[BUG #221] simGame mins not restored with duplicate player names
+    before=32,32,32,32,32,10,10,10,10,0|32,32,32,32,32,10,10,10,10,0 after=10,10,10,10,32,10,10,10,10,32|10,10,10,10,32,10,10,10,10,32 (origMins keyed by name collides)
+
+[BUG #222] simGame crashes on empty roster
+    TypeError: Cannot read properties of undefined (reading 'name') — simulation.js getFloor() returns undefined for empty roster
+   ok: simGame: weird inputs
+
+── stage: simPoss: 2000 possessions ──
+   ok: simPoss: 2000 possessions
+
+── stage: events.rollEvents x300 ──
+[Save] v6 979KB
+[Save] v6 979KB
+[Save] v6 979KB
+[Save] v6 979KB
+[Save] v6 980KB
+[Save] v6 980KB
+[Save] v6 980KB
+[Save] v6 980KB
+[Save] v6 980KB
+[Save] v6 980KB
+[Save] v6 981KB
+[Save] v6 981KB
+[Save] v6 981KB
+[Save] v6 981KB
+[Save] v6 981KB
+[Save] v6 982KB
+[Save] v6 981KB
+[Save] v6 981KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[Save] v6 982KB
+[note] injuries=2 buffs=2
+   ok: events.rollEvents x300
+
+── stage: utils edge cases ──
+   ok: utils edge cases
+
+── stage: loadState with legacy (v1) save ──
+[Load] Save version 1, current 6 — migrating...
+[Migration] v1 → v2
+[Migration] v2 → v3
+[Migration] v3 → v4
+[Migration] v4 → v5
+[Migration] v5 → v6
+[Load] Migration complete.
+[Load] v6 Season 2025 gi=0
+   ok: loadState with legacy (v1) save
+
+════════ SUMMARY ════════
+bugs found: 222
+stage crashes: 0
+notes: 7

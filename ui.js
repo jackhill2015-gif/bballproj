@@ -1,10 +1,11 @@
 // ═══════════════════════════════════════════════════════════
 //  HOOPS OS — ui.js
-//  Central UI manager: toast, logging, navigation, topbar,
-//  play button/dropdown, live sim modal (open/step/skip/finalize).
+//  Central UI manager: toast queue, O(1) game log, navigation,
+//  topbar, context-aware Advance button (event delegation),
+//  narrated recaps, coach XP, milestones, live sim modal.
 // ═══════════════════════════════════════════════════════════
 
-import { ge, txt, html, fR } from './utils.js';
+import { ge, txt, fR, clamp } from './utils.js';
 import { G, LS, SetupState, saveState } from './state.js';
 import { simPoss, simGame } from './simulation.js';
 
@@ -35,42 +36,236 @@ export function registerUICallbacks(callbacks) {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  TOAST
+//  TOAST QUEUE — stacked, capped, no overlap
 // ═══════════════════════════════════════════════════════════
 
-var _tt = null;
+var _toastQ = [];
+var _toastShowing = 0;
+var MAX_TOASTS = 3;
+
 export function toast(msg, col) {
-  var el = ge('toast');
-  if (!el) return;
-  el.textContent = msg;
-  el.style.borderColor = col || 'var(--bdr2)';
-  el.classList.add('show');
-  clearTimeout(_tt);
-  _tt = setTimeout(function() { el.classList.remove('show'); }, 3000);
+  _toastQ.push({ msg: msg, col: col || 'var(--blu)' });
+  if (_toastQ.length > 6) _toastQ.shift(); // drop oldest if spammed
+  pumpToasts();
+}
+
+function pumpToasts() {
+  var stack = ge('toast-stack');
+  if (!stack) return;
+  while (_toastShowing < MAX_TOASTS && _toastQ.length) {
+    (function(item) {
+      _toastShowing++;
+      var d = document.createElement('div');
+      d.className = 'toast';
+      d.style.borderLeftColor = item.col;
+      d.textContent = item.msg;
+      stack.appendChild(d);
+      requestAnimationFrame(function() { d.classList.add('show'); });
+      setTimeout(function() {
+        d.classList.remove('show');
+        setTimeout(function() {
+          if (d.parentNode) d.parentNode.removeChild(d);
+          _toastShowing--;
+          pumpToasts();
+        }, 250);
+      }, 2800);
+    })(_toastQ.shift());
+  }
 }
 
 // ═══════════════════════════════════════════════════════════
-//  GAME LOG (sidebar)
+//  GAME LOG — O(1) prepend with cap; batch rebuild on demand
 // ═══════════════════════════════════════════════════════════
+
+var LOG_CAP = 30;
+
+function logNode(type, wk, text) {
+  return '<div class="log-item log-' + type + '">'
+    + '<div class="log-wk">WK ' + wk + '</div>'
+    + '<div class="log-txt">' + text + '</div></div>';
+}
 
 export function addLog(type, wk, text) {
+  // Intercept user game results: narrate + award coach XP + ranked-win moments
+  if ((type === 'w' || type === 'l') && typeof text === 'string') {
+    var enriched = narrateResult(type, text);
+    if (enriched) text = enriched.text;
+    awardGameXP(type, text);
+  }
   G.logs.unshift({ type: type, wk: wk, text: text });
   if (G.logs.length > 60) G.logs.pop();
-  renderLog();
+  // O(1) DOM prepend — never a full re-render per log line
+  var el = ge('game-log');
+  if (el) {
+    el.insertAdjacentHTML('afterbegin', logNode(type, wk, text));
+    while (el.children.length > LOG_CAP) el.removeChild(el.lastChild);
+  }
 }
 
+// Batch rebuild (used on view boot / nav, not per event)
 export function renderLog() {
   var el = ge('game-log');
   if (!el) return;
-  el.innerHTML = G.logs.slice(0, 30).map(function(e) {
-    return '<div class="log-item log-' + e.type + '">'
-      + '<div class="log-wk">WK ' + e.wk + '</div>'
-      + '<div class="log-txt">' + e.text + '</div></div>';
+  el.innerHTML = G.logs.slice(0, LOG_CAP).map(function(e) {
+    return logNode(e.type, e.wk, e.text);
   }).join('');
 }
 
+// ── Narrated game recaps: 1–2 sentence log lines ──────────
+// Turns "<b>W</b> vs <b>Duke</b> 78–71" into a story beat:
+// margin flavor + top scorer + ranked/bubble context + streak.
+function narrateResult(type, text) {
+  try {
+    var m = /<b>([WL])<\/b> vs <b>([^<]+)<\/b>\s*(\d+)[\u2013\u2014-](\d+)(.*)$/.exec(text);
+    if (!m) return null;
+    var won = type === 'w';
+    var oppName = m[2];
+    var uScore = parseInt(m[3], 10), oScore = parseInt(m[4], 10);
+    var suffix = m[5] || '';
+    var margin = Math.abs(uScore - oScore);
+
+    var verb = won
+      ? (margin >= 15 ? 'cruised past' : margin >= 8 ? 'handled' : margin >= 4 ? 'held off' : 'edged')
+      : (margin >= 15 ? 'were routed by' : margin >= 8 ? 'fell to' : margin >= 4 ? 'dropped one to' : 'lost a heartbreaker to');
+
+    // Top scorer by season average
+    var t = G.teams[G.tid];
+    var best = null, bestPpg = 0;
+    if (t && t.rost) t.rost.forEach(function(p) {
+      var gp = p.s.gp || 0;
+      if (gp < 3) return;
+      var ppg = p.s.pts / gp;
+      if (ppg > bestPpg) { bestPpg = ppg; best = p; }
+    });
+
+    // Ranked-opponent context
+    var oppRank = teamRankOf(oppName);
+    var ctx = '';
+    if (oppRank > 0 && oppRank <= 25) {
+      ctx = won ? ' Statement win over #' + oppRank + '.' : ' Upset at the hands of #' + oppRank + '.';
+    } else if (!won && oppRank > 100) {
+      ctx = ' A resume-damaging loss.';
+    }
+
+    // Streak
+    var streak = currentStreak();
+    var streakTxt = '';
+    if (won && streak >= 2) streakTxt = ' Winners of ' + streak + ' straight.';
+    else if (!won && streak <= -2) streakTxt = ' Losers of ' + Math.abs(streak) + ' straight.';
+
+    var star = best ? ' ' + best.name.split(' ').slice(-1)[0] + ' (' + bestPpg.toFixed(1) + ' ppg) led the way.' : '';
+    var tour = suffix.indexOf('Conf Tourney') >= 0 ? (won ? ' On to the next round.' : ' The run ends here.') : '';
+    var narr = ' ' + t.name.split(' ').slice(-1)[0] + ' ' + verb + ' ' + oppName + '.' + star + ctx + streakTxt + tour;
+    return { text: text + '<br><span style="color:var(--txt3);font-size:11px;">' + narr + '</span>' };
+  } catch (e) { return null; }
+}
+
+function teamRankOf(name) {
+  var sorted = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; });
+  for (var i = 0; i < sorted.length; i++) if (sorted[i].name === name) return i + 1;
+  return 0;
+}
+
+export function userRank() {
+  var sorted = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; });
+  return sorted.findIndex(function(x) { return x.id === G.tid; }) + 1;
+}
+
+// Consecutive W/L from most recent played game (+ = wins)
+export function currentStreak() {
+  var t = G.teams[G.tid];
+  if (!t || !t.sched) return 0;
+  var streak = 0;
+  for (var i = t.sched.length - 1; i >= 0; i--) {
+    var s = t.sched[i];
+    if (!s || !s.played) continue;
+    var w = s.uScore > s.oScore;
+    if (streak === 0) streak = w ? 1 : -1;
+    else if ((w && streak > 0) || (!w && streak < 0)) streak += w ? 1 : -1;
+    else break;
+  }
+  return streak;
+}
+
+// ── Coach XP: per win / upset / tournament run ────────────
+function xpToNext(level) { return 100 + (level - 1) * 75; }
+export function coachXpToNext() { return xpToNext(G.coach.level || 1); }
+
+function awardGameXP(type, text) {
+  if (!G.coach) return;
+  var xp = type === 'w' ? 12 : 2;
+  var m = /vs <b>([^<]+)<\/b>/.exec(text);
+  var oppRank = m ? teamRankOf(m[1]) : 0;
+  if (type === 'w' && oppRank > 0 && oppRank <= 10) xp += 35;
+  else if (type === 'w' && oppRank > 0 && oppRank <= 25) xp += 20;
+  if (type === 'w' && G.phase === 'conf_tourn') xp += 25;
+  if (type === 'w' && G.phase === 'ncaa') xp += 40;
+  if (type === 'w' && oppRank > 0 && oppRank <= 25) {
+    toast('\uD83C\uDFC6 Ranked win! Beat #' + oppRank + ' ' + (m ? m[1] : ''), 'var(--gld)');
+  }
+  G.coach.xp = (G.coach.xp || 0) + xp;
+  // Level-ups
+  while (G.coach.xp >= xpToNext(G.coach.level || 1)) {
+    G.coach.xp -= xpToNext(G.coach.level || 1);
+    G.coach.level = (G.coach.level || 1) + 1;
+    ['off', 'def', 'dev', 'rec'].forEach(function(k) {
+      G.coach[k] = Math.min(99, (G.coach[k] || 70) + 1);
+    });
+    toast('\u2B06\uFE0F COACH LEVEL UP — now Level ' + G.coach.level + '! +1 all attributes.', 'var(--blu)');
+    addLog('ev', G.gi, '<b>Coach leveled up to ' + G.coach.level + '!</b> All coaching attributes +1.');
+  }
+}
+
 // ═══════════════════════════════════════════════════════════
-//  NAVIGATION
+//  RANK MOVEMENT + MILESTONES
+// ═══════════════════════════════════════════════════════════
+
+var _prevRank = 0;
+var _milestones = { wins: 0, streak: 0, top25: false, top10: false, no1: false };
+
+// { prev, cur, delta } — delta > 0 means moved UP the rankings
+export function rankDelta() {
+  return { prev: _prevRank, cur: userRank(), delta: _prevRank ? _prevRank - userRank() : 0 };
+}
+
+function checkMilestones(rank) {
+  // Career win milestones
+  [100, 250, 500, 750, 1000].forEach(function(mn) {
+    if (G.coach.careerWins >= mn && _milestones.wins < mn) {
+      _milestones.wins = mn;
+      toast('\uD83C\uDFC6 Milestone: ' + mn + ' career wins!', 'var(--gld)');
+      addLog('ev', G.gi, '<b>\uD83C\uDFC6 MILESTONE:</b> Coach ' + G.coach.lastName + ' reaches <b>' + mn + ' career wins</b>.');
+    }
+  });
+  // Streak milestones
+  var st = currentStreak();
+  [5, 10, 15, 20].forEach(function(sn) {
+    if (st >= sn && _milestones.streak < sn) {
+      _milestones.streak = sn;
+      toast('\uD83D\uDD25 ' + sn + '-game win streak!', 'var(--grn)');
+    }
+  });
+  if (st < 5) _milestones.streak = Math.min(_milestones.streak, st > 0 ? st : 0);
+  // Ranking milestones
+  if (rank <= 25 && !_milestones.top25 && _prevRank > 25) {
+    _milestones.top25 = true;
+    toast('\u2B50 First Top-25 ranking: #' + rank + '!', 'var(--blu)');
+  }
+  if (rank <= 10 && !_milestones.top10 && _prevRank > 10) {
+    _milestones.top10 = true;
+    toast('\u2B50 Cracked the Top 10: #' + rank + '!', 'var(--blu)');
+  }
+  if (rank === 1 && !_milestones.no1) {
+    _milestones.no1 = true;
+    toast('\uD83D\uDC51 #1 IN THE NATION!', 'var(--gld)');
+    addLog('ev', G.gi, '<b>\uD83D\uDC51 ' + G.teams[G.tid].name + ' is ranked #1 in the nation!</b>');
+  }
+  if (rank > 25) _milestones.top25 = false;
+  if (rank > 10) _milestones.top10 = false;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  NAVIGATION (event-delegated)
 // ═══════════════════════════════════════════════════════════
 
 export function navTo(v) {
@@ -87,151 +282,296 @@ export function navTo(v) {
 export function refreshView() {
   var v = SetupState.ACTIVE_VIEW;
   if (v === 'dashboard' && _views.renderDashboard) _views.renderDashboard();
-  if (v === 'roster' && _views.renderRoster) _views.renderRoster();
-  if (v === 'stats' && _views.renderStats) _views.renderStats();
-  if (v === 'schedule') {
-    var h = _views.renderScheduleView ? _views.renderScheduleView() : '';
-    html('schedule-content', h);
+  else if (v === 'roster' && _views.renderRoster) _views.renderRoster();
+  else if (v === 'stats' && _views.renderStats) _views.renderStats();
+  else if (v === 'schedule' && _views.renderScheduleView) {
+    var sc = ge('schedule-content');
+    if (sc) sc.innerHTML = _views.renderScheduleView();
   }
-  if (v === 'standings' && _views.renderStandings) _views.renderStandings();
-  if (v === 'history' && _views.renderHistory) _views.renderHistory();
-  if (v === 'bracket' && _views.renderBracket) _views.renderBracket();
-  if (v === 'offseason' && _views.renderOffseason) _views.renderOffseason();
+  else if (v === 'standings' && _views.renderStandings) _views.renderStandings();
+  else if (v === 'history' && _views.renderHistory) _views.renderHistory();
+  else if (v === 'bracket' && _views.renderBracket) _views.renderBracket();
+  else if (v === 'offseason' && _views.renderOffseason) _views.renderOffseason();
 }
 
 // ═══════════════════════════════════════════════════════════
-//  MAIN UPDATE (topbar + sidebar + active view)
+//  MAIN UPDATE — ONE render path per action
 // ═══════════════════════════════════════════════════════════
 
 export function updateAll() {
   if (!G.teams.length) return;
   var t = G.teams[G.tid];
 
+  var rank = userRank();
+  checkMilestones(rank);
+
   // Topbar
-  var sorted = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; });
-  var rank = sorted.findIndex(function(x) { return x.id === G.tid; }) + 1;
-  txt('tb-rank', '#' + rank);
-  txt('tb-yr', G.yr);
   txt('tb-rec', fR(t.wins, t.loss));
+  txt('tb-yr', G.yr);
+  txt('nil-balance', G.pts || 0);
   var phases = { reg: 'REGULAR SEASON', conf_tourn: 'CONF TOURNEY', ncaa: 'MARCH MADNESS', offseason: 'OFFSEASON' };
   txt('tb-phase', phases[G.phase] || 'PRESEASON');
+  updateMatchupChip();
+  updateAdvanceBtn();
 
-  // Play button
-  updatePlayBtn();
-
-  // Sidebar
-  var stars = '';
-  for (var i = 0; i < 5; i++) stars += i < G.prestige ? '\u2605' : '\u2606';
-  txt('sf-stars', stars);
-  txt('sf-yr', 'SEASON ' + G.yr + ' \u00b7 YR ' + (G.yr - 2025 + 1));
-
-  // Active view
-  refreshView();
+  _prevRank = rank;
+  refreshView(); // single render path — no double renders
 }
 
-// ═══════════════════════════════════════════════════════════
-//  PLAY BUTTON & DROPDOWN
-// ═══════════════════════════════════════════════════════════
-
-export function updatePlayBtn() {
+function updateMatchupChip() {
   var t = G.teams[G.tid];
-  var btn = ge('play-btn');
-  if (!btn) return;
-  txt('tb-rec', fR(t.wins, t.loss));
-  var phases = { reg: 'regular season', conf_tourn: 'conf tournament', ncaa: 'NCAA tournament', offseason: 'offseason' };
-  var phaseTxt = G.yr + ' ' + (phases[G.phase] || G.phase);
-  txt('tb-phase-label', phaseTxt);
-
   if (G.phase === 'reg') {
     var s = t.sched[G.gi];
-    txt('tb-wk', 'GAME ' + (G.gi + 1) + '/30');
-    if (s && s.opp !== undefined && !s.played) {
+    txt('tb-wk', 'GAME ' + Math.min(G.gi + 1, 30) + '/30');
+    if (s && s.opp !== undefined && s.opp !== null && !s.played) {
       var opp = G.teams[s.opp];
-      if (opp) txt('tb-opp', (s.home ? 'vs ' : ' @ ') + opp.name);
-      else txt('tb-opp', '---');
-    } else if (s === null || s === undefined) {
-      txt('tb-opp', 'Schedule NC games');
+      txt('tb-opp', opp ? ((s.home ? 'vs ' : '@ ') + opp.name) : '—');
+    } else if (!s) {
+      txt('tb-opp', 'Bye week');
     } else {
-      txt('tb-opp', '---');
+      txt('tb-opp', '—');
     }
-    btn.className = 'play-btn';
-    txt('play-label', SetupState.G_AUTO ? 'STOP \u25a0' : 'PLAY \u25bc');
-    updatePlayDropdown('reg');
   } else if (G.phase === 'conf_tourn') {
-    var myConf = G.teams[G.tid].conf;
-    var myCt = G.confTourneys ? G.confTourneys[myConf] : null;
-    var confRound = myCt && myCt.rounds ? myCt.rounds.length : 0;
-    var confRoundNames = { 1: 'First Round', 2: 'Quarterfinals', 3: 'Semifinals', 4: 'Championship' };
-    var crn = confRoundNames[confRound] || 'Conf Tourney';
-    txt('tb-wk', crn); txt('tb-opp', myConf + ' Tournament');
-    btn.className = 'play-btn'; txt('play-label', 'PLAY \u25bc');
-    updatePlayDropdown('conf_tourn');
+    txt('tb-wk', 'CONF TOURNEY'); txt('tb-opp', t.conf + ' Tournament');
   } else if (G.phase === 'ncaa') {
     var active = G.bracket ? G.bracket.filter(function(b) { return b.active; }).length : 0;
     var rn = { 64: 'Rd of 64', 32: 'Rd of 32', 16: 'Sweet 16', 8: 'Elite 8', 4: 'Final Four', 2: 'Title Game' };
     txt('tb-wk', rn[active] || 'NCAA'); txt('tb-opp', 'Tournament');
-    btn.className = 'play-btn'; txt('play-label', 'PLAY \u25bc');
-    updatePlayDropdown('ncaa');
-  } else if (G.phase === 'offseason') {
+  } else {
     txt('tb-wk', 'OFFSEASON'); txt('tb-opp', '');
-    var offLabel = G.offseasonStep === 'recap' ? 'CONTINUE \u25bc' : G.offseasonStep === 'turnover' ? 'CONTINUE \u25bc' : G.recruitPhase >= 3 ? 'FINALIZE \u25bc' : 'ADVANCE \u25bc';
-    btn.className = 'play-btn'; txt('play-label', offLabel);
-    updatePlayDropdown('offseason');
   }
 }
 
-export function updatePlayDropdown(phase) {
+// ═══════════════════════════════════════════════════════════
+//  ADVANCE BUTTON — context-aware primary action
+// ═══════════════════════════════════════════════════════════
+
+export function updateAdvanceBtn() {
+  var btn = ge('advance-btn');
+  if (!btn) return;
+  var label = ge('advance-label');
+  var t = G.teams[G.tid];
+  var txtLbl = 'ADVANCE';
+
+  if (G.phase === 'reg') {
+    if (SetupState.G_AUTO) {
+      txtLbl = '⏹ STOP';
+      btn.classList.add('stop');
+    } else {
+      btn.classList.remove('stop');
+      var s = t.sched[G.gi];
+      if (G.gi >= 30) txtLbl = '▶ CONF TOURNEY';
+      else if (s && s.opp !== undefined && s.opp !== null && !s.played) {
+        var opp = G.teams[s.opp];
+        var short = opp ? opp.name.split(' ').slice(-1)[0].toUpperCase() : 'GAME';
+        txtLbl = '▶ SIM: ' + short;
+      } else txtLbl = '▶ SIM WEEK';
+    }
+  } else if (G.phase === 'conf_tourn') {
+    txtLbl = '▶ CONF TOURNEY';
+  } else if (G.phase === 'ncaa') {
+    txtLbl = '▶ MARCH MADNESS';
+  } else if (G.phase === 'offseason') {
+    if (G.offseasonStep === 'recap') txtLbl = '▶ BEGIN OFFSEASON';
+    else if (G.offseasonStep === 'turnover') txtLbl = '▶ TO RECRUITING';
+    else if (G.offseasonStep === 'skillpoints') txtLbl = '▶ FINISH';
+    else if (G.offseasonStep === 'carousel') txtLbl = '▶ CONTINUE';
+    else if (G.offseasonStep === 'fired') txtLbl = '▶ CONTINUE';
+    else if (G.recruitPhase >= 3) txtLbl = '▶ START SEASON';
+    else txtLbl = '▶ ADVANCE';
+  }
+  if (label) label.textContent = txtLbl;
+  buildAdvanceMenu();
+}
+
+function playOpt(label, sub, mode) {
+  return '<button class="play-opt" role="menuitem" data-action="play" data-mode="' + mode + '">'
+    + '<span>' + label + '</span><span class="play-opt-sub">' + sub + '</span></button>';
+}
+
+export function buildAdvanceMenu() {
   var dd = ge('play-dropdown');
   if (!dd) return;
-  var doPlay = _actions.doPlay || function() {};
-
-  if (phase === 'reg') {
-    var autoLbl = SetupState.G_AUTO ? 'Stop' : 'Until end of season';
-    var autoSub = SetupState.G_AUTO ? 'Click to stop' : 'Runs until you stop';
-    dd.innerHTML = '';
-    var opts = [
-      { label: 'One game', sub: 'Instant result', mode: 'quick' },
-      { label: 'One game (live)', sub: 'Play by play', mode: 'live' }
-    ];
-    opts.forEach(function(o) {
-      var d = document.createElement('div'); d.className = 'play-opt';
-      d.innerHTML = o.label + ' <span class="play-opt-sub">' + o.sub + '</span>';
-      d.onclick = function() { doPlay(o.mode); };
-      dd.appendChild(d);
-    });
-    var sep = document.createElement('div');
-    sep.style.cssText = 'height:1px;background:var(--bdr);margin:0 12px;';
-    dd.appendChild(sep);
-    var autoD = document.createElement('div'); autoD.className = 'play-opt'; autoD.id = 'auto-opt';
-    autoD.innerHTML = '<span id="auto-label">' + autoLbl + '</span><span class="play-opt-sub" id="auto-sub">' + autoSub + '</span>';
-    autoD.onclick = function() { doPlay('auto'); };
-    dd.appendChild(autoD);
-  } else if (phase === 'conf_tourn' || phase === 'ncaa') {
-    dd.innerHTML = '';
-    [{ label: 'One game', sub: 'Instant result', mode: 'quick' },
-     { label: 'One game (live)', sub: 'Watch play by play', mode: 'live' }].forEach(function(o) {
-      var d = document.createElement('div'); d.className = 'play-opt';
-      d.innerHTML = o.label + ' <span class="play-opt-sub">' + o.sub + '</span>';
-      d.onclick = function() { doPlay(o.mode); };
-      dd.appendChild(d);
-    });
+  var h = '';
+  if (G.phase === 'reg') {
+    h += playOpt('Sim game', 'Instant result', 'quick');
+    h += playOpt('Sim game (live)', 'Watch play by play', 'live');
+    h += '<div class="play-sep"></div>';
+    h += '<button class="play-opt" role="menuitem" data-action="play" data-mode="auto" id="auto-opt">'
+      + '<span id="auto-label">' + (SetupState.G_AUTO ? 'Stop auto-sim' : 'Auto-sim season') + '</span>'
+      + '<span class="play-opt-sub" id="auto-sub">' + (SetupState.G_AUTO ? 'Click to stop' : 'Runs until you stop') + '</span></button>';
+  } else if (G.phase === 'conf_tourn' || G.phase === 'ncaa') {
+    h += playOpt('Sim game', 'Instant result', 'quick');
+    h += playOpt('Sim game (live)', 'Watch play by play', 'live');
   } else {
-    dd.innerHTML = '';
-    var phaseNames = { 1: 'Advance to Early Signing', 2: 'Advance to Late Signing', 3: 'Finalize Class & Start Season' };
-    var label = G.offseasonStep === 'turnover' ? 'Proceed to Recruiting' : phaseNames[G.recruitPhase] || 'Advance';
-    var sub = G.offseasonStep === 'turnover' ? 'Review departures, then recruit' : G.recruitPhase >= 3 ? 'Resolve all recruits and start next season' : 'Resolve current phase decisions';
-    var d = document.createElement('div'); d.className = 'play-opt';
-    d.innerHTML = label + ' <span class="play-opt-sub">' + sub + '</span>';
-    d.onclick = function() { doPlay('advance'); };
-    dd.appendChild(d);
+    var stepLbl = 'Advance', stepSub = 'Move to the next step';
+    if (G.offseasonStep === 'recap') { stepLbl = 'Begin offseason'; stepSub = 'Review departures, then recruit'; }
+    else if (G.offseasonStep === 'turnover') { stepLbl = 'Proceed to recruiting'; stepSub = 'Review departures, then recruit'; }
+    else if (G.offseasonStep === 'skillpoints') { stepLbl = 'Finish skill points'; stepSub = 'Lock in coach upgrades'; }
+    else if (G.offseasonStep === 'carousel') { stepLbl = 'Continue'; stepSub = 'Stay or take a new job'; }
+    else if (G.offseasonStep === 'fired') { stepLbl = 'Continue'; stepSub = 'Find your next job'; }
+    else if (G.recruitPhase >= 3) { stepLbl = 'Finalize class & start season'; stepSub = 'Resolve recruits, advance the year'; }
+    else { stepLbl = 'Advance recruiting'; stepSub = 'Resolve this signing period'; }
+    h += playOpt(stepLbl, stepSub, 'advance');
   }
+  dd.innerHTML = h;
 }
 
 export function togglePlayMenu() {
   var dd = ge('play-dropdown');
+  var btn = ge('advance-btn');
   if (!dd) return;
-  if (ge('play-btn').classList.contains('disabled')) return;
   dd.classList.toggle('open');
+  if (btn) btn.setAttribute('aria-expanded', dd.classList.contains('open') ? 'true' : 'false');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  EVENT DELEGATION — one document-level click handler
+// ═══════════════════════════════════════════════════════════
+
+function handleAction(el) {
+  var a = el.getAttribute('data-action');
+  if (!a) return;
+  switch (a) {
+    case 'nav':
+      navTo(el.getAttribute('data-view'));
+      break;
+    case 'advance-menu':
+      togglePlayMenu();
+      break;
+    case 'play': {
+      var dd = ge('play-dropdown');
+      if (dd) { dd.classList.remove('open'); }
+      var btn = ge('advance-btn');
+      if (btn) btn.setAttribute('aria-expanded', 'false');
+      if (_actions.doPlay) _actions.doPlay(el.getAttribute('data-mode'));
+      break;
+    }
+    case 'timeout':
+      callTimeout();
+      break;
+    case 'skip':
+      skipGame();
+      break;
+    case 'nil-buy':
+      buyBoost(el.getAttribute('data-item'), el);
+      break;
+    case 'new-dynasty-start':
+      if (window.startNewDynasty) window.startNewDynasty();
+      break;
+    case 'load-play':
+      if (window.loadAndPlay) window.loadAndPlay();
+      break;
+    case 'delete-save':
+      if (window.deleteFromHome) window.deleteFromHome();
+      break;
+    case 'new-dynasty':
+      if (window.newDynasty) window.newDynasty();
+      break;
+    case 'build-ncaa':
+      if (window.buildNCAA) window.buildNCAA();
+      break;
+    case 'end-season':
+      if (window.endSeason) window.endSeason();
+      break;
+    case 'begin-offseason':
+      if (window.beginOffseason) window.beginOffseason();
+      break;
+  }
+}
+
+export function initOutsideClickHandlers() {
+  document.addEventListener('click', function(e) {
+    var el = e.target.closest ? e.target.closest('[data-action]') : null;
+    if (el) { handleAction(el); return; }
+    // Outside click closes the advance menu
+    var dd = ge('play-dropdown'), btn = ge('advance-btn');
+    if (dd && dd.classList.contains('open') && btn && !btn.contains(e.target)) {
+      dd.classList.remove('open');
+      btn.setAttribute('aria-expanded', 'false');
+    }
+  });
+  // Keyboard support for role=button divs
+  document.addEventListener('keydown', function(e) {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target && e.target.getAttribute) {
+      var role = e.target.getAttribute('role');
+      var act = e.target.getAttribute('data-action');
+      if (role === 'button' && act) { e.preventDefault(); handleAction(e.target); }
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+//  NIL BOOST SHOP — spend G.pts on weekly boosts
+//  Items mirror existing mechanics so the sim already
+//  understands them (sellout = G.nextHomeBonus, chemistry
+//  and recovery = G.buffs entries, same shape as events.js).
+// ═══════════════════════════════════════════════════════════
+
+export var NIL_SHOP = [
+  { id: 'sellout', ico: '🏟️', name: 'Sellout Crowd', desc: 'Next home game gets a +3 edge. Electric atmosphere.', cost: 80 },
+  { id: 'film', ico: '🎬', name: 'Film Session', desc: 'Team-wide +2 to shooting, finishing & defense for 2 games.', cost: 50 },
+  { id: 'recovery', ico: '🧊', name: 'Recovery Session', desc: 'Clears every slump and negative effect on the roster.', cost: 60 }
+];
+
+var _shopWeek = -1;
+var _shopBought = {};
+
+export function shopBoughtThisWeek() {
+  if (_shopWeek !== G.gi) { _shopWeek = G.gi; _shopBought = {}; }
+  return _shopBought;
+}
+
+export function buyBoost(itemId, btnEl) {
+  var item = null;
+  NIL_SHOP.forEach(function(x) { if (x.id === itemId) item = x; });
+  if (!item) return;
+  var bought = shopBoughtThisWeek();
+  if (bought[itemId]) { toast('Already used this week.', 'var(--txt3)'); return; }
+  if ((G.pts || 0) < item.cost) { toast('Not enough NIL points.', 'var(--red)'); return; }
+  var t = G.teams[G.tid];
+  if (!t) return;
+
+  if (itemId === 'sellout') {
+    G.nextHomeBonus = 3; // consumed by simGame for the user's next home game
+    addLog('ev', G.gi, '🏟️ <b>Sellout crowd</b> bought with NIL funds — next home game gets a major boost.');
+  } else if (itemId === 'film') {
+    t.rost.forEach(function(p) {
+      if (p.mins > 0) {
+        p.sht = clamp(p.sht + 2, 30, 99);
+        p.fin = clamp(p.fin + 2, 30, 99);
+        p.def = clamp(p.def + 2, 30, 99);
+      }
+    });
+    if (!G.buffs) G.buffs = [];
+    G.buffs.push({ playerName: 'TEAM', attr: 'all', mod: 2, gamesLeft: 2 });
+    addLog('ev', G.gi, '🎬 <b>Film session</b> — the team is locked in (+2 all, 2 games).');
+  } else if (itemId === 'recovery') {
+    var cleared = 0;
+    if (G.buffs) {
+      for (var i = G.buffs.length - 1; i >= 0; i--) {
+        var bf = G.buffs[i];
+        if (bf.mod < 0) {
+          // Reverse the applied mod (mirrors events.js expiry logic)
+          if (bf.playerName === 'TEAM') {
+            t.rost.forEach(function(p) { if (p.mins > 0) { p.sht -= bf.mod; p.fin -= bf.mod; p.def -= bf.mod; } });
+          } else {
+            t.rost.forEach(function(p) { if (p.name === bf.playerName && bf.attr) p[bf.attr] = clamp((p[bf.attr] || 70) - bf.mod, 30, 99); });
+          }
+          G.buffs.splice(i, 1);
+          cleared++;
+        }
+      }
+    }
+    if (!cleared) { toast('No negative effects to clear.', 'var(--txt3)'); return; }
+    addLog('ev', G.gi, '🧊 <b>Recovery session</b> — cleared ' + cleared + ' negative effect' + (cleared > 1 ? 's' : '') + '.');
+  }
+
+  G.pts -= item.cost;
+  bought[itemId] = true;
+  toast(item.ico + ' ' + item.name + ' activated!', 'var(--gld)');
+  saveState();
+  updateAll(); // single refresh path — updates NIL balance + shop state
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -239,18 +579,20 @@ export function togglePlayMenu() {
 // ═══════════════════════════════════════════════════════════
 
 export function openModal(tH, tA, isTournament, roundName) {
-  // Safety: clear any lingering sim interval from previous game
   if (G.simInterval) { clearInterval(G.simInterval); G.simInterval = null; }
-  // Remove any lingering tournament result overlay
   var panel = ge('gmod').querySelector('.gpanel');
   if (panel) {
     var overlays = panel.querySelectorAll('div[style*="position:absolute"], div[style*="position: absolute"]');
     for (var oi = 0; oi < overlays.length; oi++) panel.removeChild(overlays[oi]);
   }
-  // Reset LS state for fresh game
   LS.clock = 1200; LS.half = 1; LS.hs = 0; LS.as = 0;
   LS.h1 = null; LS.a1 = null; LS.poss = 'A';
   if (typeof LS.possCount !== 'undefined') LS.possCount = 0;
+
+  // Timeout state: 3 per game, sets G.timeoutBoost for the sim to consume
+  G._timeoutsLeft = 3;
+  G.timeoutBoost = false;
+  updateTimeoutBtn();
 
   ge('gmod').classList.add('open');
   if (isTournament && roundName) {
@@ -291,6 +633,29 @@ export function openModal(tH, tA, isTournament, roundName) {
     startInterval();
   };
   startInterval();
+}
+
+// ── Timeout: 3 per game. Sets G.timeoutBoost for the sim
+//    agent to consume (kills opponent momentum).
+export function callTimeout() {
+  var left = G._timeoutsLeft || 0;
+  if (left <= 0) return;
+  G._timeoutsLeft = left - 1;
+  G.timeoutBoost = true;
+  var log = ge('pbplog');
+  if (log) {
+    var who = (LS.userTeam && LS.userTeam.name) || 'Coach';
+    log.innerHTML = '<div style="background:var(--blu);color:#fff;font-weight:800;font-size:11px;padding:4px 8px;border-radius:4px;margin:2px 0;letter-spacing:.5px;">⏸ TIMEOUT — ' + who + ' (' + G._timeoutsLeft + ' left)</div>' + log.innerHTML;
+  }
+  updateTimeoutBtn();
+}
+
+function updateTimeoutBtn() {
+  var btn = ge('timeout-btn');
+  var cnt = ge('timeout-count');
+  var left = (typeof G._timeoutsLeft === 'number') ? G._timeoutsLeft : 3;
+  if (cnt) cnt.textContent = '(' + left + ')';
+  if (btn) btn.disabled = left <= 0;
 }
 
 // ── Step Sim (one possession tick) ───────────────────────
@@ -342,6 +707,10 @@ export function stepSim() {
         var _bc = res.run.isUser ? 'var(--gld)' : '#fc8181';
         _entry = '<div style="background:' + _bc + ';color:#000;font-weight:900;font-size:10px;padding:3px 8px;border-radius:3px;margin:2px 0;letter-spacing:.5px;">' + res.run.text + '</div>' + _entry;
       }
+      // Cap PBP DOM nodes so long games don't bloat the page
+      if (logEl.childNodes.length > 220) {
+        while (logEl.childNodes.length > 220) logEl.removeChild(logEl.lastChild);
+      }
       logEl.innerHTML = _entry + logEl.innerHTML;
     }
   }
@@ -349,16 +718,28 @@ export function stepSim() {
 }
 
 // ── Skip Game ────────────────────────────────────────────
+// LOGIC FIX (M4) — preserve in UI rebuild: snapshot/restore full stat objects
 export function skipGame() {
   if (G.simInterval) { clearInterval(G.simInterval); G.simInterval = null; }
-  // Save GP before simGame (already incremented at live sim start)
-  var gpSave = {};
-  LS.tH.rost.forEach(function(p) { gpSave[p.name + '_h'] = p.s.gp; });
-  LS.tA.rost.forEach(function(p) { gpSave[p.name + '_a'] = p.s.gp; });
+  // M4 FIX: snapshot FULL stat objects (not just GP) before simGame, then
+  // restore them after. simGame sims a complete game on top of the partial
+  // live-sim stats already accumulated; without this every stat
+  // (pts/reb/ast/...) double-counts. Index-keyed, not name-keyed, so duplicate
+  // player names can't collide. Object identity is preserved for the UI rebuild.
+  function snapStats(team) {
+    return team.rost.map(function(p) { return JSON.parse(JSON.stringify(p.s)); });
+  }
+  function restoreStats(team, snap) {
+    team.rost.forEach(function(p, i) {
+      var cur = p.s, sv = snap[i];
+      Object.keys(cur).forEach(function(k) { delete cur[k]; });
+      Object.keys(sv).forEach(function(k) { cur[k] = sv[k]; });
+    });
+  }
+  var hSnap = snapStats(LS.tH), aSnap = snapStats(LS.tA);
   var res = simGame(LS.tH, LS.tA, LS.game.home);
-  // Restore GP to what it was (simGame incremented it again)
-  LS.tH.rost.forEach(function(p) { if (gpSave[p.name + '_h'] !== undefined) p.s.gp = gpSave[p.name + '_h']; });
-  LS.tA.rost.forEach(function(p) { if (gpSave[p.name + '_a'] !== undefined) p.s.gp = gpSave[p.name + '_a']; });
+  restoreStats(LS.tH, hSnap);
+  restoreStats(LS.tA, aSnap);
   LS.hs = res.homeScore; LS.as = res.awayScore;
   finalizeModal();
 }
@@ -381,21 +762,4 @@ export function finalizeModal() {
     if (_actions.simCPUWeek) _actions.simCPUWeek();
     if (_actions.advanceWeek) _actions.advanceWeek();
   }
-}
-
-// ═══════════════════════════════════════════════════════════
-//  OUTSIDE-CLICK HANDLERS
-// ═══════════════════════════════════════════════════════════
-
-export function initOutsideClickHandlers() {
-  document.addEventListener('click', function(e) {
-    var dd = ge('play-dropdown'), btn = ge('play-btn');
-    if (dd && btn && dd.classList.contains('open') && !dd.contains(e.target) && !btn.contains(e.target)) {
-      dd.classList.remove('open');
-    }
-    var pd = ge('picker-dropdown'), pt = ge('picker-trigger');
-    if (pd && pt && pd.style.display === 'block' && !pd.contains(e.target) && !pt.contains(e.target)) {
-      pd.style.display = 'none';
-    }
-  });
 }

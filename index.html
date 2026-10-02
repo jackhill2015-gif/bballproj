@@ -2,23 +2,26 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HOOPS OS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a4fc4">
+<title>HOOPS OS — College Basketball Dynasty</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div id="toast"></div>
+<div id="toast-stack" aria-live="polite" aria-atomic="false"></div>
 
-<!-- ═══ HOME SCREEN ═══ -->
+<!-- ═══ HOME SCREEN (rendered by views/setup.js) ═══ -->
 <div id="home-screen" style="display:none;">
   <div class="home-brand">HOOPS<em>OS</em></div>
-  <div class="home-tagline">364 D1 programs. One champion. Build your dynasty.</div>
+  <div class="home-tagline"><span id="home-team-count">332</span> D1 programs. One champion. Build your dynasty.</div>
   <div class="home-cards">
-    <div class="home-new" onclick="startNewDynasty()">
+    <div class="home-new" data-action="new-dynasty-start" role="button" tabindex="0" aria-label="Start a new dynasty">
       <div class="home-new-icon">＋</div>
-      <div class="home-new-label">New Dynasty</div>
-      <div class="home-new-sub">Start from scratch</div>
+      <div>
+        <div class="home-new-label">New Dynasty</div>
+        <div class="home-new-sub">Start from scratch</div>
+      </div>
     </div>
     <div id="home-save-slot" style="display:none;" class="home-save">
       <div class="home-save-title">Continue Dynasty</div>
@@ -33,115 +36,88 @@
             <div class="home-dynasty-stat"><div class="home-dynasty-stat-v" id="home-titles">0</div><div class="home-dynasty-stat-l">Titles</div></div>
           </div>
         </div>
-        <div class="home-play-btn" onclick="loadAndPlay()">PLAY ▶</div>
+        <div class="home-play-btn" data-action="load-play" role="button" tabindex="0">PLAY ▶</div>
       </div>
       <div class="home-delete">
-        <button class="home-delete-btn" onclick="deleteFromHome()">Delete save</button>
+        <button class="home-delete-btn" data-action="delete-save">Delete save</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ═══ SETUP WIZARD ═══ -->
+<!-- ═══ SETUP WIZARD (rendered by views/setup.js) ═══ -->
 <div id="setup">
-  <div id="setup-content" style="display:flex;align-items:center;justify-content:center;min-height:80vh;"></div>
+  <div id="setup-content"></div>
 </div>
 
 <!-- ═══ APP SHELL ═══ -->
-<div id="topbar">
-  <div class="tb-brand">HOOPS<em>OS</em></div>
-  <div class="tb-div"></div>
-
-  <!-- PLAY BUTTON -->
-  <div class="play-wrap">
-    <div class="play-btn" id="play-btn" onclick="togglePlayMenu()">
-      <span id="play-label">PLAY</span>
-      <span class="play-arrow">▼</span>
-    </div>
-    <div class="play-dropdown" id="play-dropdown">
-      <div class="play-opt" onclick="doPlay('live')">
-        Live Sim
-        <span class="play-opt-sub">Watch play by play</span>
-      </div>
-      <div class="play-opt" onclick="doPlay('quick')">
-        Quick Sim
-        <span class="play-opt-sub">Instant result</span>
-      </div>
-      <div style="height:1px;background:var(--bdr);margin:0 12px;"></div>
-      <div class="play-opt" id="auto-opt" onclick="doPlay('auto')">
-        <span id="auto-label">Auto Sim Season</span>
-        <span class="play-opt-sub" id="auto-sub">Runs until you stop</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- MATCHUP INFO -->
-  <div class="tb-matchup">
-    <span class="tb-wk" id="tb-wk">WK 1</span>
-    <span class="tb-vs">vs</span>
-    <span class="tb-opp" id="tb-opp">---</span>
-    <span class="tb-rec" id="tb-rec">0–0</span>
-  </div>
-
-  <div class="tb-right">
-    <div class="tb-stat"><div class="tb-stat-l">NET</div><div class="tb-stat-v" id="tb-rank">--</div></div>
-    <div class="tb-stat"><div class="tb-stat-l">Year</div><div class="tb-stat-v" id="tb-yr">2025</div></div>
-    <div style="font-size:11px;color:var(--txt2);font-family:'Inter',sans-serif;line-height:1.2;margin-right:8px;"><div id="tb-phase-label" style="font-weight:600;">2025 preseason</div><div style="font-size:10px;color:var(--txt3);">Idle</div></div><div class="tb-phase" id="tb-phase">PRESEASON</div>
-  </div>
-</div>
-
 <div id="app">
-  <!-- LEFT NAV -->
-  <div id="left">
-    <div class="nav-btn on" data-view="dashboard" onclick="navTo('dashboard')">Dashboard</div>
-    <div class="nav-btn" data-view="schedule" onclick="navTo('schedule')">Schedule</div>
-    <div class="nav-btn" data-view="roster" onclick="navTo('roster')">Roster</div>
-    <div class="nav-btn" data-view="stats" onclick="navTo('stats')">Stats</div>
-    <div class="nav-btn" data-view="standings" onclick="navTo('standings')">Standings</div>
-    <div class="nav-btn" data-view="history" onclick="navTo('history')">History</div>
-    <div class="nav-sep"></div>
-    <div class="nav-btn" data-view="bracket" onclick="navTo('bracket')">Bracket</div>
-    <div id="game-log"></div>
-    <div class="sidebar-footer">
-      <div class="sf-stars" id="sf-stars">☆☆☆☆☆</div>
-      <div class="sf-yr" id="sf-yr">SEASON 2025</div>
-      <div class="sf-new" onclick="newDynasty()">↺ New Dynasty</div>
-    </div>
-  </div>
+  <header id="topbar">
+    <div class="tb-brand">HOOPS<em>OS</em></div>
 
-  <!-- CENTER CONTENT -->
-  <div id="center">
-    <div id="v-dashboard" class="view on"><div id="dash-content"></div></div>
-    <div id="v-schedule" class="view"><div id="schedule-content"></div></div>
-    <div id="v-roster" class="view">
-      <div id="roster-content"></div>
+    <!-- Context-aware primary action (BBGM play-button pattern) -->
+    <div id="advance-wrap">
+      <button id="advance-btn" data-action="advance-menu" aria-haspopup="menu" aria-expanded="false">
+        <span id="advance-label">ADVANCE</span><span class="caret">▾</span>
+      </button>
+      <div id="play-dropdown" role="menu" aria-label="Advance options"></div>
     </div>
-    <div id="v-stats" class="view">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-        <div class="card"><div class="card-title">Points Per Game</div><table><thead><tr><th>RK</th><th>Player</th><th>Team</th><th style="text-align:right;">PPG</th></tr></thead><tbody id="stats-ppg"></tbody></table></div>
-        <div class="card"><div class="card-title">Rebounds Per Game</div><table><thead><tr><th>RK</th><th>Player</th><th>Team</th><th style="text-align:right;">RPG</th></tr></thead><tbody id="stats-rpg"></tbody></table></div>
-        <div class="card"><div class="card-title">Assists Per Game</div><table><thead><tr><th>RK</th><th>Player</th><th>Team</th><th style="text-align:right;">APG</th></tr></thead><tbody id="stats-apg"></tbody></table></div>
-        <div class="card"><div class="card-title">Field Goal %</div><table><thead><tr><th>RK</th><th>Player</th><th>Team</th><th style="text-align:right;">FG%</th></tr></thead><tbody id="stats-fg"></tbody></table></div>
-        <div class="card"><div class="card-title">Steals Per Game</div><table><thead><tr><th>RK</th><th>Player</th><th>Team</th><th style="text-align:right;">SPG</th></tr></thead><tbody id="stats-spg"></tbody></table></div>
-        <div class="card"><div class="card-title">Blocks Per Game</div><table><thead><tr><th>RK</th><th>Player</th><th>Team</th><th style="text-align:right;">BPG</th></tr></thead><tbody id="stats-bpg"></tbody></table></div>
+
+    <div class="tb-matchup" id="tb-matchup">
+      <span class="tb-wk" id="tb-wk">—</span>
+      <span class="tb-vs">·</span>
+      <span class="tb-opp" id="tb-opp">—</span>
+      <span class="tb-rec" id="tb-rec">0–0</span>
+    </div>
+
+    <!-- NIL balance (P2: spendable currency, topbar display) -->
+    <div class="tb-nil" title="NIL budget — spend it in the dashboard boost shop">
+      <span aria-hidden="true">💰</span><span id="nil-balance">0</span><span class="nil-lbl">NIL</span>
+    </div>
+
+    <div class="tb-meta">
+      <div class="tb-phase" id="tb-phase">—</div>
+      <div class="tb-yr" id="tb-yr">2025</div>
+    </div>
+  </header>
+
+  <div id="app-body">
+    <!-- Desktop sidebar / mobile bottom bar -->
+    <nav id="main-nav" aria-label="Primary">
+      <button class="nav-btn on" data-view="dashboard" data-action="nav"><span class="ni">🏠</span><span>Home</span></button>
+      <button class="nav-btn" data-view="schedule" data-action="nav"><span class="ni">📅</span><span>Schedule</span></button>
+      <button class="nav-btn" data-view="roster" data-action="nav"><span class="ni">👥</span><span>Roster</span></button>
+      <button class="nav-btn" data-view="stats" data-action="nav"><span class="ni">📊</span><span>Stats</span></button>
+      <button class="nav-btn" data-view="standings" data-action="nav"><span class="ni">📋</span><span>Ranks</span></button>
+      <button class="nav-btn" data-view="history" data-action="nav"><span class="ni">📜</span><span>History</span></button>
+      <button class="nav-btn" data-view="bracket" data-action="nav"><span class="ni">🏆</span><span>Bracket</span></button>
+      <div class="nav-sep"></div>
+      <div id="game-log-panel">
+        <div class="log-head">Latest</div>
+        <div id="game-log"></div>
       </div>
-    </div>
-    <div id="v-standings" class="view"><div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;" id="standings-content"></div></div>
-    <div id="v-history" class="view">
-      <div class="card"><div class="card-title">Dynasty History <span id="history-record"></span></div><div id="history-list"></div></div>
-      <div class="card" style="margin-top:0;"><div class="card-title">League Champions</div><div id="history-champs"></div></div>
-    </div>
-    <div id="v-bracket" class="view"><div id="bracket-content"></div></div>
-    <div id="v-offseason" class="view"><div id="offseason-content"></div></div>
+      <button class="nav-new" data-action="new-dynasty">↺ New Dynasty</button>
+    </nav>
+
+    <main id="center">
+      <section id="v-dashboard" class="view on" aria-label="Dashboard"><div id="dash-content"></div></section>
+      <section id="v-schedule" class="view" aria-label="Schedule"><div id="schedule-content"></div></section>
+      <section id="v-roster" class="view" aria-label="Roster"><div id="roster-content"></div></section>
+      <section id="v-stats" class="view" aria-label="Stats"><div id="stats-content"></div></section>
+      <section id="v-standings" class="view" aria-label="Standings"><div id="standings-content"></div></section>
+      <section id="v-history" class="view" aria-label="History"><div id="history-content"></div></section>
+      <section id="v-bracket" class="view" aria-label="Bracket"><div id="bracket-content"></div></section>
+      <section id="v-offseason" class="view" aria-label="Offseason"><div id="offseason-content"></div></section>
+    </main>
   </div>
 </div>
 
-<!-- GAME MODAL -->
-<div id="gmod">
+<!-- ═══ LIVE SIM MODAL ═══ -->
+<div id="gmod" role="dialog" aria-label="Live game simulation">
   <div class="gpanel">
     <div class="ghead">
       <div class="ghead-t" id="gmod-title">LIVE SIMULATION</div>
-      <div style="font-size:10px;color:var(--txt3);font-weight:700;" id="gmod-wk"></div>
+      <div id="gmod-wk"></div>
     </div>
     <div class="scoreboard">
       <div class="sb-t a" id="sb-away">AWAY</div>
@@ -155,55 +131,62 @@
     <div class="hrow">
       <span class="hcell lbl">1H</span>
       <div class="hcell" id="hc-a1">–</div><div class="hcell" id="hc-h1">–</div>
-      <span class="hcell lbl" style="margin-left:6px;">2H</span>
+      <span class="hcell lbl">2H</span>
       <div class="hcell" id="hc-a2">–</div><div class="hcell" id="hc-h2">–</div>
-      <span class="hcell lbl" style="margin-left:6px;">OT</span>
+      <span class="hcell lbl">OT</span>
       <div class="hcell" id="hc-aot">–</div><div class="hcell" id="hc-hot">–</div>
-      <span class="hcell lbl" style="margin-left:6px;">FIN</span>
-      <div class="hcell" id="hc-af" style="font-weight:700;">–</div>
-      <div class="hcell" id="hc-hf" style="font-weight:700;">–</div>
+      <span class="hcell lbl">FIN</span>
+      <div class="hcell" id="hc-af">–</div>
+      <div class="hcell" id="hc-hf">–</div>
     </div>
     <div class="mom-bar-wrap"><div class="mom-bar"><div class="mom-fill" id="mom-fill" style="width:50%"></div></div></div>
     <div class="spd-row">
       <div class="spd-lbl">SPEED</div>
-      <input type="range" id="spd" min="1" max="5" value="3">
+      <input type="range" id="spd" min="1" max="5" value="3" aria-label="Simulation speed">
       <div class="spd-v" id="spd-v">MED</div>
     </div>
-    <div class="lplay" id="lplay">Tip off...</div>
+    <div class="lplay" id="lplay" aria-live="polite">Tip off...</div>
     <div class="pbplog" id="pbplog"></div>
     <div class="gfoot">
-      <div class="btn btn-red" onclick="skipGame()">SKIP TO FINAL</div>
+      <button class="btn" id="timeout-btn" data-action="timeout" aria-label="Call timeout">⏸ TIMEOUT <span class="to-count" id="timeout-count">(3)</span></button>
+      <button class="btn btn-ghost" data-action="skip">SKIP TO FINAL</button>
     </div>
   </div>
 </div>
 
-<!-- NCAA BRACKET REVEAL (Selection Sunday) -->
+<!-- ═══ NCAA BRACKET REVEAL (Selection Sunday — rendered by tournament.js) ═══ -->
 <div id="bracket-reveal" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:9500;overflow-y:auto;padding:24px;">
   <div style="max-width:1100px;margin:0 auto;">
     <div style="text-align:center;margin-bottom:24px;">
       <div style="font-size:10px;color:var(--red);font-weight:800;letter-spacing:4px;text-transform:uppercase;margin-bottom:6px;" id="br-label">SELECTION SUNDAY</div>
-      <div style="font-size:40px;font-weight:900;letter-spacing:-1px;color:var(--txt);" id="br-title">NCAA Tournament</div>
+      <div style="font-size:40px;font-weight:900;letter-spacing:-1px;" id="br-title">NCAA Tournament</div>
       <div style="font-size:13px;color:var(--txt2);margin-top:4px;" id="br-seed-line"></div>
     </div>
-    <div id="br-user-card" style="background:linear-gradient(135deg,rgba(214,158,46,.08),rgba(0,102,204,.04));border:2px solid var(--gld);border-radius:8px;padding:24px;margin-bottom:20px;text-align:center;display:none;">
+    <div id="br-user-card" style="background:#fff;border:2px solid var(--gld);border-radius:8px;padding:24px;margin-bottom:20px;text-align:center;display:none;">
       <div style="font-size:10px;color:var(--gld2);font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:6px;">YOUR PROGRAM IS GOING DANCING</div>
-      <div style="font-size:32px;font-weight:900;color:var(--txt);" id="br-user-team">---</div>
+      <div style="font-size:32px;font-weight:900;" id="br-user-team">---</div>
       <div style="font-size:16px;color:var(--gld2);margin-top:6px;font-weight:800;" id="br-user-seed">---</div>
       <div style="font-size:12px;color:var(--txt2);margin-top:8px;" id="br-user-opp">---</div>
     </div>
     <div id="br-bubble" style="display:none;margin-bottom:16px;"></div>
     <div id="br-bracket" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;"></div>
     <div id="br-reveal-controls" style="text-align:center;">
-      <div id="br-reveal-btn" class="btn btn-red" style="display:inline-block;padding:14px 40px;font-size:14px;font-weight:800;" onclick="revealNextRegion()">REVEAL EAST REGION ▶</div>
+      <button id="br-reveal-btn" class="btn btn-red" style="padding:14px 40px;font-size:14px;font-weight:800;">REVEAL EAST REGION ▶</button>
     </div>
   </div>
 </div>
 
-<!-- RECAP SCREEN -->
+<!-- ═══ RECAP SCREEN (compat shim — season.js touches it; recap renders in offseason view) ═══ -->
 <div id="recap-screen">
-  <div id="recap-content" style="max-width:800px;margin:0 auto;"></div>
+  <div id="recap-content"></div>
 </div>
 
+<!-- Dynamic team-count tagline: ALL_TEAMS.length == G.teams.length post-dedupe -->
+<script type="module">
+import { ALL_TEAMS } from './constants.js';
+var el = document.getElementById('home-team-count');
+if (el) el.textContent = ALL_TEAMS.length;
+</script>
 <script type="module" src="main.js"></script>
 </body>
 </html>

@@ -1,6 +1,8 @@
 // ═══════════════════════════════════════════════════════════
 //  HOOPS OS — views/recap.js
-//  Season Recap + Awards — renders in main view, not popup.
+//  Season Recap + Awards. Renders inside the offseason view
+//  (recruiting.js calls window._renderSeasonRecap). Mobile-
+//  first stacking; delegated CTA, no inline onclick.
 // ═══════════════════════════════════════════════════════════
 
 import { G } from '../state.js';
@@ -28,19 +30,14 @@ function calcAwards() {
     });
   });
 
-  // Player of the Year — highest PER
   allPlayers.sort(function(a, b) { return b.per - a.per; });
   var poy = allPlayers[0] || null;
-
-  // All-American (best 5 nationally by PER)
   var allAmerican = allPlayers.slice(0, 5);
 
-  // Freshman of the Year
   var freshmen = allPlayers.filter(function(p) { return p.cls === 'FR'; });
   freshmen.sort(function(a, b) { return b.per - a.per; });
   var foy = freshmen[0] || null;
 
-  // All-Conference teams (best 5 per conference)
   var confTeams = {};
   var confs = {};
   allPlayers.forEach(function(p) {
@@ -52,7 +49,6 @@ function calcAwards() {
     confTeams[conf] = confs[conf].slice(0, 5);
   });
 
-  // Coach of the Year — team that most exceeded expectations (win% vs baseOvr)
   var coachCandidates = G.teams.map(function(t) {
     var totalGames = t.wins + t.loss;
     var expectedWinPct = (t.baseOvr - 50) / 50;
@@ -62,16 +58,11 @@ function calcAwards() {
   coachCandidates.sort(function(a, b) { return b.overperform - a.overperform; });
   var coy = coachCandidates[0] ? coachCandidates[0].team : null;
 
-  // User's conference All-Conference team
   var userConf = G.teams[G.tid].conf;
   var userAllConf = confTeams[userConf] || [];
 
-  return { poy: poy, allAmerican: allAmerican, foy: foy, confTeams: confTeams, coy: coy, userAllConf: userAllConf, userConf: userConf };
+  return { poy: poy, allAmerican: allAmerican, foy: foy, coy: coy, userAllConf: userAllConf, userConf: userConf };
 }
-
-// ═══════════════════════════════════════════════════════════
-//  SKILL POINTS
-// ═══════════════════════════════════════════════════════════
 
 function calcSkillPoints() {
   var t = G.teams[G.tid];
@@ -106,123 +97,98 @@ export function renderSeasonRecap() {
   var lastHistory = G.history && G.history.length ? G.history[G.history.length - 1] : null;
   var tf = lastHistory ? lastHistory.tourneyFinish : 'N/A';
 
-  var h = '';
+  function awardCard(kicker, name, sub, accent, yours) {
+    return '<div class="card" style="border-left:4px solid ' + accent + ';">'
+      + '<div class="card-title">' + kicker + '</div>'
+      + '<div style="font-size:18px;font-weight:900;' + (yours ? 'color:var(--blu);' : '') + '">' + name
+      + (yours ? ' <span class="yours-pill">YOURS</span>' : '') + '</div>'
+      + '<div style="font-size:12px;color:var(--txt2);margin-top:4px;">' + sub + '</div></div>';
+  }
 
-  // ── Header ──
-  h += '<div style="text-align:center;margin-bottom:28px;">'
-    + '<div style="font-size:11px;color:var(--gld2);letter-spacing:4px;font-weight:800;text-transform:uppercase;margin-bottom:6px;">OFFICIAL RECAP</div>'
-    + '<div style="font-size:40px;font-weight:900;line-height:1;letter-spacing:-2px;">SEASON ' + year + '</div>'
-    + '<div style="height:2px;width:60px;background:var(--red);margin:14px auto;"></div></div>';
+  var h = '<div style="text-align:center;margin-bottom:24px;">'
+    + '<div style="font-size:11px;color:var(--gld2);letter-spacing:4px;font-weight:800;text-transform:uppercase;margin-bottom:6px;">Official Recap</div>'
+    + '<div style="font-size:38px;font-weight:900;line-height:1;letter-spacing:-1px;">Season ' + year + '</div>'
+    + '<div style="height:3px;width:64px;background:var(--blu);margin:14px auto;border-radius:2px;"></div></div>';
 
-  // ── Two columns ──
-  h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">';
+  h += '<div class="grid-2">';
 
-  // LEFT — League
-  h += '<div style="display:flex;flex-direction:column;gap:14px;">';
+  // LEFT — league
+  h += '<div>';
+  h += '<div class="card" style="border-left:4px solid var(--gld);">'
+    + '<div class="card-title">National Champion</div>'
+    + '<div style="font-size:24px;font-weight:900;">🏆 ' + natChamp.name + '</div></div>';
 
-  // National Champion
-  h += '<div class="card" style="padding:18px;border-left:4px solid var(--gld2);">'
-    + '<div style="font-size:10px;color:var(--txt2);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;">National Champion</div>'
-    + '<div style="font-size:22px;font-weight:900;">' + natChamp.name + '</div></div>';
-
-  // Top 10
-  h += '<div class="card" style="padding:18px;">'
-    + '<div style="font-size:10px;color:var(--txt2);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;">Final Top 10</div>';
+  h += '<div class="card"><div class="card-title">Final Top 10</div>';
   topTeams.forEach(function(tm, i) {
     var isU = tm.id === G.tid;
-    h += '<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:12px;">'
-      + '<span><span style="color:var(--txt3);margin-right:6px;font-family:monospace;">#' + (i + 1) + '</span>'
-      + '<span style="color:' + (isU ? 'var(--red)' : 'var(--txt)') + ';font-weight:' + (isU ? '800' : '500') + ';">' + tm.name + (isU ? ' \u25c0' : '') + '</span></span>'
-      + '<span style="font-family:monospace;font-weight:700;color:' + (tm.wins > tm.loss ? 'var(--grn2)' : 'var(--txt)') + ';">' + tm.wins + '-' + tm.loss + '</span></div>';
+    h += '<div class="leader-row"><div class="leader-rank">' + (i + 1) + '</div>'
+      + '<div class="leader-name" style="' + (isU ? 'font-weight:900;color:var(--blu);' : '') + '">' + tm.name + '</div>'
+      + '<div style="font-family:var(--mono);font-weight:800;color:' + (tm.wins > tm.loss ? 'var(--grn2)' : 'var(--txt2)') + ';">' + tm.wins + '-' + tm.loss + '</div></div>';
   });
   h += '</div>';
 
-  // Player of the Year
-  if (awards.poy) {
-    h += '<div class="card" style="padding:18px;border-left:4px solid var(--red);">'
-      + '<div style="font-size:10px;color:var(--txt2);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;">Player of the Year</div>'
-      + '<div style="font-size:18px;font-weight:900;color:' + (awards.poy.tid === G.tid ? 'var(--red)' : 'var(--txt)') + ';">' + awards.poy.name + '</div>'
-      + '<div style="font-size:11px;color:var(--txt2);margin-top:2px;">' + awards.poy.team + ' \u00b7 ' + awards.poy.pos + ' \u00b7 ' + awards.poy.ppg + ' PPG / ' + awards.poy.rpg + ' RPG / ' + awards.poy.apg + ' APG</div></div>';
-  }
-
-  // Freshman of the Year
-  if (awards.foy) {
-    h += '<div class="card" style="padding:18px;">'
-      + '<div style="font-size:10px;color:var(--txt2);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;">Freshman of the Year</div>'
-      + '<div style="font-size:16px;font-weight:900;color:' + (awards.foy.tid === G.tid ? 'var(--grn2)' : 'var(--txt)') + ';">' + awards.foy.name + '</div>'
-      + '<div style="font-size:11px;color:var(--txt2);margin-top:2px;">' + awards.foy.team + ' \u00b7 ' + awards.foy.ppg + ' PPG</div></div>';
-  }
-
-  // Coach of the Year
+  if (awards.poy) h += awardCard('Player of the Year', awards.poy.name,
+    awards.poy.team + ' · ' + awards.poy.pos + ' · ' + awards.poy.ppg + ' PPG / ' + awards.poy.rpg + ' RPG / ' + awards.poy.apg + ' APG',
+    'var(--blu)', awards.poy.tid === G.tid);
+  if (awards.foy) h += awardCard('Freshman of the Year', awards.foy.name,
+    awards.foy.team + ' · ' + awards.foy.ppg + ' PPG', 'var(--grn)', awards.foy.tid === G.tid);
   if (awards.coy) {
-    var coachName = awards.coy.coach ? awards.coy.coach.firstName + ' ' + awards.coy.coach.lastName : 'Staff';
-    h += '<div class="card" style="padding:18px;">'
-      + '<div style="font-size:10px;color:var(--txt2);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;">Coach of the Year</div>'
-      + '<div style="font-size:16px;font-weight:900;color:' + (awards.coy.id === G.tid ? 'var(--gld2)' : 'var(--txt)') + ';">' + coachName + '</div>'
-      + '<div style="font-size:11px;color:var(--txt2);margin-top:2px;">' + awards.coy.name + ' (' + awards.coy.wins + '-' + awards.coy.loss + ')</div></div>';
+    var cn = awards.coy.coach ? awards.coy.coach.firstName + ' ' + awards.coy.coach.lastName : 'Staff';
+    h += awardCard('Coach of the Year', cn, awards.coy.name + ' (' + awards.coy.wins + '-' + awards.coy.loss + ')',
+      'var(--gld)', awards.coy.id === G.tid);
   }
-
   h += '</div>';
 
-  // RIGHT — Your program
-  h += '<div style="display:flex;flex-direction:column;gap:14px;">';
-
-  // Your season card
-  h += '<div class="card" style="padding:20px;background:linear-gradient(145deg,var(--s2),var(--s1));">'
-    + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">'
-    + '<div><div style="font-size:24px;font-weight:900;letter-spacing:-.5px;">' + t.name + '</div>'
-    + '<div style="font-size:13px;color:var(--red);font-weight:700;margin-top:2px;">' + t.wins + '-' + t.loss + ' (' + t.cWins + '-' + t.cLoss + ' ' + t.conf + ')</div></div>'
-    + '<div style="text-align:right;"><div style="font-size:10px;color:var(--txt2);">NET</div><div style="font-size:22px;font-weight:900;">#' + rank + '</div></div></div>'
-    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
-    + '<div style="background:rgba(0,0,0,.04);padding:10px;border-radius:4px;"><div style="font-size:9px;color:var(--txt3);text-transform:uppercase;">Tournament</div><div style="font-size:14px;font-weight:700;margin-top:2px;">' + tf + '</div></div>'
-    + '<div style="background:rgba(0,0,0,.04);padding:10px;border-radius:4px;"><div style="font-size:9px;color:var(--txt3);text-transform:uppercase;">Prestige</div><div style="font-size:14px;font-weight:700;margin-top:2px;">' + (t.schoolPrestige || '--') + '</div></div>'
+  // RIGHT — your program
+  h += '<div>';
+  h += '<div class="card"><div class="card-title">Your Season</div>'
+    + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">'
+    + '<div><div style="font-size:22px;font-weight:900;">' + t.name + '</div>'
+    + '<div style="font-size:13px;color:var(--blu);font-weight:700;margin-top:2px;">' + t.wins + '-' + t.loss + ' (' + t.cWins + '-' + t.cLoss + ' ' + t.conf + ')</div></div>'
+    + '<div style="text-align:right;"><div style="font-size:10px;color:var(--txt3);font-weight:700;">NET</div><div style="font-family:var(--mono);font-size:24px;font-weight:900;">#' + rank + '</div></div></div>'
+    + '<div class="grid-2" style="gap:8px;">'
+    + '<div style="background:var(--s2);padding:10px;border-radius:8px;"><div style="font-size:9px;color:var(--txt3);font-weight:700;">TOURNAMENT</div><div style="font-size:14px;font-weight:800;margin-top:2px;">' + tf + '</div></div>'
+    + '<div style="background:var(--s2);padding:10px;border-radius:8px;"><div style="font-size:9px;color:var(--txt3);font-weight:700;">PRESTIGE</div><div style="font-size:14px;font-weight:800;margin-top:2px;">' + (t.schoolPrestige || '—') + '</div></div>'
     + '</div></div>';
 
-  // All-American
   if (awards.allAmerican.length) {
-    h += '<div class="card" style="padding:18px;">'
-      + '<div style="font-size:10px;color:var(--txt2);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;">All-American Team</div>';
+    h += '<div class="card"><div class="card-title">All-American Team</div>';
     awards.allAmerican.forEach(function(p) {
       var isU = p.tid === G.tid;
-      h += '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(0,0,0,.03);font-size:12px;">'
-        + '<span style="color:' + (isU ? 'var(--red)' : 'var(--txt)') + ';font-weight:' + (isU ? '800' : '600') + ';">' + p.name + ' <span style="color:var(--txt3);font-size:10px;">' + p.pos + ' \u00b7 ' + p.team + '</span></span>'
-        + '<span style="font-family:monospace;color:var(--txt2);">' + p.ppg + ' / ' + p.rpg + ' / ' + p.apg + '</span></div>';
+      h += '<div class="leader-row"><div class="leader-name" style="' + (isU ? 'font-weight:900;color:var(--blu);' : '') + '">' + p.name
+        + '<small>' + p.pos + ' · ' + p.team + '</small></div>'
+        + '<div style="font-family:var(--mono);font-size:12px;color:var(--txt2);">' + p.ppg + ' / ' + p.rpg + ' / ' + p.apg + '</div></div>';
     });
     h += '</div>';
   }
 
-  // Your Conference All-Conference
   if (awards.userAllConf.length) {
-    h += '<div class="card" style="padding:18px;">'
-      + '<div style="font-size:10px;color:var(--txt2);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;">All-' + awards.userConf + ' Team</div>';
+    h += '<div class="card"><div class="card-title">All-' + awards.userConf + ' Team</div>';
     awards.userAllConf.forEach(function(p) {
       var isU = p.tid === G.tid;
-      h += '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(0,0,0,.03);font-size:12px;">'
-        + '<span style="color:' + (isU ? 'var(--red)' : 'var(--txt)') + ';font-weight:' + (isU ? '800' : '600') + ';">' + p.name + ' <span style="color:var(--txt3);font-size:10px;">' + p.team + '</span></span>'
-        + '<span style="font-family:monospace;color:var(--txt2);">' + p.ppg + ' PPG</span></div>';
+      h += '<div class="leader-row"><div class="leader-name" style="' + (isU ? 'font-weight:900;color:var(--blu);' : '') + '">' + p.name
+        + '<small>' + p.team + '</small></div>'
+        + '<div style="font-family:var(--mono);font-size:12px;color:var(--txt2);">' + p.ppg + ' PPG</div></div>';
     });
     h += '</div>';
   }
 
-  // Skill Points Earned
-  h += '<div class="card" style="padding:18px;border-left:4px solid var(--grn);">'
-    + '<div style="font-size:10px;color:var(--txt2);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;">Coaching XP Earned</div>'
-    + '<div style="font-size:28px;font-weight:900;color:var(--grn2);margin-bottom:8px;">' + skillPts.length + ' skill point' + (skillPts.length !== 1 ? 's' : '') + '</div>';
+  h += '<div class="card" style="border-left:4px solid var(--grn);">'
+    + '<div class="card-title">Coaching XP Earned</div>'
+    + '<div style="font-family:var(--mono);font-size:30px;font-weight:900;color:var(--grn2);margin-bottom:8px;">' + skillPts.length + ' <span style="font-size:14px;">skill point' + (skillPts.length !== 1 ? 's' : '') + '</span></div>';
   if (skillPts.length) {
     skillPts.forEach(function(label) {
-      h += '<div style="font-size:11px;color:var(--grn2);padding:2px 0;">\u2713 ' + label + '</div>';
+      h += '<div style="font-size:12px;color:var(--grn2);padding:3px 0;">✓ ' + label + '</div>';
     });
   } else {
-    h += '<div style="font-size:11px;color:var(--txt3);">No achievements this season.</div>';
+    h += '<div style="font-size:12px;color:var(--txt3);">No achievements this season.</div>';
   }
   h += '</div>';
 
-  h += '</div>'; // close right
-  h += '</div>'; // close grid
+  h += '</div></div>';
 
-  // CTA
-  h += '<div style="margin-top:24px;text-align:center;">'
-    + '<div class="btn btn-red" onclick="beginOffseason()" style="display:inline-block;padding:14px 40px;font-size:14px;font-weight:800;">BEGIN OFFSEASON \u25b6</div></div>';
+  h += '<div style="margin-top:20px;text-align:center;">'
+    + '<button class="btn btn-red" style="padding:14px 44px;font-size:14px;" data-action="begin-offseason">BEGIN OFFSEASON ▶</button></div>';
 
   return h;
 }

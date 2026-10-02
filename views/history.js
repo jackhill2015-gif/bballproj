@@ -1,114 +1,146 @@
 // ═══════════════════════════════════════════════════════════
 //  HOOPS OS — views/history.js
-//  Coach career timeline, dynasty history, league champions
+//  Dynasty almanac: coach resume, season timeline, national
+//  champions, program record book, coaching milestones,
+//  trophy case. (Fixes the old dead view that rendered into
+//  a nonexistent element.)
 // ═══════════════════════════════════════════════════════════
 
 import { ge, fR } from '../utils.js';
 import { G } from '../state.js';
 
+function finishBadge(tf) {
+  if (tf === 'CHAMP') return '<span class="tag" style="background:var(--gld-soft);color:var(--gld2);">🏆 National Champion</span>';
+  if (tf === 'Runner-Up') return '<span class="tag" style="background:var(--s3);color:var(--txt2);">Runner-Up</span>';
+  if (tf === 'Final Four') return '<span class="tag" style="background:rgba(128,90,213,.10);color:#6d3fc0;">Final Four</span>';
+  if (tf === 'Elite Eight') return '<span class="tag" style="background:var(--s3);color:var(--txt2);">Elite 8</span>';
+  if (tf === 'Sweet 16') return '<span class="tag" style="background:var(--s3);color:var(--txt2);">Sweet 16</span>';
+  if (tf === 'Round of 32') return '<span class="tag" style="background:var(--s3);color:var(--txt3);">Round of 32</span>';
+  if (tf === 'Round of 64') return '<span class="tag" style="background:var(--s3);color:var(--txt3);">Round of 64</span>';
+  if (tf === 'Conf Tourney') return '<span class="tag t-cf">Conf Tourney</span>';
+  return '';
+}
+
+// ── Trophy case: derived from career data ─────────────────
+function trophies() {
+  var out = [];
+  var hist = G.history || [];
+  var titles = hist.filter(function(x) { return x.championship; }).length;
+  var f4 = hist.filter(function(x) { return x.tourneyFinish === 'Final Four' || x.championship; }).length;
+  if (titles > 0) out.push({ ico: '🏆', name: 'National Champion', desc: titles + '× — ' + hist.filter(function(x){return x.championship;}).map(function(x){return x.year;}).join(', ') });
+  if (f4 > 0) out.push({ ico: '🎖️', name: 'Final Four', desc: f4 + ' appearances' });
+  var confT = hist.filter(function(x) { return x.confTitle; }).length;
+  if (confT > 0) out.push({ ico: '🥇', name: 'Conference Champion', desc: confT + '×' });
+  var best = null;
+  hist.forEach(function(x) { if (!best || x.wins > best.wins) best = x; });
+  if (best && best.wins >= 25) out.push({ ico: '🔥', name: '25-Win Season', desc: best.wins + '-' + best.loss + ' in ' + best.year });
+  if (G.coach.careerWins >= 100) out.push({ ico: '💯', name: 'Century Club', desc: G.coach.careerWins + ' career wins' });
+  if (G.coach.awards && G.coach.awards.length) out.push({ ico: '⭐', name: 'Coach of the Year', desc: G.coach.awards.length + '×' });
+  return out;
+}
+
+// ── Program record book: bests across recorded seasons ────
+function recordBook() {
+  var hist = G.history || [];
+  if (!hist.length) return [];
+  var rows = [];
+  var mostWins = hist.reduce(function(a, b) { return b.wins > a.wins ? b : a; }, hist[0]);
+  rows.push({ label: 'Most wins, season', val: mostWins.wins + '-' + mostWins.loss, note: mostWins.year });
+  var bestPct = hist.reduce(function(a, b) {
+    var pa = a.wins / Math.max(1, a.wins + a.loss), pb = b.wins / Math.max(1, b.wins + b.loss);
+    return pb > pa ? b : a;
+  }, hist[0]);
+  rows.push({ label: 'Best win %, season', val: (bestPct.wins / Math.max(1, bestPct.wins + bestPct.loss) * 100).toFixed(1) + '%', note: bestPct.year });
+  var bestRank = hist.reduce(function(a, b) { return b.rank < a.rank ? b : a; }, hist[0]);
+  rows.push({ label: 'Best final rank', val: '#' + bestRank.rank, note: bestRank.year });
+  // Longest recorded streak of 20+ win seasons
+  var run = 0, bestRun = 0;
+  hist.forEach(function(x) { run = x.wins >= 20 ? run + 1 : 0; bestRun = Math.max(bestRun, run); });
+  if (bestRun >= 2) rows.push({ label: '20-win seasons in a row', val: bestRun, note: 'program best' });
+  return rows;
+}
+
 export function renderHistory() {
-  var el = ge('history-content'); if (!el) return;
+  var el = ge('history-content');
+  if (!el) return;
+  var c = G.coach || {};
+  var hist = G.history || [];
+  var totalW = hist.reduce(function(a, b) { return a + b.wins; }, 0);
+  var totalL = hist.reduce(function(a, b) { return a + b.loss; }, 0);
+  var titles = hist.filter(function(x) { return x.championship; }).length;
+  var confTitles = hist.filter(function(x) { return x.confTitle; }).length;
 
-  var c = G.coach;
-  var totalW = G.history.reduce(function(a, b) { return a + b.wins; }, 0);
-  var totalL = G.history.reduce(function(a, b) { return a + b.loss; }, 0);
-  var titles = G.history.filter(function(h) { return h.championship; }).length;
-  var confTitles = G.history.filter(function(h) { return h.confTitle; }).length;
-  var f4s = G.history.filter(function(h) { return h.tourneyFinish === 'F4' || h.championship; }).length;
+  var h = '<div style="margin-bottom:12px;"><div class="sec-head">Dynasty Almanac</div>'
+    + '<div class="sec-sub">Every season, every title, every milestone — the permanent record.</div></div>';
 
-  var h = '';
-
-  // ── Coach Resume Card ──
-  h += '<div style="background:var(--s2);border:1px solid var(--bdr);border-radius:6px;padding:16px;margin-bottom:16px;">'
-    + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">'
-    + '<div>'
-    + '<div style="font-size:18px;font-weight:900;">Coach ' + c.firstName + ' ' + c.lastName + '</div>'
-    + '<div style="font-size:11px;color:var(--txt2);margin-top:2px;">Age ' + c.age + ' \u00b7 Year ' + (G.history.length + 1) + ' \u00b7 Currently at ' + G.teams[G.tid].name + '</div>'
-    + '</div>'
-    + '<div style="font-family:monospace;font-size:20px;font-weight:900;color:' + (totalW > totalL ? 'var(--grn2)' : '#dc2626') + ';">' + fR(totalW, totalL) + '</div>'
-    + '</div>';
-
-  // Stats grid
-  h += '<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;">';
-  var resumeStats = [
-    { label: 'SEASONS', val: G.history.length },
-    { label: 'TITLES', val: titles, col: titles > 0 ? 'var(--gld2)' : null },
-    { label: 'CONF TITLES', val: confTitles, col: confTitles > 0 ? 'var(--blu2)' : null },
-    { label: 'FINAL FOURS', val: f4s },
-    { label: 'WIN %', val: (totalW + totalL) > 0 ? ((totalW / (totalW + totalL)) * 100).toFixed(0) + '%' : '--' }
-  ];
-  resumeStats.forEach(function(s) {
-    h += '<div style="text-align:center;padding:8px;background:var(--s3);border-radius:4px;">'
-      + '<div style="font-family:monospace;font-size:18px;font-weight:900;color:' + (s.col || 'var(--txt)') + ';">' + s.val + '</div>'
-      + '<div style="font-size:8px;color:var(--txt3);font-weight:700;letter-spacing:.5px;">' + s.label + '</div></div>';
-  });
-  h += '</div>';
-
-  // Coaching ratings
-  h += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px;">';
-  [{ k: 'off', l: 'OFF' }, { k: 'def', l: 'DEF' }, { k: 'dev', l: 'DEV' }, { k: 'rec', l: 'REC' }].forEach(function(r) {
-    var v = c[r.k] || 70;
-    h += '<div style="text-align:center;padding:4px;background:var(--s3);border-radius:3px;">'
-      + '<div style="font-family:monospace;font-size:14px;font-weight:900;color:var(--red);">' + v + '</div>'
-      + '<div style="font-size:8px;color:var(--txt3);font-weight:700;">' + r.l + '</div></div>';
+  // ── Coach resume ──
+  h += '<div class="card"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:12px;">'
+    + '<div><div style="font-size:19px;font-weight:900;">Coach ' + (c.firstName || '') + ' ' + (c.lastName || '') + '</div>'
+    + '<div style="font-size:12px;color:var(--txt2);margin-top:2px;">Age ' + (c.age || '—') + ' · Level ' + (c.level || 1) + ' · ' + (hist.length + 1) + 'th season · ' + G.teams[G.tid].name + '</div></div>'
+    + '<div style="font-family:var(--mono);font-size:22px;font-weight:900;color:' + (totalW >= totalL ? 'var(--grn2)' : 'var(--red)') + ';">' + fR(totalW, totalL) + '</div></div>'
+    + '<div class="grid-2" style="grid-template-columns:repeat(5,1fr);gap:8px;">';
+  [
+    { l: 'Seasons', v: hist.length },
+    { l: 'Nat Titles', v: titles },
+    { l: 'Conf Titles', v: confTitles },
+    { l: 'Career Wins', v: c.careerWins || 0 },
+    { l: 'Win %', v: (totalW + totalL) ? Math.round(totalW / (totalW + totalL) * 100) + '%' : '—' }
+  ].forEach(function(s) {
+    h += '<div style="text-align:center;padding:10px;background:var(--s2);border-radius:8px;">'
+      + '<div style="font-family:var(--mono);font-size:19px;font-weight:900;">' + s.v + '</div>'
+      + '<div style="font-size:9px;color:var(--txt3);font-weight:700;letter-spacing:.5px;">' + s.l.toUpperCase() + '</div></div>';
   });
   h += '</div></div>';
 
-  // ── Season-by-Season Timeline ──
-  h += '<div style="font-size:16px;font-weight:900;margin-bottom:10px;">Season History</div>';
+  // ── Trophy case ──
+  var tr = trophies();
+  if (tr.length) {
+    h += '<div class="card"><div class="card-title">🏅 Trophy Case</div><div class="grid-3">';
+    tr.forEach(function(t2) {
+      h += '<div style="display:flex;gap:10px;align-items:center;padding:10px;background:var(--s2);border-radius:8px;">'
+        + '<div style="font-size:26px;">' + t2.ico + '</div>'
+        + '<div><div style="font-size:13px;font-weight:800;">' + t2.name + '</div>'
+        + '<div style="font-size:11px;color:var(--txt3);">' + t2.desc + '</div></div></div>';
+    });
+    h += '</div></div>';
+  }
 
-  if (!G.history.length) {
-    h += '<div style="background:var(--s2);border:1px solid var(--bdr);border-radius:6px;padding:20px;text-align:center;color:var(--txt3);">No seasons completed yet. Your story starts now.</div>';
+  // ── Season timeline ──
+  h += '<div class="card"><div class="card-title">Season History</div>';
+  if (!hist.length) {
+    h += '<div style="font-size:13px;color:var(--txt3);">No completed seasons yet. Your story starts now.</div>';
   } else {
-    h += '<div style="background:var(--s2);border:1px solid var(--bdr);border-radius:6px;overflow:hidden;">';
-    G.history.slice().reverse().forEach(function(yr, idx) {
-      var winCol = yr.wins > yr.loss ? 'var(--grn2)' : yr.wins < yr.loss ? '#dc2626' : 'var(--txt)';
+    hist.slice().reverse().forEach(function(yr) {
+      var ch = (c.history || []).find(function(e) { return e.yr === yr.year; });
+      var act = '';
+      if (ch && ch.action === 'Fired') act = ' <span class="tag t-rival">Fired</span>';
+      else if (ch && ch.action === 'Hot Seat') act = ' <span class="tag t-rival">Hot Seat</span>';
+      h += '<div class="leader-row"><div class="leader-rank" style="width:44px;">' + yr.year + '</div>'
+        + '<div class="leader-name"><b>' + fR(yr.wins, yr.loss) + '</b> ' + finishBadge(yr.tourneyFinish) + act
+        + '<small>#' + yr.rank + ' NET · ' + (yr.note || '') + '</small></div></div>';
+    });
+  }
+  h += '</div>';
 
-      // Badges
-      var badges = '';
-      if (yr.championship) badges += '<span style="font-size:9px;font-weight:800;color:var(--gld2);background:rgba(214,158,46,.12);padding:2px 7px;border-radius:3px;margin-left:6px;">\ud83c\udfc6 NATIONAL CHAMPION</span>';
-      if (yr.confTitle && !yr.championship) badges += '<span style="font-size:9px;font-weight:800;color:#63b3ed;background:rgba(49,130,206,.1);padding:2px 7px;border-radius:3px;margin-left:6px;">CONF CHAMP</span>';
-      if (yr.tourneyFinish === 'F4' && !yr.championship) badges += '<span style="font-size:9px;font-weight:800;color:#b794f4;background:rgba(128,90,213,.1);padding:2px 7px;border-radius:3px;margin-left:6px;">FINAL FOUR</span>';
-      if (yr.tourneyFinish === 'E8') badges += '<span style="font-size:9px;font-weight:800;color:var(--txt2);background:var(--s3);padding:2px 7px;border-radius:3px;margin-left:6px;">ELITE 8</span>';
-      if (yr.tourneyFinish === 'S16') badges += '<span style="font-size:9px;font-weight:800;color:var(--txt3);background:var(--s3);padding:2px 7px;border-radius:3px;margin-left:6px;">SWEET 16</span>';
-
-      // Coach history action for this year
-      var coachAction = '';
-      if (c.history) {
-        var ch = c.history.find(function(e) { return e.yr === yr.year; });
-        if (ch) {
-          if (ch.action === 'Fired') coachAction = '<span style="font-size:9px;font-weight:800;color:#dc2626;margin-left:6px;">FIRED</span>';
-          else if (ch.action === 'Hot Seat') coachAction = '<span style="font-size:9px;font-weight:800;color:#dc2626;margin-left:6px;">HOT SEAT</span>';
-          else if (ch.action && ch.action.indexOf('Left for') >= 0) coachAction = '<span style="font-size:9px;font-weight:800;color:var(--gld2);margin-left:6px;">' + ch.action.toUpperCase() + '</span>';
-        }
-      }
-
-      h += '<div style="display:flex;align-items:center;padding:10px 14px;border-bottom:1px solid rgba(0,0,0,.04);gap:12px;">'
-        + '<div style="font-family:monospace;font-size:14px;font-weight:900;color:var(--red);width:40px;flex-shrink:0;">' + yr.year + '</div>'
-        + '<div style="flex:1;min-width:0;">'
-        + '<div style="display:flex;align-items:center;flex-wrap:wrap;">'
-        + '<span style="font-size:13px;font-weight:700;color:var(--txt);">' + fR(yr.wins, yr.loss) + '</span>'
-        + badges + coachAction
-        + '</div>'
-        + '<div style="font-size:10px;color:var(--txt3);margin-top:2px;">' + yr.note + '</div>'
-        + '</div>'
-        + '<div style="font-family:monospace;font-size:12px;font-weight:700;color:' + winCol + ';flex-shrink:0;">' + yr.wins + 'W</div>'
-        + '</div>';
+  // ── Record book ──
+  var rb = recordBook();
+  if (rb.length) {
+    h += '<div class="card"><div class="card-title">📖 Program Record Book</div>';
+    rb.forEach(function(r) {
+      h += '<div class="leader-row"><div class="leader-name">' + r.label + '<small>' + r.note + '</small></div>'
+        + '<div class="leader-val" style="font-size:15px;">' + r.val + '</div></div>';
     });
     h += '</div>';
   }
 
-  // ── League Champions ──
+  // ── National champions ──
   if (G.leagueChamps && G.leagueChamps.length) {
-    h += '<div style="font-size:16px;font-weight:900;margin:16px 0 10px;">National Champions</div>';
-    h += '<div style="background:var(--s2);border:1px solid var(--bdr);border-radius:6px;overflow:hidden;">';
-    G.leagueChamps.slice().reverse().forEach(function(ch) {
+    h += '<div class="card"><div class="card-title">🏆 National Champions</div>';
+    G.leagueChamps.slice().reverse().slice(0, 20).forEach(function(ch) {
       var isU = ch.tid === G.tid;
-      h += '<div style="display:flex;align-items:center;padding:8px 14px;border-bottom:1px solid rgba(0,0,0,.04);gap:12px;">'
-        + '<div style="font-family:monospace;font-size:14px;font-weight:900;color:var(--gld2);width:40px;flex-shrink:0;">' + ch.year + '</div>'
-        + '<div style="font-size:13px;font-weight:' + (isU ? '800' : '600') + ';color:' + (isU ? 'var(--gld2)' : '#fff') + ';">' + ch.name + '</div>'
-        + (isU ? '<span style="font-size:9px;font-weight:800;color:var(--gld2);background:rgba(214,158,46,.1);padding:2px 7px;border-radius:3px;">YOUR DYNASTY</span>' : '')
-        + '</div>';
+      h += '<div class="leader-row"><div class="leader-rank" style="width:44px;color:var(--gld2);">' + ch.year + '</div>'
+        + '<div class="leader-name" style="' + (isU ? 'font-weight:900;color:var(--gld2);' : '') + '">' + ch.name
+        + (isU ? ' <span class="yours-pill">YOURS</span>' : '') + '</div></div>';
     });
     h += '</div>';
   }

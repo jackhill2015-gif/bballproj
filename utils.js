@@ -99,7 +99,10 @@ export function fixMins(rost) {
 }
 
 export function freshS() {
-  return { gp: 0, pts: 0, reb: 0, ast: 0, fgm: 0, fga: 0, stl: 0, blk: 0 };
+  // M9: 3PT/FT/TO splits + offensive rebounds wired through both sim paths so
+  // the engine can be calibrated against real D1 bands (3P%, 3PA rate, FT%,
+  // TO%, OR%). oreb is a subset of reb (kept separate for OR% measurement).
+  return { gp: 0, pts: 0, reb: 0, oreb: 0, ast: 0, fgm: 0, fga: 0, tpm: 0, tpa: 0, ftm: 0, fta: 0, to: 0, stl: 0, blk: 0 };
 }
 
 // ── Team Style / Identity ────────────────────────────────
