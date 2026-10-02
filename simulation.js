@@ -688,11 +688,3 @@ export function simGame(home, away, userIsHome) {
   away.rost.forEach(function(p) { if (origMins.has(p)) p.mins = origMins.get(p); });
   return { homeScore: hScore, awayScore: aScore };
 }
-
-// M9 NOTE: distributeStats is intentionally kept as a no-op for now.
-// Stats accumulate on player objects inside simGame, so it does nothing — but
-// season.js still imports it (line 12) and calls it (simCPUWeek). Deleting this
-// export before those call sites are removed would break module loading
-// entirely. S-team: remove the season.js import + calls first, then delete this.
-// distributeStats is no longer needed — kept as no-op for backward compat
-export function distributeStats(team, teamScore) {}

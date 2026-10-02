@@ -153,12 +153,12 @@ check(nameMismatch.length === 0, 'R1: goneTo matches the signed team name', 'bad
 console.log('── R5: board capped at 30 rows ──');
 R.renderOffseason();
 const html = _els['offseason-content'].innerHTML;
-const rows = (html.match(/showDetail\(/g) || []).length;
+const rows = (html.match(/data-rid="/g) || []).length;
 check(rows <= 30 && rows === 30, 'board renders exactly 30 rows w/ show-more', 'rows=' + rows);
-check(html.indexOf('showMoreBoard()') >= 0, 'show-more button present');
+check(html.indexOf('data-show-more') >= 0, 'show-more button present');
 R.showMoreBoard();
 const html2 = _els['offseason-content'].innerHTML;
-const rows2 = (html2.match(/showDetail\(/g) || []).length;
+const rows2 = (html2.match(/data-rid="/g) || []).length;
 check(rows2 === 60, 'show-more adds 30 rows', 'rows=' + rows2);
 
 console.log('── doOffseason: R2 signees join, R6 class cap, R9 portal before walk-ons ──');
@@ -289,17 +289,17 @@ while (!r3ok && attempts < 12) {
   const jobs2 = globalThis.window._carouselJobs || [];
   const html3 = _els['offseason-content'].innerHTML;
   if (jobs2.some(j => j.team.id === tid)) {
-    r3ok = html3.indexOf('applyForJob(' + tid + ')') < 0;
+    r3ok = html3.indexOf('data-apply-job="' + tid + '"') < 0;
     check(r3ok, 'R3: rejected team id ' + tid + ' hidden on re-render (attempt ' + attempts + ')');
   }
 }
 Math.random = realRandom;
 if (!r3ok) { failures++; console.log('  FAIL: R3 — rejected job never regenerated within 12 attempts'); }
 else console.log('  ok: R3 stable-id hiding verified');
-// onclick ids are team ids, not render indices
+// data-apply-job ids are team ids, not render indices
 R.renderOffseason();
 const html4 = _els['offseason-content'].innerHTML;
-const ids = (html4.match(/applyForJob\((\d+)\)/g) || []).map(s => +s.match(/\d+/)[0]);
+const ids = (html4.match(/data-apply-job="(\d+)"/g) || []).map(s => +s.match(/\d+/)[0]);
 const jobIds = (globalThis.window._carouselJobs || []).map(j => j.team.id);
 check(ids.length > 0 && ids.every(id => jobIds.indexOf(id) >= 0),
   'R3: applyForJob wired with team ids', 'ids=' + ids.slice(0, 5).join(','));

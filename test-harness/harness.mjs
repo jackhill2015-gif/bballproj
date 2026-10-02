@@ -383,7 +383,10 @@ stage('utils edge cases', () => {
   U.fixMins([{ mins: 0 }]); // short roster must not crash
   const g1 = SIM.calcGrowth(SIM.genPlayer(70, 'PG', 'FR'), 70);
   assert(isNum(g1.sht), 'calcGrowth', '');
-  assert(U.getTeamStyle('ACC', 95).identity === 'The Machine', 'getTeamStyle', '');
+  const _sty = U.getTeamStyle('ACC', 95);
+  assert(_sty && ['balanced','motion','drive','set','early'].indexOf(_sty.off) >= 0 &&
+    ['man','2-3','3-2','1-3-1','box1'].indexOf(_sty.def) >= 0 &&
+    typeof _sty.identity === 'string' && _sty.identity.indexOf(' / ') > 0, 'getTeamStyle', '');
 });
 
 stage('loadState with legacy (v1) save', () => {

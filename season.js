@@ -9,7 +9,7 @@ import {
   ri, clamp, getTOvr, fixMins, freshS, getTeamStyle, getOvr, ge, txt
 } from './utils.js';
 import { G, LS, SetupState, saveState } from './state.js';
-import { genPlayer, simGame, distributeStats, calcGrowth } from './simulation.js';
+import { genPlayer, simGame, calcGrowth } from './simulation.js';
 import { rollEvents } from './events.js';
 
 // ── Late-Binding Registry ────────────────────────────────
@@ -372,8 +372,6 @@ export function simCPUWeek() {
     // Stats
     homeTeam.ts.pts += hScore; homeTeam.ts.opp += aScore; homeTeam.ts.games++;
     awayTeam.ts.pts += aScore; awayTeam.ts.opp += hScore; awayTeam.ts.games++;
-    distributeStats(homeTeam, hScore);
-    distributeStats(awayTeam, aScore);
   });
   // CPU recruit drift
   G.recruits.forEach(function(r) {
@@ -428,9 +426,8 @@ export function recordResult() {
     var lossPenalty = oppRank2 > 150 ? -35 : oppRank2 > 64 ? -25 : -15;
     t.pts += lossPenalty;
   }
-  [LS.tH, LS.tA].forEach(function(tm) {
-    tm.rost.forEach(function(p) { if (p.mins > 0) p.s.gp++; });
-  });
+  // Note: GP is counted once per game — simGame() increments it internally
+  // for quick/auto-simmed games, and launchSim() increments at tipoff for live games.
   addLog(won ? 'w' : 'l', G.gi + 1,
     '<b>' + (won ? 'W' : 'L') + '</b> vs <b>' + opp.name + '</b>  ' + uScore + '\u2013' + oScore);
   toast((won ? 'W ' : 'L ') + uScore + '-' + oScore + ' vs ' + opp.name,
