@@ -55,7 +55,7 @@ COM.run (constants.js), RECRUIT_PRESTIGE_GATES (constants.js), fmtR/pct/ord (uti
 ## P2 — Game feel (implement WITH the UI rebuild; ranked by impact/effort)
 1. NIL currency (`G.pts`) spendable weekly boost shop on dashboard (display balance in topbar).
 2. Weekly in-season recruiting decision (small point budget per week).
-3. Timeouts in live sim (3/game, kills opponent momentum).
+3. ~~Timeouts in live sim~~ — CANCELLED per jack (2026-10-02): live game view stays WATCH-ONLY, zero mid-game coaching controls. All strategy (schemes/rotation/usage) is pre-game only.
 4. Coach XP/level: XP per win/upset/title, visible XP bar, level-up perks.
 5. Rank-movement arrows + poll history (G.rankHistory[]).
 6. Mid-season award races panel (POY watch, user's players in stat races).
