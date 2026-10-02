@@ -83,10 +83,11 @@ function gameRow(game, week, natSorted, team, rivals) {
     h += '<div class="sched-badge"></div>';
   }
 
-  h += '<div class="sched-ha">' + (game.home ? 'vs' : '@') + '</div>';
-  h += '<div class="sched-opp">' + rkStr + opp.name
-    + '<small>' + (game.conf ? 'CONF · ' : '') + (rivals[opp.id] && !isPlayed ? 'RIVALRY · ' : '') + 'OVR ' + getTOvr(opp) + '</small></div>';
-  h += '<div class="sched-rec">' + opp.wins + '-' + opp.loss + '</div>';
+  // Dense one-liner: opponent + context on a single line, score right
+  var ctx = (game.conf ? 'conf · ' : '') + (rivals[opp.id] && !isPlayed ? 'rivalry · ' : '')
+    + opp.wins + '-' + opp.loss + ' · OVR ' + getTOvr(opp);
+  h += '<div class="sched-opp-one">' + (game.home ? 'vs' : '@') + ' ' + rkStr + opp.name
+    + '<small>' + ctx + '</small></div>';
 
   if (isPlayed) {
     h += '<div class="sched-score" style="color:' + (isWin ? 'var(--grn2)' : 'var(--txt2)') + ';">' + game.uScore + '–' + game.oScore + '</div>';

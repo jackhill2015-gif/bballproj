@@ -99,14 +99,14 @@ function renderSchoolCard() {
 
 function renderNotifications() {
   var ns = notifState();
-  return '<div class="notif-card" data-action="notif-toggle" role="button" tabindex="0" aria-expanded="' + ns.open + '">'
+  var h = '<div class="notif-card" data-action="notif-toggle" role="button" tabindex="0" aria-expanded="' + ns.open + '">'
     + '<div class="notif-row"><span class="notif-label">Notifications</span>'
     + (ns.unread ? '<span class="notif-badge">' + ns.unread + '</span>' : '')
     + '<span class="notif-chev">' + (ns.open ? '▲' : '▼') + '</span></div>';
   if (ns.open) {
     h += '<div class="notif-body">';
     var logs = (G.logs || []).slice(0, 10);
-    if (!logs.length) h += '<div style="font-size:13px;color:var(--txt3);padding:8px 0;">Nothing yet — sim your first game.</div>';
+    if (!logs.length) h += '<div style="font-size:12px;color:var(--txt3);padding:6px 0;">Nothing yet — sim your first game.</div>';
     logs.forEach(function(lg) {
       var badge = lg.type === 'w' ? 'W' : lg.type === 'l' ? 'L' : '•';
       h += '<div class="headline"><span class="hbadge ' + lg.type + '">' + badge + '</span><span>' + lg.text + '</span></div>';

@@ -123,28 +123,29 @@ export function renderHistory() {
   // ── Record book ──
   var rb = recordBook();
   if (rb.length) {
-    h += '<div class="sec-block"><div class="card-title">Program Record Book</div>';
+    h += '<div class="sec-block"><div class="card-title">Program Record Book</div>'
+      + '<div class="tbl-wrap"><table class="tbl"><tbody>';
     rb.forEach(function(r) {
-      h += '<div class="leader-row"><div class="leader-name">' + r.label + '<small>' + r.note + '</small></div>'
-        + '<div class="leader-val" style="font-size:15px;">' + r.val + '</div></div>';
+      h += '<tr><td class="tname">' + r.label + ' <span class="dim">' + r.note + '</span></td>'
+        + '<td class="num" style="font-size:14px;font-weight:800;">' + r.val + '</td></tr>';
     });
-    h += '</div>';
+    h += '</tbody></table></div></div>';
   }
 
   // ── Player record book (single game / season / career) ──
   var pb = bookFor(G.tid);
   h += '<div class="sec-block"><div class="card-title">Player Record Book</div>'
-    + '<div style="font-size:12px;color:var(--txt3);margin-bottom:6px;">' + G.teams[G.tid].name + ' all-time marks. First seasons write the history.</div>';
+    + '<div style="font-size:11px;color:var(--txt3);margin-bottom:8px;">' + G.teams[G.tid].name + ' all-time marks. First seasons write the history.</div>';
   [['game', 'Single Game'], ['season', 'Single Season'], ['career', 'Career']].forEach(function(sc) {
-    h += '<div style="font-size:11px;font-weight:800;color:var(--txt3);text-transform:uppercase;letter-spacing:.4px;margin:10px 0 2px;">' + sc[1] + '</div>';
+    h += '<div class="rb-scope">' + sc[1] + '</div><div class="tbl-wrap"><table class="tbl"><tbody>';
     ['pts', 'reb', 'ast', 'stl', 'blk'].forEach(function(st) {
       var e = pb[sc[0]][st];
-      h += '<div class="leader-row"><div class="leader-name">' + STAT_LABELS[st]
-        + (e
-          ? '<small>' + e.name + ' · ' + e.yr + '</small>'
-          : '<small>No record yet</small>')
-        + '</div><div class="leader-val" style="font-size:15px;">' + (e ? e.v : '—') + '</div></div>';
+      h += '<tr><td class="tname">' + STAT_LABELS[st]
+        + (e ? ' <span class="dim">' + e.name + ' · ' + e.yr + '</span>'
+             : ' <span class="dim">No record yet</span>')
+        + '</td><td class="num" style="font-size:14px;font-weight:800;">' + (e ? e.v : '—') + '</td></tr>';
     });
+    h += '</tbody></table></div>';
   });
   h += '</div>';
 

@@ -254,15 +254,15 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 .view { display: none; }
 .view.on { display: block; }
 
-/* ── Topbar: slim, quiet ── */
+/* ── Topbar: dark navy (CBS signal), white type, blue advance ── */
 #topbar {
   position: sticky; top: 0; z-index: 500;
-  background: #fff; border-bottom: 1px solid var(--bdr2);
+  background: #14243f; border-bottom: 2px solid var(--blu);
   display: flex; align-items: center; gap: 10px;
-  padding: 6px 12px; min-height: 52px;
+  padding: 6px 12px; min-height: 50px;
 }
-.tb-brand { font-size: 15px; font-weight: 900; letter-spacing: 1.5px; color: var(--txt); white-space: nowrap; }
-.tb-brand em { font-style: normal; color: var(--blu); font-weight: 300; }
+.tb-brand { font-size: 15px; font-weight: 900; letter-spacing: 1.5px; color: #fff; white-space: nowrap; }
+.tb-brand em { font-style: normal; color: #7fa8e8; font-weight: 300; }
 #advance-wrap { position: relative; }
 #advance-btn {
   display: flex; align-items: center; gap: 6px;
@@ -292,19 +292,19 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
   color: var(--txt2); padding: 6px 4px; overflow: hidden; white-space: nowrap;
   flex: 1 1 auto; min-width: 0; /* shrink before pushing siblings off-screen */
 }
-.tb-wk { font-size: 10px; font-weight: 800; color: var(--blu); letter-spacing: .6px; text-transform: uppercase; }
-.tb-vs { color: var(--txt3); }
-.tb-opp { font-weight: 600; color: var(--txt); overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
-.tb-rec { font-size: 11px; color: var(--txt3); font-variant-numeric: tabular-nums; }
+.tb-wk { font-size: 10px; font-weight: 800; color: #8fb4ec; letter-spacing: .6px; text-transform: uppercase; }
+.tb-vs { color: #93a1bb; }
+.tb-opp { font-weight: 600; color: #fff; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
+.tb-rec { font-size: 11px; color: #93a1bb; font-variant-numeric: tabular-nums; }
 .tb-nil {
   display: flex; align-items: center; gap: 5px; margin-left: auto;
-  font-size: 12px; font-weight: 800; color: var(--txt); white-space: nowrap;
-  border-left: 1px solid var(--bdr); padding-left: 10px;
+  font-size: 12px; font-weight: 800; color: #fff; white-space: nowrap;
+  border-left: 1px solid #2b3c5e; padding-left: 10px;
 }
-.tb-nil .nil-lbl { font-size: 9px; font-weight: 700; letter-spacing: .6px; color: var(--txt3); }
+.tb-nil .nil-lbl { font-size: 9px; font-weight: 700; letter-spacing: .6px; color: #8fb4ec; }
 .tb-meta { text-align: right; line-height: 1.3; white-space: nowrap; }
-.tb-phase { font-size: 10px; font-weight: 800; letter-spacing: .8px; color: var(--blu); text-transform: uppercase; }
-.tb-yr { font-size: 10px; color: var(--txt3); font-weight: 600; }
+.tb-phase { font-size: 10px; font-weight: 800; letter-spacing: .8px; color: #8fb4ec; text-transform: uppercase; }
+.tb-yr { font-size: 10px; color: #93a1bb; font-weight: 600; }
 @media (max-width: 700px) {
   .tb-matchup .tb-rec, .tb-vs { display: none; }
   .tb-opp { max-width: 120px; }
@@ -390,13 +390,13 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 
 /* ═══ DASHBOARD ═══ */
 /* School identity: plain type block, no card chrome */
-.school-card { padding: 4px 0 0; margin-bottom: 4px; }
+.school-card { padding: 2px 0 0; margin-bottom: 2px; }
 .sc-top { display: flex; align-items: baseline; gap: 10px; }
 .sc-id { flex: 1; min-width: 0; }
-.sc-name { font-size: 19px; font-weight: 800; letter-spacing: -.2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sc-name { font-size: 18px; font-weight: 800; letter-spacing: -.2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .sc-conf { font-size: 11px; color: var(--txt3); font-weight: 600; text-transform: uppercase; letter-spacing: .6px; }
-.sc-record { font-size: 24px; font-weight: 800; font-variant-numeric: tabular-nums; margin: 2px 0 4px; }
-.sc-meta { font-size: 12px; color: var(--txt2); padding-bottom: 10px; border-bottom: 1px solid var(--bdr); }
+.sc-record { font-size: 21px; font-weight: 800; font-variant-numeric: tabular-nums; margin: 1px 0 3px; }
+.sc-meta { font-size: 11.5px; color: var(--txt2); padding-bottom: 8px; border-bottom: 1px solid var(--bdr); }
 .sc-meta b { color: var(--txt); font-weight: 800; }
 .sc-lab { font-size: 9px; font-weight: 700; color: var(--txt3); text-transform: uppercase; letter-spacing: .6px; }
 /* (sc-cols / sc-val retired with the boxed school card) */
@@ -466,9 +466,9 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 .sec-block { margin-bottom: 18px; }
 /* ═══ SCHEDULE ═══ */
 .sched-row {
-  display: flex; align-items: center; gap: 8px; padding: 7px 0;
-  border-bottom: 1px solid var(--bdr); background: none; min-height: 40px;
-  font-size: 12.5px;
+  display: flex; align-items: center; gap: 8px; padding: 4px 0;
+  border-bottom: 1px solid var(--bdr); background: none; min-height: 32px;
+  font-size: 12px;
 }
 .sched-row:last-child { border-bottom: none; }
 .sched-row.next { background: var(--blu-soft); border-radius: 3px; padding-left: 8px; padding-right: 8px; }
@@ -479,32 +479,37 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 .sched-ha { width: 20px; font-size: 11px; color: var(--txt3); flex-shrink: 0; text-align: center; }
 .sched-opp { flex: 1; min-width: 0; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .sched-opp small { display: block; font-weight: 400; color: var(--txt3); font-size: 10px; }
+/* One-line schedule variant: opponent + context inline */
+.sched-opp-one { flex: 1; min-width: 0; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sched-opp-one small { font-weight: 400; color: var(--txt3); font-size: 10px; margin-left: 6px; }
 .sched-rec { width: 52px; font-size: 11px; color: var(--txt3); text-align: center; flex-shrink: 0; font-variant-numeric: tabular-nums; }
 .sched-score { width: 64px; text-align: right; font-size: 12.5px; font-weight: 800; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+.sched-wk { width: 44px; flex-shrink: 0; font-size: 10px; font-weight: 800; color: var(--txt3); font-variant-numeric: tabular-nums; }
+.sched-badge { width: 44px; flex-shrink: 0; }
 
 /* ═══ ROSTER / DEPTH CHART ═══ */
-/* Flat rows, dividers only — tier headers carry the grouping */
-.depth-row { background: none; border: none; border-bottom: 1px solid var(--bdr); border-radius: 0; padding: 8px 0; margin-bottom: 0; }
+/* Flat rows, dividers only — tier headers carry the grouping. Dense: ~62px/row */
+.depth-row { background: none; border: none; border-bottom: 1px solid var(--bdr); border-radius: 0; padding: 5px 0; margin-bottom: 0; }
 .depth-row:last-of-type { border-bottom: none; }
 .depth-row.benched { opacity: .55; }
-.dr-top { display: flex; align-items: center; gap: 8px; }
-.dr-name { flex: 1; min-width: 0; font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.dr-sub { font-size: 10.5px; color: var(--txt3); font-weight: 400; margin-top: 1px; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.dr-ovr { text-align: right; flex-shrink: 0; min-width: 44px; }
-.dr-ovr b { font-size: 16px; font-weight: 800; font-variant-numeric: tabular-nums; }
-.dr-ovr small { display: block; font-size: 9px; color: var(--txt3); font-weight: 700; }
+.dr-top { display: flex; align-items: center; gap: 6px; }
+.dr-name { flex: 1; min-width: 0; font-size: 12.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dr-sub { font-size: 10px; color: var(--txt3); font-weight: 400; margin-top: 0; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dr-ovr { text-align: right; flex-shrink: 0; min-width: 40px; }
+.dr-ovr b { font-size: 15px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.dr-ovr small { display: block; font-size: 8.5px; color: var(--txt3); font-weight: 700; }
 .nudge { display: flex; gap: 2px; flex-shrink: 0; }
 .nudge-btn {
-  width: 40px; height: 40px; border-radius: var(--radius); border: 1px solid var(--bdr2);
-  background: #fff; font-size: 13px; color: var(--txt2); cursor: pointer;
+  width: 30px; height: 30px; border-radius: var(--radius); border: 1px solid var(--bdr2);
+  background: #fff; font-size: 11px; color: var(--txt2); cursor: pointer;
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
 .nudge-btn:active { background: var(--blu-soft); border-color: var(--blu); }
 .nudge-btn:disabled { opacity: .3; cursor: default; }
-.drag-handle { color: var(--txt3); font-size: 14px; cursor: grab; user-select: none; padding: 10px 4px; flex-shrink: 0; touch-action: none; }
-.dr-bot { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
-.mins-val { font-size: 13px; font-weight: 800; width: 30px; text-align: right; flex-shrink: 0; font-variant-numeric: tabular-nums; }
-.tier-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; color: var(--txt3); text-transform: uppercase; margin: 14px 0 6px; padding-bottom: 4px; border-bottom: 1px solid var(--bdr); }
+.drag-handle { color: var(--txt3); font-size: 12px; cursor: grab; user-select: none; padding: 6px 2px; flex-shrink: 0; touch-action: none; }
+.dr-bot { display: flex; align-items: center; gap: 8px; margin-top: 2px; }
+.mins-val { font-size: 12px; font-weight: 800; width: 26px; text-align: right; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+.tier-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; color: var(--txt3); text-transform: uppercase; margin: 10px 0 4px; padding-bottom: 4px; border-bottom: 1px solid var(--bdr); }
 .tier-label:first-of-type { margin-top: 2px; }
 /* Position: plain bold text, not a boxed chip */
 .pos-chip {
@@ -520,7 +525,7 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 input[type=range] { -webkit-appearance: none; appearance: none; height: 4px; border-radius: 2px; background: var(--inset); outline: none; cursor: pointer; }
 input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #fff; border: 2px solid var(--blu); cursor: pointer; }
 input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: #fff; border: 2px solid var(--blu); cursor: pointer; }
-.dr-bot input[type=range], .usage-row input[type=range] { flex: 1; min-height: 40px; background: transparent; }
+.dr-bot input[type=range], .usage-row input[type=range] { flex: 1; min-height: 30px; background: transparent; }
 .dr-bot input[type=range]::-webkit-slider-runnable-track, .usage-row input[type=range]::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: var(--inset); }
 
 /* ═══ STRATEGY ═══ */
@@ -559,56 +564,62 @@ input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 
 .usage-total { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; font-size: 13px; font-weight: 700; }
 
 /* ═══ RECRUITING ═══ */
+/* Dense rows: ~48px, one glanceable line of info per recruit */
 .rc-row {
-  display: flex; align-items: center; gap: 10px; width: 100%; background: none;
+  display: flex; align-items: center; gap: 8px; width: 100%; background: none;
   border: none; border-bottom: 1px solid var(--bdr); border-radius: 0;
-  padding: 8px 0; margin-bottom: 0; min-height: 56px; cursor: pointer; text-align: left;
+  padding: 5px 0; margin-bottom: 0; min-height: 46px; cursor: pointer; text-align: left;
 }
 .rc-row:last-of-type { border-bottom: none; }
 .rc-row:active { background: var(--panel); }
 .rc-row.is-target { border-bottom: 1px solid var(--bdr); }
 .rc-row.is-target .rc-ovr b { color: var(--blu); }
-.rc-row.open { background: var(--blu-soft); border-radius: 3px; padding-left: 8px; padding-right: 8px; }
-.rc-ovr { text-align: right; flex-shrink: 0; min-width: 44px; }
-.rc-ovr b { font-size: 16px; font-weight: 800; font-variant-numeric: tabular-nums; }
-.rc-ovr small { display: block; font-size: 9px; color: var(--txt3); font-weight: 700; }
+.rc-row.open { background: var(--blu-soft); border-radius: 3px; padding-left: 6px; padding-right: 6px; }
+.rc-ovr { text-align: right; flex-shrink: 0; min-width: 40px; }
+.rc-ovr b { font-size: 15px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.rc-ovr small { display: block; font-size: 8.5px; color: var(--txt3); font-weight: 700; }
 .stepper {
-  width: 40px; height: 40px; border-radius: var(--radius); border: 1px solid var(--bdr2);
-  background: #fff; font-size: 18px; font-weight: 700; color: var(--txt); cursor: pointer;
+  width: 32px; height: 32px; border-radius: var(--radius); border: 1px solid var(--bdr2);
+  background: #fff; font-size: 15px; font-weight: 700; color: var(--txt); cursor: pointer;
   display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; user-select: none;
 }
 .stepper:active { background: var(--inset); }
 .stepper.off { opacity: .35; cursor: default; }
 .stepper.plus { background: var(--blu); border-color: var(--blu); color: #fff; }
 .stepper.plus.off { background: #fff; color: var(--txt3); border-color: var(--bdr2); }
-.pts-val { font-size: 15px; font-weight: 800; min-width: 52px; text-align: center; flex-shrink: 0; font-variant-numeric: tabular-nums; }
-.school-row { display: flex; align-items: center; gap: 8px; padding: 3px 0; }
-.school-name { width: 110px; font-size: 11.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-shrink: 0; }
+.pts-val { font-size: 14px; font-weight: 800; min-width: 44px; text-align: center; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+.school-row { display: flex; align-items: center; gap: 8px; padding: 2px 0; }
+.school-name { width: 104px; font-size: 11px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-shrink: 0; }
 .school-bar { flex: 1; height: 5px; background: var(--inset); border-radius: 3px; overflow: hidden; }
 .school-fill { height: 100%; border-radius: 3px; background: var(--blu); }
-.school-pct { width: 40px; text-align: right; font-size: 11px; font-weight: 700; flex-shrink: 0; font-variant-numeric: tabular-nums; color: var(--txt2); }
+.school-pct { width: 38px; text-align: right; font-size: 11px; font-weight: 700; flex-shrink: 0; font-variant-numeric: tabular-nums; color: var(--txt2); }
 .rc-select {
   background: #fff; border: 1px solid var(--bdr2); border-radius: var(--radius); color: var(--txt);
-  padding: 0 10px; font-size: 12px; min-height: 36px; flex-shrink: 0;
+  padding: 0 8px; font-size: 12px; min-height: 32px; flex-shrink: 0;
 }
 .phase-dots { display: flex; gap: 5px; align-items: center; }
 .phase-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--bdr); }
 .phase-dot.on { background: var(--blu); }
-.chance { font-size: 14px; font-weight: 800; font-variant-numeric: tabular-nums; }
-.skill-row { display: flex; align-items: center; gap: 10px; background: none; border: none; border-bottom: 1px solid var(--bdr); border-radius: 0; padding: 10px 0; margin-bottom: 0; }
-.skill-bar { height: 4px; background: var(--inset); border-radius: 2px; overflow: hidden; margin-top: 4px; }
+.chance { font-size: 13px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.skill-row { display: flex; align-items: center; gap: 10px; background: none; border: none; border-bottom: 1px solid var(--bdr); border-radius: 0; padding: 8px 0; margin-bottom: 0; }
+.skill-bar { height: 4px; background: var(--inset); border-radius: 2px; overflow: hidden; margin-top: 3px; }
 .skill-fill { height: 100%; background: var(--blu); border-radius: 2px; }
 /* geo badges retired — markup now uses .tag variants */
 
 /* ═══ TRANSFER PORTAL ═══ */
+/* Dense battle rows: one row per entrant, offer state inline */
 .portal-wrap { max-width: 760px; margin: 0 auto; }
-.pl-row { display: flex; align-items: center; gap: 10px; background: none; border: none; border-bottom: 1px solid var(--bdr); border-radius: 0; padding: 8px 0; margin-bottom: 0; min-height: 56px; }
+.pl-row { display: flex; align-items: center; gap: 8px; background: none; border: none; border-bottom: 1px solid var(--bdr); border-radius: 0; padding: 6px 0; margin-bottom: 0; min-height: 48px; }
 .pl-body { flex: 1; min-width: 0; }
-.pl-name { font-size: 13.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.pl-desc { font-size: 11px; color: var(--txt3); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.pl-ovr { text-align: right; flex-shrink: 0; min-width: 44px; }
-.pl-ovr b { font-size: 16px; font-weight: 800; font-variant-numeric: tabular-nums; }
-.pl-ovr small { display: block; font-size: 9px; color: var(--txt3); font-weight: 700; }
+.pl-name { font-size: 12.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pl-desc { font-size: 10.5px; color: var(--txt3); margin-top: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pl-ovr { text-align: right; flex-shrink: 0; min-width: 40px; }
+.pl-ovr b { font-size: 15px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.pl-ovr small { display: block; font-size: 8.5px; color: var(--txt3); font-weight: 700; }
+/* Battle-row inline offer controls */
+.bt-offer { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.bt-offer .stepper { width: 28px; height: 28px; font-size: 14px; }
+.bt-state { font-size: 10.5px; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* ═══ TOURNAMENT HUB / BRACKET ═══ */
 /* Region block: plain stack, header row + hairlines */
@@ -738,20 +749,30 @@ input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 
 .mood-tag { font-size: 9px; font-weight: 800; padding: 2px 7px; border-radius: 3px; flex-shrink: 0; margin-left: 4px; white-space: nowrap; }
 
 /* ═══ STANDINGS ═══ */
-.rk-table, .cf-table { background: #fff; border: 1px solid var(--bdr); border-radius: var(--radius); overflow: hidden; }
-.rk-head, .rk-row {
-  display: grid; grid-template-columns: 36px 1fr 84px 64px 64px 52px; align-items: center;
-  gap: 6px; padding: 7px 12px;
+/* National rankings: real <table> (table-layout fixed so the team
+   column truncates gracefully at any width — no div-grid traps). */
+.stbl { table-layout: fixed; }
+.stbl th:nth-child(1), .stbl td.rk { width: 30px; }
+.stbl th:nth-child(3), .stbl td.dim { width: 74px; }
+.stbl th:nth-child(4), .stbl td.num:nth-child(4),
+.stbl th:nth-child(5), .stbl td.num:nth-child(5),
+.stbl th:nth-child(6), .stbl td.num:nth-child(6) { width: 58px; }
+.stbl td.tname {
+  max-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-weight: 600;
 }
-.rk-head { font-size: 9px; font-weight: 800; color: var(--txt3); letter-spacing: .6px; text-transform: uppercase; border-bottom: 1px solid var(--bdr); background: var(--panel); }
-.rk-row { border-bottom: 1px solid var(--bdr); font-size: 12px; }
-.rk-row:last-child { border-bottom: none; }
-.rk-num { font-weight: 800; font-variant-numeric: tabular-nums; }
-.rk-team { font-weight: 600; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.rk-row .num, .rk-sub { font-variant-numeric: tabular-nums; font-size: 11.5px; color: var(--txt2); }
-.rk-row.is-user, .cf-row.is-user { background: var(--blu-soft); }
-.rk-row.is-user .rk-team, .cf-row.is-user .cf-team { font-weight: 800; color: var(--blu); }
-.rk-user-extra { border-top: 2px dashed var(--bdr2); }
+.stbl td.tname.u { font-weight: 800; color: var(--blu); }
+.stbl td.dim { font-size: 11px; color: var(--txt2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.stbl tr.user-extra td { border-top: 2px dashed var(--bdr2); }
+.stbl td, .stbl th { padding: 5px 7px; font-size: 12px; }
+/* Record-book tables: stat | holder | value */
+.tbl td.tname { font-weight: 600; }
+.tbl td.tname .dim { font-weight: 400; color: var(--txt3); font-size: 10.5px; }
+.rb-scope { font-size: 10px; font-weight: 800; color: var(--txt3); text-transform: uppercase; letter-spacing: .6px; margin: 10px 0 2px; }
+/* Conference standings: plain stack, hairlines */
+.cf-table { background: #fff; }
+.cf-row.is-user { background: var(--blu-soft); }
+.cf-row.is-user .cf-team { font-weight: 800; color: var(--blu); }
 .cf-head { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: var(--panel); border-bottom: 1px solid var(--bdr); }
 .cf-name { font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
 .cf-count { font-size: 10px; color: var(--txt3); }
@@ -767,16 +788,11 @@ input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 
 .home-dynasty-stats { display: flex; gap: 18px; }
 .home-dynasty-stat { font-size: 11px; color: var(--txt3); }
 .home-dynasty-stat b { display: block; font-size: 15px; color: var(--txt); font-variant-numeric: tabular-nums; }
-.stepper {
-  width: 44px; height: 44px; border: 1px solid var(--bdr2); background: #fff; border-radius: var(--radius);
-  font-size: 18px; font-weight: 800; color: var(--txt); cursor: pointer; flex-shrink: 0;
-}
-.stepper:active { background: var(--blu-soft); border-color: var(--blu); }
-.stepper.off { opacity: .3; cursor: default; }
+/* (stepper sizing lives with the recruiting block; this residual is retired) */
 .scheme-row {
-  display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
+  display: flex; align-items: center; gap: 10px; width: 100%; text-align: left;
   background: none; border: none; border-bottom: 1px solid var(--bdr); border-radius: 0;
-  padding: 10px 0; margin-bottom: 0; cursor: pointer; min-height: 52px;
+  padding: 8px 0; margin-bottom: 0; cursor: pointer; min-height: 44px;
 }
 .scheme-row:active { background: var(--panel); }
 .scheme-row.picked { background: none; }

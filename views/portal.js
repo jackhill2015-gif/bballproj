@@ -580,35 +580,36 @@ function entrantRow(e, stage) {
   var trend = Battle.trendHTML(ch.pct, e._prevPct);
   var pctCol = chanceColor(ch.pct);
 
-  var offerLine;
+  // Dense: everything on two lines — name/status, then offer state inline
+  var state;
   if (offer > 0) {
-    offerLine = '<div style="font-size:11px;margin-top:2px;"><b style="color:var(--blu);">' + offer + ' NIL</b> offered · '
-      + '<b style="color:' + pctCol + ';">' + ch.pct + '%</b> ' + trend + '</div>';
+    state = '<b style="color:var(--blu);font-variant-numeric:tabular-nums;">' + offer + '</b> NIL · '
+      + '<b style="color:' + pctCol + ';font-variant-numeric:tabular-nums;">' + ch.pct + '%</b> ' + trend;
   } else {
-    offerLine = '<div style="font-size:11px;color:var(--txt3);margin-top:2px;">std offer ' + std + ' NIL · not in the race</div>';
+    state = '<span style="color:var(--txt3);">std ' + std + ' NIL · not in the race</span>';
   }
+  var chase = ch.suitors.slice(0, 2).map(function(s) { return s.name; }).join(', ');
 
   var action;
   if (e.fromTid === G.tid) {
-    action = '<div style="font-size:11px;color:var(--txt3);">Your player</div>';
+    action = '<div style="font-size:10px;color:var(--txt3);flex-shrink:0;">Yours</div>';
   } else {
     var canAdd = nil >= PORTAL_OFFER_STEP;
     var canSub = offer > 0;
-    action = '<div style="display:flex;align-items:center;gap:6px;">'
-      + '<button class="stepper' + (canSub ? '' : ' off') + '" data-poff-dec="' + e.pid + '" aria-label="Withdraw 10 NIL from ' + e.name + '" style="width:34px;height:34px;font-size:15px;">−</button>'
-      + '<button class="stepper plus' + (canAdd ? '' : ' off') + '" data-poff-inc="' + e.pid + '" aria-label="Offer 10 more NIL to ' + e.name + '" style="width:34px;height:34px;font-size:15px;">+</button>'
-      + (offer > 0 && stage >= 1 ? '<button class="btn-quiet" data-ppivot="' + e.pid + '">Pivot</button>' : '')
+    action = '<div class="bt-offer">'
+      + '<button class="stepper' + (canSub ? '' : ' off') + '" data-poff-dec="' + e.pid + '" aria-label="Withdraw 10 NIL from ' + e.name + '">−</button>'
+      + '<button class="stepper plus' + (canAdd ? '' : ' off') + '" data-poff-inc="' + e.pid + '" aria-label="Offer 10 more NIL to ' + e.name + '">+</button>'
+      + (offer > 0 && stage >= 1 ? '<button class="btn-quiet btn-sm" style="min-height:28px;padding:4px;" data-ppivot="' + e.pid + '">Pivot</button>' : '')
       + '</div>';
   }
-  var chase = ch.suitors.slice(0, 2).map(function(s) { return s.name; }).join(', ');
   return '<div class="pl-row">'
     + teamLogo(e.fromName, 'sm')
     + '<span class="pos-chip">' + e.pos + '</span>'
-    + '<div class="pl-body"><div class="pl-name">' + e.name + ' <span style="font-size:11px;font-weight:700;color:var(--txt3);">' + e.cls + '</span>'
+    + '<div class="pl-body"><div class="pl-name">' + e.name + ' <span class="cls-txt">' + e.cls + '</span>'
     + (e.late ? ' <span class="tag t-ok">Late</span>' : '') + '</div>'
-    + '<div class="pl-desc">from ' + e.fromName + ' · ' + e.reason + ' · ' + e.mins + ' min last season'
-    + (chase ? ' · <span style="color:var(--txt3);">also: ' + chase + '</span>' : '') + '</div>'
-    + offerLine + '</div>'
+    + '<div class="pl-desc">' + e.fromName + ' · ' + e.reason + ' · ' + e.mins + ' min'
+    + (chase ? ' · ' + chase : '') + '</div>'
+    + '<div class="bt-state">' + state + '</div></div>'
     + '<div class="pl-ovr"><b>' + e.ovr + '</b><small>POT ' + (e.pot || e.ovr) + '</small></div>'
     + action + '</div>';
 }

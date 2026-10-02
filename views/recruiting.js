@@ -582,16 +582,16 @@ function schoolRaceHTML(r, n) {
   return h;
 }
 
-// +/- stepper row (44px touch targets). kind: 'detail' | 'target'
+// +/- stepper row (compact). kind: 'detail' | 'target'
 function stepperRow(r, left, removable) {
   var pts = r.points || 0;
-  var h = '<div style="display:flex;align-items:center;gap:10px;">'
+  var h = '<div style="display:flex;align-items:center;gap:6px;">'
     + '<button class="stepper' + (pts >= 5 ? '' : ' off') + '" data-pt-dec="' + r.id + '" aria-label="Remove 5 points from ' + r.name + '" aria-disabled="' + (pts >= 5 ? 'false' : 'true') + '">−</button>'
     + '<div class="pts-val" data-pts-val="' + r.id + '">' + pts + '</div>'
     + '<button class="stepper plus' + (left >= 5 ? '' : ' off') + '" data-pt-inc="' + r.id + '" aria-label="Add 5 points to ' + r.name + '" aria-disabled="' + (left >= 5 ? 'false' : 'true') + '">+</button>'
-    + '<span style="font-size:11px;color:var(--txt3);">pts</span>'
+    + '<span style="font-size:10px;color:var(--txt3);">pts</span>'
     + '<div style="flex:1;"></div>';
-  if (removable) h += '<button class="btn-quiet" data-rem-target="' + r.id + '" aria-label="Pivot away from ' + r.name + '">Pivot</button>';
+  if (removable) h += '<button class="btn-quiet btn-sm" style="min-height:28px;padding:4px;" data-rem-target="' + r.id + '" aria-label="Pivot away from ' + r.name + '">Pivot</button>';
   return h + '</div>';
 }
 
@@ -1111,17 +1111,17 @@ function renderTargets(left) {
     var leading = schools.length && schools[0].isUser;
     var pctCol = userPct >= 60 ? 'var(--grn2)' : userPct >= 30 ? 'var(--gld2)' : 'var(--red)';
 
-    h += '<div style="padding-bottom:12px;margin-bottom:12px;border-bottom:1px solid var(--bdr);">';
-    h += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">'
+    h += '<div style="padding:8px 0;border-bottom:1px solid var(--bdr);">';
+    h += '<div style="display:flex;align-items:center;gap:8px;">'
       + '<div class="leader-rank">#' + r.natRank + '</div>'
       + '<span class="pos-chip">' + r.pos + '</span>'
       + '<div class="leader-name" style="flex:1;">' + r.name + (leading ? ' <span class="tag t-ok">Leading</span>' : '')
       + (r.late ? ' <span class="tag t-ok">Late</span>' : '')
       + '<small><span style="color:var(--gld2);">' + starStr(r.stars) + '</span> · OVR ' + r.ovr + ' · ' + (STATE_NAMES[r.homeState] || r.homeState) + '</small></div>'
-      + '<div style="text-align:right;"><div class="leader-val" data-user-pct="' + r.id + '" style="color:' + pctCol + ';">' + userPct + '%</div>'
-      + '<div style="margin-top:2px;">' + Battle.trendHTML(userPct, r._prevPct) + '</div></div></div>';
+      + '<div style="text-align:right;flex-shrink:0;"><div class="leader-val" data-user-pct="' + r.id + '" style="color:' + pctCol + ';font-size:14px;">' + userPct + '%</div>'
+      + '<div>' + Battle.trendHTML(userPct, r._prevPct) + '</div></div></div>';
 
-    h += '<div style="margin-bottom:10px;">' + stepperRow(r, left, true) + '</div>';
+    h += '<div style="margin-top:4px;">' + stepperRow(r, left, true) + '</div>';
 
     h += '<div data-schools-for="' + r.id + '" data-schools-n="3">' + schoolRaceHTML(r, 3) + '</div>';
     h += '</div>';

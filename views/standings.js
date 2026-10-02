@@ -12,24 +12,24 @@ export function renderStandings() {
   var natSorted = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; });
   var h = '';
 
-  // ── National Top 25 ──
-  h += '<div style="margin-bottom:20px;">'
+  // ── National Top 25 — real table (no div-grid overflow traps) ──
+  h += '<div style="margin-bottom:16px;">'
     + '<div class="sec-head">National Rankings</div>'
-    + '<div class="rk-table">'
-    + '<div class="rk-head"><div>RK</div><div>TEAM</div><div>CONF</div><div>RECORD</div><div>CONF</div><div>WIN%</div></div>';
+    + '<div class="tbl-wrap"><table class="tbl stbl">'
+    + '<thead><tr><th>RK</th><th>Team</th><th>Conf</th><th class="num">Record</th><th class="num">Conf</th><th class="num">Win%</th></tr></thead><tbody>';
 
   natSorted.slice(0, 25).forEach(function(t, i) {
     var isU = t.id === G.tid;
     var total = t.wins + t.loss;
     var winPct = total > 0 ? (t.wins / total * 100).toFixed(0) : '--';
-    h += '<div class="rk-row' + (isU ? ' is-user' : '') + '">'
-      + '<div class="rk-num">' + (i + 1) + '</div>'
-      + '<div class="rk-team">' + t.name + '</div>'
-      + '<div class="rk-sub">' + t.conf + '</div>'
-      + '<div class="num">' + t.wins + '-' + t.loss + '</div>'
-      + '<div class="num">' + t.cWins + '-' + t.cLoss + '</div>'
-      + '<div class="num">' + winPct + '%</div>'
-      + '</div>';
+    h += '<tr' + (isU ? ' class="hl"' : '') + '>'
+      + '<td class="num rk">' + (i + 1) + '</td>'
+      + '<td class="tname' + (isU ? ' u' : '') + '">' + t.name + '</td>'
+      + '<td class="dim">' + t.conf + '</td>'
+      + '<td class="num">' + t.wins + '-' + t.loss + '</td>'
+      + '<td class="num">' + t.cWins + '-' + t.cLoss + '</td>'
+      + '<td class="num">' + winPct + '%</td>'
+      + '</tr>';
   });
 
   // Show user's rank if not in top 25
@@ -38,16 +38,16 @@ export function renderStandings() {
     var ut = G.teams[G.tid];
     var utTotal = ut.wins + ut.loss;
     var utPct = utTotal > 0 ? (ut.wins / utTotal * 100).toFixed(0) : '--';
-    h += '<div class="rk-row is-user rk-user-extra">'
-      + '<div class="rk-num">' + userRank + '</div>'
-      + '<div class="rk-team">' + ut.name + '</div>'
-      + '<div class="rk-sub">' + ut.conf + '</div>'
-      + '<div class="num">' + ut.wins + '-' + ut.loss + '</div>'
-      + '<div class="num">' + ut.cWins + '-' + ut.cLoss + '</div>'
-      + '<div class="num">' + utPct + '%</div>'
-      + '</div>';
+    h += '<tr class="hl user-extra">'
+      + '<td class="num rk">' + userRank + '</td>'
+      + '<td class="tname u">' + ut.name + '</td>'
+      + '<td class="dim">' + ut.conf + '</td>'
+      + '<td class="num">' + ut.wins + '-' + ut.loss + '</td>'
+      + '<td class="num">' + ut.cWins + '-' + ut.cLoss + '</td>'
+      + '<td class="num">' + utPct + '%</td>'
+      + '</tr>';
   }
-  h += '</div></div>';
+  h += '</tbody></table></div></div>';
 
   // ── Conference Standings ──
   var confs = {};
