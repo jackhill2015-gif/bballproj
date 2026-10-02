@@ -1,12 +1,18 @@
 // ═══════════════════════════════════════════════════════════
 //  HOOPS OS — views/setup.js
 //  Coach career setup: name → difficulty → job offers → start
+//  Re-skinned into the Campus Dynasty design system.
+//  Mobile-first: everything stacks vertically; the job grid
+//  goes two-column only on wide screens. All setup flow
+//  logic (prestige init, NC auto-gen, dynasty start) is
+//  preserved with identical names/signatures.
 // ═══════════════════════════════════════════════════════════
 
 import { DIFF_DESC, calcSchoolPrestige, calcExpectations } from '../constants.js';
 import { ri, ge, txt, getTier, getTOvr, fR } from '../utils.js';
 import { G, SetupState, loadState, deleteSave, saveState } from '../state.js';
 import { buildSchedules, genRecruits, buildUniverse, setupUserOOC } from '../season.js';
+import { teamLogo } from '../ui.js';
 
 var _ext = { addLog: null, updateAll: null };
 export function registerSetupCallbacks(cb) {
@@ -14,6 +20,56 @@ export function registerSetupCallbacks(cb) {
 }
 function addLog(t, w, x) { if (_ext.addLog) _ext.addLog(t, w, x); }
 function updateAll() { if (_ext.updateAll) _ext.updateAll(); }
+
+// ═══════════════════════════════════════════════════════════
+//  VIEW SKIN (scoped, mobile-first)
+// ═══════════════════════════════════════════════════════════
+
+function ensureSkin() {
+  if (document.getElementById('setup-skin')) return;
+  var s = document.createElement('style');
+  s.id = 'setup-skin';
+  s.textContent =
+    '.setup-wrap{max-width:600px;margin:0 auto;padding:28px 16px 48px;}' +
+    '.setup-steps{display:flex;gap:6px;justify-content:center;margin-bottom:22px;}' +
+    '.setup-step{flex:1;max-width:110px;text-align:center;}' +
+    '.setup-step .sdot{height:6px;border-radius:3px;background:var(--s3);margin-bottom:6px;}' +
+    '.setup-step.on .sdot{background:var(--blu);}' +
+    '.setup-step .slbl{font-size:10px;font-weight:800;color:var(--txt3);text-transform:uppercase;letter-spacing:.6px;}' +
+    '.setup-step.on .slbl{color:var(--blu);}' +
+    '.setup-input{width:100%;min-height:52px;padding:12px 14px;background:#fff;border:1px solid var(--bdr2);' +
+    'border-radius:8px;color:var(--txt);font-size:16px;}' +
+    '.setup-input:focus{border-color:var(--blu);outline:none;box-shadow:0 0 0 3px var(--blu-soft);}' +
+    '.field-label{font-size:11px;font-weight:800;color:var(--txt3);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}' +
+    '.job-grid{display:grid;grid-template-columns:1fr;gap:8px;}' +
+    '@media(min-width:861px){.job-grid{grid-template-columns:1fr 1fr;}}' +
+    '.nc-grid{display:grid;grid-template-columns:1fr;gap:8px;}' +
+    '@media(min-width:861px){.nc-grid{grid-template-columns:1fr 1fr;}}';
+  document.head.appendChild(s);
+}
+
+var STEPS = [
+  { id: 'coach-name', label: 'Coach' },
+  { id: 'difficulty', label: 'Difficulty' },
+  { id: 'job-offers', label: 'Job' },
+  { id: 'nc-schedule', label: 'Schedule' }
+];
+
+function stepHeader(title, sub) {
+  var h = '<div class="setup-steps" aria-hidden="true">';
+  var curIdx = 0;
+  STEPS.forEach(function(s, i) { if (s.id === _currentStep) curIdx = i; });
+  STEPS.forEach(function(s, i) {
+    h += '<div class="setup-step' + (i <= curIdx ? ' on' : '') + '"><div class="sdot"></div><div class="slbl">' + s.label + '</div></div>';
+  });
+  h += '</div>';
+  h += '<div style="text-align:center;margin-bottom:20px;">'
+    + '<div class="setup-title">HOOPS<em>OS</em></div>'
+    + '<div style="font-size:17px;font-weight:900;margin-top:10px;">' + title + '</div>'
+    + (sub ? '<div style="font-size:12px;color:var(--txt2);margin-top:4px;">' + sub + '</div>' : '')
+    + '</div>';
+  return h;
+}
 
 // ═══════════════════════════════════════════════════════════
 //  HOME SCREEN
@@ -95,6 +151,7 @@ var _currentStep = 'coach-name';
 var _jobOffers = [];
 
 function showStep(step) {
+  ensureSkin();
   _currentStep = step;
   var el = ge('setup-content');
   if (!el) return;
@@ -103,6 +160,28 @@ function showStep(step) {
   else if (step === 'difficulty') el.innerHTML = renderDifficulty();
   else if (step === 'job-offers') el.innerHTML = renderJobOffers();
   else if (step === 'nc-schedule') el.innerHTML = renderNCSchedule();
+  bindSetup(el);
+}
+
+// Container-level delegation: no inline onclick strings.
+function bindSetup(el) {
+  el.onclick = function(e) {
+    var q = function(sel) { return e.target.closest ? e.target.closest(sel) : null; };
+    var m;
+    if (q('[data-setup="coach-name-submit"]')) { submitCoachName(); return; }
+    if (q('[data-setup="diff-submit"]')) { submitDifficulty(); return; }
+    if ((m = q('[data-diff]'))) { setDiff(m.getAttribute('data-diff')); return; }
+    if ((m = q('[data-job]'))) { selectJob(parseInt(m.getAttribute('data-job'), 10)); return; }
+    if (q('[data-setup="back-jobs"]')) { goBackToJobs(); return; }
+    if (q('[data-setup="start-dynasty"]')) { startDynasty(); return; }
+    if ((m = q('[data-swapnc]'))) { swapNC(parseInt(m.getAttribute('data-swapnc'), 10)); return; }
+  };
+  el.onkeydown = function(e) {
+    if (e.key === 'Enter' && _currentStep === 'coach-name') {
+      var t = e.target;
+      if (t && (t.id === 'coach-first' || t.id === 'coach-last')) { e.preventDefault(); submitCoachName(); }
+    }
+  };
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -110,19 +189,15 @@ function showStep(step) {
 // ═══════════════════════════════════════════════════════════
 
 function renderCoachName() {
-  return '<div style="max-width:500px;margin:0 auto;padding:40px 20px;">'
-    + '<div style="text-align:center;margin-bottom:32px;">'
-    + '<div class="setup-title">HOOPS<em>OS</em></div>'
-    + '<div style="font-size:13px;color:var(--txt2);margin-top:8px;">Create your coaching legacy.</div></div>'
-    + '<div style="margin-bottom:20px;">'
-    + '<div style="font-size:11px;font-weight:700;color:var(--txt3);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">First Name</div>'
-    + '<input id="coach-first" type="text" placeholder="John" style="width:100%;padding:12px 14px;background:var(--s2);border:1px solid var(--bdr);border-radius:6px;color:var(--txt);font-family:Inter,sans-serif;font-size:15px;outline:none;" maxlength="20">'
+  return '<div class="setup-wrap">'
+    + stepHeader('Create your coach', 'Your legacy starts on the sideline.')
+    + '<div class="card">'
+    + '<div style="margin-bottom:16px;"><div class="field-label">First Name</div>'
+    + '<input id="coach-first" class="setup-input" type="text" placeholder="John" maxlength="20" autocomplete="off"></div>'
+    + '<div style="margin-bottom:4px;"><div class="field-label">Last Name</div>'
+    + '<input id="coach-last" class="setup-input" type="text" placeholder="Smith" maxlength="20" autocomplete="off"></div>'
     + '</div>'
-    + '<div style="margin-bottom:28px;">'
-    + '<div style="font-size:11px;font-weight:700;color:var(--txt3);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">Last Name</div>'
-    + '<input id="coach-last" type="text" placeholder="Smith" style="width:100%;padding:12px 14px;background:var(--s2);border:1px solid var(--bdr);border-radius:6px;color:var(--txt);font-family:Inter,sans-serif;font-size:15px;outline:none;" maxlength="20">'
-    + '</div>'
-    + '<div class="btn btn-red btn-full" style="padding:14px;font-size:14px;" onclick="submitCoachName()">CONTINUE \u203a</div>'
+    + '<button class="btn-big btn-full" data-setup="coach-name-submit">CONTINUE ›</button>'
     + '</div>';
 }
 
@@ -144,34 +219,24 @@ export function submitCoachName() {
 window.submitCoachName = submitCoachName;
 
 // ═══════════════════════════════════════════════════════════
-//  STEP 2: Difficulty
+//  STEP 2: Difficulty (Strategy-screen scheme-row rhythm)
 // ═══════════════════════════════════════════════════════════
 
 function renderDifficulty() {
-  var name = G.coach.firstName + ' ' + G.coach.lastName;
-  return '<div style="max-width:500px;margin:0 auto;padding:40px 20px;">'
-    + '<div style="text-align:center;margin-bottom:24px;">'
-    + '<div style="font-size:20px;font-weight:900;">Welcome, Coach ' + G.coach.lastName + '</div>'
-    + '<div style="font-size:12px;color:var(--txt2);margin-top:4px;">Age 30 \u00b7 First year coaching</div></div>'
-    + '<div style="font-size:11px;font-weight:700;color:var(--txt3);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">Select Difficulty</div>'
-    + '<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;">'
-    + renderDiffBtn('easy', 'Easy', DIFF_DESC.easy)
-    + renderDiffBtn('normal', 'Normal', DIFF_DESC.normal)
-    + renderDiffBtn('hard', 'Hard', DIFF_DESC.hard)
-    + renderDiffBtn('legend', 'Legend', DIFF_DESC.legend)
-    + '</div>'
-    + '<div id="diff-chosen" style="font-size:11px;color:var(--txt3);margin-bottom:20px;text-align:center;">' + DIFF_DESC[SetupState.DIFF] + '</div>'
-    + '<div class="btn btn-red btn-full" style="padding:14px;font-size:14px;" onclick="submitDifficulty()">FIND A JOB \u203a</div>'
+  var h = '<div class="setup-wrap">'
+    + stepHeader('Welcome, Coach ' + G.coach.lastName, 'Age 30 · first year on the sideline')
+    + '<div class="field-label" style="margin-bottom:10px;">Select difficulty</div>';
+  ['easy', 'normal', 'hard', 'legend'].forEach(function(key) {
+    var on = SetupState.DIFF === key;
+    var label = key.charAt(0).toUpperCase() + key.slice(1);
+    h += '<button class="scheme-row' + (on ? ' picked' : '') + '" data-diff="' + key + '" role="radio" aria-checked="' + on + '">'
+      + '<span class="sm-body"><span class="sm-name">' + label + '</span>'
+      + '<span class="sm-desc" style="display:block;">' + DIFF_DESC[key] + '</span></span>'
+      + '<span class="scheme-check">' + (on ? '✓' : '') + '</span></button>';
+  });
+  h += '<button class="btn-big btn-full" style="margin-top:16px;" data-setup="diff-submit">FIND A JOB ›</button>'
     + '</div>';
-}
-
-function renderDiffBtn(key, label, desc) {
-  var on = SetupState.DIFF === key;
-  return '<div onclick="setDiff(\'' + key + '\')" style="padding:14px 16px;background:' + (on ? 'rgba(0,102,204,.12)' : 'var(--s2)') + ';border:1px solid ' + (on ? 'var(--red)' : 'var(--bdr)') + ';border-radius:6px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">'
-    + '<div><div style="font-size:13px;font-weight:700;color:' + (on ? '#fff' : 'var(--txt2)') + ';">' + label + '</div>'
-    + '<div style="font-size:10px;color:var(--txt3);">' + desc + '</div></div>'
-    + (on ? '<div style="width:10px;height:10px;border-radius:50%;background:var(--red);"></div>' : '')
-    + '</div>';
+  return h;
 }
 
 export function setDiff(d) {
@@ -204,24 +269,17 @@ function generateJobOffers() {
 }
 
 function renderJobOffers() {
-  var h = '<div style="max-width:700px;margin:0 auto;padding:20px;">';
-  h += '<div style="text-align:center;margin-bottom:20px;">'
-    + '<div style="font-size:10px;color:var(--red);font-weight:800;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;">COACHING CAROUSEL</div>'
-    + '<div style="font-size:24px;font-weight:900;">Job Offers</div>'
-    + '<div style="font-size:12px;color:var(--txt2);margin-top:4px;">As a first-year coach, these programs are willing to take a chance on you.</div></div>';
-
-  h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">';
+  var h = '<div class="setup-wrap" style="max-width:720px;">'
+    + stepHeader('Job Offers', 'As a first-year coach, these programs will take a chance on you.')
+    + '<div class="job-grid">';
   _jobOffers.forEach(function(t) {
     var tier = getTier(t.baseOvr);
     var sp = t.schoolPrestige;
-    h += '<div onclick="selectJob(' + t.id + ')" style="padding:14px;background:var(--s1);border:1px solid var(--bdr);border-radius:8px;cursor:pointer;transition:all .15s;" onmouseover="this.style.borderColor=\'var(--red)\';this.style.background=\'rgba(0,102,204,.04)\'" onmouseout="this.style.borderColor=\'var(--bdr)\';this.style.background=\'var(--s1)\'">'
-      + '<div style="font-size:14px;font-weight:800;color:var(--txt);margin-bottom:4px;">' + t.name + '</div>'
-      + '<div style="font-size:11px;color:var(--txt2);margin-bottom:8px;">' + t.conf + '</div>'
-      + '<div style="display:flex;gap:12px;">'
-      + '<div><div style="font-size:16px;font-weight:900;color:var(--red);">' + getTOvr(t) + '</div><div style="font-size:9px;color:var(--txt3);">OVR</div></div>'
-      + '<div><div style="font-size:16px;font-weight:900;">' + sp + '</div><div style="font-size:9px;color:var(--txt3);">PRESTIGE</div></div>'
-      + '<div><div style="font-size:12px;font-weight:700;color:' + tier.col + ';">' + tier.label + '</div><div style="font-size:9px;color:var(--txt3);">TIER</div></div>'
-      + '</div></div>';
+    h += '<button class="scheme-row" data-job="' + t.id + '" style="margin-bottom:0;">'
+      + teamLogo(t.name, 'sm')
+      + '<span class="sm-body"><span class="sm-name">' + t.name + '</span>'
+      + '<span class="sm-desc" style="display:block;">' + t.conf + ' · Prestige ' + sp + ' · <span style="color:' + tier.col + ';font-weight:700;">' + tier.label + '</span></span></span>'
+      + '<span style="font-family:var(--mono);font-size:17px;font-weight:900;color:var(--blu);flex-shrink:0;">' + getTOvr(t) + '</span></button>';
   });
   h += '</div></div>';
   return h;
@@ -272,37 +330,28 @@ function autoGenNC() {
 
 function renderNCSchedule() {
   var t = G.teams[G.tid];
-  var h = '<div style="max-width:700px;margin:0 auto;padding:20px;">';
-  h += '<div style="text-align:center;margin-bottom:16px;">'
-    + '<div style="font-size:10px;color:var(--red);font-weight:800;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">YOUR NEW JOB</div>'
-    + '<div style="font-size:28px;font-weight:900;">' + t.name + '</div>'
-    + '<div style="font-size:12px;color:var(--txt2);margin-top:4px;">' + t.conf + ' \u00b7 Prestige ' + t.schoolPrestige + ' \u00b7 OVR ' + getTOvr(t) + '</div></div>';
-
-  h += '<div style="font-size:13px;font-weight:700;color:var(--txt);margin-bottom:8px;">Non-Conference Schedule</div>'
-    + '<div style="font-size:11px;color:var(--txt3);margin-bottom:12px;">Auto-generated. Swap any opponent you don\'t want.</div>';
-
-  h += '<div id="nc-auto-list" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">';
+  var h = '<div class="setup-wrap" style="max-width:720px;">'
+    + stepHeader(t.name, t.conf + ' · Prestige ' + t.schoolPrestige + ' · OVR ' + getTOvr(t))
+    + '<div class="sec-head">Non-Conference Schedule</div>'
+    + '<div class="sec-sub">Auto-generated. Swap any opponent you don\'t want.</div>'
+    + '<div class="nc-grid">';
   SetupState.NC_PICKS.forEach(function(id, i) {
     var opp = G.teams[id];
     var myOvr = getTOvr(t);
     var diff = getTOvr(opp) - myOvr;
-    var diffCol = diff >= 5 ? '#dc2626' : diff >= -5 ? 'var(--gld2)' : 'var(--grn2)';
+    var diffCol = diff >= 5 ? 'var(--red)' : diff >= -5 ? 'var(--gld2)' : 'var(--grn2)';
     var diffStr = diff > 0 ? '+' + diff : '' + diff;
-    h += '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--s2);border:1px solid var(--bdr);border-radius:5px;">'
-      + '<div><div style="font-size:12px;font-weight:700;color:var(--txt);">' + opp.name + '</div>'
-      + '<div style="font-size:10px;color:var(--txt3);margin-top:1px;">' + opp.conf + ' \u00b7 OVR ' + getTOvr(opp) + ' <span style="color:' + diffCol + ';">(' + diffStr + ')</span></div></div>'
-      + '<div style="display:flex;gap:6px;align-items:center;">'
-      + '<div style="font-size:10px;color:var(--txt3);">' + (i % 2 === 0 ? 'HOME' : 'AWAY') + '</div>'
-      + '<div class="btn btn-ghost btn-sm" style="font-size:10px;padding:4px 8px;" onclick="swapNC(' + i + ')">SWAP</div>'
-      + '</div></div>';
+    h += '<div class="nc-row">'
+      + teamLogo(opp.name, 'sm')
+      + '<div style="flex:1;min-width:0;"><div style="font-size:13px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + opp.name + '</div>'
+      + '<div style="font-size:11px;color:var(--txt3);">' + (i % 2 === 0 ? 'HOME' : 'AWAY') + ' · ' + opp.conf + ' · OVR ' + getTOvr(opp) + ' <span style="color:' + diffCol + ';font-weight:800;">(' + diffStr + ')</span></div></div>'
+      + '<button class="btn btn-ghost btn-sm" data-swapnc="' + i + '">SWAP</button></div>';
   });
-  h += '</div>';
-
-  h += '<div style="display:flex;gap:8px;margin-top:16px;">'
-    + '<div class="btn btn-ghost" style="flex:1;text-align:center;padding:12px;" onclick="goBackToJobs()">\u2190 Back</div>'
-    + '<div class="btn btn-red" style="flex:2;text-align:center;padding:14px;font-size:14px;font-weight:800;" onclick="startDynasty()">START SEASON \u25b6</div></div>';
-
-  h += '</div>';
+  h += '</div>'
+    + '<div style="display:flex;gap:8px;margin-top:20px;">'
+    + '<button class="btn btn-ghost" style="min-height:56px;" data-setup="back-jobs" aria-label="Back to job offers">‹ Back</button>'
+    + '<button class="btn-big" style="flex:1;" data-setup="start-dynasty">START SEASON ▶</button></div>'
+    + '</div>';
   return h;
 }
 
@@ -316,30 +365,28 @@ export function swapNC(idx) {
     return t.conf !== G.teams[G.tid].conf && t.id !== G.tid && SetupState.NC_PICKS.indexOf(t.id) < 0;
   }).sort(function(a, b) { return b.baseOvr - a.baseOvr; });
   var overlay = document.createElement('div');
-  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:99999;display:flex;align-items:center;justify-content:center;';
-  overlay.innerHTML = '<div style="background:var(--s1);border:1px solid var(--bdr);border-radius:8px;width:480px;max-height:500px;display:flex;flex-direction:column;overflow:hidden;">'
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(10,25,50,.55);z-index:99999;display:flex;align-items:center;justify-content:center;padding:12px;';
+  overlay.innerHTML = '<div style="background:#fff;border:1px solid var(--bdr);border-radius:12px;width:min(480px,100%);max-height:80vh;display:flex;flex-direction:column;overflow:hidden;">'
     + '<div style="padding:14px 16px;border-bottom:1px solid var(--bdr);display:flex;justify-content:space-between;align-items:center;">'
-    + '<div style="font-size:13px;font-weight:700;color:var(--txt);">Swap Opponent</div>'
-    + '<div style="cursor:pointer;color:var(--txt3);font-size:16px;" id="swap-close">\u2715</div></div>'
-    + '<input id="swap-search" placeholder="Search..." style="padding:10px 14px;background:var(--s2);border:none;border-bottom:1px solid var(--bdr);color:var(--txt);font-family:Inter,sans-serif;font-size:12px;outline:none;">'
-    + '<div id="swap-list" style="overflow-y:auto;max-height:360px;"></div></div>';
+    + '<div style="font-size:14px;font-weight:800;color:var(--txt);">Swap Opponent</div>'
+    + '<button class="btn btn-ghost btn-sm" id="swap-close" aria-label="Close">✕</button></div>'
+    + '<input id="swap-search" class="setup-input" placeholder="Search teams..." style="border:none;border-bottom:1px solid var(--bdr);border-radius:0;" autocomplete="off">'
+    + '<div id="swap-list" style="overflow-y:auto;max-height:50vh;"></div></div>';
   document.body.appendChild(overlay);
   function renderSwapList(f) {
     var list = document.getElementById('swap-list'); list.innerHTML = '';
     pool.filter(function(t) { return !f || t.name.toLowerCase().indexOf(f) >= 0 || t.conf.toLowerCase().indexOf(f) >= 0; })
     .forEach(function(t) {
       var d = document.createElement('div');
-      d.style.cssText = 'padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(0,0,0,.03);display:flex;justify-content:space-between;font-size:12px;';
-      d.innerHTML = '<span style="font-weight:600;color:var(--txt);">' + t.name + '</span><span style="color:var(--txt3);">' + t.conf + ' \u2022 ' + getTOvr(t) + '</span>';
-      d.onmouseover = function() { this.style.background = 'rgba(0,102,204,.08)'; };
-      d.onmouseout = function() { this.style.background = ''; };
-      d.onclick = function() { SetupState.NC_PICKS[idx] = t.id; document.body.removeChild(overlay); showStep('nc-schedule'); };
+      d.style.cssText = 'padding:12px 16px;cursor:pointer;border-bottom:1px solid var(--bdr);display:flex;justify-content:space-between;align-items:center;font-size:13px;min-height:52px;';
+      d.innerHTML = '<span style="font-weight:700;color:var(--txt);">' + t.name + '</span><span style="color:var(--txt3);font-size:11px;">' + t.conf + ' • OVR ' + getTOvr(t) + '</span>';
+      d.addEventListener('click', function() { SetupState.NC_PICKS[idx] = t.id; document.body.removeChild(overlay); showStep('nc-schedule'); });
       list.appendChild(d);
     });
   }
   renderSwapList('');
-  document.getElementById('swap-search').oninput = function() { renderSwapList(this.value.toLowerCase()); };
-  document.getElementById('swap-close').onclick = function() { document.body.removeChild(overlay); };
+  document.getElementById('swap-search').addEventListener('input', function() { renderSwapList(this.value.toLowerCase()); });
+  document.getElementById('swap-close').addEventListener('click', function() { document.body.removeChild(overlay); });
 }
 window.swapNC = swapNC;
 

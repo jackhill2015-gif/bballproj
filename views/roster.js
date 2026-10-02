@@ -1,6 +1,14 @@
 // ═══════════════════════════════════════════════════════════
 //  HOOPS OS — views/roster.js
-//  Final: drag-drop with auto-minutes, inline slider fills
+//  Depth chart + minutes sliders, re-skinned into the
+//  Campus Dynasty design system (mobile-first).
+//
+//  PHONE FIX: reorder is no longer drag-and-drop ONLY —
+//  every row now has ▲/▼ nudge buttons (44px touch targets)
+//  alongside the desktop drag handle. Sliders update their
+//  fill + label + total in place while dragging (no
+//  re-render mid-drag); the redistribution logic runs once
+//  on change end, then a full re-render.
 // ═══════════════════════════════════════════════════════════
 
 import { ge, clamp } from '../utils.js';
@@ -8,147 +16,179 @@ import { G, saveState } from '../state.js';
 
 var _dragIdx = -1;
 
+// ── View skin (scoped) ────────────────────────────────────
+function ensureSkin() {
+  if (document.getElementById('roster-skin')) return;
+  var s = document.createElement('style');
+  s.id = 'roster-skin';
+  s.textContent =
+    '.depth-row{background:#fff;border:1px solid var(--bdr);border-radius:10px;padding:10px 12px;' +
+    'margin-bottom:6px;border-left:3px solid transparent;}' +
+    '.depth-row.starter{border-left-color:var(--blu);}' +
+    '.depth-row.rotation{border-left-color:var(--blu2);}' +
+    '.depth-row.benched{opacity:.5;}' +
+    '.dr-top{display:flex;align-items:center;gap:8px;}' +
+    '.dr-name{flex:1;min-width:0;font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}' +
+    '.dr-sub{font-size:11px;color:var(--txt3);font-weight:500;margin-top:1px;font-family:var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}' +
+    '.dr-ovr{text-align:right;flex-shrink:0;}' +
+    '.dr-ovr b{font-family:var(--mono);font-size:18px;font-weight:900;color:var(--blu);}' +
+    '.dr-ovr small{display:block;font-size:10px;color:var(--txt3);font-weight:700;}' +
+    '.nudge{display:flex;gap:4px;flex-shrink:0;}' +
+    '.nudge-btn{width:44px;height:44px;border-radius:8px;border:1px solid var(--bdr2);background:#fff;' +
+    'font-size:15px;color:var(--txt2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}' +
+    '.nudge-btn:active{background:var(--blu-soft);border-color:var(--blu);}' +
+    '.nudge-btn:disabled{opacity:.3;cursor:default;}' +
+    '.drag-handle{color:var(--txt3);font-size:16px;cursor:grab;user-select:none;padding:12px 6px;flex-shrink:0;touch-action:none;}' +
+    '.dr-bot{display:flex;align-items:center;gap:10px;margin-top:6px;}' +
+    '.dr-bot input[type=range]{flex:1;min-height:44px;cursor:pointer;-webkit-appearance:none;appearance:none;' +
+    'height:6px;border-radius:3px;outline:none;background:var(--s3);}' +
+    '.mins-val{font-family:var(--mono);font-size:14px;font-weight:800;width:32px;text-align:right;flex-shrink:0;}' +
+    '.tier-label{font-size:11px;font-weight:800;letter-spacing:1.5px;color:var(--txt3);text-transform:uppercase;margin:16px 0 8px;}' +
+    '.tier-label:first-of-type{margin-top:4px;}' +
+    '.pos-chip{display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;' +
+    'background:var(--blu-soft);color:var(--blu);padding:5px 0;border-radius:5px;width:38px;flex-shrink:0;}' +
+    '.cls-badge{font-size:9px;font-weight:800;padding:2px 7px;border-radius:4px;flex-shrink:0;}' +
+    '@media(min-width:861px){.drag-handle{display:block;}}' +
+    '#roster-content input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;' +
+    'border-radius:50%;background:#fff;border:3px solid var(--blu);cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.2);}' +
+    '#roster-content input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#fff;' +
+    'border:3px solid var(--blu);cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.2);}';
+  document.head.appendChild(s);
+}
+
 // ═══════════════════════════════════════════════════════════
 //  RENDER
 // ═══════════════════════════════════════════════════════════
 
+function sliderBg(mins) {
+  var f = Math.round(clamp(mins, 0, 40) / 40 * 100);
+  return 'linear-gradient(90deg,var(--blu) 0%,var(--blu) ' + f + '%,var(--s3) ' + f + '%)';
+}
+
+function tierOf(i) { return i < 5 ? 'starter' : i < 9 ? 'rotation' : 'bench'; }
+
+function depthRow(p, i) {
+  var tier = tierOf(i);
+  var gp = p.s ? (p.s.gp || 0) : 0;
+  var line = gp > 0
+    ? (p.s.pts / gp).toFixed(1) + ' pts · ' + (p.s.reb / gp).toFixed(1) + ' reb · ' + (p.s.ast / gp).toFixed(1) + ' ast'
+    : 'no games yet';
+  var pot = p.pot || p.ovr;
+  var potCol = pot > p.ovr + 8 ? 'var(--grn2)' : pot > p.ovr + 3 ? 'var(--gld2)' : 'var(--txt3)';
+  var clsBg = { FR: '#dbeafe', SO: '#f3e8ff', JR: '#ffedd5', SR: '#fce7f3' };
+  var clsTx = { FR: '#1e40af', SO: '#6b21a8', JR: '#9a3412', SR: '#9d174d' };
+  var benched = p.mins === 0;
+
+  var h = '<div class="depth-row ' + tier + (benched ? ' benched' : '') + '" data-row="' + i + '">'
+    + '<div class="dr-top">'
+    // drag handle (desktop) — nudge buttons are the touch path
+    + '<div class="drag-handle" draggable="true" data-drag="' + i + '" aria-hidden="true" title="Drag to reorder">☰</div>'
+    + '<div class="nudge" role="group" aria-label="Move ' + p.name + '">'
+    + '<button class="nudge-btn" data-rmove="' + i + '" data-dir="-1" aria-label="Move ' + p.name + ' up"' + (i === 0 ? ' disabled' : '') + '>▲</button>'
+    + '<button class="nudge-btn" data-rmove="' + i + '" data-dir="1" aria-label="Move ' + p.name + ' down">▼</button>'
+    + '</div>'
+    + '<span class="pos-chip">' + p.pos + '</span>'
+    + '<div class="dr-name">' + p.name + ' <span class="cls-badge" style="background:' + (clsBg[p.cls] || '#f1f5f9') + ';color:' + (clsTx[p.cls] || '#64748b') + ';">' + p.cls + '</span>'
+    + '<div class="dr-sub">' + line + '</div></div>'
+    + '<div class="dr-ovr"><b>' + p.ovr + '</b><small style="color:' + potCol + ';">POT ' + pot + '</small></div>'
+    + '</div>'
+    + '<div class="dr-bot">'
+    + '<input type="range" min="0" max="40" step="1" value="' + p.mins + '" data-mins="' + i + '"'
+    + ' aria-label="Minutes for ' + p.name + '" style="background:' + sliderBg(p.mins) + ';">'
+    + '<span class="mins-val" data-mins-val="' + i + '">' + p.mins + '</span>'
+    + '</div></div>';
+  return h;
+}
+
 export function renderRoster() {
+  ensureSkin();
   var el = ge('roster-content');
   if (!el) return;
   var t = G.teams[G.tid];
   if (!t || !t.rost) return;
 
   var total = t.rost.reduce(function(s, p) { return s + p.mins; }, 0);
-  var totalCol = total === 200 ? 'var(--grn2)' : 'var(--danger)';
+  var totalCol = total === 200 ? 'var(--grn2)' : 'var(--red)';
 
-  var h = '';
+  var h = '<div style="margin-bottom:12px;"><div class="sec-head">Depth Chart</div>'
+    + '<div class="sec-sub">Top 5 = starters · drag on desktop, ▲▼ buttons on touch · sliders set minutes</div></div>';
 
-  // Header
-  h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">'
-    + '<div>'
-    + '<div style="font-size:22px;font-weight:900;color:var(--g900);">Depth Chart</div>'
-    + '<div style="font-size:11px;color:var(--g500);margin-top:4px;">Drag to reorder \u00b7 Top 5 = Starters \u00b7 Sliders control minutes</div>'
-    + '</div>'
-    + '<div style="display:flex;align-items:center;gap:12px;">'
-    + '<div style="text-align:right;"><div style="font-size:9px;color:var(--g400);font-weight:700;letter-spacing:.5px;text-transform:uppercase;">TOTAL MIN</div>'
-    + '<div style="font-family:var(--mono);font-size:16px;font-weight:900;color:' + totalCol + ';">' + total + '/200</div></div>'
-    + '<div class="btn btn-red btn-sm" onclick="autoOptimizeRoster()">AUTO SET</div>'
-    + '</div></div>';
+  h += '<div class="card" style="display:flex;align-items:center;justify-content:space-between;">'
+    + '<div><div style="font-size:10px;font-weight:800;color:var(--txt3);letter-spacing:1px;">TOTAL MINUTES</div>'
+    + '<div style="font-family:var(--mono);font-size:20px;font-weight:900;color:' + totalCol + ';" data-min-total>' + total + '/200</div></div>'
+    + '<button class="btn btn-red btn-sm" data-roster-auto>AUTO SET</button></div>';
 
-  // Column headers
-  h += '<div style="display:grid;grid-template-columns:28px 36px 1fr 50px 50px 150px;align-items:center;gap:6px;padding:6px 14px;font-size:9px;font-weight:700;color:var(--g400);letter-spacing:.5px;text-transform:uppercase;border-bottom:2px solid var(--g200);">'
-    + '<div></div><div>POS</div><div>PLAYER</div><div style="text-align:center;">OVR</div><div style="text-align:center;">POT</div><div style="text-align:right;padding-right:28px;">MINUTES</div></div>';
-
-  // Player rows
   t.rost.forEach(function(p, i) {
-    var tier = i < 5 ? 'starter' : i < 9 ? 'rotation' : 'bench';
-
-    // Section headers
-    if (i === 0) h += sectHead('STARTERS', 'var(--primary)');
-    else if (i === 5) h += sectHead('ROTATION', 'var(--g500)');
-    else if (i === 9) h += sectHead('BENCH', 'var(--g400)');
-
-    // Stats
-    var gp = p.s ? (p.s.gp || 0) : 0;
-    var ppg = gp > 0 ? (p.s.pts / gp).toFixed(1) : null;
-    var rpg = gp > 0 ? (p.s.reb / gp).toFixed(1) : null;
-    var apg = gp > 0 ? (p.s.ast / gp).toFixed(1) : null;
-
-    // Colors
-    var stripe = tier === 'starter' ? 'var(--primary)' : tier === 'rotation' ? 'var(--accent)' : 'transparent';
-    var clsBg = { FR: '#dbeafe', SO: '#f3e8ff', JR: '#ffedd5', SR: '#fce7f3' };
-    var clsCol2 = { FR: '#1e40af', SO: '#6b21a8', JR: '#9a3412', SR: '#9d174d' };
-    var pot = p.pot || p.ovr;
-    var potCol = pot > p.ovr + 8 ? 'var(--grn2)' : pot > p.ovr + 3 ? 'var(--gld2)' : 'var(--g400)';
-    var isBenched = p.mins === 0;
-
-    // Slider fill
-    var fillPct = Math.round((p.mins / 40) * 100);
-    var sliderTrackCol = tier === 'starter' ? 'var(--primary)' : tier === 'rotation' ? 'var(--accent)' : 'var(--g300)';
-    var sliderBg = 'linear-gradient(90deg,' + sliderTrackCol + ' 0%,' + sliderTrackCol + ' ' + fillPct + '%,var(--g200) ' + fillPct + '%)';
-
-    h += '<div data-idx="' + i + '" '
-      + 'ondragover="rosterDragOver(event)" '
-      + 'ondrop="rosterDrop(event,' + i + ')" '
-      + 'style="display:grid;grid-template-columns:28px 36px 1fr 50px 50px 150px;align-items:center;gap:6px;'
-      + 'padding:10px 14px;border-left:3px solid ' + stripe + ';border-bottom:1px solid var(--g100);'
-      + 'transition:opacity .12s,background .1s;'
-      + (isBenched ? 'opacity:.45;' : '') + '" '
-      + 'onmouseover="this.style.background=\'var(--g50)\'" '
-      + 'onmouseout="this.style.background=\'\'">';
-
-    // Col 1: Drag handle
-    h += '<div draggable="true" ondragstart="rosterDragStart(event,' + i + ')" style="color:var(--g300);font-size:14px;cursor:grab;user-select:none;text-align:center;transition:color .1s;" onmouseover="this.style.color=\'var(--g500)\'" onmouseout="this.style.color=\'var(--g300)\'">\u2630</div>';
-
-    // Col 2: Position chip
-    var posKey = p.pos.toLowerCase();
-    var posBg = { pg: '#dbeafe', sg: '#e0f2fe', sf: '#dcfce7', pf: '#ffedd5', c: '#fef3c7' };
-    var posCol = { pg: '#1e40af', sg: '#0369a1', sf: '#166534', pf: '#9a3412', c: '#92400e' };
-    h += '<div><span style="display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;background:' + (posBg[posKey] || 'var(--g100)') + ';color:' + (posCol[posKey] || 'var(--g500)') + ';padding:3px 0;border-radius:4px;width:32px;">' + p.pos + '</span></div>';
-
-    // Col 3: Name + class badge + stats
-    h += '<div style="min-width:0;overflow:hidden;">'
-      + '<div style="display:flex;align-items:center;gap:6px;">'
-      + '<span style="font-size:13px;font-weight:700;color:' + (isBenched ? 'var(--g400)' : 'var(--g900)') + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + p.name + '</span>'
-      + '<span style="font-size:9px;font-weight:800;color:' + (clsCol2[p.cls] || '#64748b') + ';background:' + (clsBg[p.cls] || '#f1f5f9') + ';padding:1px 6px;border-radius:3px;flex-shrink:0;">' + p.cls + '</span></div>';
-    if (ppg !== null) {
-      h += '<div style="font-size:10px;color:var(--g400);margin-top:2px;white-space:nowrap;font-family:var(--mono);">' + ppg + ' pts \u00b7 ' + rpg + ' reb \u00b7 ' + apg + ' ast</div>';
-    }
-    h += '</div>';
-
-    // Col 4: OVR
-    h += '<div style="text-align:center;">'
-      + '<div style="font-family:var(--mono);font-size:16px;font-weight:900;color:var(--primary);">' + p.ovr + '</div></div>';
-
-    // Col 5: POT
-    h += '<div style="text-align:center;">'
-      + '<div style="font-family:var(--mono);font-size:13px;font-weight:700;color:' + potCol + ';">' + pot + '</div></div>';
-
-    // Col 6: Slider + minutes value
-    h += '<div style="display:flex;align-items:center;gap:8px;">'
-      + '<input type="range" min="0" max="40" value="' + p.mins + '" data-idx="' + i + '" '
-      + 'oninput="updateMinsSlider(this)" '
-      + 'style="-webkit-appearance:none;appearance:none;width:100%;height:5px;border-radius:3px;outline:none;cursor:pointer;'
-      + 'background:' + sliderBg + ';">'
-      + '<span style="font-family:var(--mono);font-size:12px;font-weight:700;color:' + (p.mins > 0 ? 'var(--g900)' : 'var(--g400)') + ';width:24px;text-align:right;flex-shrink:0;">' + p.mins + '</span>'
-      + '</div>';
-
-    h += '</div>';
+    if (i === 0) h += '<div class="tier-label">Starters</div>';
+    else if (i === 5) h += '<div class="tier-label">Rotation</div>';
+    else if (i === 9) h += '<div class="tier-label">Bench</div>';
+    h += depthRow(p, i);
   });
 
-  // Inject slider thumb styles
-  if (!document.getElementById('roster-thumb-style')) {
-    var style = document.createElement('style');
-    style.id = 'roster-thumb-style';
-    style.textContent = '#roster-content input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--primary);cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.15);}'
-      + '#roster-content input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--primary);cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.15);}';
-    document.head.appendChild(style);
-  }
-
   el.innerHTML = h;
+  bindRoster(el);
 }
 
-function sectHead(label, col) {
-  return '<div style="padding:12px 14px 6px;font-size:10px;font-weight:800;color:' + col + ';letter-spacing:1.5px;border-bottom:2px solid ' + col + ';">' + label + '</div>';
+// Container-level delegation: nudge buttons, auto-set, sliders.
+// Drag events are bound per-handle (draggable) below.
+function bindRoster(el) {
+  el.onclick = function(e) {
+    var q = function(sel) { return e.target.closest ? e.target.closest(sel) : null; };
+    var m;
+    if ((m = q('[data-rmove]'))) {
+      rosterMove(parseInt(m.getAttribute('data-rmove'), 10), parseInt(m.getAttribute('data-dir'), 10));
+      return;
+    }
+    if (q('[data-roster-auto]')) { autoOptimizeRoster(); return; }
+  };
+  // In-place fill/label updates while dragging — no re-render, no logic.
+  el.oninput = function(e) {
+    var s = e.target.closest ? e.target.closest('[data-mins]') : null;
+    if (s) rosterSliderLive(s);
+  };
+  // Full redistribution + re-render only when the drag ends.
+  el.onchange = function(e) {
+    var s = e.target.closest ? e.target.closest('[data-mins]') : null;
+    if (s) rosterSliderCommit(s);
+  };
+  // Desktop drag-and-drop (kept alongside nudge buttons)
+  el.ondragstart = function(e) {
+    var hd = e.target.closest ? e.target.closest('[data-drag]') : null;
+    if (hd) rosterDragStart(e, parseInt(hd.getAttribute('data-drag'), 10));
+  };
+  el.ondragover = function(e) {
+    var row = e.target.closest ? e.target.closest('[data-row]') : null;
+    if (row) rosterDragOver(e);
+  };
+  el.ondrop = function(e) {
+    var row = e.target.closest ? e.target.closest('[data-row]') : null;
+    if (row) { e.preventDefault(); rosterDrop(e, parseInt(row.getAttribute('data-row'), 10)); }
+  };
 }
 
 // ═══════════════════════════════════════════════════════════
 //  DRAG AND DROP — auto-adjusts minutes on tier change
+//  (desktop path; touch users get the ▲▼ nudge buttons)
 // ═══════════════════════════════════════════════════════════
 
 export function rosterDragStart(e, idx) {
   _dragIdx = idx;
-  e.dataTransfer.effectAllowed = 'move';
-  e.dataTransfer.setData('text/plain', '' + idx);
-  setTimeout(function() { if (e.target) e.target.style.opacity = '0.2'; }, 0);
+  if (e.dataTransfer) {
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', '' + idx);
+  }
+  setTimeout(function() { if (e.target && e.target.style) e.target.style.opacity = '0.2'; }, 0);
 }
 window.rosterDragStart = rosterDragStart;
 
-export function rosterDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }
+export function rosterDragOver(e) {
+  e.preventDefault();
+  if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+}
 window.rosterDragOver = rosterDragOver;
 
 export function rosterDrop(e, dropIdx) {
-  e.preventDefault();
+  if (e.preventDefault) e.preventDefault();
   if (_dragIdx < 0 || _dragIdx === dropIdx) return;
   var t = G.teams[G.tid];
 
@@ -201,6 +241,7 @@ function autoAdjustMinutes(t) {
   }
 }
 
+// Nudge-button reorder (touch path) — same tier/minute logic as drag.
 export function rosterMove(idx, dir) {
   var t = G.teams[G.tid];
   var newIdx = idx + dir;
@@ -215,12 +256,48 @@ export function rosterMove(idx, dir) {
 window.rosterMove = rosterMove;
 
 // ═══════════════════════════════════════════════════════════
-//  SMART SLIDER — redistributes by position
+//  MINUTES SLIDERS
+//  Live drag: in-place fill + label + total (no logic, no
+//  re-render). Change end: full redistribution (R8 minutes
+//  conservation) + save + re-render.
 // ═══════════════════════════════════════════════════════════
 
-export function updateMinsSlider(input) {
-  var idx = parseInt(input.getAttribute('data-idx'));
-  var val = clamp(parseInt(input.value) || 0, 0, 40);
+// In-place visual update while dragging. Pure presentation.
+export function rosterSliderLive(input) {
+  var idx = parseInt(input.getAttribute('data-mins'), 10);
+  var val = clamp(parseInt(input.value, 10) || 0, 0, 40);
+  var t = G.teams[G.tid];
+  var p = t && t.rost[idx];
+  if (!p) return;
+  input.style.background = sliderBg(val);
+  var el = ge('roster-content');
+  if (el && el.querySelector) {
+    var lab = el.querySelector('[data-mins-val="' + idx + '"]');
+    if (lab) lab.textContent = val;
+    // Show the live total without committing: everyone else's
+    // committed minutes + this slider's in-flight value.
+    var total = t.rost.reduce(function(s, pl, i) { return s + (i === idx ? val : pl.mins); }, 0);
+    var tot = el.querySelector('[data-min-total]');
+    if (tot) {
+      tot.textContent = total + '/200';
+      tot.style.color = total === 200 ? 'var(--grn2)' : 'var(--red)';
+    }
+  }
+}
+
+// Commit on change end: redistribute, save, re-render.
+export function rosterSliderCommit(input) {
+  var idx = parseInt(input.getAttribute('data-mins'), 10);
+  var val = clamp(parseInt(input.value, 10) || 0, 0, 40);
+  applyMinsRedistribution(idx, val);
+  saveState();
+  renderRoster();
+}
+
+// The redistribution logic (was inline in updateMinsSlider).
+// R8: minutes are conserved — a player only shrinks by what
+// could actually be redistributed elsewhere.
+function applyMinsRedistribution(idx, val) {
   var t = G.teams[G.tid];
   var p = t.rost[idx];
   if (!p) return;
@@ -276,9 +353,15 @@ export function updateMinsSlider(input) {
   }
 
   p.mins = val;
+}
+
+// Kept export (main.js bridge + updateMins): apply immediately.
+export function updateMinsSlider(input) {
+  var idx = parseInt(input.getAttribute('data-mins') || input.getAttribute('data-idx'), 10);
+  var val = clamp(parseInt(input.value, 10) || 0, 0, 40);
+  applyMinsRedistribution(idx, val);
   saveState();
-  clearTimeout(window._rosterRenderTimeout);
-  window._rosterRenderTimeout = setTimeout(renderRoster, 200);
+  renderRoster();
 }
 window.updateMinsSlider = updateMinsSlider;
 
