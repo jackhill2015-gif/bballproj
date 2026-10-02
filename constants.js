@@ -111,7 +111,7 @@ export const ALL_TEAMS = [
   {n:"South Alabama",c:"Sun Belt",o:66},{n:"Arkansas St",c:"Sun Belt",o:64},{n:"Texas St",c:"Sun Belt",o:65},{n:"ULM",c:"Sun Belt",o:61},
   {n:"Georgia St",c:"Sun Belt",o:68},{n:"Marshall",c:"Sun Belt",o:71},{n:"Coastal Carolina",c:"Sun Belt",o:66},{n:"James Madison",c:"Sun Belt",o:70},
   // WAC
-  {n:"Utah Valley",c:"WAC",o:71},{n:"Grand Canyon",c:"WAC",o:74},{n:"Cal Baptist",c:"WAC",o:68},{n:"Abilene Chr",c:"WAC",o:65},
+  {n:"Utah Valley",c:"WAC",o:71},{n:"Grand Canyon",c:"MW",o:74},{n:"Cal Baptist",c:"WAC",o:68},{n:"Abilene Chr",c:"WAC",o:65},
   {n:"Tarleton St",c:"WAC",o:63},{n:"Southern Utah",c:"WAC",o:62},{n:"Seattle U",c:"WCC",o:60},
   {n:"Chicago St",c:"NEC",o:56},{n:"Lamar",c:"Southland",o:60},
   // Big East
@@ -197,7 +197,7 @@ export const ALL_TEAMS = [
   {n:"Portland State",c:"Big Sky",o:57},
   {n:"Weber State",c:"Big Sky",o:61},
   {n:"Radford",c:"Big South",o:60},
-  {n:"Sacramento State",c:"Big West",o:60},
+  {n:"Sacramento State",c:"Big Sky",o:60},
   {n:"Monmouth",c:"CAA",o:62},
   {n:"Northeastern",c:"CAA",o:62},
   {n:"Robert Morris",c:"Horizon",o:62},
