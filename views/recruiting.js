@@ -219,7 +219,7 @@ export function advanceRecruitPhase(){
 window.advanceRecruitPhase=advanceRecruitPhase;
 
 export function resolveRecruitingClass(){
-  if(G.recruitPhase<3){while(G.recruitPhase<3)advanceRecruitPhase();}
+  if(G.recruitPhase<3){while(G.recruitPhase<3&&G.recruitPhase>0)advanceRecruitPhase();}
   G.recruits.forEach(function(r){
     if(r.status!=='open')return;
     var ub=calcUserBid(r);var schools=calcSchoolChances(r);
@@ -589,7 +589,7 @@ function generateOpenJobs() {
   return openJobs.slice(0, 12);
 }
 
-function calcOfferChance(job) {
+export function calcOfferChance(job) {
   var sp = job.team.schoolPrestige || 30;
   var coachAvg = (G.coach.off + G.coach.def + G.coach.dev + G.coach.rec) / 4;
   var totalGames = G.coach.careerWins + G.coach.careerLoss;
