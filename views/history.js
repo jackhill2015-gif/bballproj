@@ -10,7 +10,7 @@ import { ge, fR } from '../utils.js';
 import { G } from '../state.js';
 
 function finishBadge(tf) {
-  if (tf === 'CHAMP') return '<span class="tag" style="background:var(--gld-soft);color:var(--gld2);">🏆 National Champion</span>';
+  if (tf === 'CHAMP') return '<span class="tag" style="background:var(--gld-soft);color:var(--gld2);">National Champion</span>';
   if (tf === 'Runner-Up') return '<span class="tag" style="background:var(--s3);color:var(--txt2);">Runner-Up</span>';
   if (tf === 'Final Four') return '<span class="tag" style="background:rgba(128,90,213,.10);color:#6d3fc0;">Final Four</span>';
   if (tf === 'Elite Eight') return '<span class="tag" style="background:var(--s3);color:var(--txt2);">Elite 8</span>';
@@ -27,15 +27,15 @@ function trophies() {
   var hist = G.history || [];
   var titles = hist.filter(function(x) { return x.championship; }).length;
   var f4 = hist.filter(function(x) { return x.tourneyFinish === 'Final Four' || x.championship; }).length;
-  if (titles > 0) out.push({ ico: '🏆', name: 'National Champion', desc: titles + '× — ' + hist.filter(function(x){return x.championship;}).map(function(x){return x.year;}).join(', ') });
-  if (f4 > 0) out.push({ ico: '🎖️', name: 'Final Four', desc: f4 + ' appearances' });
+  if (titles > 0) out.push({ ico: '', name: 'National Champion', desc: titles + '× — ' + hist.filter(function(x){return x.championship;}).map(function(x){return x.year;}).join(', ') });
+  if (f4 > 0) out.push({ ico: '', name: 'Final Four', desc: f4 + ' appearances' });
   var confT = hist.filter(function(x) { return x.confTitle; }).length;
-  if (confT > 0) out.push({ ico: '🥇', name: 'Conference Champion', desc: confT + '×' });
+  if (confT > 0) out.push({ ico: '', name: 'Conference Champion', desc: confT + '×' });
   var best = null;
   hist.forEach(function(x) { if (!best || x.wins > best.wins) best = x; });
-  if (best && best.wins >= 25) out.push({ ico: '🔥', name: '25-Win Season', desc: best.wins + '-' + best.loss + ' in ' + best.year });
-  if (G.coach.careerWins >= 100) out.push({ ico: '💯', name: 'Century Club', desc: G.coach.careerWins + ' career wins' });
-  if (G.coach.awards && G.coach.awards.length) out.push({ ico: '⭐', name: 'Coach of the Year', desc: G.coach.awards.length + '×' });
+  if (best && best.wins >= 25) out.push({ ico: '', name: '25-Win Season', desc: best.wins + '-' + best.loss + ' in ' + best.year });
+  if (G.coach.careerWins >= 100) out.push({ ico: '', name: 'Century Club', desc: G.coach.careerWins + ' career wins' });
+  if (G.coach.awards && G.coach.awards.length) out.push({ ico: '', name: 'Coach of the Year', desc: G.coach.awards.length + '×' });
   return out;
 }
 
@@ -95,11 +95,10 @@ export function renderHistory() {
   // ── Trophy case ──
   var tr = trophies();
   if (tr.length) {
-    h += '<div class="card"><div class="card-title">🏅 Trophy Case</div><div class="grid-3">';
+    h += '<div class="card"><div class="card-title">Trophy Case</div><div class="grid-3">';
     tr.forEach(function(t2) {
-      h += '<div style="display:flex;gap:10px;align-items:center;padding:10px;background:var(--s2);border-radius:8px;">'
-        + '<div style="font-size:26px;">' + t2.ico + '</div>'
-        + '<div><div style="font-size:13px;font-weight:800;">' + t2.name + '</div>'
+      h += '<div style="padding:10px;background:var(--s2);border:1px solid var(--bdr);border-radius:4px;">'
+        +         + '<div><div style="font-size:13px;font-weight:800;">' + t2.name + '</div>'
         + '<div style="font-size:11px;color:var(--txt3);">' + t2.desc + '</div></div></div>';
     });
     h += '</div></div>';
@@ -125,7 +124,7 @@ export function renderHistory() {
   // ── Record book ──
   var rb = recordBook();
   if (rb.length) {
-    h += '<div class="card"><div class="card-title">📖 Program Record Book</div>';
+    h += '<div class="card"><div class="card-title">Program Record Book</div>';
     rb.forEach(function(r) {
       h += '<div class="leader-row"><div class="leader-name">' + r.label + '<small>' + r.note + '</small></div>'
         + '<div class="leader-val" style="font-size:15px;">' + r.val + '</div></div>';
@@ -135,7 +134,7 @@ export function renderHistory() {
 
   // ── National champions ──
   if (G.leagueChamps && G.leagueChamps.length) {
-    h += '<div class="card"><div class="card-title">🏆 National Champions</div>';
+    h += '<div class="card"><div class="card-title">National Champions</div>';
     G.leagueChamps.slice().reverse().slice(0, 20).forEach(function(ch) {
       var isU = ch.tid === G.tid;
       h += '<div class="leader-row"><div class="leader-rank" style="width:44px;color:var(--gld2);">' + ch.year + '</div>'

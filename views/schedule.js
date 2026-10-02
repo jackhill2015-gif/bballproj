@@ -85,7 +85,7 @@ function gameRow(game, week, natSorted, team, rivals) {
 
   h += '<div class="sched-ha">' + (game.home ? 'vs' : '@') + '</div>';
   h += '<div class="sched-opp">' + rkStr + opp.name
-    + '<small>' + (game.conf ? 'CONF · ' : '') + (rivals[opp.id] && !isPlayed ? '🏆 RIVALRY · ' : '') + 'OVR ' + getTOvr(opp) + '</small></div>';
+    + '<small>' + (game.conf ? 'CONF · ' : '') + (rivals[opp.id] && !isPlayed ? 'RIVALRY · ' : '') + 'OVR ' + getTOvr(opp) + '</small></div>';
   h += '<div class="sched-rec">' + opp.wins + '-' + opp.loss + '</div>';
 
   if (isPlayed) {

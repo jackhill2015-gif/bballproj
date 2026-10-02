@@ -116,7 +116,7 @@ export function renderSeasonRecap() {
   h += '<div>';
   h += '<div class="card" style="border-left:4px solid var(--gld);">'
     + '<div class="card-title">National Champion</div>'
-    + '<div style="font-size:24px;font-weight:900;">🏆 ' + natChamp.name + '</div></div>';
+    + '<div class="br-champ-kicker">National Champion</div><div class="br-champ-team">' + natChamp.name + '</div></div>';
 
   h += '<div class="card"><div class="card-title">Final Top 10</div>';
   topTeams.forEach(function(tm, i) {
@@ -188,7 +188,7 @@ export function renderSeasonRecap() {
   h += '</div></div>';
 
   h += '<div style="margin-top:20px;text-align:center;">'
-    + '<button class="btn btn-red" style="padding:14px 44px;font-size:14px;" data-action="begin-offseason">BEGIN OFFSEASON ▶</button></div>';
+    + '<button class="btn btn-red" data-action="begin-offseason">BEGIN OFFSEASON</button></div>';
 
   return h;
 }

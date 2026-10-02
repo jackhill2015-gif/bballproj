@@ -347,7 +347,7 @@ export function toggleNotif() {
   if (SetupState.ACTIVE_VIEW === 'dashboard' && _views.renderDashboard) _views.renderDashboard();
 }
 
-// ── Circular initial team logos (Campus Dynasty pattern) ──
+// ── Team abbreviation marker (BBGM-style: plain text, no colored circles) ──
 var LOGO_COLORS = ['#0a4fc4', '#1e8e3e', '#d32f2f', '#6d3fc0', '#e67e22', '#0e7c7b', '#b7791f', '#c2185b'];
 export function teamColor(name) {
   var h = 0, s = String(name || '?');
@@ -358,7 +358,7 @@ export function teamInitial(name) {
   return (String(name || '?').trim().charAt(0) || '?').toUpperCase();
 }
 export function teamLogo(name, cls) {
-  return '<div class="team-logo' + (cls ? ' ' + cls : '') + '" style="background:' + teamColor(name) + '" aria-hidden="true">' + teamInitial(name) + '</div>';
+  return '<span class="team-logo' + (cls ? ' ' + cls : '') + '" aria-hidden="true">' + teamAbbr(name) + '</span>';
 }
 export function teamAbbr(name) {
   return String(name || '???').replace(/[^A-Za-z]/g, '').slice(0, 4).toUpperCase() || '???';
@@ -425,30 +425,30 @@ export function updateAdvanceBtn() {
 
   if (G.phase === 'reg') {
     if (SetupState.G_AUTO) {
-      txtLbl = '⏹ STOP';
+      txtLbl = 'STOP';
       btn.classList.add('stop');
     } else {
       btn.classList.remove('stop');
       var s = t.sched[G.gi];
-      if (G.gi >= 30) txtLbl = '▶ CONF TOURNEY';
+      if (G.gi >= 30) txtLbl = 'CONF TOURNEY';
       else if (s && s.opp !== undefined && s.opp !== null && !s.played) {
         var opp = G.teams[s.opp];
         var short = opp ? opp.name.split(' ').slice(-1)[0].toUpperCase() : 'GAME';
-        txtLbl = '▶ SIM: ' + short;
-      } else txtLbl = '▶ SIM WEEK';
+        txtLbl = 'SIM: ' + short;
+      } else txtLbl = 'SIM WEEK';
     }
   } else if (G.phase === 'conf_tourn') {
-    txtLbl = '▶ CONF TOURNEY';
+    txtLbl = 'CONF TOURNEY';
   } else if (G.phase === 'ncaa') {
-    txtLbl = '▶ MARCH MADNESS';
+    txtLbl = 'MARCH MADNESS';
   } else if (G.phase === 'offseason') {
-    if (G.offseasonStep === 'recap') txtLbl = '▶ BEGIN OFFSEASON';
-    else if (G.offseasonStep === 'turnover') txtLbl = '▶ TO RECRUITING';
-    else if (G.offseasonStep === 'skillpoints') txtLbl = '▶ FINISH';
-    else if (G.offseasonStep === 'carousel') txtLbl = '▶ CONTINUE';
-    else if (G.offseasonStep === 'fired') txtLbl = '▶ CONTINUE';
-    else if (G.recruitPhase >= 3) txtLbl = '▶ START SEASON';
-    else txtLbl = '▶ ADVANCE';
+    if (G.offseasonStep === 'recap') txtLbl = 'BEGIN OFFSEASON';
+    else if (G.offseasonStep === 'turnover') txtLbl = 'TO RECRUITING';
+    else if (G.offseasonStep === 'skillpoints') txtLbl = 'FINISH';
+    else if (G.offseasonStep === 'carousel') txtLbl = 'CONTINUE';
+    else if (G.offseasonStep === 'fired') txtLbl = 'CONTINUE';
+    else if (G.recruitPhase >= 3) txtLbl = 'START SEASON';
+    else txtLbl = 'ADVANCE';
   }
   if (label) label.textContent = txtLbl;
   buildAdvanceMenu();
@@ -585,9 +585,9 @@ export function initOutsideClickHandlers() {
 // ═══════════════════════════════════════════════════════════
 
 export var NIL_SHOP = [
-  { id: 'sellout', ico: '🏟️', name: 'Sellout Crowd', desc: 'Next home game gets a +3 edge. Electric atmosphere.', cost: 80 },
-  { id: 'film', ico: '🎬', name: 'Film Session', desc: 'Team-wide +2 to shooting, finishing & defense for 2 games.', cost: 50 },
-  { id: 'recovery', ico: '🧊', name: 'Recovery Session', desc: 'Clears every slump and negative effect on the roster.', cost: 60 }
+  { id: 'sellout', name: 'Sellout Crowd', desc: 'Next home game gets a +3 edge. Electric atmosphere.', cost: 80 },
+  { id: 'film', name: 'Film Session', desc: 'Team-wide +2 to shooting, finishing & defense for 2 games.', cost: 50 },
+  { id: 'recovery', name: 'Recovery Session', desc: 'Clears every slump and negative effect on the roster.', cost: 60 }
 ];
 
 var _shopWeek = -1;
@@ -610,7 +610,7 @@ export function buyBoost(itemId, btnEl) {
 
   if (itemId === 'sellout') {
     G.nextHomeBonus = 3; // consumed by simGame for the user's next home game
-    addLog('ev', G.gi, '🏟️ <b>Sellout crowd</b> bought with NIL funds — next home game gets a major boost.');
+    addLog('ev', G.gi, '<b>Sellout crowd</b> bought with NIL funds — next home game gets a major boost.');
   } else if (itemId === 'film') {
     t.rost.forEach(function(p) {
       if (p.mins > 0) {
@@ -621,7 +621,7 @@ export function buyBoost(itemId, btnEl) {
     });
     if (!G.buffs) G.buffs = [];
     G.buffs.push({ playerName: 'TEAM', attr: 'all', mod: 2, gamesLeft: 2 });
-    addLog('ev', G.gi, '🎬 <b>Film session</b> — the team is locked in (+2 all, 2 games).');
+    addLog('ev', G.gi, '<b>Film session</b> — the team is locked in (+2 all, 2 games).');
   } else if (itemId === 'recovery') {
     var cleared = 0;
     if (G.buffs) {
@@ -640,12 +640,12 @@ export function buyBoost(itemId, btnEl) {
       }
     }
     if (!cleared) { toast('No negative effects to clear.', 'var(--txt3)'); return; }
-    addLog('ev', G.gi, '🧊 <b>Recovery session</b> — cleared ' + cleared + ' negative effect' + (cleared > 1 ? 's' : '') + '.');
+    addLog('ev', G.gi, '<b>Recovery session</b> — cleared ' + cleared + ' negative effect' + (cleared > 1 ? 's' : '') + '.');
   }
 
   G.pts -= item.cost;
   bought[itemId] = true;
-  toast(item.ico + ' ' + item.name + ' activated!', 'var(--gld)');
+  toast(item.name + ' activated!', 'var(--grn)');
   saveState();
   updateAll(); // single refresh path — updates NIL balance + shop state
 }
@@ -687,8 +687,8 @@ export function openModal(tH, tA, isTournament, roundName) {
   he.textContent = tH.name + (isTournament && tH._seed ? '  #' + tH._seed : '');
   he.className = 'gc-name' + (tH.id === G.tid ? ' u' : '');
   var la = ge('gc-logo-a'), lh = ge('gc-logo-h');
-  if (la) { la.textContent = teamInitial(tA.name); la.style.background = teamColor(tA.name); }
-  if (lh) { lh.textContent = teamInitial(tH.name); lh.style.background = teamColor(tH.name); }
+  if (la) { la.textContent = teamAbbr(tA.name); }
+  if (lh) { lh.textContent = teamAbbr(tH.name); }
   txt('gc-score-a', '0'); txt('gc-score-h', '0');
   txt('sb-clk', '20:00'); txt('sb-per', 'Half 1');
 

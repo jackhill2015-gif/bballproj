@@ -84,9 +84,8 @@ function renderSchoolCard() {
   }
 
   return '<div class="card school-card">'
-    + '<div class="sc-top">' + teamLogo(t.name, 'lg')
-    + '<div class="sc-id"><div class="sc-name">' + t.name + '</div></div>'
-    + '<div class="sc-conf">' + t.conf + '</div></div>'
+    + '<div class="sc-top"><div class="sc-id"><div class="sc-name">' + t.name + '</div>'
+    + '<div class="sc-conf">' + t.conf + '</div></div></div>'
     + '<div class="sc-record">' + fR(t.wins, t.loss) + '</div>'
     + '<div class="sc-cols">'
     + '<div><div class="sc-lab">National</div><div class="sc-val">' + netRank + arrow + '</div></div>'
@@ -102,7 +101,7 @@ function renderSchoolCard() {
 function renderNotifications() {
   var ns = notifState();
   var h = '<div class="card notif-card" data-action="notif-toggle" role="button" tabindex="0" aria-expanded="' + ns.open + '">'
-    + '<div class="notif-row"><span class="ni">🔔</span><span class="notif-label">Notifications</span>'
+    + '<div class="notif-row"><span class="notif-label">Notifications</span>'
     + (ns.unread ? '<span class="notif-badge">' + ns.unread + '</span>' : '')
     + '<span class="notif-chev">' + (ns.open ? '▲' : '▼') + '</span></div>';
   if (ns.open) {
@@ -130,16 +129,16 @@ function renderExpectations() {
   var wins = t.wins;
   var job, cls;
   if (c.hotSeat) {
-    job = '🔥 HOT SEAT';
+    job = 'Hot seat';
     cls = 'danger';
   } else if (wins < exp.danger) {
-    job = '⚠️ Job in danger';
+    job = 'Job in danger';
     cls = 'warn';
   } else if (wins < exp.low) {
-    job = '😐 Below expectations';
+    job = 'Below expectations';
     cls = 'warn';
   } else {
-    job = '✅ Job safe';
+    job = 'Job safe';
     cls = 'safe';
   }
   return '<div class="card exp-card">'
@@ -158,8 +157,8 @@ function renderGameCard() {
 
   function bigButtons() {
     return '<div class="big-btn-row">'
-      + '<button class="btn-big" data-action="play" data-mode="live">▶ Play Game</button>'
-      + '<button class="btn-big" data-action="play" data-mode="quick">⏩ Sim Game</button></div>';
+      + '<button class="btn-big" data-action="play" data-mode="live">Play Game</button>'
+      + '<button class="btn-big" data-action="play" data-mode="quick">Sim Game</button></div>';
   }
 
   if (G.phase === 'reg' && G.gi < 30) {
@@ -168,8 +167,8 @@ function renderGameCard() {
     if (ng && no) {
       var wp = winProb(t, no, ng.home);
       var r = rivalIds(), rev = revengeIds();
-      var flags = (r[no.id] ? '<span class="tag t-rival">🏆 Rivalry</span> ' : '')
-        + (rev[no.id] ? '<span class="tag t-revenge">😤 Revenge</span>' : '');
+      var flags = (r[no.id] ? '<span class="tag t-rival">Rivalry</span> ' : '')
+        + (rev[no.id] ? '<span class="tag t-revenge">Revenge</span> ' : '');
       return '<div class="card game-card">'
         + '<div class="gc-opp-row">' + teamLogo(no.name)
         + '<div class="gc-opp-id"><div class="gc-opp-name">' + (ng.home ? 'vs ' : '@ ') + no.name + '</div>'
@@ -179,11 +178,11 @@ function renderGameCard() {
         + '<div class="prob-row"><span>Win probability</span><span style="color:' + wpColor(wp) + ';font-weight:800;">' + wp + '%</span></div>'
         + '<div class="prob-bar"><div class="prob-fill" style="width:' + wp + '%;background:' + wpColor(wp) + ';"></div></div>'
         + bigButtons()
-        + '<button class="btn btn-ghost btn-sm btn-full" style="margin-top:8px;" data-action="nav" data-view="strategy">🧠 GAMEPLAN</button></div>';
+        + '<button class="btn btn-ghost btn-sm btn-full" style="margin-top:8px;" data-action="nav" data-view="strategy">Gameplan</button></div>';
     }
     return '<div class="card game-card"><div class="gc-opp-name">Bye week</div>'
       + '<div class="gc-opp-sub">Week ' + (G.gi + 1) + ' — rest up.</div>'
-      + '<div class="big-btn-row"><button class="btn-big" data-action="play" data-mode="quick">▶ Sim Week</button></div></div>';
+      + '<div class="big-btn-row"><button class="btn-big" data-action="play" data-mode="quick">Sim Week</button></div></div>';
   }
 
   if (G.phase === 'reg') {
@@ -207,7 +206,7 @@ function renderBriefing() {
   var d = rankDelta();
   if (d.prev) {
     var mv = d.delta > 0 ? 'up <b>' + d.delta + '</b> to <b>#' + d.cur + '</b>' : d.delta < 0 ? 'down <b>' + Math.abs(d.delta) + '</b> to <b>#' + d.cur + '</b>' : 'holding at <b>#' + d.cur + '</b>';
-    rows += '<div class="brief-row"><span class="bi">📈</span><span>NET rank ' + mv + ' after last week.</span></div>';
+    rows += '<div class="brief-row"><span>NET rank ' + mv + ' after last week.</span></div>';
   }
   var ng = t.sched[G.gi];
   if (ng && ng.opp !== undefined && ng.opp !== null && !ng.played) {
@@ -215,10 +214,10 @@ function renderBriefing() {
     if (opp) {
       var oppRank = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; }).findIndex(function(x) { return x.id === opp.id; }) + 1;
       var scout = oppRank <= 25 ? 'Ranked #' + oppRank + ' — bring your best.' : oppRank <= 64 ? 'A winnable resume game.' : 'Take care of business.';
-      rows += '<div class="brief-row"><span class="bi">🔍</span><span>Scout: <b>' + (ng.home ? 'vs' : '@') + ' ' + opp.name + '</b> (' + opp.wins + '-' + opp.loss + '). ' + scout + '</span></div>';
+      rows += '<div class="brief-row"><span>Scout: <b>' + (ng.home ? 'vs' : '@') + ' ' + opp.name + '</b> (' + opp.wins + '-' + opp.loss + '). ' + scout + '</span></div>';
     }
   }
-  rows += '<div class="brief-row"><span class="bi">💰</span><span><b>' + (G.pts || 0) + ' NIL</b> in the bank — spend it in the boost shop below.</span></div>';
+  rows += '<div class="brief-row"><span><b>' + (G.pts || 0) + ' NIL</b> in the bank — spend it in the boost shop below.</span></div>';
   return '<div class="brief-card"><div class="bk">Week ' + (G.gi + 1) + ' Briefing</div>' + rows + '</div>';
 }
 
@@ -228,14 +227,13 @@ function renderBriefing() {
 
 function renderShop() {
   var bought = shopBoughtThisWeek();
-  var h = '<div class="card"><div class="card-title">💰 NIL Boost Shop <span style="float:right;color:#7a5a10;">' + (G.pts || 0) + ' PTS</span></div>';
+  var h = '<div class="card"><div class="card-title">NIL Boost Shop <span style="float:right;color:var(--txt2);">' + (G.pts || 0) + ' PTS</span></div>';
   NIL_SHOP.forEach(function(item) {
     var isB = !!bought[item.id];
     h += '<div class="shop-item' + (isB ? ' bought' : '') + '">'
-      + '<div class="si-ico">' + item.ico + '</div>'
       + '<div class="si-body"><div class="si-name">' + item.name + '</div><div class="si-desc">' + item.desc + '</div></div>'
       + '<div style="text-align:right;"><div class="si-cost">' + item.cost + ' pts</div>'
-      + (isB ? '<div style="font-size:10px;color:var(--grn2);font-weight:800;">ACTIVE ✓</div>'
+      + (isB ? '<div style="font-size:10px;color:var(--grn2);font-weight:800;">ACTIVE</div>'
              : '<button class="btn btn-sm btn-ghost" style="margin-top:4px;" data-action="nil-buy" data-item="' + item.id + '">BUY</button>')
       + '</div></div>';
   });
@@ -270,7 +268,7 @@ function renderCoach() {
 function renderRaces() {
   var rows = poyRace();
   if (!rows.length) return '';
-  var h = '<div class="card"><div class="card-title">⭐ POY Watch</div>';
+  var h = '<div class="card"><div class="card-title">POY Watch</div>';
   rows.forEach(function(r, i) {
     var yours = r.tid === G.tid;
     h += '<div class="leader-row"><div class="leader-rank">' + (i + 1) + '</div>'

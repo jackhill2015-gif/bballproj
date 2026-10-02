@@ -17,47 +17,6 @@ import { moodTag, moodColors, MORALE_DEFAULT } from '../morale.js';
 
 var _dragIdx = -1;
 
-// ── View skin (scoped) ────────────────────────────────────
-function ensureSkin() {
-  if (document.getElementById('roster-skin')) return;
-  var s = document.createElement('style');
-  s.id = 'roster-skin';
-  s.textContent =
-    '.depth-row{background:#fff;border:1px solid var(--bdr);border-radius:10px;padding:10px 12px;' +
-    'margin-bottom:6px;border-left:3px solid transparent;}' +
-    '.depth-row.starter{border-left-color:var(--blu);}' +
-    '.depth-row.rotation{border-left-color:var(--blu2);}' +
-    '.depth-row.benched{opacity:.5;}' +
-    '.dr-top{display:flex;align-items:center;gap:8px;}' +
-    '.dr-name{flex:1;min-width:0;font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}' +
-    '.dr-sub{font-size:11px;color:var(--txt3);font-weight:500;margin-top:1px;font-family:var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}' +
-    '.dr-ovr{text-align:right;flex-shrink:0;}' +
-    '.dr-ovr b{font-family:var(--mono);font-size:18px;font-weight:900;color:var(--blu);}' +
-    '.dr-ovr small{display:block;font-size:10px;color:var(--txt3);font-weight:700;}' +
-    '.nudge{display:flex;gap:4px;flex-shrink:0;}' +
-    '.nudge-btn{width:44px;height:44px;border-radius:8px;border:1px solid var(--bdr2);background:#fff;' +
-    'font-size:15px;color:var(--txt2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}' +
-    '.nudge-btn:active{background:var(--blu-soft);border-color:var(--blu);}' +
-    '.nudge-btn:disabled{opacity:.3;cursor:default;}' +
-    '.drag-handle{color:var(--txt3);font-size:16px;cursor:grab;user-select:none;padding:12px 6px;flex-shrink:0;touch-action:none;}' +
-    '.dr-bot{display:flex;align-items:center;gap:10px;margin-top:6px;}' +
-    '.dr-bot input[type=range]{flex:1;min-height:44px;cursor:pointer;-webkit-appearance:none;appearance:none;' +
-    'height:6px;border-radius:3px;outline:none;background:var(--s3);}' +
-    '.mins-val{font-family:var(--mono);font-size:14px;font-weight:800;width:32px;text-align:right;flex-shrink:0;}' +
-    '.tier-label{font-size:11px;font-weight:800;letter-spacing:1.5px;color:var(--txt3);text-transform:uppercase;margin:16px 0 8px;}' +
-    '.tier-label:first-of-type{margin-top:4px;}' +
-    '.pos-chip{display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;' +
-    'background:var(--blu-soft);color:var(--blu);padding:5px 0;border-radius:5px;width:38px;flex-shrink:0;}' +
-    '.cls-badge{font-size:9px;font-weight:800;padding:2px 7px;border-radius:4px;flex-shrink:0;}' +
-    '.mood-tag{font-size:9px;font-weight:800;padding:2px 7px;border-radius:4px;flex-shrink:0;margin-left:4px;white-space:nowrap;}' +
-    '@media(min-width:861px){.drag-handle{display:block;}}' +
-    '#roster-content input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;' +
-    'border-radius:50%;background:#fff;border:3px solid var(--blu);cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.2);}' +
-    '#roster-content input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#fff;' +
-    'border:3px solid var(--blu);cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.2);}';
-  document.head.appendChild(s);
-}
-
 // ═══════════════════════════════════════════════════════════
 //  RENDER
 // ═══════════════════════════════════════════════════════════
@@ -107,7 +66,6 @@ function depthRow(p, i) {
 }
 
 export function renderRoster() {
-  ensureSkin();
   var el = ge('roster-content');
   if (!el) return;
   var t = G.teams[G.tid];

@@ -36,7 +36,7 @@
             <div class="home-dynasty-stat"><div class="home-dynasty-stat-v" id="home-titles">0</div><div class="home-dynasty-stat-l">Titles</div></div>
           </div>
         </div>
-        <div class="home-play-btn" data-action="load-play" role="button" tabindex="0">PLAY ▶</div>
+        <div class="home-play-btn" data-action="load-play" role="button" tabindex="0">PLAY</div>
       </div>
       <div class="home-delete">
         <button class="home-delete-btn" data-action="delete-save">Delete save</button>
@@ -72,7 +72,7 @@
 
     <!-- NIL balance (P2: spendable currency, topbar display) -->
     <div class="tb-nil" title="NIL budget — spend it in the dashboard boost shop">
-      <span aria-hidden="true">💰</span><span id="nil-balance">0</span><span class="nil-lbl">NIL</span>
+      <span id="nil-balance">0</span><span class="nil-lbl">NIL</span>
     </div>
 
     <div class="tb-meta">
@@ -86,32 +86,32 @@
          Mobile shows: Roster · Schedule · Dashboard · Bracket · More.
          The rest live in the More sheet (mobile) / sidebar (desktop). -->
     <nav id="main-nav" aria-label="Primary">
-      <button class="nav-btn nav-main" data-view="roster" data-action="nav"><span class="ni">👥</span><span>Roster</span></button>
-      <button class="nav-btn nav-main" data-view="schedule" data-action="nav"><span class="ni">📅</span><span>Schedule</span></button>
-      <button class="nav-btn nav-main on" data-view="dashboard" data-action="nav"><span class="ni">🏠</span><span>Home</span></button>
-      <button class="nav-btn nav-main" data-view="bracket" data-action="nav"><span class="ni">🏆</span><span>Bracket</span></button>
-      <button class="nav-btn nav-more-btn" data-action="more" aria-haspopup="true"><span class="ni">⋯</span><span>More</span></button>
-      <button class="nav-btn nav-extra" data-view="strategy" data-action="nav"><span class="ni">🧠</span><span>Strategy</span></button>
-      <button class="nav-btn nav-extra" data-view="stats" data-action="nav"><span class="ni">📊</span><span>Stats</span></button>
-      <button class="nav-btn nav-extra" data-view="standings" data-action="nav"><span class="ni">📈</span><span>Ranks</span></button>
-      <button class="nav-btn nav-extra" data-view="history" data-action="nav"><span class="ni">📜</span><span>History</span></button>
+      <button class="nav-btn nav-main" data-view="roster" data-action="nav"><span>Roster</span></button>
+      <button class="nav-btn nav-main" data-view="schedule" data-action="nav"><span>Schedule</span></button>
+      <button class="nav-btn nav-main on" data-view="dashboard" data-action="nav"><span>Home</span></button>
+      <button class="nav-btn nav-main" data-view="bracket" data-action="nav"><span>Bracket</span></button>
+      <button class="nav-btn nav-more-btn" data-action="more" aria-haspopup="true"><span>More</span></button>
+      <button class="nav-btn nav-extra" data-view="strategy" data-action="nav"><span>Strategy</span></button>
+      <button class="nav-btn nav-extra" data-view="stats" data-action="nav"><span>Stats</span></button>
+      <button class="nav-btn nav-extra" data-view="standings" data-action="nav"><span>Rankings</span></button>
+      <button class="nav-btn nav-extra" data-view="history" data-action="nav"><span>History</span></button>
       <div class="nav-sep"></div>
       <div id="game-log-panel">
         <div class="log-head">Latest</div>
         <div id="game-log"></div>
       </div>
-      <button class="nav-new" data-action="new-dynasty">↺ New Dynasty</button>
+      <button class="nav-new" data-action="new-dynasty">New Dynasty</button>
     </nav>
 
     <!-- More sheet (mobile): destinations beyond the 5-icon bar -->
     <div id="sheet-scrim" data-action="more"></div>
     <div id="more-sheet" role="dialog" aria-label="More">
       <div class="more-handle"></div>
-      <button class="nav-btn" data-view="strategy" data-action="nav"><span class="ni">🧠</span><span>Strategy</span></button>
-      <button class="nav-btn" data-view="stats" data-action="nav"><span class="ni">📊</span><span>Stats</span></button>
-      <button class="nav-btn" data-view="standings" data-action="nav"><span class="ni">📈</span><span>Ranks</span></button>
-      <button class="nav-btn" data-view="history" data-action="nav"><span class="ni">📜</span><span>History</span></button>
-      <button class="nav-btn" data-action="new-dynasty"><span class="ni">↺</span><span>New Dynasty</span></button>
+      <button class="nav-btn" data-view="strategy" data-action="nav"><span>Strategy</span></button>
+      <button class="nav-btn" data-view="stats" data-action="nav"><span>Stats</span></button>
+      <button class="nav-btn" data-view="standings" data-action="nav"><span>Rankings</span></button>
+      <button class="nav-btn" data-view="history" data-action="nav"><span>History</span></button>
+      <button class="nav-btn" data-action="new-dynasty"><span>New Dynasty</span></button>
     </div>
 
     <main id="center">
@@ -161,29 +161,27 @@
     <div class="gc-pane" id="gc-pane-team"></div>
     <div class="gc-pane" id="gc-pane-box"></div>
     <div class="gfoot">
-      <button class="btn btn-big btn-full" data-action="skip">⏩ SIM GAME</button>
+      <button class="btn btn-big btn-full" data-action="skip">SIM GAME</button>
     </div>
   </div>
 </div>
 
 <!-- ═══ NCAA BRACKET REVEAL (Selection Sunday — rendered by tournament.js) ═══ -->
-<div id="bracket-reveal" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:9500;overflow-y:auto;padding:24px;">
-  <div style="max-width:1100px;margin:0 auto;">
-    <div style="text-align:center;margin-bottom:24px;">
-      <div style="font-size:10px;color:var(--red);font-weight:800;letter-spacing:4px;text-transform:uppercase;margin-bottom:6px;" id="br-label">SELECTION SUNDAY</div>
-      <div style="font-size:40px;font-weight:900;letter-spacing:-1px;" id="br-title">NCAA Tournament</div>
-      <div style="font-size:13px;color:var(--txt2);margin-top:4px;" id="br-seed-line"></div>
+<div id="bracket-reveal">
+  <div class="brv-inner">
+    <div class="brv-kicker" id="br-label">SELECTION SUNDAY</div>
+    <div class="brv-title" id="br-title">NCAA Tournament</div>
+    <div class="brv-seedline" id="br-seed-line"></div>
+    <div id="br-user-card" class="brv-user">
+      <div class="brv-user-kicker">Your program is going dancing</div>
+      <div class="brv-user-team" id="br-user-team">---</div>
+      <div class="brv-user-seed" id="br-user-seed">---</div>
+      <div class="brv-user-opp" id="br-user-opp">---</div>
     </div>
-    <div id="br-user-card" style="background:#fff;border:2px solid var(--gld);border-radius:8px;padding:24px;margin-bottom:20px;text-align:center;display:none;">
-      <div style="font-size:10px;color:var(--gld2);font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:6px;">YOUR PROGRAM IS GOING DANCING</div>
-      <div style="font-size:32px;font-weight:900;" id="br-user-team">---</div>
-      <div style="font-size:16px;color:var(--gld2);margin-top:6px;font-weight:800;" id="br-user-seed">---</div>
-      <div style="font-size:12px;color:var(--txt2);margin-top:8px;" id="br-user-opp">---</div>
-    </div>
-    <div id="br-bubble" style="display:none;margin-bottom:16px;"></div>
-    <div id="br-bracket" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;"></div>
-    <div id="br-reveal-controls" style="text-align:center;">
-      <button id="br-reveal-btn" class="btn btn-red" style="padding:14px 40px;font-size:14px;font-weight:800;">REVEAL THE FIELD ▶</button>
+    <div id="br-bubble" style="display:none;margin-bottom:12px;"></div>
+    <div id="br-bracket" class="brv-grid"></div>
+    <div id="br-reveal-controls" class="brv-controls">
+      <button id="br-reveal-btn" class="btn btn-red">REVEAL THE FIELD</button>
     </div>
   </div>
 </div>

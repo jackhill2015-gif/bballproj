@@ -497,18 +497,18 @@ export function showBracketReveal(userSeed) {
 
   // Single reveal button: one action spawns all four regions immediately
   var btn = ge('br-reveal-btn');
-  if (btn) { btn.textContent = 'REVEAL THE FIELD \u25b6'; btn.onclick = function() { revealFullBracket(); }; }
+  if (btn) { btn.textContent = 'REVEAL THE FIELD'; btn.onclick = function() { revealFullBracket(); }; }
 }
 
 // Builds one region's reveal card from G.bracket layout — the same layout
 // the sim plays, so the reveal always matches the games.
 function buildRevealRegionCard(step) {
   var col = document.createElement('div');
-  col.style.cssText = 'background:var(--s1);border:1px solid var(--bdr);border-radius:8px;overflow:hidden;opacity:0;transition:opacity 0.6s;';
+  col.className = 'br-region brv-fade';
 
   var header = document.createElement('div');
-  header.style.cssText = 'font-size:12px;font-weight:800;color:var(--red);letter-spacing:1.5px;text-transform:uppercase;padding:10px 14px;border-bottom:1px solid var(--bdr);text-align:center;background:var(--s2);';
-  header.textContent = NCAA_REGIONS[step] + ' Region';
+  header.className = 'br-region-head';
+  header.innerHTML = '<span class="br-region-name">' + NCAA_REGIONS[step] + ' Region</span>';
   col.appendChild(header);
 
   var hasUser = false;
@@ -521,26 +521,18 @@ function buildRevealRegionCard(step) {
     if (isU1 || isU2) hasUser = true;
 
     var matchup = document.createElement('div');
-    matchup.style.cssText = 'border-bottom:1px solid rgba(0,0,0,.04);';
+    matchup.className = 'br-match';
 
-    [{ b: b1, s: s1, isu: isU1 }, { b: b2, s: s2, isu: isU2 }].forEach(function(entry, idx) {
+    [{ b: b1, s: s1, isu: isU1 }, { b: b2, s: s2, isu: isU2 }].forEach(function(entry) {
       var row = document.createElement('div');
-      row.style.cssText = 'display:flex;align-items:center;gap:6px;padding:6px 12px;font-size:11px;'
-        + (entry.isu ? 'background:rgba(214,158,46,.12);border-left:3px solid var(--gld);' : 'border-left:3px solid transparent;')
-        + (idx === 0 ? 'border-bottom:1px solid rgba(0,0,0,.03);' : '');
-      row.innerHTML = '<span style="width:18px;font-family:monospace;font-size:10px;color:' + (entry.isu ? 'var(--gld2)' : 'var(--txt3)') + ';font-weight:700;text-align:right;">' + entry.s + '</span>'
-        + '<span style="flex:1;font-weight:' + (entry.isu ? '800' : '500') + ';color:' + (entry.isu ? 'var(--gld2)' : 'var(--txt)') + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + entry.b.team.name + '</span>'
-        + '<span style="font-family:monospace;font-size:10px;color:var(--txt3);">' + entry.b.team.wins + '-' + entry.b.team.loss + '</span>';
+      row.className = 'br-team' + (entry.isu ? ' is-user' : '');
+      row.innerHTML = '<span class="br-seed">' + entry.s + '</span>'
+        + '<span class="br-tname">' + entry.b.team.name + '</span>'
+        + '<span style="font-size:10.5px;color:var(--txt3);font-variant-numeric:tabular-nums;">' + entry.b.team.wins + '-' + entry.b.team.loss + '</span>';
       matchup.appendChild(row);
     });
     col.appendChild(matchup);
   });
-
-  // If user's region, add gold pulse
-  if (hasUser) {
-    col.style.border = '2px solid var(--gld)';
-    col.style.boxShadow = '0 0 12px rgba(214,158,46,.2)';
-  }
   return col;
 }
 
@@ -560,7 +552,7 @@ export function revealFullBracket() {
     (function(col) { setTimeout(function() { col.style.opacity = '1'; }, 60); })(cols[i]);
   }
   if (btn) {
-    btn.textContent = "LET\u2019S DANCE \u25b6";
+    btn.textContent = "LET\u2019S DANCE";
     btn.onclick = function() { closeBracketReveal(); };
   }
 }

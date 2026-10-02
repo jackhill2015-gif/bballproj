@@ -40,61 +40,13 @@ var _filter = { pos: 'All', stars: 0, sort: 'rank' };
 var _detailId = -1; // recruit ID shown in detail, -1 = none
 var _boardShown = 30; // R5: cap rendered board rows
 
-// ── View skin (scoped) ────────────────────────────────────
-function ensureSkin() {
-  if (document.getElementById('rec-skin')) return;
-  var s = document.createElement('style');
-  s.id = 'rec-skin';
-  s.textContent =
-    '.pos-chip{display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;' +
-    'background:var(--blu-soft);color:var(--blu);padding:5px 0;border-radius:5px;width:38px;flex-shrink:0;}' +
-    '.rc-row{display:flex;align-items:center;gap:10px;width:100%;background:#fff;border:1px solid var(--bdr);' +
-    'border-radius:10px;padding:12px 14px;margin-bottom:6px;min-height:64px;cursor:pointer;text-align:left;}' +
-    '.rc-row:active{background:var(--s2);}' +
-    '.rc-row.is-target{border-left:3px solid var(--blu);}' +
-    '.rc-row.open{border-color:var(--blu2);background:var(--blu-soft);}' +
-    '.rc-ovr{text-align:right;flex-shrink:0;}' +
-    '.rc-ovr b{font-family:var(--mono);font-size:18px;font-weight:900;}' +
-    '.rc-ovr small{display:block;font-size:10px;color:var(--txt3);font-weight:700;}' +
-    '.stepper{width:44px;height:44px;border-radius:8px;border:1px solid var(--bdr2);background:#fff;' +
-    'font-size:20px;font-weight:900;color:var(--txt);cursor:pointer;display:inline-flex;align-items:center;' +
-    'justify-content:center;flex-shrink:0;user-select:none;-webkit-user-select:none;}' +
-    '.stepper:active{background:var(--s3);}' +
-    '.stepper.off{opacity:.35;cursor:default;}' +
-    '.stepper.plus{background:var(--blu);border-color:var(--blu);color:#fff;}' +
-    '.stepper.plus.off{background:#fff;color:var(--txt3);border-color:var(--bdr2);}' +
-    '.pts-val{font-family:var(--mono);font-size:17px;font-weight:900;min-width:56px;text-align:center;flex-shrink:0;}' +
-    '.school-row{display:flex;align-items:center;gap:8px;padding:5px 0;}' +
-    '.school-name{width:118px;font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;' +
-    'text-overflow:ellipsis;flex-shrink:0;}' +
-    '.school-bar{flex:1;height:7px;background:var(--s3);border-radius:4px;overflow:hidden;}' +
-    '.school-fill{height:100%;border-radius:4px;}' +
-    '.school-pct{width:44px;text-align:right;font-family:var(--mono);font-size:12px;font-weight:800;flex-shrink:0;}' +
-    '.rc-select{background:#fff;border:1px solid var(--bdr2);border-radius:8px;color:var(--txt);' +
-    'padding:0 12px;font-size:13px;min-height:44px;font-family:inherit;flex-shrink:0;}' +
-    '.phase-dots{display:flex;gap:6px;align-items:center;}' +
-    '.phase-dot{width:10px;height:10px;border-radius:50%;}' +
-    '.job-grid{display:grid;grid-template-columns:1fr;gap:10px;}' +
-    '@media(min-width:861px){.job-grid{grid-template-columns:1fr 1fr;}}' +
-    '.chance{font-size:15px;font-weight:900;}' +
-    '.skill-row{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--bdr);' +
-    'border-radius:10px;padding:12px 14px;margin-bottom:8px;}' +
-    '.skill-bar{height:6px;background:var(--s3);border-radius:3px;overflow:hidden;margin-top:6px;}' +
-    '.skill-fill{height:100%;background:var(--blu);border-radius:3px;}' +
-    '.geo-badge{font-size:9px;font-weight:900;padding:2px 7px;border-radius:4px;margin-left:6px;letter-spacing:.4px;}' +
-    '.geo-home{color:var(--grn2);background:var(--grn-soft);}' +
-    '.geo-region{color:var(--blu);background:var(--blu-soft);}' +
-    '.geo-long{color:var(--red);background:var(--red-soft);}';
-  document.head.appendChild(s);
-}
-
 // ═══════════════════════════════════════════════════════════
 //  PHASE CONFIG
 // ═══════════════════════════════════════════════════════════
 var PHASES = {
-  1: { name: 'Evaluation Period', tag: 'PHASE 1 OF 3', desc: 'Browse and target recruits. No decisions yet.', btnLabel: 'ADVANCE TO EARLY SIGNING ▶', final: false, decisionRate: 0.30, cpuAgg: 0.8 },
-  2: { name: 'Early Signing Period', tag: 'PHASE 2 OF 3', desc: 'Top prospects decide. Refunded points can be reinvested.', btnLabel: 'ADVANCE TO LATE SIGNING ▶', final: false, decisionRate: 0.55, cpuAgg: 1.1 },
-  3: { name: 'Late Signing Period', tag: 'PHASE 3 OF 3', desc: 'All remaining recruits make their decision.', btnLabel: 'FINALIZE CLASS & START SEASON ▶', final: true, decisionRate: 1.0, cpuAgg: 1.4 }
+  1: { name: 'Evaluation Period', tag: 'PHASE 1 OF 3', desc: 'Browse and target recruits. No decisions yet.', btnLabel: 'ADVANCE TO EARLY SIGNING', final: false, decisionRate: 0.30, cpuAgg: 0.8 },
+  2: { name: 'Early Signing Period', tag: 'PHASE 2 OF 3', desc: 'Top prospects decide. Refunded points can be reinvested.', btnLabel: 'ADVANCE TO LATE SIGNING', final: false, decisionRate: 0.55, cpuAgg: 1.1 },
+  3: { name: 'Late Signing Period', tag: 'PHASE 3 OF 3', desc: 'All remaining recruits make their decision.', btnLabel: 'FINALIZE CLASS & START SEASON', final: true, decisionRate: 1.0, cpuAgg: 1.4 }
 };
 
 // ═══════════════════════════════════════════════════════════
@@ -306,7 +258,6 @@ window.resolveRecruitingClass = resolveRecruitingClass;
 // ═══════════════════════════════════════════════════════════
 
 export function renderOffseason() {
-  ensureSkin();
   var el = ge('offseason-content'); if (!el) return;
 
   // Route to correct screen
@@ -600,7 +551,7 @@ function renderTurnover() {
 
   h += '</div>'; // close grid-2
 
-  h += '<button class="btn-big btn-full" style="margin-top:8px;" data-proceed-portal>PROCEED TO TRANSFER PORTAL ▶</button>';
+  h += '<button class="btn-big btn-full" style="margin-top:8px;" data-proceed-portal>PROCEED TO TRANSFER PORTAL</button>';
   return h;
 }
 
@@ -630,7 +581,7 @@ function renderFired() {
     + '</div></div>';
 
   h += '<div style="font-size:12px;color:var(--txt3);margin-bottom:20px;">Your reputation has taken a hit. Fewer schools will be interested, but there\'s always a program looking for a fresh start.</div>'
-    + '<button class="btn-big btn-full" data-fired-go>FIND A NEW JOB ▶</button>'
+    + '<button class="btn-big btn-full" data-fired-go>FIND A NEW JOB</button>'
     + '</div>';
   return h;
 }
@@ -698,7 +649,7 @@ function renderSkillPoints() {
       + '</div>';
   });
 
-  h += '<button class="btn-big btn-full" style="margin-top:12px;" data-finish-skills>CONTINUE ▶</button></div>';
+  h += '<button class="btn-big btn-full" style="margin-top:12px;" data-finish-skills>CONTINUE</button></div>';
   return h;
 }
 

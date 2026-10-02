@@ -21,32 +21,6 @@ export function registerSetupCallbacks(cb) {
 function addLog(t, w, x) { if (_ext.addLog) _ext.addLog(t, w, x); }
 function updateAll() { if (_ext.updateAll) _ext.updateAll(); }
 
-// ═══════════════════════════════════════════════════════════
-//  VIEW SKIN (scoped, mobile-first)
-// ═══════════════════════════════════════════════════════════
-
-function ensureSkin() {
-  if (document.getElementById('setup-skin')) return;
-  var s = document.createElement('style');
-  s.id = 'setup-skin';
-  s.textContent =
-    '.setup-wrap{max-width:600px;margin:0 auto;padding:28px 16px 48px;}' +
-    '.setup-steps{display:flex;gap:6px;justify-content:center;margin-bottom:22px;}' +
-    '.setup-step{flex:1;max-width:110px;text-align:center;}' +
-    '.setup-step .sdot{height:6px;border-radius:3px;background:var(--s3);margin-bottom:6px;}' +
-    '.setup-step.on .sdot{background:var(--blu);}' +
-    '.setup-step .slbl{font-size:10px;font-weight:800;color:var(--txt3);text-transform:uppercase;letter-spacing:.6px;}' +
-    '.setup-step.on .slbl{color:var(--blu);}' +
-    '.setup-input{width:100%;min-height:52px;padding:12px 14px;background:#fff;border:1px solid var(--bdr2);' +
-    'border-radius:8px;color:var(--txt);font-size:16px;}' +
-    '.setup-input:focus{border-color:var(--blu);outline:none;box-shadow:0 0 0 3px var(--blu-soft);}' +
-    '.field-label{font-size:11px;font-weight:800;color:var(--txt3);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}' +
-    '.job-grid{display:grid;grid-template-columns:1fr;gap:8px;}' +
-    '@media(min-width:861px){.job-grid{grid-template-columns:1fr 1fr;}}' +
-    '.nc-grid{display:grid;grid-template-columns:1fr;gap:8px;}' +
-    '@media(min-width:861px){.nc-grid{grid-template-columns:1fr 1fr;}}';
-  document.head.appendChild(s);
-}
 
 var STEPS = [
   { id: 'coach-name', label: 'Coach' },
@@ -151,7 +125,6 @@ var _currentStep = 'coach-name';
 var _jobOffers = [];
 
 function showStep(step) {
-  ensureSkin();
   _currentStep = step;
   var el = ge('setup-content');
   if (!el) return;
@@ -350,7 +323,7 @@ function renderNCSchedule() {
   h += '</div>'
     + '<div style="display:flex;gap:8px;margin-top:20px;">'
     + '<button class="btn btn-ghost" style="min-height:56px;" data-setup="back-jobs" aria-label="Back to job offers">‹ Back</button>'
-    + '<button class="btn-big" style="flex:1;" data-setup="start-dynasty">START SEASON ▶</button></div>'
+    + '<button class="btn-big" style="flex:1;" data-setup="start-dynasty">START SEASON</button></div>'
     + '</div>';
   return h;
 }

@@ -201,25 +201,6 @@ window.showMorePortal = showMorePortal;
 //  #offseason-content container this HTML is injected into)
 // ═══════════════════════════════════════════════════════════
 
-function ensureSkin() {
-  if (document.getElementById('portal-skin')) return;
-  var s = document.createElement('style');
-  s.id = 'portal-skin';
-  s.textContent =
-    '.portal-wrap{max-width:800px;margin:0 auto;}' +
-    '.pl-row{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--bdr);' +
-    'border-radius:10px;padding:12px 14px;margin-bottom:6px;min-height:68px;}' +
-    '.pl-body{flex:1;min-width:0;}' +
-    '.pl-name{font-size:15px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}' +
-    '.pl-desc{font-size:12px;color:var(--txt3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}' +
-    '.pl-ovr{text-align:right;flex-shrink:0;}' +
-    '.pl-ovr b{font-family:var(--mono);font-size:19px;font-weight:900;color:var(--blu);}' +
-    '.pl-ovr small{display:block;font-size:10px;color:var(--txt3);font-weight:700;}' +
-    '.pos-chip{display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;' +
-    'background:var(--blu-soft);color:var(--blu);padding:5px 0;border-radius:5px;width:38px;flex-shrink:0;}';
-  document.head.appendChild(s);
-}
-
 function entrantRow(e, picksLeft) {
   var action = picksLeft > 0
     ? '<button class="btn btn-red btn-sm" data-ppick="' + e.pid + '" aria-label="Pick up ' + e.name + '">PICK UP</button>'
@@ -234,7 +215,6 @@ function entrantRow(e, picksLeft) {
 }
 
 export function renderPortal() {
-  ensureSkin();
   var board = portalBoard();
   var mine = board.filter(function(e) { return e.fromTid === G.tid; });
   var avail = board.filter(function(e) { return e.fromTid !== G.tid; });
@@ -268,7 +248,7 @@ export function renderPortal() {
     h += '<button class="btn btn-ghost btn-full" data-pshowmore>SHOW MORE (' + (avail.length - _portalShown) + ' remaining)</button>';
   }
 
-  h += '<button class="btn-big btn-full" style="margin-top:16px;" data-padvance>CONTINUE TO RECRUITING ▶</button>';
+  h += '<button class="btn-big btn-full" style="margin-top:16px;" data-padvance>CONTINUE TO RECRUITING</button>';
 
   h += '</div>';
   return h;
