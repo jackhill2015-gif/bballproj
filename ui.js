@@ -330,6 +330,7 @@ export function refreshView() {
   else if (v === 'offseason' && _views.renderOffseason) _views.renderOffseason();
   else if (v === 'strategy') loadStrategyView();
   else if (v === 'trophies') loadTrophiesView();
+  else if (v === 'help') loadHelpView();
 }
 
 var _trophiesMod = null;
@@ -339,6 +340,15 @@ function loadTrophiesView() {
     _trophiesMod = m;
     if (SetupState.ACTIVE_VIEW === 'trophies') m.renderTrophies();
   }).catch(function(e) { console.error('trophy room failed to load', e); });
+}
+
+var _helpMod = null;
+function loadHelpView() {
+  if (_helpMod) { _helpMod.renderHelp(); return; }
+  import('./views/help.js').then(function(m) {
+    _helpMod = m;
+    if (SetupState.ACTIVE_VIEW === 'help') m.renderHelp();
+  }).catch(function(e) { console.error('help view failed to load', e); });
 }
 
 // Strategy view is owned by views/strategy.js and loaded on demand so

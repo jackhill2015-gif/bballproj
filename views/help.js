@@ -1,0 +1,112 @@
+// ═══════════════════════════════════════════════════════════
+//  HOOPS OS — views/help.js
+//  "How it works" page: calm, plain-language explanations of
+//  every system, verified against the code. Static content —
+//  no game state needed.
+// ═══════════════════════════════════════════════════════════
+
+import { ge } from '../utils.js';
+
+function panel(title, body) {
+  return '<div class="panel"><div class="panel-h"><span>' + title + '</span></div>'
+    + '<div class="panel-b help-body">' + body + '</div></div>';
+}
+
+function sec(title, text) {
+  return panel(title, '<p>' + text + '</p>');
+}
+
+export function renderHelp() {
+  var el = ge('help-content');
+  if (!el) return;
+
+  var h = '<div class="dash-sum"><div class="dash-team"><h1>How it works</h1>'
+    + '<div class="sub">Every system in the game, in plain language.</div></div></div>';
+
+  h += sec('Playing and simming games',
+    'Use the advance button in the top bar. Sim game gives an instant result; '
+    + 'watch game opens the live gamecast with play-by-play. During the regular season you can also '
+    + 'sim to the end of the regular season, through the conference tournament (stopping at '
+    + 'Selection Sunday), or through the end of the season (stopping at the offseason). '
+    + 'In the offseason the button changes with the step: begin the offseason, finish skill points, '
+    + 'advance recruiting, or finalize the class and start the new season.');
+
+  h += sec('Depth chart and minutes',
+    'The top five players on the roster screen start; the next four are the rotation. '
+    + 'There are 200 minutes to hand out each game. Drag a row by its handle (or use the arrow keys) '
+    + 'to reorder, and set minutes with the sliders — minutes are conserved, so raising one player '
+    + 'takes minutes from teammates at his position first. Auto set fills a sensible rotation if you '
+    + 'would rather not fiddle.');
+
+  h += sec('Gameplan schemes',
+    'Pick an offensive and a defensive scheme in the gameplan panel on the roster screen; '
+    + 'changes apply from your next game. Offenses: balanced, motion, drive, set, and early — each '
+    + 'shifts pace and where shots come from. Defenses: man-to-man, 2-3 zone, 3-2 zone, 1-3-1 zone, '
+    + 'and box-and-one — each with a clear tradeoff, like protecting the paint at the cost of open threes.');
+
+  h += sec('Redshirts',
+    'A player can redshirt once in his career, as long as he has played four games or fewer that '
+    + 'season. He sits out the rest of the year, keeps his class year, and develops a little extra '
+    + 'in the offseason. You can undo it during the season if you change your mind.');
+
+  h += sec('Rankings',
+    'The national top 25 is ordered by power rating, adjusted for schedule strength. '
+    + 'The arrows show movement since last week. Conference tables sort by conference win '
+    + 'percentage, not raw wins.');
+
+  h += sec('Season goals',
+    'Each season the athletic director sets three goals sized to your program: a wins target, '
+    + 'a conference finish, and a postseason or signature-win goal. They show on the home screen '
+    + 'with live progress. Each goal you meet is worth one skill point and 40 NIL; meet all three '
+    + 'and school prestige rises.');
+
+  h += sec('Facilities',
+    'Three upgrade tracks, each with five levels, bought once with NIL: the practice facility '
+    + 'speeds up offseason development, the arena strengthens your home court and pays weekly NIL, '
+    + 'and the training room gives injured players a weekly chance to heal early. '
+    + 'Facilities belong to the school — take a new job and you start over with that program\'s levels.');
+
+  h += sec('NIL and the boost shop',
+    'NIL is the spendable currency shown in the top bar. The boost shop on the dashboard sells '
+    + 'three weekly boosts: sellout crowd (80 NIL, +3 edge in your next home game), film session '
+    + '(50 NIL, +2 to shooting, finishing and defense for two games), and recovery session '
+    + '(60 NIL, clears every slump and negative effect on the roster). Each can be bought once per week.');
+
+  h += sec('Injuries and morale',
+    'Players can get hurt any week — typically out two to four weeks with their minutes set to zero '
+    + 'until they return. Academic suspensions cost two games. Morale drifts with results, streaks, '
+    + 'and whether a player\'s minutes match his quality; it nudges ratings slightly and unhappy '
+    + 'players are far more likely to enter the transfer portal. The roster shows a mood tag only '
+    + 'when it matters.');
+
+  h += sec('The offseason, in order',
+    'Season recap, then skill points, then the coaching carousel, then departures, then the '
+    + 'transfer portal, then recruiting. Each step advances with the top-bar button.');
+
+  h += sec('The transfer portal',
+    'The portal runs in three rounds: initial offers, follow-up, and decision day. Offers are '
+    + 'escrowed in NIL, placed in steps of 10, and your odds against the field of suitor schools '
+    + 'are shown before you commit. Withdrawing after the first round refunds 75% of the offer. '
+    + 'Players with a clear leader can sign early, and rival schools bid harder as the rounds '
+    + 'advance, so odds decay unless you keep investing. Elite transfers are gated by prestige — '
+    + 'a small school can dream, but the math punishes it.');
+
+  h += sec('Recruiting',
+    'Mark prospects as targets, then spend recruiting points from a budget set by your prestige, '
+    + 'open roster spots, and your coach\'s recruiting skill. It runs on the same three-round '
+    + 'rhythm as the portal: concentrate points on a few prospects or spread them, watch the odds '
+    + 'move, and drop out after round one for a 75% refund. The class resolves on signing day.');
+
+  h += sec('Job security',
+    'Every season comes with a win expectation based on your roster. Finish below the danger line '
+    + 'and you land on the hot seat; keep underperforming and you are fired. Four straight losing '
+    + 'years ends it regardless. If you are fired, you find a new job in the carousel — with a '
+    + 'small hit to your coach ratings.');
+
+  h += sec('Trophy room',
+    'Your career record, national titles, Final Fours, tournament trips, and conference titles, '
+    + 'plus a season-by-season table, your season-goal history, and twenty career achievements — '
+    + 'from a first win to back-to-back championships.');
+
+  el.innerHTML = h;
+}

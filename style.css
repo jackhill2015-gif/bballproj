@@ -1075,3 +1075,8 @@ th.sortable.on { color: var(--txt); }
 .box-team { display: flex; align-items: center; gap: 8px; margin: 10px 0 6px; font-size: 13px; font-weight: 600; }
 .pbp-banner.run-user { background: var(--gld-soft); color: var(--txt); }
 .pbp-banner.run-opp { background: var(--red-soft); color: var(--txt); }
+
+/* Muse: job2-help — "How it works" page */
+.help-body p { font-size: 13.5px; line-height: 1.65; color: var(--txt2); margin: 0; max-width: 72ch; }
+.help-body .panel { margin-bottom: 12px; }
+#v-help .dash-sum { margin-bottom: 14px; }
