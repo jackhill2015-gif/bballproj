@@ -1096,3 +1096,8 @@ input[type="text"], input:not([type]), select, textarea, .setup-input { font-siz
 /* Backup controls on the title screen */
 .home-backup { margin-top: 18px; text-align: center; font-size: 13px; color: var(--txt3); }
 .home-backup .btn-quiet { margin: 0 6px; }
+/* Around the country (conference tournaments) */
+table.atc td { font-size: 12.5px; vertical-align: top; }
+table.atc td:first-child { white-space: nowrap; }
+table.atc .dim { color: var(--txt3); }
+@media (max-width: 640px) { table.atc th:nth-child(2), table.atc td:nth-child(2) { display: none; } }

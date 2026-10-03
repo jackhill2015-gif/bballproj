@@ -41,14 +41,12 @@ function renderConfHub() {
 
   var others = Object.keys(G.confTourneys).filter(function(c) { return c !== myConf; });
   if (others.length) {
-    h += '<div class="sec-head">Around the country</div>'
-      + '<div class="sec-sub">Finalists and latest results from every conference.</div>'
-      + '<div class="grid-2">';
-    others.slice(0, 8).forEach(function(c) {
-      h += renderConfBracketCard(c, G.confTourneys[c], false);
-    });
-    h += '</div>';
-    if (others.length > 8) h += '<div class="sec-sub" style="margin-top:6px;">Showing 8 of ' + others.length + ' conferences.</div>';
+    // Every conference in one compact table: champion, or latest result,
+    // or (at the start of a round) the next game
+    h += '<div class="panel"><div class="panel-h"><span>Around the country</span><small>' + others.length + ' conferences</small></div>'
+      + '<div class="panel-b flush"><div class="tbl-wrap"><table class="atc"><thead><tr><th>Conference</th><th>Status</th><th>Latest</th></tr></thead><tbody>';
+    others.forEach(function(c) { h += confStatusRow(c, G.confTourneys[c]); });
+    h += '</tbody></table></div></div></div>';
   }
 
   if (allConfDone() && (!G.bracket || !G.bracket.length)) {
@@ -109,6 +107,36 @@ function renderConfBracketCard(conf, ct, expanded) {
     });
   }
   return h + '</div></div></div>';
+}
+
+// One row per conference for "Around the country"
+function confStatusRow(conf, ct) {
+  if (!ct || !ct.rounds) return '';
+  var seedOf = function(t) { var i = (ct.seeds || []).findIndex(function(x) { return x && t && x.id === t.id; }); return i >= 0 ? i + 1 : ''; };
+  var nm = function(t) { return t ? seedOf(t) + ' ' + t.name : 'TBD'; };
+  if (ct.done && ct.champ) {
+    var fin = ct.rounds[ct.rounds.length - 1] && ct.rounds[ct.rounds.length - 1][0];
+    var score = fin && fin.winner ? ' ' + fmtScore(fin.s1, fin.s2, '-') : '';
+    return '<tr><td><b>' + conf + '</b></td><td>Champion</td><td><b>' + ct.champ.name + '</b><span class="dim">' + score + '</span></td></tr>';
+  }
+  var rIdx = ct.rounds.length - 1, round = ct.rounds[rIdx] || [];
+  var left = round.filter(function(m) { return !m.winner; }).length;
+  var isFinal = round.length === 1 && !(ct.carry && ct.carry.length);
+  var status = isFinal ? 'Final' : (round.length <= 2 && !(ct.carry && ct.carry.length) ? 'Semifinals' : 'Round ' + (rIdx + 1));
+  // Latest decided game anywhere in the tournament
+  var last = null;
+  for (var r = ct.rounds.length - 1; r >= 0 && !last; r--) {
+    var done = ct.rounds[r].filter(function(m) { return m.winner; });
+    if (done.length) last = done[done.length - 1];
+  }
+  var latest = '';
+  if (last) {
+    var lo = last.winner.id === last.t1.id ? last.t2 : last.t1;
+    latest += nm(last.winner) + ' def. ' + nm(lo) + ' <span class="dim">' + fmtScore(last.s1, last.s2, '-') + '</span>';
+  }
+  var next = round.filter(function(m) { return !m.winner; })[0];
+  if (next) latest += (latest ? '<br>' : '') + '<span class="dim">Next: ' + nm(next.t1) + ' vs ' + nm(next.t2) + '</span>';
+  return '<tr><td><b>' + conf + '</b></td><td>' + status + '</td><td>' + latest + '</td></tr>';
 }
 
 function renderScoutingCard(confMatch) {

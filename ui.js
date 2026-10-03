@@ -265,7 +265,18 @@ export function rankDelta() {
   return { prev: prev, cur: cur, delta: prev ? prev - cur : 0 };
 }
 
+var _milestonesPrimed = false;
 function checkMilestones(rank) {
+  // First check after loading a save: record where things stand without
+  // announcing anything (milestones already reached were announced back then)
+  if (!_milestonesPrimed) {
+    _milestonesPrimed = true;
+    var st0 = currentStreak();
+    [100, 250, 500, 750, 1000].forEach(function(mn) { if (G.coach.careerWins >= mn) _milestones.wins = mn; });
+    [5, 10, 15, 20].forEach(function(sn) { if (st0 >= sn) _milestones.streak = sn; });
+    _milestones.top25 = rank <= 25; _milestones.top10 = rank <= 10; _milestones.no1 = rank === 1;
+    return;
+  }
   // Career win milestones
   [100, 250, 500, 750, 1000].forEach(function(mn) {
     if (G.coach.careerWins >= mn && _milestones.wins < mn) {
@@ -276,12 +287,9 @@ function checkMilestones(rank) {
   });
   // Streak milestones
   var st = currentStreak();
-  [5, 10, 15, 20].forEach(function(sn) {
-    if (st >= sn && _milestones.streak < sn) {
-      _milestones.streak = sn;
-      toast(sn + '-game win streak', 'var(--grn)');
-    }
-  });
+  var newStreak = 0;
+  [5, 10, 15, 20].forEach(function(sn) { if (st >= sn && _milestones.streak < sn) newStreak = sn; });
+  if (newStreak) { _milestones.streak = newStreak; toast(newStreak + '-game win streak', 'var(--grn)'); } // one toast, the highest
   if (st < 5) _milestones.streak = Math.min(_milestones.streak, st > 0 ? st : 0);
   // Ranking milestones
   if (rank <= 25 && !_milestones.top25 && _prevRank > 25) {
