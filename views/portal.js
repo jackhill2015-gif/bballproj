@@ -19,22 +19,28 @@ var _ext = { render: null, toast: null, addLog: null };
 export function registerPortalCallbacks(cb) {
   Object.keys(cb).forEach(function(k) { if (_ext.hasOwnProperty(k)) _ext[k] = cb[k]; });
 }
-function rerender() { if (_ext.render) _ext.render(); }
+function rerender() {
+  if (_ext.render) _ext.render();
+  // keep the header NIL balance in step with offers
+  if (typeof document !== 'undefined' && document.getElementById) {
+    var nb = document.getElementById('nil-balance');
+    if (nb) nb.textContent = G.pts || 0;
+  }
+}
 function toast(m, c) { if (_ext.toast) _ext.toast(m, c); }
 function addLog(t, w, x) { if (_ext.addLog) _ext.addLog(t, w, x); }
 
 // ═══════════════════════════════════════════════════════════
 //  LOGIC — 3-stage battle system (see views/battle.js)
-//  Stage 1 "Open": place NIL offers across targets (dump or spread)
-//  Stage 2 "Vibe Check": trends + invest more / hold / pivot
-//  Stage 3 "Signing Day": final offers, then everyone decides
+//  Round 1 "Initial offers": place NIL offers (concentrate or spread)
+//  Round 2 "Follow-up": odds moved — raise, hold, or withdraw
+//  Round 3 "Decision day": final offers, then everyone decides
 // ═══════════════════════════════════════════════════════════
 
 export var PORTAL_MAX_ENTRANTS = 160;
 export var PORTAL_OFFER_STEP = 10;   // NIL per stepper click
 
 var _nextPid = 1;
-var _portalShown = 30;
 var _portalTouchedUser = false;      // user's roster poached this stage
 
 function portalReason(p) {
@@ -50,7 +56,7 @@ function getGeoBonus(ts, rs) { if (!ts || !rs || ts === 'XX') return 0; if (ts =
 // "standard" reference offer for an entrant (shown on the row); any offer
 // above 0 puts you in the race, and bigger offers bid harder.
 // CPU suitors heat up as stages advance — your % decays unless you
-// invest more. That's the Vibe Check drama.
+// invest more in the follow-up round.
 export function portalCost(e) {
   return 20 + Math.max(0, e.ovr - 65) * 5;
 }
@@ -195,7 +201,6 @@ export function genPortalEntrants() {
       (tm.rost || []).forEach(function(p) { if (p._portalPid && cutIds[p._portalPid]) delete p._portalPid; });
     });
   }
-  _portalShown = 30;
   G.portalStage = 0;
   G.portalCpuTakes = {};
   G.portalUserSigns = 0;
@@ -261,7 +266,7 @@ export function adjustOffer(pid, delta) {
   } else if (delta < 0) {
     var back = (G.portalStage || 0) >= 1 ? Math.round(-delta * Battle.PIVOT_REFUND) : -delta;
     G.pts += back;
-    if (back < -delta) toast('Pivot cost: ' + (-delta - back) + ' NIL sunk.', 'var(--gld)');
+    if (back < -delta) toast('Offer reduced. ' + (-delta - back) + ' NIL not refunded.', 'var(--gld)');
   }
   e.offer = nv;
   saveState(); rerender();
@@ -559,8 +564,6 @@ export function clearPortalState() {
 }
 window._clearPortalState = clearPortalState;
 
-export function showMorePortal() { _portalShown += 30; rerender(); }
-window.showMorePortal = showMorePortal;
 
 // ═══════════════════════════════════════════════════════════
 //  RENDERING — new design-system skin
@@ -572,46 +575,79 @@ function chanceColor(pct) {
   return pct >= 60 ? 'var(--grn2)' : pct >= 30 ? 'var(--gld2)' : 'var(--red)';
 }
 
+// ── Board view state (filters + sort). Not saved: it's a view preference.
+var _pf = { pos: 'All', tier: 'all', mine: false, sort: 'ovr', dir: -1 };
+var TIERS = [
+  { id: 'all', label: 'All', test: function() { return true; } },
+  { id: 'a', label: '90+', test: function(e) { return e.ovr >= 90; } },
+  { id: 'b', label: '85–89', test: function(e) { return e.ovr >= 85 && e.ovr < 90; } },
+  { id: 'c', label: '80–84', test: function(e) { return e.ovr >= 80 && e.ovr < 85; } },
+  { id: 'd', label: '75–79', test: function(e) { return e.ovr >= 75 && e.ovr < 80; } },
+  { id: 'e', label: 'Under 75', test: function(e) { return e.ovr < 75; } }
+];
+export function setPortalFilter(key, val) {
+  if (key === 'sort') {
+    if (_pf.sort === val) _pf.dir = -_pf.dir; else { _pf.sort = val; _pf.dir = val === 'name' || val === 'pos' ? 1 : -1; }
+  } else if (key === 'mine') _pf.mine = !_pf.mine;
+  else _pf[key] = val;
+  rerender();
+}
+
+function sortVal(e, ch) {
+  switch (_pf.sort) {
+    case 'name': return e.name;
+    case 'pos': return ['PG', 'SG', 'SF', 'PF', 'C'].indexOf(e.pos);
+    case 'pot': return e.pot || e.ovr;
+    case 'ask': return portalCost(e);
+    case 'offer': return e.offer || 0;
+    case 'odds': return ch.pct;
+    case 'from': return e.fromName;
+    default: return e.ovr;
+  }
+}
+
+function chip(key, val, label, on) {
+  return '<button class="fchip' + (on ? ' on' : '') + '" data-pfilter="' + key + '" data-pval="' + val + '">' + label + '</button>';
+}
+
+function th(key, label, cls) {
+  var on = _pf.sort === key;
+  return '<th class="sortable' + (cls ? ' ' + cls : '') + (on ? ' on' : '') + '" data-pfilter="sort" data-pval="' + key + '">'
+    + label + (on ? (_pf.dir < 0 ? ' ▾' : ' ▴') : '') + '</th>';
+}
+
 function entrantRow(e, stage) {
   var ch = portalChance(e);
   var nil = G.pts || 0;
   var offer = e.offer || 0;
-  var std = portalCost(e);
-  var trend = Battle.trendHTML(ch.pct, e._prevPct);
-  var pctCol = chanceColor(ch.pct);
-
-  // Dense: everything on two lines — name/status, then offer state inline
-  var state;
-  if (offer > 0) {
-    state = '<b style="color:var(--blu);font-variant-numeric:tabular-nums;">' + offer + '</b> NIL · '
-      + '<b style="color:' + pctCol + ';font-variant-numeric:tabular-nums;">' + ch.pct + '%</b> ' + trend;
+  var potCol = (e.pot || e.ovr) > e.ovr + 6 ? 'var(--grn2)' : 'var(--txt2)';
+  var offerCell, oddsCell;
+  if (e.fromTid === G.tid) {
+    offerCell = '<span style="color:var(--txt3);">Your player</span>';
+    oddsCell = '';
   } else {
-    state = '<span style="color:var(--txt3);">std ' + std + ' NIL · not in the race</span>';
+    var canAdd = nil >= PORTAL_OFFER_STEP, canSub = offer > 0;
+    offerCell = '<div class="bt-offer">'
+      + '<button class="stepper' + (canSub ? '' : ' off') + '" data-poff-dec="' + e.pid + '" aria-label="Lower offer to ' + e.name + '">−</button>'
+      + '<span class="offer-v' + (offer ? ' on' : '') + '">' + offer + '</span>'
+      + '<button class="stepper plus' + (canAdd ? '' : ' off') + '" data-poff-inc="' + e.pid + '" aria-label="Raise offer to ' + e.name + '">+</button>'
+      + (offer > 0 && stage >= 1 ? '<button class="btn-quiet btn-sm" data-ppivot="' + e.pid + '">Withdraw</button>' : '')
+      + '</div>';
+    oddsCell = offer > 0
+      ? '<b style="color:' + chanceColor(ch.pct) + ';font-weight:600;">' + ch.pct + '%</b><div>' + Battle.trendHTML(ch.pct, e._prevPct) + '</div>'
+      : '<span style="color:var(--txt3);">' + ch.pct + '%</span>';
   }
   var chase = ch.suitors.slice(0, 2).map(function(s) { return s.name; }).join(', ');
-
-  var action;
-  if (e.fromTid === G.tid) {
-    action = '<div style="font-size:10px;color:var(--txt3);flex-shrink:0;">Yours</div>';
-  } else {
-    var canAdd = nil >= PORTAL_OFFER_STEP;
-    var canSub = offer > 0;
-    action = '<div class="bt-offer">'
-      + '<button class="stepper' + (canSub ? '' : ' off') + '" data-poff-dec="' + e.pid + '" aria-label="Withdraw 10 NIL from ' + e.name + '">−</button>'
-      + '<button class="stepper plus' + (canAdd ? '' : ' off') + '" data-poff-inc="' + e.pid + '" aria-label="Offer 10 more NIL to ' + e.name + '">+</button>'
-      + (offer > 0 && stage >= 1 ? '<button class="btn-quiet btn-sm" style="min-height:28px;padding:4px;" data-ppivot="' + e.pid + '">Pivot</button>' : '')
-      + '</div>';
-  }
-  return '<div class="pl-row">'
-    + teamLogo(e.fromName, 'sm')
-    + '<span class="pos-chip">' + e.pos + '</span>'
-    + '<div class="pl-body"><div class="pl-name">' + e.name + ' <span class="cls-txt">' + e.cls + '</span>'
-    + (e.late ? ' <span class="tag t-ok">Late</span>' : '') + '</div>'
-    + '<div class="pl-desc">' + e.fromName + ' · ' + e.reason + ' · ' + e.mins + ' min'
-    + (chase ? ' · ' + chase : '') + '</div>'
-    + '<div class="bt-state">' + state + '</div></div>'
-    + '<div class="pl-ovr"><b>' + e.ovr + '</b><small>POT ' + (e.pot || e.ovr) + '</small></div>'
-    + action + '</div>';
+  return '<tr' + (offer > 0 ? ' class="hl"' : '') + '>'
+    + '<td class="c-pos">' + e.pos + '</td>'
+    + '<td class="pt-name c-name"><b>' + e.name + '</b> <span class="dim">' + e.cls + '</span>' + (e.late ? ' <span class="tag t-ok">Late entry</span>' : '')
+    + '<div class="pt-sub">' + e.fromName + ', ' + e.reason.toLowerCase() + (chase ? '. Interest: ' + chase : '') + '</div></td>'
+    + '<td class="num c-ovr" data-l="Ovr"><b>' + e.ovr + '</b></td>'
+    + '<td class="num c-pot" data-l="Pot" style="color:' + potCol + ';">' + (e.pot || e.ovr) + '</td>'
+    + '<td class="num dim c-ask" data-l="Ask">' + portalCost(e) + '</td>'
+    + '<td class="c-offer">' + offerCell + '</td>'
+    + '<td class="num c-odds" data-l="Odds">' + oddsCell + '</td>'
+    + '</tr>';
 }
 
 export function renderPortal() {
@@ -621,40 +657,60 @@ export function renderPortal() {
   var stage = G.portalStage || 0;
   var stg = Battle.stageOf(stage);
   var offersOut = avail.filter(function(e) { return (e.offer || 0) > 0; }).length;
+  var committed = avail.reduce(function(s, e) { return s + (e.offer || 0); }, 0);
+  var tier = TIERS.find(function(t) { return t.id === _pf.tier; }) || TIERS[0];
 
   var h = '<div class="portal-wrap">';
-
-  h += '<div style="margin-bottom:14px;"><div class="sec-head">Transfer Portal</div>'
-    + '<div class="sec-sub">' + stg.name + ' · ' + stg.desc + '</div></div>';
-
+  h += '<div style="margin-bottom:10px;"><div class="sec-head">Transfer portal</div>'
+    + '<div class="sec-sub">' + stg.tag + ': ' + stg.name + '. ' + stg.desc + '</div></div>';
   h += Battle.stageStepperHTML(stage);
 
-  h += '<div class="stat-strip" style="grid-template-columns:1fr 1fr 1fr;">'
-    + '<div class="stat-cell' + (offersOut > 0 ? ' hot' : '') + '"><div class="sv">' + offersOut + '</div><div class="sl">Offers out</div></div>'
-    + '<div class="stat-cell"><div class="sv" data-nil-left>' + (G.pts || 0) + '</div><div class="sl">NIL</div></div>'
-    + '<div class="stat-cell"><div class="sv">' + avail.length + '</div><div class="sl">Available</div></div></div>';
+  h += '<div class="kv" style="margin-bottom:12px;">'
+    + '<div><b data-nil-left>' + (G.pts || 0) + '</b><span>NIL available</span></div>'
+    + '<div><b>' + committed + '</b><span>NIL offered</span></div>'
+    + '<div><b>' + offersOut + '</b><span>Open offers</span></div>'
+    + '<div><b>' + avail.length + '</b><span>In portal</span></div></div>';
 
   if (mine.length) {
-    h += '<div style="font-size:13px;color:var(--txt2);margin-bottom:10px;">'
-      + '<b style="color:var(--red);">' + mine.length + '</b> of your player' + (mine.length > 1 ? 's' : '')
-      + ' entered the portal: '
-      + mine.map(function(e) { return '<b>' + e.name + '</b> (' + e.pos + ', ' + e.ovr + ')'; }).join(', ')
-      + '.</div>';
+    h += '<div class="final-line l" style="display:block;">'
+      + (mine.length === 1 ? 'One of your players' : mine.length + ' of your players') + ' entered the portal: '
+      + mine.map(function(e) { return '<b>' + e.name + '</b> (' + e.pos + ', ' + e.ovr + ')'; }).join(', ') + '.</div>';
   }
 
-  h += '<div class="strat-sec-label">Available transfers</div>';
-
-  var shown = avail.slice(0, _portalShown);
-  shown.forEach(function(e) { h += entrantRow(e, stage); });
-  if (!avail.length) {
-    h += '<div class="empty-state">The portal is quiet this year.</div>';
-  }
-  if (avail.length > _portalShown) {
-    h += '<button class="btn-quiet" data-pshowmore>Show more (' + (avail.length - _portalShown) + ' remaining)</button>';
-  }
-
-  h += '<button class="btn-big btn-full" style="margin-top:16px;" data-pstage>' + stg.btn + '</button>';
-
+  // Filters
+  h += '<div class="fbar"><span class="flbl">Position</span>';
+  ['All', 'PG', 'SG', 'SF', 'PF', 'C'].forEach(function(pz) { h += chip('pos', pz, pz, _pf.pos === pz); });
+  h += '</div><div class="fbar"><span class="flbl">Overall</span>';
+  TIERS.forEach(function(t) { h += chip('tier', t.id, t.label, _pf.tier === t.id); });
+  h += chip('mine', '1', 'My offers only', _pf.mine);
+  h += '</div><div class="fbar fbar-sort"><span class="flbl">Sort</span>';
+  [['ovr', 'Overall'], ['pot', 'Potential'], ['odds', 'Odds'], ['ask', 'Ask']].forEach(function(s) {
+    h += chip('sort', s[0], s[1] + (_pf.sort === s[0] ? (_pf.dir < 0 ? ' ▾' : ' ▴') : ''), _pf.sort === s[0]);
+  });
   h += '</div>';
-  return h;
+
+  var rows = avail.filter(function(e) {
+    if (_pf.pos !== 'All' && e.pos !== _pf.pos) return false;
+    if (!tier.test(e)) return false;
+    if (_pf.mine && !(e.offer > 0)) return false;
+    return true;
+  }).map(function(e) { return { e: e, ch: portalChance(e) }; });
+  rows.sort(function(a, b) {
+    var x = sortVal(a.e, a.ch), y = sortVal(b.e, b.ch);
+    if (x < y) return -1 * _pf.dir; if (x > y) return 1 * _pf.dir;
+    return b.e.ovr - a.e.ovr;
+  });
+
+  h += '<div class="sec-sub" style="margin:6px 0;">' + rows.length + ' of ' + avail.length + ' players shown. Ask is the typical NIL offer for that player.</div>';
+  h += '<div class="tbl-wrap"><table class="ptbl"><thead><tr>'
+    + th('pos', 'Pos') + th('name', 'Player') + th('ovr', 'Ovr', 'num') + th('pot', 'Pot', 'num')
+    + th('ask', 'Ask', 'num') + th('offer', 'Your offer') + th('odds', 'Odds', 'num')
+    + '</tr></thead><tbody>';
+  rows.forEach(function(r) { h += entrantRow(r.e, stage); });
+  h += '</tbody></table></div>';
+  if (!avail.length) h += '<div class="empty-state">No players are in the portal this year.</div>';
+  else if (!rows.length) h += '<div class="empty-state">No players match these filters.</div>';
+
+  h += '<button class="btn-big btn-full" style="margin-top:14px;" data-pstage>' + stg.btn + '</button>';
+  return h + '</div>';
 }

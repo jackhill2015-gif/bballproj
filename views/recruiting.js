@@ -17,7 +17,7 @@ import { ge, clamp, ri } from '../utils.js';
 import { hasRestlessStarAt } from '../morale.js';
 import { TEAM_STATES, STATE_TO_REGION, STATE_NAMES, SCHOOL_RECRUIT_GATES, COACH_FN, COACH_LN, RECRUIT_STATE_POOL } from '../constants.js';
 import { G, LS, SetupState, saveState, calcRecruitingBudget } from '../state.js';
-import { renderPortal, genPortalEntrants, registerPortalCallbacks, adjustOffer, pivotOffer, advancePortalStage, advanceFromPortal, showMorePortal, PORTAL_OFFER_STEP } from './portal.js';
+import { renderPortal, genPortalEntrants, registerPortalCallbacks, adjustOffer, pivotOffer, advancePortalStage, advanceFromPortal, setPortalFilter, PORTAL_OFFER_STEP } from './portal.js';
 import { genPlayer } from '../simulation.js';
 import { teamLogo } from '../ui.js';
 import * as Battle from './battle.js';
@@ -40,21 +40,20 @@ registerPortalCallbacks({
 var _tab = 'board';
 var _filter = { pos: 'All', stars: 0, sort: 'rank' };
 var _detailId = -1; // recruit ID shown in detail, -1 = none
-var _boardShown = 30; // R5: cap rendered board rows
 
 // ═══════════════════════════════════════════════════════════
 //  PHASE CONFIG
 // ═══════════════════════════════════════════════════════════
 // ═══════════════════════════════════════════════════════════
 //  STAGE CONFIG — unified 3-stage battle machine (views/battle.js)
-//  Stage 1 "Open": allocate points across targets (dump or spread)
-//  Stage 2 "Vibe Check": trends + invest more / hold / pivot
-//  Stage 3 "Signing Day": final investments, then everyone decides
+//  Round 1 "Initial offers": allocate points (concentrate or spread)
+//  Round 2 "Follow-up": odds moved — add, hold, or drop (75% refund)
+//  Round 3 "Signing day": final adjustments, then everyone decides
 // ═══════════════════════════════════════════════════════════
 var PHASES = {
-  1: { name: 'Open', tag: 'STAGE 1 OF 3', desc: 'Cast a wide net — dump points on a star or spread them across the board.', btnLabel: 'ADVANCE TO VIBE CHECK', final: false, decideFrac: 0.30, cpuAgg: 0.8 },
-  2: { name: 'Vibe Check', tag: 'STAGE 2 OF 3', desc: 'Movement check — invest more, hold your ground, or pivot to a backup.', btnLabel: 'ADVANCE TO SIGNING DAY', final: false, decideFrac: 0.60, cpuAgg: 1.1 },
-  3: { name: 'Signing Day', tag: 'STAGE 3 OF 3', desc: 'Final investments — then everyone decides.', btnLabel: 'FINALIZE CLASS & START SEASON', final: true, decideFrac: 1.0, cpuAgg: 1.4 }
+  1: { name: 'Initial offers', tag: 'Round 1 of 3', desc: 'Assign recruiting points. Commit heavily to a few prospects or spread points across many.', btnLabel: 'Close initial offers', final: false, decideFrac: 0.30, cpuAgg: 0.8 },
+  2: { name: 'Follow-up', tag: 'Round 2 of 3', desc: 'Odds have moved. Add points, hold, or drop a prospect (dropping refunds 75%).', btnLabel: 'Close follow-ups', final: false, decideFrac: 0.60, cpuAgg: 1.1 },
+  3: { name: 'Signing day', tag: 'Round 3 of 3', desc: 'Last chance to adjust. Prospects sign when you finalize.', btnLabel: 'Finalize class and start season', final: true, decideFrac: 1.0, cpuAgg: 1.4 }
 };
 
 // ═══════════════════════════════════════════════════════════
@@ -176,7 +175,7 @@ export function removeTarget(rid) {
       var sunk = Math.round(pts * (1 - Battle.PIVOT_REFUND));
       if (sunk > 0) {
         G.recruitingBudget = Math.max(0, G.recruitingBudget - sunk);
-        toast('Pivot cost: ' + sunk + ' pts sunk.', 'var(--gld)');
+        toast('Dropped. ' + sunk + ' points not refunded.', 'var(--gld)');
       }
     }
     r.points = 0; delete r._schools; delete r._schoolsPhase;
@@ -191,14 +190,12 @@ window.showDetail = showDetail;
 export function closeDetail() { _detailId = -1; renderOffseason(); }
 window.closeDetail = closeDetail;
 
-export function setRecruitTab(tab) { _tab = tab; _detailId = -1; _boardShown = 30; renderOffseason(); }
+export function setRecruitTab(tab) { _tab = tab; _detailId = -1; renderOffseason(); }
 window.setRecruitTab = setRecruitTab;
 
-export function setRecruitFilter(key, val) { _filter[key] = val; _boardShown = 30; renderOffseason(); }
+export function setRecruitFilter(key, val) { _filter[key] = val; renderOffseason(); }
 window.setRecruitFilter = setRecruitFilter;
 
-export function showMoreBoard() { _boardShown += 30; renderOffseason(); }
-window.showMoreBoard = showMoreBoard;
 
 export function proceedToRecruiting() {
   // Remove departing players from roster
@@ -217,7 +214,7 @@ export function proceedToRecruiting() {
   addLog('ev', G.gi, 'Offseason NIL bonus: <b>+' + bonus + '</b> (ranked #' + orank + ') — spend it in the portal.');
   toast('Offseason NIL bonus: +' + bonus + ' NIL (ranked #' + orank + ')', 'var(--grn)');
   G.offseasonStep = 'portal';
-  saveState(); renderOffseason();
+  saveState(); updateAll(); renderOffseason();
 }
 window.proceedToRecruiting = proceedToRecruiting;
 
@@ -470,7 +467,6 @@ function bindOffseason(el) {
     if ((m = q('[data-rem-target]'))) { removeTarget(parseInt(m.getAttribute('data-rem-target'), 10)); return; }
     if (q('[data-close-detail]')) { closeDetail(); return; }
     if ((m = q('[data-rtab]'))) { setRecruitTab(m.getAttribute('data-rtab')); return; }
-    if (q('[data-show-more]')) { showMoreBoard(); return; }
     if (q('[data-phase-advance]')) { phaseAdvance(); return; }
     if (q('[data-proceed-portal]')) { proceedToRecruiting(); return; }
     if ((m = q('[data-skill-dec]'))) { deallocateSkillPoint(m.getAttribute('data-skill-dec')); return; }
@@ -483,7 +479,7 @@ function bindOffseason(el) {
     if ((m = q('[data-poff-dec]'))) { adjustOffer(parseInt(m.getAttribute('data-poff-dec'), 10), -PORTAL_OFFER_STEP); return; }
     if ((m = q('[data-poff-inc]'))) { adjustOffer(parseInt(m.getAttribute('data-poff-inc'), 10), PORTAL_OFFER_STEP); return; }
     if ((m = q('[data-ppivot]'))) { pivotOffer(parseInt(m.getAttribute('data-ppivot'), 10)); return; }
-    if (q('[data-pshowmore]')) { showMorePortal(); return; }
+    if ((m = q('[data-pfilter]'))) { setPortalFilter(m.getAttribute('data-pfilter'), m.getAttribute('data-pval')); return; }
     if (q('[data-pstage]')) { advancePortalStage(); return; }
     // Board row → detail (checked last; steppers/target buttons win)
     if ((m = q('[data-rid]'))) { showDetail(parseInt(m.getAttribute('data-rid'), 10)); return; }
@@ -591,7 +587,7 @@ function stepperRow(r, left, removable) {
     + '<button class="stepper plus' + (left >= 5 ? '' : ' off') + '" data-pt-inc="' + r.id + '" aria-label="Add 5 points to ' + r.name + '" aria-disabled="' + (left >= 5 ? 'false' : 'true') + '">+</button>'
     + '<span style="font-size:10px;color:var(--txt3);">pts</span>'
     + '<div style="flex:1;"></div>';
-  if (removable) h += '<button class="btn-quiet btn-sm" style="min-height:28px;padding:4px;" data-rem-target="' + r.id + '" aria-label="Pivot away from ' + r.name + '">Pivot</button>';
+  if (removable) h += '<button class="btn-quiet btn-sm" style="min-height:28px;padding:4px;" data-rem-target="' + r.id + '" aria-label="Drop ' + r.name + '">Drop</button>';
   return h + '</div>';
 }
 
@@ -665,7 +661,7 @@ function renderTurnover() {
 
   h += '</div>'; // close grid-2
 
-  h += '<button class="btn-big btn-full" style="margin-top:8px;" data-proceed-portal>PROCEED TO TRANSFER PORTAL</button>';
+  h += '<button class="btn-big btn-full" style="margin-top:8px;" data-proceed-portal>Open transfer portal</button>';
   return h;
 }
 
@@ -1042,9 +1038,9 @@ function renderBoard(open, left) {
     if (dr) h += renderDetailPanel(dr, left);
   }
 
-  // List (R5: capped at _boardShown rows with show-more)
+  // List: every recruit that matches the filters
   var sp = (G.teams[G.tid] && G.teams[G.tid].schoolPrestige) || 50;
-  filtered.slice(0, _boardShown).forEach(function(r) {
+  filtered.forEach(function(r) {
     var isTarget = G.recruitTargets.indexOf(r.id) >= 0;
     var stName = STATE_NAMES[r.homeState] || r.homeState;
     var potCol = r.pot > r.ovr + 8 ? 'var(--grn2)' : r.pot > r.ovr + 3 ? 'var(--gld2)' : 'var(--txt3)';
@@ -1057,9 +1053,7 @@ function renderBoard(open, left) {
       + '</div>';
   });
   if (!filtered.length) h += '<div class="empty-state">No recruits match filters.</div>';
-  else if (filtered.length > _boardShown) {
-    h += '<button class="btn-quiet" style="margin-top:6px;" data-show-more>Show more (' + (filtered.length - _boardShown) + ' remaining)</button>';
-  }
+
   return h;
 }
 

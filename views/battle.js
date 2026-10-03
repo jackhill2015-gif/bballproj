@@ -3,25 +3,24 @@
 //  Unified 3-stage acquisition engine. Drives BOTH the transfer
 //  portal (NIL offers) and HS recruiting (recruiting points)
 //  through the same battle rhythm:
-//    Stage 1 "Open"        — cast a wide net: dump big on a star
-//                            or spread thin across the board
-//    Stage 2 "Vibe Check"  — movement check: invest more, hold
-//                            your ground, or pivot to a backup
-//    Stage 3 "Signing Day" — final investments, then everyone
-//                            decides (+ late targets if thin)
+//    Round 1 "Initial offers" — concentrate or spread offers
+//    Round 2 "Follow-up"      — odds have moved: raise, hold or
+//                               withdraw (75% refund)
+//    Round 3 "Decision day"   — final adjustments, then everyone
+//                               decides (+ late entries if thin)
 //  Pure logic + tiny shared render helpers. No DOM dependencies.
 // ═══════════════════════════════════════════════════════════
 
 export var ACQ_STAGES = [
-  { name: 'Open', tag: 'STAGE 1 OF 3',
-    desc: 'Cast a wide net — dump big on a star or spread thin across the board.',
-    btn: 'ADVANCE TO VIBE CHECK', decideFrac: 0.30 },
-  { name: 'Vibe Check', tag: 'STAGE 2 OF 3',
-    desc: 'Movement check — invest more, hold your ground, or pivot to a backup.',
-    btn: 'ADVANCE TO SIGNING DAY', decideFrac: 0.60 },
-  { name: 'Signing Day', tag: 'STAGE 3 OF 3',
-    desc: 'Final investments — then everyone decides.',
-    btn: 'FINALIZE', decideFrac: 1.00 }
+  { name: 'Initial offers', tag: 'Round 1 of 3',
+    desc: 'Make offers. Commit heavily to a few players or spread offers across many.',
+    btn: 'Close initial offers', decideFrac: 0.30 },
+  { name: 'Follow-up', tag: 'Round 2 of 3',
+    desc: 'Odds have moved. Raise offers, hold, or withdraw (withdrawing refunds 75%).',
+    btn: 'Close follow-ups', decideFrac: 0.60 },
+  { name: 'Decision day', tag: 'Round 3 of 3',
+    desc: 'Last chance to adjust offers. Players commit when you finalize.',
+    btn: 'Finalize transfers', decideFrac: 1.00 }
 ];
 
 export function stageOf(idx) {
@@ -36,7 +35,7 @@ export var PIVOT_REFUND = 0.75;
 export function trendFor(pct, prevPct) {
   if (prevPct === undefined || prevPct === null || typeof prevPct !== 'number')
     return { arrow: '', word: 'New', cls: 'var(--txt3)' };
-  if (pct < 20) return { arrow: '', word: 'Longshot', cls: 'var(--red)' };
+  if (pct < 20) return { arrow: '', word: 'Long shot', cls: 'var(--red)' };
   var d = pct - prevPct;
   if (d >= 8) return { arrow: '▲', word: 'Gaining', cls: 'var(--grn2)' };
   if (d <= -8) return { arrow: '▼', word: 'Fading', cls: 'var(--red)' };
@@ -45,7 +44,7 @@ export function trendFor(pct, prevPct) {
 
 export function trendHTML(pct, prevPct) {
   var t = trendFor(pct, prevPct);
-  return '<span style="font-size:10px;font-weight:800;color:' + t.cls + ';white-space:nowrap;">'
+  return '<span style="font-size:11px;font-weight:500;color:' + t.cls + ';white-space:nowrap;">'
     + (t.arrow ? t.arrow + ' ' : '') + t.word + '</span>';
 }
 
@@ -77,7 +76,7 @@ export function stageStepperHTML(cur) {
     var lbl = on ? 'var(--blu)' : done ? 'var(--grn2)' : 'var(--txt3)';
     h += '<div style="flex:1;text-align:center;" role="listitem">'
       + '<div style="width:10px;height:10px;border-radius:50%;background:' + dot + ';margin:0 auto 4px;"></div>'
-      + '<div style="font-size:9px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:' + lbl + ';">' + s.name + '</div></div>';
+      + '<div style="font-size:11.5px;font-weight:' + (on ? 600 : 400) + ';color:' + lbl + ';">' + s.name + '</div></div>';
   });
   return h + '</div>';
 }

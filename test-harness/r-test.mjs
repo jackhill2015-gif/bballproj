@@ -142,7 +142,10 @@ const onUser = G.teams[G.tid].rost.some(p => p.name === p1name);
 const onCpu = G.teams.some(tm => tm.id !== G.tid && tm.rost.some(p => p.name === p1name));
 const stayed = G.teams[p1from].rost.some(p => p.name === p1name);
 check(onUser || onCpu || stayed, 'offered entrant landed somewhere or stayed put');
-check(G.teams[p1from].rost.length <= beforeLen, 'old roster never grows from the portal');
+// The old school can still sign OTHER transfers, so check the real
+// invariants: the entrant is never duplicated and rosters stay within 15.
+check(G.teams.reduce((n, tm) => n + tm.rost.filter(p => p.name === p1name && p.pos === pick1.pos).length, 0) <= 1, 'entrant never duplicated across rosters');
+check(G.teams[p1from].rost.length <= 15, 'old school roster stays within 15', 'len=' + G.teams[p1from].rost.length + ' before=' + beforeLen);
 check(Number.isFinite(G.pts) && G.pts <= 500, 'NIL accounting sane after battle', 'pts=' + G.pts);
 let leaked = 0;
 G.teams.forEach(tm => tm.rost.forEach(p => { if (p._portalPid) leaked++; }));
@@ -166,16 +169,13 @@ check(badSigned.length === 0, 'R1: every CPU signee signed = valid team id (not 
 const nameMismatch = gone.filter(r => r.goneTo && G.teams[r.signed] && G.teams[r.signed].name !== r.goneTo);
 check(nameMismatch.length === 0, 'R1: goneTo matches the signed team name', 'bad=' + nameMismatch.length);
 
-console.log('── R5: board capped at 30 rows ──');
+console.log('── Board lists every open recruit (no show-more) ──');
 R.renderOffseason();
 const html = _els['offseason-content'].innerHTML;
 const rows = (html.match(/data-rid="/g) || []).length;
-check(rows <= 30 && rows === 30, 'board renders exactly 30 rows w/ show-more', 'rows=' + rows);
-check(html.indexOf('data-show-more') >= 0, 'show-more button present');
-R.showMoreBoard();
-const html2 = _els['offseason-content'].innerHTML;
-const rows2 = (html2.match(/data-rid="/g) || []).length;
-check(rows2 === 60, 'show-more adds 30 rows', 'rows=' + rows2);
+const openN = G.recruits.filter(r => !(r.signed >= 0)).length;
+check(rows === openN, 'board renders every open recruit', 'rows=' + rows + ' open=' + openN);
+check(html.indexOf('data-show-more') < 0, 'no show-more button');
 
 console.log('── doOffseason: R2 signees join, R6 class cap, R9 portal before walk-ons ──');
 // Finalize signings first so the snapshot sees exactly what doOffseason will
