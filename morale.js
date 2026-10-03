@@ -27,11 +27,11 @@ export function moodTag(morale) {
 // Pill colors for the roster tag: [background, text]
 export function moodColors(morale) {
   var m = (typeof morale === 'number') ? morale : MORALE_DEFAULT;
-  if (m >= 85) return ['#dcfce7', '#15803d'];  // locked in — green
-  if (m >= 70) return ['#dbeafe', '#1d4ed8'];  // happy — blue
-  if (m >= 45) return ['#f1f5f9', '#64748b'];  // content — gray
-  if (m >= 25) return ['#fef3c7', '#b45309'];  // restless — amber
-  return ['#fee2e2', '#b91c1c'];               // checked out — red
+  if (m >= 85) return ['#e8f2eb', '#2f6842'];  // locked in — green
+  if (m >= 70) return ['#eaf0f7', '#3a5f8f'];  // happy — blue
+  if (m >= 45) return ['#f0f2f5', '#5c6571'];  // content — gray
+  if (m >= 25) return ['#f6f0e1', '#7a5c1b'];  // restless — amber
+  return ['#f6eae8', '#a8473f'];               // checked out — red
 }
 
 // ── Sim modifier ───────────────────────────────────────────

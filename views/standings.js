@@ -6,6 +6,18 @@
 import { ge } from '../utils.js';
 import { G } from '../state.js';
 
+function fmtRating(t) {
+  var r = typeof t.rating === 'number' ? t.rating : 0;
+  return (r > 0 ? '+' : '') + r.toFixed(1);
+}
+function moveCell(t, rank) {
+  if (!t.lastRank) return '<span style="color:var(--txt3);">–</span>';
+  var d = t.lastRank - rank;
+  if (d > 0) return '<span class="mv-up">▲' + d + '</span>';
+  if (d < 0) return '<span class="mv-dn">▼' + (-d) + '</span>';
+  return '<span style="color:var(--txt3);">–</span>';
+}
+
 export function renderStandings() {
   var el = ge('standings-content'); if (!el) return;
 
@@ -14,9 +26,10 @@ export function renderStandings() {
 
   // ── National Top 25 — real table (no div-grid overflow traps) ──
   h += '<div style="margin-bottom:16px;">'
-    + '<div class="sec-head">National Rankings</div>'
+    + '<div class="sec-head">National rankings</div>'
+    + '<div class="sec-sub">Power rating adjusted for schedule strength. Arrows show movement since last week.</div>'
     + '<div class="tbl-wrap"><table class="tbl stbl">'
-    + '<thead><tr><th>RK</th><th>Team</th><th>Conf</th><th class="num">Record</th><th class="num">Conf</th><th class="num">Win%</th></tr></thead><tbody>';
+    + '<thead><tr><th>#</th><th>Team</th><th>Conf</th><th class="num">Record</th><th class="num">Rtg</th><th class="num">Chg</th></tr></thead><tbody>';
 
   natSorted.slice(0, 25).forEach(function(t, i) {
     var isU = t.id === G.tid;
@@ -27,8 +40,8 @@ export function renderStandings() {
       + '<td class="tname' + (isU ? ' u' : '') + '">' + t.name + '</td>'
       + '<td class="dim">' + t.conf + '</td>'
       + '<td class="num">' + t.wins + '-' + t.loss + '</td>'
-      + '<td class="num">' + t.cWins + '-' + t.cLoss + '</td>'
-      + '<td class="num">' + winPct + '%</td>'
+      + '<td class="num">' + fmtRating(t) + '</td>'
+      + '<td class="num">' + moveCell(t, i + 1) + '</td>'
       + '</tr>';
   });
 
@@ -43,8 +56,8 @@ export function renderStandings() {
       + '<td class="tname u">' + ut.name + '</td>'
       + '<td class="dim">' + ut.conf + '</td>'
       + '<td class="num">' + ut.wins + '-' + ut.loss + '</td>'
-      + '<td class="num">' + ut.cWins + '-' + ut.cLoss + '</td>'
-      + '<td class="num">' + utPct + '%</td>'
+      + '<td class="num">' + fmtRating(ut) + '</td>'
+      + '<td class="num">' + moveCell(ut, userRank) + '</td>'
       + '</tr>';
   }
   h += '</tbody></table></div></div>';

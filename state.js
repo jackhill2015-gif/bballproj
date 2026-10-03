@@ -335,7 +335,7 @@ function _writeSave() {
       teams:G.teams.map(function(t,i){
         var b={id:t.id,wins:t.wins,loss:t.loss,cWins:t.cWins,cLoss:t.cLoss,
           pts:t.pts,ts:t.ts,schoolPrestige:t.schoolPrestige,coach:t.coach,
-          strat:t.strat,streak:t.streak||0,coachHistory:t.coachHistory||[]};
+          strat:t.strat,streak:t.streak||0,coachHistory:t.coachHistory||[],lastRank:t.lastRank||0,rating:t.rating||0};
         if(i===G.tid){b.sched=t.sched;}
         else{
           // v10: CPU schedule entries packed as [opp, home, conf, played, uScore, oScore]
@@ -350,7 +350,8 @@ function _writeSave() {
       recruits:_slimRecruits(G.recruits),
       bracket:_slimBracket(G.bracket),
       confTourneys:_slimConfTourneys(G.confTourneys),
-      injuries:G.injuries||[],buffs:G.buffs||[],nextHomeBonus:G.nextHomeBonus||0
+      injuries:G.injuries||[],buffs:G.buffs||[],nextHomeBonus:G.nextHomeBonus||0,
+      lastResult:G.lastResult||null
     };
     var str=JSON.stringify(lean);
     try { localStorage.setItem(SAVE_KEY,str); }
@@ -451,6 +452,7 @@ export function loadState() {
     G.injuries=s.injuries||[];
     G.buffs=s.buffs||[];
     G.nextHomeBonus=s.nextHomeBonus||0;
+    G.lastResult=s.lastResult||null;
 
     // Recruits backward compat
     G.recruits.forEach(function(r){
@@ -475,6 +477,8 @@ export function loadState() {
       if(st.strat)G.teams[i].strat=st.strat;
       if(typeof st.streak==='number')G.teams[i].streak=st.streak;
       if(st.coachHistory)G.teams[i].coachHistory=st.coachHistory;
+      if(st.lastRank)G.teams[i].lastRank=st.lastRank;
+      if(typeof st.rating==='number')G.teams[i].rating=st.rating;
       // v10 saves carry every roster; v9 and older only had the user's (st.rost)
       var _r = (_rosters && _rosters[i] && _rosters[i].length) ? _rosters[i] : (i===G.tid ? st.rost : null);
       if(_r)G.teams[i].rost=_r;

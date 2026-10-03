@@ -44,6 +44,9 @@ var _toastShowing = 0;
 var MAX_TOASTS = 3;
 
 export function toast(msg, col) {
+  msg = calm(msg);
+  // Sentence case: "INDIANA ADVANCES!" reads as shouting in a quiet UI
+  if (msg && msg === msg.toUpperCase() && /[A-Z]{4}/.test(msg)) msg = msg.charAt(0) + msg.slice(1).toLowerCase();
   _toastQ.push({ msg: msg, col: col || 'var(--blu)' });
   if (_toastQ.length > 6) _toastQ.shift(); // drop oldest if spammed
   pumpToasts();
@@ -85,11 +88,19 @@ var LOG_CAP = 30;
 
 function logNode(type, wk, text) {
   return '<div class="log-item log-' + type + '">'
-    + '<div class="log-wk">WK ' + wk + '</div>'
+    + '<div class="log-wk">Wk ' + wk + '</div>'
     + '<div class="log-txt">' + text + '</div></div>';
 }
 
+// Keep the feed and notices plain-text calm: no emoji, no shouting.
+var EMOJI_RE = /[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}]/gu;
+export function calm(text) {
+  if (typeof text !== 'string') return text;
+  return text.replace(EMOJI_RE, '').replace(/\s{2,}/g, ' ').replace(/^\s+/, '');
+}
+
 export function addLog(type, wk, text) {
+  text = calm(text);
   // Intercept user game results: narrate + award coach XP + ranked-win moments
   if ((type === 'w' || type === 'l') && typeof text === 'string') {
     var enriched = narrateResult(type, text);
@@ -242,8 +253,13 @@ var _prevRank = 0;
 var _milestones = { wins: 0, streak: 0, top25: false, top10: false, no1: false };
 
 // { prev, cur, delta } — delta > 0 means moved UP the rankings
+// Movement since last week's poll (t.lastRank is snapshotted in advanceWeek
+// and saved), so the arrow stays put until the next week is played.
 export function rankDelta() {
-  return { prev: _prevRank, cur: userRank(), delta: _prevRank ? _prevRank - userRank() : 0 };
+  var t = G.teams[G.tid];
+  var prev = (t && t.lastRank) || 0;
+  var cur = userRank();
+  return { prev: prev, cur: cur, delta: prev ? prev - cur : 0 };
 }
 
 function checkMilestones(rank) {
@@ -389,8 +405,8 @@ export function updateAll() {
   txt('tb-rec', fR(t.wins, t.loss));
   txt('tb-yr', G.yr);
   txt('nil-balance', G.pts || 0);
-  var phases = { reg: 'REGULAR SEASON', conf_tourn: 'CONF TOURNEY', ncaa: 'MARCH MADNESS', offseason: 'OFFSEASON' };
-  txt('tb-phase', phases[G.phase] || 'PRESEASON');
+  var phases = { reg: 'Regular season', conf_tourn: 'Conf. tournament', ncaa: 'NCAA tournament', offseason: 'Offseason' };
+  txt('tb-phase', phases[G.phase] || 'Preseason');
   updateMatchupChip();
   updateAdvanceBtn();
 
@@ -402,23 +418,23 @@ function updateMatchupChip() {
   var t = G.teams[G.tid];
   if (G.phase === 'reg') {
     var s = t.sched[G.gi];
-    txt('tb-wk', 'GAME ' + Math.min(G.gi + 1, 30) + '/30');
+    txt('tb-wk', 'Game ' + Math.min(G.gi + 1, 30) + '/30');
     if (s && s.opp !== undefined && s.opp !== null && !s.played) {
       var opp = G.teams[s.opp];
-      txt('tb-opp', opp ? ((s.home ? 'vs ' : '@ ') + opp.name) : '—');
+      txt('tb-opp', opp ? ((s.home ? 'vs ' : 'at ') + opp.name) : '—');
     } else if (!s) {
       txt('tb-opp', 'Bye week');
     } else {
       txt('tb-opp', '—');
     }
   } else if (G.phase === 'conf_tourn') {
-    txt('tb-wk', 'CONF TOURNEY'); txt('tb-opp', t.conf + ' Tournament');
+    txt('tb-wk', 'Conf. tournament'); txt('tb-opp', t.conf);
   } else if (G.phase === 'ncaa') {
     var active = G.bracket ? G.bracket.filter(function(b) { return b.active; }).length : 0;
     var rn = { 64: 'Rd of 64', 32: 'Rd of 32', 16: 'Sweet 16', 8: 'Elite 8', 4: 'Final Four', 2: 'Title Game' };
-    txt('tb-wk', rn[active] || 'NCAA'); txt('tb-opp', 'Tournament');
+    txt('tb-wk', 'NCAA'); txt('tb-opp', rn[active] || 'Tournament');
   } else {
-    txt('tb-wk', 'OFFSEASON'); txt('tb-opp', '');
+    txt('tb-wk', 'Offseason'); txt('tb-opp', '');
   }
 }
 
@@ -431,34 +447,32 @@ export function updateAdvanceBtn() {
   if (!btn) return;
   var label = ge('advance-label');
   var t = G.teams[G.tid];
-  var txtLbl = 'ADVANCE';
+  var txtLbl = 'Continue';
 
   if (G.phase === 'reg') {
     if (SetupState.G_AUTO) {
-      txtLbl = 'STOP';
+      txtLbl = 'Stop';
       btn.classList.add('stop');
     } else {
       btn.classList.remove('stop');
       var s = t.sched[G.gi];
-      if (G.gi >= 30) txtLbl = 'CONF TOURNEY';
+      if (G.gi >= 30) txtLbl = 'Conf. tournament';
       else if (s && s.opp !== undefined && s.opp !== null && !s.played) {
-        var opp = G.teams[s.opp];
-        var short = opp ? opp.name.split(' ').slice(-1)[0].toUpperCase() : 'GAME';
-        txtLbl = 'SIM: ' + short;
-      } else txtLbl = 'SIM WEEK';
+        txtLbl = 'Sim game';
+      } else txtLbl = 'Sim week';
     }
   } else if (G.phase === 'conf_tourn') {
-    txtLbl = 'CONF TOURNEY';
+    txtLbl = 'Play round';
   } else if (G.phase === 'ncaa') {
-    txtLbl = 'MARCH MADNESS';
+    txtLbl = 'Play round';
   } else if (G.phase === 'offseason') {
-    if (G.offseasonStep === 'recap') txtLbl = 'BEGIN OFFSEASON';
-    else if (G.offseasonStep === 'turnover') txtLbl = 'TO RECRUITING';
-    else if (G.offseasonStep === 'skillpoints') txtLbl = 'FINISH';
-    else if (G.offseasonStep === 'carousel') txtLbl = 'CONTINUE';
-    else if (G.offseasonStep === 'fired') txtLbl = 'CONTINUE';
-    else if (G.recruitPhase >= 3) txtLbl = 'START SEASON';
-    else txtLbl = 'ADVANCE';
+    if (G.offseasonStep === 'recap') txtLbl = 'Begin offseason';
+    else if (G.offseasonStep === 'turnover') txtLbl = 'To recruiting';
+    else if (G.offseasonStep === 'skillpoints') txtLbl = 'Finish';
+    else if (G.offseasonStep === 'carousel') txtLbl = 'Continue';
+    else if (G.offseasonStep === 'fired') txtLbl = 'Continue';
+    else if (G.recruitPhase >= 3) txtLbl = 'Start season';
+    else txtLbl = 'Continue';
   }
   if (label) label.textContent = txtLbl;
   buildAdvanceMenu();

@@ -91,3 +91,18 @@ export function resumeScore(t) {
   var winPct = gp ? t.wins / gp : 0;
   return (t.pts || 0) + Math.round((winPct - 0.5) * 30);
 }
+
+// Remember every team's current poll position (called right before the
+// weekly recompute) so the UI can show movement arrows that survive
+// re-renders and reloads.
+export function snapshotRanks() {
+  var sorted = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; });
+  sorted.forEach(function(t, i) { t.lastRank = i + 1; });
+}
+
+// Current rank map (id → 1-based rank) and movement since last week.
+export function rankMap() {
+  var m = {};
+  G.teams.slice().sort(function(a, b) { return b.pts - a.pts; }).forEach(function(t, i) { m[t.id] = i + 1; });
+  return m;
+}

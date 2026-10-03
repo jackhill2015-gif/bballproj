@@ -26,6 +26,12 @@ function sliderBg(mins) {
   return 'linear-gradient(90deg,var(--blu) 0%,var(--blu) ' + f + '%,var(--s3) ' + f + '%)';
 }
 
+function injuryOf(p) {
+  var list = G.injuries || [];
+  for (var k = 0; k < list.length; k++) if (list[k].playerName === p.name && list[k].weeksLeft > 0) return list[k];
+  return null;
+}
+
 function tierOf(i) { return i < 5 ? 'starter' : i < 9 ? 'rotation' : 'bench'; }
 
 function depthRow(p, i) {
@@ -33,14 +39,20 @@ function depthRow(p, i) {
   var gp = p.s ? (p.s.gp || 0) : 0;
   var line = gp > 0
     ? (p.s.pts / gp).toFixed(1) + ' pts · ' + (p.s.reb / gp).toFixed(1) + ' reb · ' + (p.s.ast / gp).toFixed(1) + ' ast'
-    : 'no games yet';
+    : 'No games yet';
+  var _injLine = injuryOf(p);
+  if (_injLine) line = _injLine.type.charAt(0).toUpperCase() + _injLine.type.slice(1) + ', back in ' + _injLine.weeksLeft + ' wk. ' + line;
   var pot = p.pot || p.ovr;
   var potCol = pot > p.ovr + 8 ? 'var(--grn2)' : pot > p.ovr + 3 ? 'var(--gld2)' : 'var(--txt3)';
   var benched = p.mins === 0;
   // Mood tag — roster page only, per jack (no dashboard meter)
   var _mor = (typeof p.morale === 'number') ? p.morale : MORALE_DEFAULT;
   var _mc = moodColors(_mor);
-  var moodPill = '<span class="mood-tag" style="background:' + _mc[0] + ';color:' + _mc[1] + ';">' + moodTag(_mor) + '</span>';
+  // Only call out moods that matter; "Content" is the quiet default
+  var _mt = moodTag(_mor);
+  var moodPill = _mt === 'Content' ? '' : '<span class="mood-tag" style="color:' + _mc[1] + ';">' + _mt + '</span>';
+  var inj = injuryOf(p);
+  if (inj) moodPill += '<span class="out-tag">Out ' + inj.weeksLeft + ' wk</span>';
 
   var h = '<div class="depth-row ' + tier + (benched ? ' benched' : '') + '" data-row="' + i + '">'
     + '<div class="dr-top">'
@@ -53,7 +65,7 @@ function depthRow(p, i) {
     + '<span class="pos-chip">' + p.pos + '</span>'
     + '<div class="dr-name">' + p.name + ' <span class="cls-txt">' + p.cls + '</span>' + moodPill
     + '<div class="dr-sub">' + line + '</div></div>'
-    + '<div class="dr-ovr"><b>' + p.ovr + '</b><small style="color:' + potCol + ';">POT ' + pot + '</small></div>'
+    + '<div class="dr-ovr"><b>' + p.ovr + '</b><small style="color:' + potCol + ';">Pot ' + pot + '</small></div>'
     + '</div>'
     + '<div class="dr-bot">'
     + '<input type="range" min="0" max="40" step="1" value="' + p.mins + '" data-mins="' + i + '"'
@@ -72,11 +84,13 @@ export function renderRoster() {
   var total = t.rost.reduce(function(s, p) { return s + p.mins; }, 0);
   var totalCol = total === 200 ? 'var(--grn2)' : 'var(--red)';
 
-  var h = '<div style="margin-bottom:12px;"><div class="sec-head">Depth Chart</div>'
-    + '<div class="sec-sub">Top 5 = starters · drag on desktop, ▲▼ buttons on touch · sliders set minutes</div></div>';
+  var nOut = t.rost.filter(function(p) { return !!injuryOf(p); }).length;
+  var h = '<div style="margin-bottom:8px;"><div class="sec-head">Depth chart</div>'
+    + '<div class="sec-sub">The top five start. Reorder with the arrows (or drag on desktop) and set minutes with the sliders.</div></div>';
 
   h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bdr);margin-bottom:4px;">'
-    + '<div style="font-size:12px;color:var(--txt2);">Total minutes <b style="font-family:var(--mono);font-size:15px;color:' + totalCol + ';" data-min-total>' + total + '/200</b></div>'
+    + '<div style="font-size:12.5px;color:var(--txt2);">Minutes <b style="font-size:14px;font-weight:600;color:' + totalCol + ';" data-min-total>' + total + '/200</b>'
+    + (nOut ? ' <span style="color:var(--txt3);">(' + nOut + ' out)</span>' : '') + '</div>'
     + '<button class="btn-quiet" data-roster-auto>Auto set</button></div>';
 
   t.rost.forEach(function(p, i) {

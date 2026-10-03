@@ -8,7 +8,7 @@
 //  preserved with identical names/signatures.
 // ═══════════════════════════════════════════════════════════
 
-import { DIFF_DESC, calcSchoolPrestige, calcExpectations } from '../constants.js';
+import { DIFF_DESC, calcSchoolPrestige, calcExpectations, ALL_TEAMS } from '../constants.js';
 import { ri, ge, txt, getTier, getTOvr, fR } from '../utils.js';
 import { G, SetupState, loadState, deleteSave, saveState } from '../state.js';
 import { buildSchedules, genRecruits, buildUniverse, setupUserOOC } from '../season.js';
@@ -38,7 +38,7 @@ function stepHeader(title, sub) {
   });
   h += '</div>';
   h += '<div style="text-align:center;margin-bottom:20px;">'
-    + '<div class="setup-title">HOOPS<em>OS</em></div>'
+    + '<div class="setup-title">Hoops <em>OS</em></div>'
     + '<div style="font-size:17px;font-weight:900;margin-top:10px;">' + title + '</div>'
     + (sub ? '<div style="font-size:12px;color:var(--txt2);margin-top:4px;">' + sub + '</div>' : '')
     + '</div>';
@@ -61,6 +61,9 @@ export function showHomeScreen() {
       var saved = JSON.parse(raw);
       var t = saved.teams && saved.teams[saved.tid];
       if (t) {
+        // Saves store team results only; name/conference come from the team table
+        var td = ALL_TEAMS[saved.tid] || {};
+        t = Object.assign({ name: td.n, conf: td.c }, t);
         var coachName = saved.coach ? saved.coach.firstName + ' ' + saved.coach.lastName : 'Coach';
         txt('home-team-name', t.name || '---');
         var phases = { reg: 'Regular Season', conf_tourn: 'Conf Tournament', ncaa: 'NCAA Tournament', offseason: 'Offseason' };
@@ -95,7 +98,6 @@ export function loadAndPlay() {
          G.offseasonStep === 'recruiting' || G.offseasonStep === 'skillpoints')) {
       G.offseasonStep = 'carousel';
     }
-    addLog('ev', G.gi, 'Dynasty restored. Season ' + G.yr + '.');
     updateAll();
   }
 }
@@ -306,7 +308,7 @@ function renderNCSchedule() {
   var t = G.teams[G.tid];
   var h = '<div class="setup-wrap" style="max-width:720px;">'
     + stepHeader(t.name, t.conf + ' · Prestige ' + t.schoolPrestige + ' · OVR ' + getTOvr(t))
-    + '<div class="sec-head">Non-Conference Schedule</div>'
+    + '<div class="sec-head">Non-conference schedule</div>'
     + '<div class="sec-sub">Auto-generated. Swap any opponent you don\'t want.</div>'
     + '<div class="nc-grid">';
   SetupState.NC_PICKS.forEach(function(id, i) {

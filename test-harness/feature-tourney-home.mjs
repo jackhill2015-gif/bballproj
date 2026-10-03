@@ -72,7 +72,7 @@ SetupState.ACTIVE_VIEW = 'dashboard';
 console.log('── 1. home swap: reg → conf_tourn → ncaa ──');
 DASH.renderDashboard();
 let html = _els['dash-content'].innerHTML;
-ok(html.includes('school-card'), 'reg phase: home shows normal dashboard (school card)');
+ok(html.includes('dash-sum'), 'reg phase: home shows normal dashboard (school card)');
 ok(!html.includes('Conference Tournaments'), 'reg phase: home does NOT show tournament hub');
 
 T.startConfTourney(); // sets phase='conf_tourn', navTo('dashboard')
@@ -80,7 +80,7 @@ DASH.renderDashboard();
 html = _els['dash-content'].innerHTML;
 ok(G.phase === 'conf_tourn', 'phase is conf_tourn after startConfTourney');
 ok(html.includes('Conference Tournaments'), 'conf_tourn phase: home shows tournament hub');
-ok(!html.includes('school-card'), 'conf_tourn phase: home does NOT show regular dashboard');
+ok(!html.includes('dash-sum'), 'conf_tourn phase: home does NOT show regular dashboard');
 ok(html.includes('QUICK SIM') || html.includes('ADVANCE'), 'conf_tourn home: user can play/advance from home');
 
 // sim through all conf tourneys (user's conf needs its game simmed too)
@@ -93,15 +93,15 @@ ok(G.phase === 'ncaa', 'phase is ncaa after buildNCAA');
 DASH.renderDashboard();
 html = _els['dash-content'].innerHTML;
 ok(html.includes('NCAA Tournament'), 'ncaa phase: home shows NCAA hub');
-ok(!html.includes('school-card'), 'ncaa phase: home does NOT show regular dashboard');
+ok(!html.includes('dash-sum'), 'ncaa phase: home does NOT show regular dashboard');
 
 console.log('── 2. full-bracket reveal (no region stepping) ──');
 const btn = _els['br-reveal-btn'];
-ok(btn.textContent.includes('REVEAL THE FIELD'), 'reveal button says REVEAL THE FIELD (got: "' + btn.textContent + '")');
+ok(btn.textContent.includes('Reveal the field'), 'reveal button says Reveal the field (got: "' + btn.textContent + '")');
 btn.onclick(); // the single reveal action
 const wrapKids = _els['br-bracket'].children.length;
 ok(wrapKids === 4, 'one click reveals all 4 regions at once (got ' + wrapKids + ')');
-ok(btn.textContent.includes('DANCE'), 'after reveal, button becomes LET\u2019S DANCE (got: "' + btn.textContent + '")');
+ok(btn.textContent.includes('Go to the tournament'), 'after reveal, button becomes Go to the tournament (got: "' + btn.textContent + '")');
 navTarget = null;
 btn.onclick(); // close
 ok(_els['bracket-reveal'].style.display === 'none', 'reveal overlay closes');
@@ -111,7 +111,7 @@ console.log('── 3. new season reverts home ──');
 G.phase = 'reg'; G.gi = 0; G.yr++;
 DASH.renderDashboard();
 html = _els['dash-content'].innerHTML;
-ok(html.includes('school-card'), 'new season (reg): home reverts to normal dashboard');
+ok(html.includes('dash-sum'), 'new season (reg): home reverts to normal dashboard');
 ok(!html.includes('NCAA Tournament'), 'new season: no tournament hub on home');
 
 console.log('\n════════ RESULT: ' + (failCount === 0 ? 'ALL PASS (' + pass + ' passed)' : failCount + ' FAILURES') + ' ════════');

@@ -61,6 +61,8 @@ function recordBook() {
   return rows;
 }
 
+function ordinal(n) { var s = ['th', 'st', 'nd', 'rd'], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); }
+
 export function renderHistory() {
   var el = ge('history-content');
   if (!el) return;
@@ -71,13 +73,13 @@ export function renderHistory() {
   var titles = hist.filter(function(x) { return x.championship; }).length;
   var confTitles = hist.filter(function(x) { return x.confTitle; }).length;
 
-  var h = '<div style="margin-bottom:12px;"><div class="sec-head">Dynasty Almanac</div>'
+  var h = '<div style="margin-bottom:12px;"><div class="sec-head">Dynasty history</div>'
     + '<div class="sec-sub">Every season, every title, every milestone — the permanent record.</div></div>';
 
   // ── Coach resume ──
   h += '<div class="sec-block"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:12px;">'
     + '<div><div style="font-size:19px;font-weight:900;">Coach ' + (c.firstName || '') + ' ' + (c.lastName || '') + '</div>'
-    + '<div style="font-size:12px;color:var(--txt2);margin-top:2px;">Age ' + (c.age || '—') + ' · Level ' + (c.level || 1) + ' · ' + (hist.length + 1) + 'th season · ' + G.teams[G.tid].name + '</div></div>'
+    + '<div style="font-size:12px;color:var(--txt2);margin-top:2px;">Age ' + (c.age || '—') + ' · Level ' + (c.level || 1) + ' · ' + ordinal(hist.length + 1) + ' season · ' + G.teams[G.tid].name + '</div></div>'
     + '<div style="font-family:var(--mono);font-size:22px;font-weight:900;color:' + (totalW >= totalL ? 'var(--grn2)' : 'var(--red)') + ';">' + fR(totalW, totalL) + '</div></div>'
     + '<div class="stat-strip" style="grid-template-columns:repeat(5,1fr);">';
   [

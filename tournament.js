@@ -499,7 +499,7 @@ export function showBracketReveal(userSeed) {
 
   // Single reveal button: one action spawns all four regions immediately
   var btn = ge('br-reveal-btn');
-  if (btn) { btn.textContent = 'REVEAL THE FIELD'; btn.onclick = function() { revealFullBracket(); }; }
+  if (btn) { btn.textContent = 'Reveal the field'; btn.onclick = function() { revealFullBracket(); }; }
 }
 
 // Builds one region's reveal card from G.bracket layout — the same layout
@@ -554,7 +554,7 @@ export function revealFullBracket() {
     (function(col) { setTimeout(function() { col.style.opacity = '1'; }, 60); })(cols[i]);
   }
   if (btn) {
-    btn.textContent = "LET\u2019S DANCE";
+    btn.textContent = "Go to the tournament";
     btn.onclick = function() { closeBracketReveal(); };
   }
 }
@@ -727,6 +727,7 @@ export function resolveTournamentGame() {
     var userWon = (m.winner.id === G.tid);
     var oppName = (m.t1.id === G.tid ? m.t2 : m.t1).name;
     var oppTeam = (m.t1.id === G.tid ? m.t2 : m.t1);
+    G.lastResult = { oppId: oppTeam.id, home: null, u: uScore, o: oScore, won: userWon, wk: G.gi, label: conf + ' tournament' };
     // Morale: tournament games swing moods too
     recordGameMorale(userWon ? userTeam : oppTeam, userWon ? oppTeam : userTeam);
     if (userWon) {
@@ -771,6 +772,7 @@ export function resolveTournamentGame() {
     recordGameMorale(userWon2 ? userTeam : oppTeam2, userWon2 ? oppTeam2 : userTeam);
     // Teams left AFTER the full round: 32 / 16 / 8 / 4 / 2 / 1
     var remaining = G.bracket.filter(function(b) { return b.active; }).length;
+    G.lastResult = { oppId: oppTeam2.id, home: null, u: uScore, o: oScore, won: userWon2, wk: G.gi, label: 'NCAA tournament' };
 
     if (userWon2) {
       // Round-specific headlines and prestige bonuses

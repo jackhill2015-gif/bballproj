@@ -38,7 +38,7 @@ export function renderScheduleView() {
   var left = sched.filter(function(g) { return g && !g.played && g.opp !== undefined && g.opp !== null; }).length;
 
   var h = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">'
-    + '<div><div class="sec-head" style="margin:0;">' + team.name + ' Schedule</div>'
+    + '<div><div class="sec-head" style="margin:0;">' + team.name + ' schedule</div>'
     + '<div class="sec-sub" style="margin:2px 0 0;">' + team.conf + ' · Season ' + G.yr + '</div></div>'
     + '<div style="display:flex;gap:14px;">'
     + '<div style="text-align:center;"><div style="font-family:var(--mono);font-size:18px;font-weight:900;color:var(--grn2);">' + wins + '</div><div style="font-size:10px;color:var(--txt3);">WINS</div></div>'
@@ -46,11 +46,11 @@ export function renderScheduleView() {
     + '<div style="text-align:center;"><div style="font-family:var(--mono);font-size:18px;font-weight:900;color:var(--txt2);">' + left + '</div><div style="font-size:10px;color:var(--txt3);">LEFT</div></div>'
     + '</div></div>';
 
-  h += '<div class="card-title">Non-Conference</div><div class="tbl-wrap" style="margin-bottom:16px;">';
+  h += '<div class="card-title">Non-conference</div><div class="tbl-wrap" style="margin-bottom:16px;">';
   for (var w = 0; w < 10; w++) h += gameRow(sched[w], w, natSorted, team, rivals);
   h += '</div>';
 
-  h += '<div class="card-title">' + team.conf + ' Play</div><div class="tbl-wrap">';
+  h += '<div class="card-title">' + team.conf + ' play</div><div class="tbl-wrap">';
   for (var w2 = 10; w2 < 30; w2++) h += gameRow(sched[w2], w2, natSorted, team, rivals);
   h += '</div>';
 

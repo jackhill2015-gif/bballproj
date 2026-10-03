@@ -3,8 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#0a4fc4">
-<title>HOOPS OS — College Basketball Dynasty</title>
+<meta name="theme-color" content="#ffffff">
+<title>Hoops OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -13,18 +16,18 @@
 
 <!-- ═══ HOME SCREEN (rendered by views/setup.js) ═══ -->
 <div id="home-screen" style="display:none;">
-  <div class="home-brand">HOOPS<em>OS</em></div>
+  <div class="home-brand">Hoops <em>OS</em></div>
   <div class="home-tagline"><span id="home-team-count">365</span> D1 programs. One champion. Build your dynasty.</div>
   <div class="home-cards">
     <div class="home-new" data-action="new-dynasty-start" role="button" tabindex="0" aria-label="Start a new dynasty">
       <div class="home-new-icon">＋</div>
       <div>
-        <div class="home-new-label">New Dynasty</div>
+        <div class="home-new-label">New dynasty</div>
         <div class="home-new-sub">Start from scratch</div>
       </div>
     </div>
     <div id="home-save-slot" style="display:none;" class="home-save">
-      <div class="home-save-title">Continue Dynasty</div>
+      <div class="home-save-title">Saved dynasty</div>
       <div class="home-dynasty-row">
         <div class="home-dynasty-info">
           <div class="home-dynasty-team" id="home-team-name">---</div>
@@ -36,7 +39,7 @@
             <div class="home-dynasty-stat"><div class="home-dynasty-stat-v" id="home-titles">0</div><div class="home-dynasty-stat-l">Titles</div></div>
           </div>
         </div>
-        <div class="home-play-btn" data-action="load-play" role="button" tabindex="0">PLAY</div>
+        <div class="home-play-btn" data-action="load-play" role="button" tabindex="0">Continue</div>
       </div>
       <div class="home-delete">
         <button class="home-delete-btn" data-action="delete-save">Delete save</button>
@@ -53,12 +56,12 @@
 <!-- ═══ APP SHELL ═══ -->
 <div id="app">
   <header id="topbar">
-    <div class="tb-brand">HOOPS<em>OS</em></div>
+    <div class="tb-brand">Hoops <em>OS</em></div>
 
     <!-- Context-aware primary action (BBGM play-button pattern) -->
     <div id="advance-wrap">
       <button id="advance-btn" data-action="advance-menu" aria-haspopup="menu" aria-expanded="false">
-        <span id="advance-label">ADVANCE</span><span class="caret">▾</span>
+        <span id="advance-label">Continue</span><span class="caret">▾</span>
       </button>
       <div id="play-dropdown" role="menu" aria-label="Advance options"></div>
     </div>
@@ -132,7 +135,7 @@
 <div id="gmod" role="dialog" aria-label="Live gamecast">
   <div class="gpanel">
     <div class="ghead">
-      <div class="ghead-t" id="gmod-title">GAMECAST</div>
+      <div class="ghead-t" id="gmod-title">Gamecast</div>
     </div>
     <div class="gc-teams">
       <div class="gc-team">
@@ -149,11 +152,11 @@
     </div>
     <div class="gc-tabs" role="tablist" aria-label="Gamecast views">
       <button class="gc-tab on" role="tab" data-action="gcast-tab" data-tab="cast">Gamecast</button>
-      <button class="gc-tab" role="tab" data-action="gcast-tab" data-tab="team">Team Stats</button>
-      <button class="gc-tab" role="tab" data-action="gcast-tab" data-tab="box">Box Score</button>
+      <button class="gc-tab" role="tab" data-action="gcast-tab" data-tab="team">Team stats</button>
+      <button class="gc-tab" role="tab" data-action="gcast-tab" data-tab="box">Box score</button>
     </div>
     <div class="spd-row">
-      <div class="spd-lbl">SPEED</div>
+      <div class="spd-lbl">Speed</div>
       <input type="range" id="spd" min="1" max="5" value="3" aria-label="Simulation speed">
       <div class="spd-v" id="spd-v">MED</div>
     </div>
@@ -161,7 +164,7 @@
     <div class="gc-pane" id="gc-pane-team"></div>
     <div class="gc-pane" id="gc-pane-box"></div>
     <div class="gfoot">
-      <button class="btn btn-big btn-full" data-action="skip">SIM GAME</button>
+      <button class="btn btn-big btn-full" data-action="skip">Skip to final</button>
     </div>
   </div>
 </div>
@@ -169,7 +172,7 @@
 <!-- ═══ NCAA BRACKET REVEAL (Selection Sunday — rendered by tournament.js) ═══ -->
 <div id="bracket-reveal">
   <div class="brv-inner">
-    <div class="brv-kicker" id="br-label">SELECTION SUNDAY</div>
+    <div class="brv-kicker" id="br-label">Selection Sunday</div>
     <div class="brv-title" id="br-title">NCAA Tournament</div>
     <div class="brv-seedline" id="br-seed-line"></div>
     <div id="br-user-card" class="brv-user">
@@ -181,7 +184,7 @@
     <div id="br-bubble" style="display:none;margin-bottom:12px;"></div>
     <div id="br-bracket" class="brv-grid"></div>
     <div id="br-reveal-controls" class="brv-controls">
-      <button id="br-reveal-btn" class="btn btn-red">REVEAL THE FIELD</button>
+      <button id="br-reveal-btn" class="btn btn-red">Reveal the field</button>
     </div>
   </div>
 </div>

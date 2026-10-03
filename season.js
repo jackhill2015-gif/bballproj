@@ -4,7 +4,7 @@
 //  week advancement, game launching, auto-sim, offseason.
 // ═══════════════════════════════════════════════════════════
 
-import { recomputeRatings } from './ratings.js';
+import { recomputeRatings, snapshotRanks } from './ratings.js';
 import { ALL_TEAMS, POS, CLS, RECRUIT_STATE_POOL, COACH_FN, COACH_LN, calcSchoolPrestige, SKILL_POINT_TABLE, calcExpectations } from './constants.js';
 import {
   ri, clamp, getTOvr, fixMins, freshS, getTeamStyle, getOvr, ge, txt, fmtScore
@@ -435,6 +435,8 @@ export function recordResult() {
     if (game.conf) { t.cLoss++; opp.cWins++; }
   }
   // Rankings (t.pts) are recomputed from all results in advanceWeek — see ratings.js.
+  // The final stays on the dashboard until the next game is played.
+  G.lastResult = { oppId: opp.id, home: !!uHome, u: uScore, o: oScore, won: won, wk: G.gi + 1, label: game.conf ? 'Conference' : 'Non-conference' };
   // Note: GP is counted once per game — simGame() increments it internally
   // for quick/auto-simmed games, and launchSim() increments at tipoff for live games.
   // Morale: both teams' players react to the result.
@@ -454,6 +456,7 @@ export function recordResult() {
 export function advanceWeek() {
   G.gi++;
   G.wk = G.gi;
+  snapshotRanks();    // last week's poll, for movement arrows
   recomputeRatings(); // rankings reflect every result through this week
 
   // Fire mid-season events during regular season
@@ -934,6 +937,8 @@ export function doOffseason() {
 
   // Advance year
   G.yr++; G.wk = 0; G.gi = 0; G.phase = 'reg';
+  G.lastResult = null;
+  G.teams.forEach(function(tm) { tm.lastRank = 0; });
   G.bracket = []; G.confTourneys = {};
   // Records: fresh highlight reel for the new season
   clearSeasonBreaks();

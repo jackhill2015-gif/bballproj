@@ -10,12 +10,12 @@ import { G } from '../state.js';
 var _cache = { key: '', cats: null };
 
 var CATS = [
-  { id: 'ppg', label: 'Points Per Game', min: 0, val: function(r) { return r.ppg; }, fmt: function(v) { return v.toFixed(1); } },
-  { id: 'rpg', label: 'Rebounds Per Game', min: 0, val: function(r) { return r.rpg; }, fmt: function(v) { return v.toFixed(1); } },
-  { id: 'apg', label: 'Assists Per Game', min: 0, val: function(r) { return r.apg; }, fmt: function(v) { return v.toFixed(1); } },
-  { id: 'fg', label: 'Field Goal %', minFga: 10, val: function(r) { return r.fg; }, fmt: function(v) { return (v * 100).toFixed(1) + '%'; } },
-  { id: 'spg', label: 'Steals Per Game', min: 0, val: function(r) { return r.spg; }, fmt: function(v) { return v.toFixed(1); } },
-  { id: 'bpg', label: 'Blocks Per Game', min: 0, val: function(r) { return r.bpg; }, fmt: function(v) { return v.toFixed(1); } }
+  { id: 'ppg', label: 'Points per game', min: 0, val: function(r) { return r.ppg; }, fmt: function(v) { return v.toFixed(1); } },
+  { id: 'rpg', label: 'Rebounds per game', min: 0, val: function(r) { return r.rpg; }, fmt: function(v) { return v.toFixed(1); } },
+  { id: 'apg', label: 'Assists per game', min: 0, val: function(r) { return r.apg; }, fmt: function(v) { return v.toFixed(1); } },
+  { id: 'fg', label: 'Field goal %', minFga: 10, val: function(r) { return r.fg; }, fmt: function(v) { return (v * 100).toFixed(1) + '%'; } },
+  { id: 'spg', label: 'Steals per game', min: 0, val: function(r) { return r.spg; }, fmt: function(v) { return v.toFixed(1); } },
+  { id: 'bpg', label: 'Blocks per game', min: 0, val: function(r) { return r.bpg; }, fmt: function(v) { return v.toFixed(1); } }
 ];
 
 function computeLeaders() {
@@ -54,7 +54,7 @@ export function renderStats() {
   if (!el) return;
   var cats = computeLeaders();
 
-  var h = '<div style="margin-bottom:12px;"><div class="sec-head">League Leaders</div>'
+  var h = '<div style="margin-bottom:12px;"><div class="sec-head">League leaders</div>'
     + '<div class="sec-sub">Season ' + G.yr + ' · Top 10 in each category</div></div>';
 
   if (!cats[0].rows.length) {
