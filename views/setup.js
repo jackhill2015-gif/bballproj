@@ -50,9 +50,12 @@ function stepHeader(title, sub) {
 // ═══════════════════════════════════════════════════════════
 
 export function showHomeScreen() {
-  var raw = localStorage.getItem('hoops_os_v3');
+  // Reveal first: if a storage read throws below (blocked storage in some
+  // browsers/WebViews), the home screen must still appear — never white-screen.
   var hs = ge('home-screen'); if (hs) hs.style.display = 'flex';
   ge('setup').style.display = 'none';
+  var raw = null;
+  try { raw = localStorage.getItem('hoops_os_v3'); } catch (e) { raw = null; }
   if (raw) {
     try {
       var saved = JSON.parse(raw);

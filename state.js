@@ -435,11 +435,13 @@ export function loadState() {
 
 export function deleteSave(){
   if (_saveTimer) { clearTimeout(_saveTimer); _saveTimer = null; }
-  localStorage.removeItem(SAVE_KEY);
+  try { localStorage.removeItem(SAVE_KEY); } catch (e) {}
 }
-export function hasSave(){return!!localStorage.getItem(SAVE_KEY);}
+export function hasSave(){ try { return !!localStorage.getItem(SAVE_KEY); } catch (e) { return false; } }
 export function getRawSave(){
   _flushPendingSave();
-  var r=localStorage.getItem(SAVE_KEY);if(!r)return null;
+  var r = null;
+  try { r = localStorage.getItem(SAVE_KEY); } catch (e) { return null; }
+  if(!r)return null;
   try{return JSON.parse(r);}catch(e){return null;}
 }
