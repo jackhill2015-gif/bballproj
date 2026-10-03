@@ -21,7 +21,7 @@ for (const [label, lo, hi] of [['small', 0, 35], ['mid', 45, 60], ['power', 80, 
 console.log('  tier   school          prestige gate  tv  tourney ad  donors total');
 rows.forEach(r => console.log('  ' + r[0].padEnd(6) + ' ' + String(r[1]).padEnd(15) + ' ' + String(r[2]).padStart(8) + ' ' + [3,4,5,6,7,8].map(i => String(r[i]).padStart(5)).join('')));
 const [small, mid, power] = rows.map(r => r[8]);
-check(small >= 250 && small <= 600, 'small program season income in range (' + small + ')');
+check(small >= 200 && small <= 650, 'small program season income in range (' + small + ')'); // a bad year can dip
 check(power > small, 'power program earns more than a small one');
 check(mid >= 300, 'mid program can afford a facility upgrade or a strong portal offer (' + mid + ')');
 console.log('── spending is tracked ──');

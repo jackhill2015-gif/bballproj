@@ -62,12 +62,16 @@ export function renderHelp() {
 
   h += sec('Facilities',
     'Three upgrade tracks, each with five levels, bought once with NIL: the practice facility '
-    + 'speeds up offseason development, the arena strengthens your home court and pays weekly NIL, '
+    + 'speeds up offseason development, the arena strengthens your home court and raises ticket sales, '
     + 'and the training room gives injured players a weekly chance to heal early. '
     + 'Facilities belong to the school — take a new job and you start over with that program\'s levels.');
 
-  h += sec('NIL and the boost shop',
-    'NIL is the spendable currency shown in the top bar. The boost shop on the dashboard sells '
+  h += sec('NIL and program finances',
+    'NIL is your program budget, shown in the top bar. It comes from ticket sales after each home game, '
+    + 'your conference TV share after week 1, the donor collective\'s check each offseason (bigger after a '
+    + 'deep March run), NCAA tournament wins (each round pays more) and season-goal bonuses. You spend it on '
+    + 'transfer portal offers, facilities and boosts. The Program finances panel on the home screen shows '
+    + 'every source and what you\'ve spent this season. The boost shop on the dashboard sells '
     + 'three weekly boosts: sellout crowd (80 NIL, +3 edge in your next home game), film session '
     + '(50 NIL, +2 to shooting, finishing and defense for two games), and recovery session '
     + '(60 NIL, clears every slump and negative effect on the roster). Each can be bought once per week.');
