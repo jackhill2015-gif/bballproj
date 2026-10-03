@@ -1117,4 +1117,16 @@ table.atc .dim { color: var(--txt3); }
 .pf-sub { font-size: 12.5px; color: var(--txt2); margin-top: 2px; }
 .pf-ovr { margin-top: 6px; font-size: 13px; color: var(--txt2); }
 .pf-ovr b { font-size: 22px; color: var(--txt); font-weight: 800; }
->>>>>>> 5763dd4 (Job 1: player pages)
+/* Muse: job3-live */
+.gc-score.lead { color: var(--blu); }
+.gc-halves { font-size: 11px; color: var(--txt3); margin-top: 2px; min-height: 14px; }
+.pbp-banner.lead { background: var(--blu-soft); color: var(--txt); }
+.pbp-row.clutch { background: var(--gld-soft); }
+.pbp-row.clutch .p-tx { font-weight: 700; }
+#gc-pane-box tr.box-tot td { font-weight: 700; border-top: 2px solid var(--bdr2); background: var(--panel); }
+@media (max-width: 640px) {
+  .gc-teams { padding: 10px; gap: 6px; }
+  .gc-name { font-size: 12px; }
+  .pbp-row { padding: 5px 10px; font-size: 12px; gap: 8px; }
+  .p-sc { font-size: 11px; }
+}

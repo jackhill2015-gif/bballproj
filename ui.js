@@ -758,7 +758,10 @@ export function openModal(tH, tA, isTournament, roundName) {
   if (la) { la.textContent = teamAbbr(tA.name); }
   if (lh) { lh.textContent = teamAbbr(tH.name); }
   txt('gc-score-a', '0'); txt('gc-score-h', '0');
-  txt('sb-clk', '20:00'); txt('sb-per', 'Half 1');
+  var _sa = ge('gc-score-a'), _sh = ge('gc-score-h');
+  if (_sa && _sa.classList) _sa.classList.remove('lead');
+  if (_sh && _sh.classList) _sh.classList.remove('lead');
+  txt('sb-clk', '20:00'); txt('sb-per', 'Half 1'); txt('sb-halves', '');
 
   switchGcastTab('cast');
   var log = ge('pbplog');
@@ -853,15 +856,21 @@ function renderGcastBox() {
       .sort(function(x, y) { return y.pts - x.pts; });
     var html = '<div class="box-team">' + teamLogo(team.name, 'sm')
       + '<span>' + team.name + '</span></div>'
-      + '<table><thead><tr><th>Player</th><th class="num">PTS</th>'
+      + '<div class="tbl-wrap"><table><thead><tr><th>Player</th><th class="num">PTS</th>'
       + '<th class="num">REB</th><th class="num">AST</th></tr></thead><tbody>';
+    var tot = { pts: 0, reb: 0, ast: 0 };
     rows.forEach(function(r) {
+      tot.pts += r.pts; tot.reb += r.reb; tot.ast += r.ast;
       html += '<tr><td><span class="pname" data-action="player" data-player="' + team.id + ':' + r.idx + '" role="button" tabindex="0">' + r.p.name + '</span> <span class="pt-sub">' + r.p.pos + '</span></td>'
         + '<td class="num">' + r.pts + '</td>'
         + '<td class="num">' + r.reb + '</td>'
         + '<td class="num">' + r.ast + '</td></tr>';
     });
-    return html + '</tbody></table>';
+    html += '</tbody><tfoot><tr class="box-tot"><td>Total</td>'
+      + '<td class="num">' + tot.pts + '</td>'
+      + '<td class="num">' + tot.reb + '</td>'
+      + '<td class="num">' + tot.ast + '</td></tr></tfoot></table></div>';
+    return html;
   }
   el.innerHTML = teamTable(LS.tA, LS._boxSnap.a) + teamTable(LS.tH, LS._boxSnap.h);
 }
@@ -878,6 +887,7 @@ export function stepSim() {
     if (LS.half === 1) {
       LS.h1 = LS.hs; LS.a1 = LS.as; LS.half = 2; LS.clock = 1200;
       txt('sb-per', 'Half 2');
+      txt('sb-halves', 'Half 1 — ' + teamAbbr(LS.tA.name) + ' ' + LS.a1 + ', ' + teamAbbr(LS.tH.name) + ' ' + LS.h1);
       G.momentum = { tid: -1, pts: 0 };
       var log = ge('pbplog');
       if (log) log.innerHTML = '<div class="pbp-banner">── Halftime ──</div>' + log.innerHTML;
@@ -897,14 +907,19 @@ export function stepSim() {
   LS.possCount++;
   var res = simPoss(offT, defT);
   LS.clock -= Math.max(1, res.time);
+  var prevLead = LS.hs > LS.as ? 'H' : LS.as > LS.hs ? 'A' : 'T';
   if (LS.poss === 'H') LS.hs += res.pts; else LS.as += res.pts;
   LS.poss = LS.poss === 'H' ? 'A' : 'H';
+  var newLead = LS.hs > LS.as ? 'H' : LS.as > LS.hs ? 'A' : 'T';
   var m = Math.max(0, Math.floor(LS.clock / 60));
   var s = ('0' + Math.max(0, LS.clock % 60)).slice(-2);
   var ts = m + ':' + s;
   var score = LS.as + '-' + LS.hs;
   txt('gc-score-a', String(LS.as));
   txt('gc-score-h', String(LS.hs));
+  var _sca = ge('gc-score-a'), _sch = ge('gc-score-h');
+  if (_sca && _sca.classList) _sca.classList.toggle('lead', LS.as > LS.hs);
+  if (_sch && _sch.classList) _sch.classList.toggle('lead', LS.hs > LS.as);
   txt('sb-clk', ts);
 
   if (res.pbp) {
@@ -914,7 +929,16 @@ export function stepSim() {
       if (res.run) {
         entry += '<div class="pbp-banner' + (res.run.isUser ? ' run-user' : ' run-opp') + '">' + res.run.text + '</div>';
       }
-      entry += pbpRow(ts, res.pbp, score, res.big ? 'big' : (res.type === 'turn' || res.type === 'block' ? 'bad' : ''));
+      if ((prevLead === 'H' && newLead === 'A') || (prevLead === 'A' && newLead === 'H')) {
+        var _ld = newLead === 'H' ? LS.tH : LS.tA, _tr = newLead === 'H' ? LS.tA : LS.tH;
+        entry += '<div class="pbp-banner lead">Lead change — ' + teamAbbr(_ld.name) + ' '
+          + (newLead === 'H' ? LS.hs : LS.as) + ', ' + teamAbbr(_tr.name) + ' '
+          + (newLead === 'H' ? LS.as : LS.hs) + '</div>';
+      }
+      var clutch = res.type === 'make' && res.pts === 3 && LS.half >= 2 && LS.clock <= 120;
+      var cls = res.big ? 'big' : (res.type === 'turn' || res.type === 'block' ? 'bad' : '');
+      if (clutch) cls += (cls ? ' ' : '') + 'clutch';
+      entry += pbpRow(ts, res.pbp, score, cls);
       if (logEl.childNodes && logEl.childNodes.length > 220) {
         while (logEl.childNodes.length > 220) logEl.removeChild(logEl.lastChild);
       }
