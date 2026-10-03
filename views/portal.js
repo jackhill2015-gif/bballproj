@@ -166,6 +166,7 @@ export function genPortalEntrants() {
     var count = 0;
     tm.rost.forEach(function(p) {
       if (p.cls === 'SR') return;              // seniors already departing
+      if (p.rs) return;                        // redshirting this season by choice
       if (count >= 3) return;                  // max 3 entrants per team
       if ((p.mins || 0) >= 18) {
         // Rotation players stay put — unless they're checked out (morale < 25)

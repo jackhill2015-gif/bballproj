@@ -11,6 +11,8 @@
 import { DIFF_MOD } from '../constants.js';
 import { ge, clamp, getTOvr, fR, fmtScore, awardScore } from '../utils.js';
 import { rankMap } from '../ratings.js';
+import { ensureGoals, progress, GOAL_REWARD } from '../goals.js';
+import { FACILITIES, FACILITY_MAX, myFacilities, upgradeCost } from '../facilities.js';
 import { G } from '../state.js';
 import { bracketHubHTML } from './bracket.js';
 import {
@@ -240,6 +242,34 @@ function renderBriefing() {
 //  NIL BOOST SHOP
 // ═══════════════════════════════════════════════════════════
 
+function renderGoals() {
+  var gs = ensureGoals();
+  if (!gs) return '';
+  var h = '<table><tbody>';
+  gs.list.forEach(function(g) {
+    var pr = progress(g);
+    h += '<tr><td style="width:22px;color:' + (pr.done ? 'var(--grn2)' : 'var(--txt3)') + ';">' + (pr.done ? '✓' : '○') + '</td>'
+      + '<td>' + g.text + '<div style="font-size:12px;color:var(--txt3);">' + pr.label + '</div></td></tr>';
+  });
+  h += '</tbody></table><div style="font-size:12px;color:var(--txt3);padding:6px 10px 8px;">Each goal met: +' + GOAL_REWARD.skill + ' skill point and +' + GOAL_REWARD.nil + ' NIL. All three also raise school prestige.</div>';
+  return panel('Season goals', h, { flush: true, right: 'From the athletic director' });
+}
+
+function renderFacilities() {
+  var f = myFacilities();
+  var h = '';
+  FACILITIES.forEach(function(x) {
+    var lvl = f[x.id] || 0, cost = upgradeCost(lvl);
+    var maxed = lvl >= FACILITY_MAX;
+    h += '<div class="shop-item"><div class="si-body"><div class="si-name">' + x.name + ' <span style="color:var(--txt3);font-weight:400;">Level ' + lvl + ' of ' + FACILITY_MAX + '</span></div>'
+      + '<div class="si-desc">' + x.effect(lvl) + '</div></div>'
+      + (maxed ? '<div style="font-size:12px;color:var(--txt3);width:92px;text-align:right;">Maxed</div>'
+        : '<button class="btn-quiet" style="width:92px;text-align:right;" data-action="fac-up" data-fac="' + x.id + '"' + ((G.pts || 0) < cost ? ' disabled' : '') + '>Upgrade ' + cost + '</button>')
+      + '</div>';
+  });
+  return panel('Facilities', h, { right: (G.pts || 0) + ' NIL available' });
+}
+
 function renderShop() {
   var bought = shopBoughtThisWeek();
   var h = '';
@@ -270,6 +300,7 @@ function renderCoach() {
     + '<div style="font-size:12.5px;color:var(--txt2);margin:1px 0 8px;">Year ' + (c.tenure + 1) + ', career ' + c.careerWins + '-' + c.careerLoss + '</div>'
     + '<div class="xp-bar"><div class="xp-fill" style="width:' + pct + '%;"></div></div>'
     + '<div class="xp-lbl"><span>Level ' + lvl + '</span><span>' + xp + ' / ' + need + ' XP</span></div>';
+  body += '<button class="btn-quiet" style="padding-left:0;margin-top:4px;" data-action="nav" data-view="trophies">Trophy room</button>';
   return panel('Coach', body);
 }
 
@@ -327,8 +358,8 @@ export function renderDashboard() {
   h += renderSchoolCard();
   h += renderLastFinal();
   h += '<div class="grid-2">';
-  h += '<div>' + renderGameCard() + renderNotifications() + renderShop() + '</div>';
-  h += '<div>' + renderMiniStandings() + renderRaces() + renderCoach() + '</div>';
+  h += '<div>' + renderGameCard() + renderGoals() + renderNotifications() + renderShop() + '</div>';
+  h += '<div>' + renderMiniStandings() + renderRaces() + renderFacilities() + renderCoach() + '</div>';
   h += '</div>';
 
   el.innerHTML = h;

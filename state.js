@@ -352,7 +352,9 @@ function _writeSave() {
       confTourneys:_slimConfTourneys(G.confTourneys),
       injuries:G.injuries||[],buffs:G.buffs||[],nextHomeBonus:G.nextHomeBonus||0,
       lastResult:G.lastResult||null,
-      jobMarket:G.jobMarket||null
+      jobMarket:G.jobMarket||null,
+      goals:G.goals||null,goalHistory:G.goalHistory||[],achievements:G.achievements||{},
+      facilities:G.facilities||null
     };
     var str=JSON.stringify(lean);
     try { localStorage.setItem(SAVE_KEY,str); }
@@ -455,6 +457,8 @@ export function loadState() {
     G.nextHomeBonus=s.nextHomeBonus||0;
     G.lastResult=s.lastResult||null;
     G.jobMarket=s.jobMarket||null;
+    G.goals=s.goals||null; G.goalHistory=s.goalHistory||[]; G.achievements=s.achievements||{};
+    G.facilities=s.facilities||null;
 
     // Recruits backward compat
     G.recruits.forEach(function(r){

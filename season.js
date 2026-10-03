@@ -5,6 +5,8 @@
 // ═══════════════════════════════════════════════════════════
 
 import { recomputeRatings, snapshotRanks } from './ratings.js';
+import { ensureGoals, noteUserResult, settleGoals, checkAchievements } from './goals.js';
+import { practiceBonus, arenaNil, trainingChance } from './facilities.js';
 import { ALL_TEAMS, POS, CLS, RECRUIT_STATE_POOL, COACH_FN, COACH_LN, calcSchoolPrestige, SKILL_POINT_TABLE, calcExpectations } from './constants.js';
 import {
   ri, clamp, getTOvr, fixMins, freshS, getTeamStyle, getOvr, ge, txt, fmtScore
@@ -402,7 +404,7 @@ export function simCPUWeek() {
   var _nilRanked = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; });
   var _nilRank = _nilRanked.findIndex(function(x) { return x.id === G.tid; }) + 1;
   var _nilEarn = _nilRank <= 25 ? 40 : _nilRank <= 64 ? 30 : _nilRank <= 150 ? 22 : 14;
-  G.pts += _nilEarn;
+  G.pts += _nilEarn + arenaNil(G.tid);
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -438,6 +440,7 @@ export function recordResult() {
   // Rankings (t.pts) are recomputed from all results in advanceWeek — see ratings.js.
   // The final stays on the dashboard until the next game is played.
   G.lastResult = { oppId: opp.id, home: !!uHome, u: uScore, o: oScore, won: won, wk: G.gi + 1, label: game.conf ? 'Conference' : 'Non-conference' };
+  noteUserResult(opp, won);
   // Note: GP is counted once per game — simGame() increments it internally
   // for quick/auto-simmed games, and launchSim() increments at tipoff for live games.
   // Morale: both teams' players react to the result.
@@ -459,6 +462,15 @@ export function advanceWeek() {
   G.wk = G.gi;
   snapshotRanks();    // last week's poll, for movement arrows
   recomputeRatings(); // rankings reflect every result through this week
+  checkAchievements();
+
+  // Training room: injured players sometimes heal a week early
+  // (suspensions and academic issues aren't medical, so they don't)
+  var _tc = trainingChance(G.tid);
+  (G.injuries || []).forEach(function(inj) {
+    if (inj.type === 'Suspension' || inj.type === 'Academic') return;
+    if (inj.weeksLeft > 1 && Math.random() < _tc) inj.weeksLeft--;
+  });
 
   // Fire mid-season events during regular season
   if (G.phase === 'reg' && G.gi < 30) {
@@ -687,8 +699,10 @@ export function recordSeasonHistory(source) {
   // Don't duplicate
   if (G.history.find(function(h) { return h.year === G.yr; })) return;
   G.history.push({
-    year: G.yr, wins: t.wins, loss: t.loss, rank: rank,
-    confTitle: G.confTitles > 0, championship: G.championships > 0,
+    year: G.yr, school: t.name, wins: t.wins, loss: t.loss, rank: rank,
+    // per-season flags (were the career counters, so every season after a
+    // first title read as a title season)
+    confTitle: !!sa.confTitleThisYear, championship: !!sa.natChamp,
     tourneyFinish: tf,
     note: t.wins + '-' + t.loss + ' \u00b7 #' + rank + ' NET \u00b7 ' + tf
   });
@@ -709,10 +723,16 @@ export function endSeason() {
   // Runs while p.s still holds the finished season.
   processSeasonRecords();
 
+  // Season goals: rewards land now (NIL + prestige inside settleGoals)
+  checkAchievements();
+  var goalRes = settleGoals();
+
   // Calculate skill points
   var t = G.teams[G.tid];
   var sa = G.seasonAchievements;
-  var earned = 0;
+  var earned = goalRes ? goalRes.skill : 0;
+  if (goalRes) addLog('ev', G.gi, 'Season goals: <b>' + goalRes.met + ' of ' + goalRes.total + '</b> met'
+    + (goalRes.met ? ' (+' + goalRes.skill + ' skill point' + (goalRes.skill > 1 ? 's' : '') + ', +' + goalRes.nil + ' NIL)' : '') + '.');
   if (t.wins >= 16) earned++;
   if (t.wins >= 20) earned++;
   if (t.wins >= 25) earned++;
@@ -840,7 +860,7 @@ export function beginOffseason() {
   t.rost.forEach(function(p) {
     var gp = p.s.gp || 0;
     var ppg = gp > 0 ? p.s.pts / gp : 0;
-    if (p.cls === 'SR') {
+    if (p.cls === 'SR' && !p.rs) {
       G.departingPlayers.push({ name: p.name, pos: p.pos, cls: p.cls, ovr: p.ovr, reason: 'Graduated', ppg: ppg.toFixed(1), rpg: gp > 0 ? (p.s.reb / gp).toFixed(1) : '0.0', apg: gp > 0 ? (p.s.ast / gp).toFixed(1) : '0.0', mins: p.mins });
     } else if (ppg >= 16 && p.cls !== 'FR') {
       G.departingPlayers.push({ name: p.name, pos: p.pos, cls: p.cls, ovr: p.ovr, reason: 'Declared for Draft', ppg: ppg.toFixed(1), rpg: gp > 0 ? (p.s.reb / gp).toFixed(1) : '0.0', apg: gp > 0 ? (p.s.ast / gp).toFixed(1) : '0.0', mins: p.mins });
@@ -866,21 +886,34 @@ export function doOffseason() {
 
   var commits = G.recruits.filter(function(r) { return r.signed === G.tid; });
 
-  // Age up / develop returning players using calcGrowth
+  // Age up / develop returning players using calcGrowth.
+  // Redshirts: no class change (the year doesn't count), +2 extra
+  // development, and the redshirt is used up for good.
   t.rost.forEach(function(p) {
-    if (p.cls === 'SR') return;
+    if (p.cls === 'SR' && !p.rs) return;
     var growth = calcGrowth(p, G.coach.dev);
+    // Practice facility: extra development points, spread at random
+    for (var _pb = practiceBonus(G.tid), _ga = ['sht', 'fin', 'def', 'reb', 'ply']; _pb > 0; _pb--) {
+      var _a = _ga[ri(0, 4)]; growth[_a] = (growth[_a] || 0) + 1;
+    }
     ['sht', 'fin', 'def', 'reb', 'ply'].forEach(function(a) {
       p[a] = clamp(p[a] + (growth[a] || 0), 38, 99);
     });
     p.ovr = getOvr(p);
     if (p.pot && p.ovr > p.pot) p.pot = p.ovr;
+    if (p.rs) {
+      var _rsA = ['sht', 'fin', 'def', 'reb', 'ply'];
+      for (var _r = 0; _r < 2; _r++) { var _k = _rsA[ri(0, 4)]; p[_k] = clamp(p[_k] + 1, 38, 99); }
+      p.ovr = getOvr(p); if (p.pot && p.ovr > p.pot) p.pot = p.ovr;
+      p.rs = false; p.rsUsed = true; p._rsKeep = true;
+      return;
+    }
     var idx = CLS.indexOf(p.cls);
     if (idx < 3) p.cls = CLS[idx + 1];
   });
 
-  // Remove seniors
-  t.rost = t.rost.filter(function(p) { return p.cls !== 'SR'; });
+  // Remove seniors (a senior who redshirted stays for one more year)
+  t.rost = t.rost.filter(function(p) { var keep = p.cls !== 'SR' || p._rsKeep; delete p._rsKeep; return keep; });
 
   // Add commits (R6: class-size cap enforced)
   var CLASS_SIZE_CAP = 8;

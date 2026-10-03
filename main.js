@@ -140,6 +140,8 @@ window.closeTournamentResult = closeTournamentResult;
 // Setup / Home screen
 window.showHomeScreen = showHomeScreen;
 window.loadAndPlay = loadAndPlay;
+// goals.js announces unlocks without importing the UI
+window._hoopsToast = function(msg) { toast(msg); addLog('ev', G.gi, msg + '.'); };
 window.startNewDynasty = startNewDynasty;
 window.deleteFromHome = deleteFromHome;
 window.newDynasty = newDynasty;

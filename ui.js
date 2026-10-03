@@ -5,6 +5,7 @@
 //  narrated recaps, coach XP, milestones, live sim modal.
 // ═══════════════════════════════════════════════════════════
 
+import { upgradeFacility } from './facilities.js';
 import { ge, txt, fR, clamp } from './utils.js';
 import { G, LS, SetupState, saveState } from './state.js';
 import { simPoss, simGame } from './simulation.js';
@@ -328,6 +329,16 @@ export function refreshView() {
   else if (v === 'bracket' && _views.renderBracket) _views.renderBracket();
   else if (v === 'offseason' && _views.renderOffseason) _views.renderOffseason();
   else if (v === 'strategy') loadStrategyView();
+  else if (v === 'trophies') loadTrophiesView();
+}
+
+var _trophiesMod = null;
+function loadTrophiesView() {
+  if (_trophiesMod) { _trophiesMod.renderTrophies(); return; }
+  import('./views/trophies.js').then(function(m) {
+    _trophiesMod = m;
+    if (SetupState.ACTIVE_VIEW === 'trophies') m.renderTrophies();
+  }).catch(function(e) { console.error('trophy room failed to load', e); });
 }
 
 // Strategy view is owned by views/strategy.js and loaded on demand so
@@ -542,6 +553,13 @@ function handleAction(el) {
       break;
     case 'nil-buy':
       buyBoost(el.getAttribute('data-item'), el);
+      break;
+    case 'fac-up':
+      (function() {
+        var r = upgradeFacility(el.getAttribute('data-fac'));
+        toast(r.ok ? 'Upgraded to level ' + r.level + ' (' + r.cost + ' NIL)' : r.msg);
+        if (r.ok) { saveState(); updateAll(); }
+      })();
       break;
     case 'new-dynasty-start':
       if (window.startNewDynasty) window.startNewDynasty();

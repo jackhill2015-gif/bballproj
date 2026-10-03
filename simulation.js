@@ -10,6 +10,7 @@ import { ri, clamp, gn, getOvr, getTOvr, pick, freshS } from './utils.js';
 import { moraleAttrMod, MORALE_DEFAULT } from './morale.js';
 import { G, LS } from './state.js';
 import { snapRoster, diffRoster } from './records.js';
+import { arenaBonus } from './facilities.js';
 
 // ── Player Generation ────────────────────────────────────
 export function genPlayer(base, pos, cls) {
@@ -358,7 +359,7 @@ export function simPoss(offT, defT) {
   // Home court + score effects, matching simGame so watched games play like
   // simmed ones. Tournament games are neutral-site.
   var liveHome = (G.phase === 'reg' && offT === LS.tH);
-  if (liveHome) makePct += HOME_BONUS;
+  if (liveHome) makePct += HOME_BONUS + (offT.id === G.tid ? arenaBonus(G.tid) : 0);
   if (LS.half >= 2) {
     var liveLead = (offT === LS.tH) ? (LS.hs - LS.as) : (LS.as - LS.hs);
     var liveOver = Math.abs(liveLead) - SCORE_EFFECT_START;
@@ -442,7 +443,7 @@ export function simGame(home, away, userIsHome) {
   // Applies to the user's next home game only, consumed once.
   // Conference and NCAA tournament games are neutral-site: no home court.
   var neutralSite = G.phase === 'conf_tourn' || G.phase === 'ncaa';
-  var homeBonus = neutralSite ? 0 : HOME_BONUS;
+  var homeBonus = neutralSite ? 0 : HOME_BONUS + (home.id === G.tid ? arenaBonus(G.tid) : 0);
   if (!neutralSite && userIsHomeActual && (G.nextHomeBonus || 0) > 0) {
     homeBonus += G.nextHomeBonus;
     G.nextHomeBonus = 0;
