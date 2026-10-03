@@ -388,7 +388,7 @@ function awardPortalToUser(e, early) {
   var t = G.teams[G.tid];
   if (!t || t.rost.length >= 15) {
     // Roster filled mid-battle — refund the escrowed offer instead.
-    G.pts += (e.offer || 0); e.offer = 0; return false;
+    var _off = e.offer || 0; G.pts += _off; noteSpend('portal', -_off); e.offer = 0; return false;
   }
   e.pickedBy = G.tid;
   takeFromOldRoster(e);
@@ -406,6 +406,12 @@ function awardPortalToUser(e, early) {
 function awardPortalToTeam(e, tid) {
   var wt = G.teams[tid];
   if (!wt) return false;
+  // Lost him to another school: any NIL you had offered comes back in full
+  if ((e.offer || 0) > 0) {
+    var _back = e.offer; e.offer = 0;
+    G.pts = (G.pts || 0) + _back; noteSpend('portal', -_back);
+    toast(e.name + ' signed with ' + wt.name + '. Your ' + _back + ' NIL offer was refunded.');
+  }
   e.pickedBy = tid;
   G.portalCpuTakes[tid] = (G.portalCpuTakes[tid] || 0) + 1;
   var taken = takeFromOldRoster(e);
