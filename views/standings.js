@@ -1,6 +1,7 @@
 // ═══════════════════════════════════════════════════════════
 //  HOOPS OS — views/standings.js
-//  National Top 25 + all conference standings
+//  Two tabs: national Top 25, and one conference at a time
+//  (yours by default, any other from the dropdown)
 // ═══════════════════════════════════════════════════════════
 
 import { ge } from '../utils.js';
@@ -18,11 +19,16 @@ function moveCell(t, rank) {
   return '<span style="color:var(--txt3);">–</span>';
 }
 
+var _tab = 'nat', _conf = null;
+
 export function renderStandings() {
   var el = ge('standings-content'); if (!el) return;
 
   var natSorted = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; });
-  var h = '';
+  var h = '<div class="fbar" style="margin-bottom:12px;">'
+    + '<button class="fchip' + (_tab === 'nat' ? ' on' : '') + '" data-stab="nat">National top 25</button>'
+    + '<button class="fchip' + (_tab === 'conf' ? ' on' : '') + '" data-stab="conf">Conference standings</button></div>';
+  if (_tab === 'conf') { el.innerHTML = h + confHTML(natSorted); bindStandings(el); return; }
 
   // ── National Top 25 — real table (no div-grid overflow traps) ──
   h += '<div style="margin-bottom:16px;">'
@@ -62,48 +68,58 @@ export function renderStandings() {
   }
   h += '</tbody></table></div></div>';
 
-  // ── Conference Standings ──
+  el.innerHTML = h;
+  bindStandings(el);
+}
+
+
+function bindStandings(el) {
+  el.onclick = function(e) {
+    var b = e.target.closest && e.target.closest('[data-stab]');
+    if (b) { _tab = b.getAttribute('data-stab'); renderStandings(); }
+  };
+  el.onchange = function(e) {
+    if (e.target && e.target.id === 'conf-pick') { _conf = e.target.value; renderStandings(); }
+  };
+}
+
+function confHTML(natSorted) {
+  var rankOf = {};
+  natSorted.forEach(function(t, i) { rankOf[t.id] = i + 1; });
   var confs = {};
   G.teams.forEach(function(t) { if (!confs[t.conf]) confs[t.conf] = []; confs[t.conf].push(t); });
   var power = ['ACC', 'Big 12', 'Big Ten', 'SEC', 'Big East'];
-  var confNames = Object.keys(confs).sort(function(a, b) {
+  var names = Object.keys(confs).sort(function(a, b) {
     var ai = power.indexOf(a), bi = power.indexOf(b);
     if (ai < 0) ai = 99; if (bi < 0) bi = 99;
     return ai - bi || a.localeCompare(b);
   });
-
-  // User's conference first
   var userConf = G.teams[G.tid].conf;
-  var sortedConfs = [userConf].concat(confNames.filter(function(c) { return c !== userConf; }));
+  if (!_conf || !confs[_conf]) _conf = userConf;
 
-  h += '<div class="sec-head">Conference Standings</div>';
-  h += '<div class="grid-2">';
-
-  sortedConfs.forEach(function(conf) {
-    // sort by conference WIN PCT, not raw wins
-    var confPct = function(t) { var g = t.cWins + t.cLoss; return g > 0 ? t.cWins / g : 0; };
-    var teams = confs[conf].slice().sort(function(a, b) { return confPct(b) - confPct(a) || b.cWins - a.cWins || b.pts - a.pts; });
-    var leaderWins = teams.length ? teams[0].cWins : 0;
-    var isUserConf = conf === userConf;
-
-    h += '<div class="cf-table">'
-      + '<div class="cf-head">'
-      + '<span class="cf-name">' + conf + '</span><span class="cf-count">' + teams.length + ' teams</span></div>';
-
-    teams.forEach(function(t, i) {
-      var isU = t.id === G.tid;
-      var gb = leaderWins - t.cWins;
-      h += '<div class="cf-row' + (isU ? ' is-user' : '') + '">'
-        + '<div class="cf-l"><span class="cf-num">' + (i + 1) + '</span>'
-        + '<span class="cf-team">' + t.name + '</span></div>'
-        + '<div class="cf-r">'
-        + '<span>' + t.cWins + '-' + t.cLoss + '</span>'
-        + '<span class="cf-gb">' + (gb === 0 ? '-' : gb) + '</span>'
-        + '</div></div>';
-    });
-    h += '</div>';
+  var h = '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">'
+    + '<label for="conf-pick" style="font-size:12.5px;color:var(--txt3);">Conference</label>'
+    + '<select id="conf-pick" class="sel">';
+  names.forEach(function(c) {
+    h += '<option value="' + c + '"' + (c === _conf ? ' selected' : '') + '>' + c + (c === userConf ? ' (yours)' : '') + '</option>';
   });
-  h += '</div>';
+  h += '</select></div>';
 
-  el.innerHTML = h;
+  var confPct = function(t) { var g = t.cWins + t.cLoss; return g > 0 ? t.cWins / g : 0; };
+  var teams = confs[_conf].slice().sort(function(a, b) { return confPct(b) - confPct(a) || b.cWins - a.cWins || b.pts - a.pts; });
+  var lead = teams.length ? teams[0] : null;
+  h += '<div class="tbl-wrap"><table class="tbl stbl"><thead><tr><th>#</th><th>Team</th><th class="num">Conf</th><th class="num">GB</th><th class="num">Overall</th><th class="num">Natl</th></tr></thead><tbody>';
+  teams.forEach(function(t, i) {
+    var isU = t.id === G.tid;
+    var gb = lead ? ((lead.cWins - t.cWins) + (t.cLoss - lead.cLoss)) / 2 : 0;
+    h += '<tr' + (isU ? ' class="hl"' : '') + '>'
+      + '<td class="num rk">' + (i + 1) + '</td>'
+      + '<td class="tname' + (isU ? ' u' : '') + '">' + t.name + '</td>'
+      + '<td class="num">' + t.cWins + '-' + t.cLoss + '</td>'
+      + '<td class="num dim">' + (gb <= 0 ? '–' : (gb % 1 ? gb.toFixed(1) : gb)) + '</td>'
+      + '<td class="num">' + t.wins + '-' + t.loss + '</td>'
+      + '<td class="num dim">' + rankOf[t.id] + '</td></tr>';
+  });
+  h += '</tbody></table></div>';
+  return h;
 }

@@ -18,6 +18,7 @@ import { openDevReport } from './views/devreport.js';
 // ── Late-Binding Registry ────────────────────────────────
 var _views = {
   renderDashboard: null,
+  renderProgram: null,
   renderRoster: null,
   renderStats: null,
   renderStandings: null,
@@ -343,6 +344,7 @@ export function refreshView() {
   else if (v === 'offseason' && _views.renderOffseason) _views.renderOffseason();
   else if (v === 'strategy') loadStrategyView();
   else if (v === 'trophies') loadTrophiesView();
+  else if (v === 'program' && _views.renderProgram) _views.renderProgram();
   else if (v === 'help') loadHelpView();
 }
 

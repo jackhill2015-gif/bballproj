@@ -1139,3 +1139,12 @@ table.ret td { vertical-align: middle; }
 .ret-btn.on.go { background: var(--txt2); border-color: var(--txt2); }
 .ret-btn:disabled { opacity: .45; cursor: not-allowed; }
 @media (max-width: 640px) { table.ret .hide-sm { display: none; } }
+
+/* ── Less-at-once pass: dropdowns, gameplan row ── */
+.sel { border: 1px solid var(--bdr2); background: var(--s1); color: var(--txt); border-radius: var(--radius); padding: 5px 8px; min-height: 32px; font-size: 13px; max-width: 100%; }
+.gp-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.gp-col { min-width: 0; }
+.gp-lbl { display: block; font-size: 12px; color: var(--txt3); margin-bottom: 3px; }
+.gp-col .sel { width: 100%; }
+.gp-col .gp-desc { margin-top: 4px; }
+@media (max-width: 420px) { .gp-row { gap: 8px; } }

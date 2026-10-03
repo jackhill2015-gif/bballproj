@@ -26,7 +26,7 @@ import {
 } from './ui.js';
 
 // ── Views ────────────────────────────────────────────────
-import { renderDashboard, renderStatsBanner } from './views/dashboard.js';
+import { renderDashboard, renderStatsBanner, renderProgram } from './views/dashboard.js';
 import { renderRoster, updateMins, updateMinsSlider, autoOptimizeRoster, rosterMove } from './views/roster.js';
 import { renderStats } from './views/stats.js';
 import { renderStandings } from './views/standings.js';
@@ -51,6 +51,7 @@ import { registerRecordsCallbacks } from './records.js';
 
 registerUICallbacks({
   renderDashboard: renderDashboard,
+  renderProgram: renderProgram,
   renderRoster: renderRoster,
   renderStats: renderStats,
   renderStandings: renderStandings,

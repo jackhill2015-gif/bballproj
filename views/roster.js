@@ -14,7 +14,7 @@
 import { ge, clamp } from '../utils.js';
 import { G, saveState } from '../state.js';
 import { moodTag, moodColors, MORALE_DEFAULT } from '../morale.js';
-import { gameplanPanelHTML, handleGameplanClick } from './strategy.js';
+import { gameplanPanelHTML, handleGameplanClick, handleGameplanChange } from './strategy.js';
 
 var _dragIdx = -1;
 
@@ -76,9 +76,9 @@ function depthRow(p, i) {
   // Mood tag — roster page only, per jack (no dashboard meter)
   var _mor = (typeof p.morale === 'number') ? p.morale : MORALE_DEFAULT;
   var _mc = moodColors(_mor);
-  // Only call out moods that matter; "Content" is the quiet default
+  // Only call out moods that need attention (Restless, Checked Out)
   var _mt = moodTag(_mor);
-  var moodPill = _mt === 'Content' ? '' : '<span class="mood-tag" style="color:' + _mc[1] + ';">' + _mt + '</span>';
+  var moodPill = (_mt === 'Content' || _mt === 'Happy' || _mt === 'Locked In') ? '' : '<span class="mood-tag" style="color:' + _mc[1] + ';">' + _mt + '</span>';
   var inj = injuryOf(p);
   if (inj) moodPill += '<span class="out-tag">Out ' + inj.weeksLeft + ' wk</span>';
 
@@ -112,9 +112,8 @@ export function renderRoster() {
   var totalCol = total === 200 ? 'var(--grn2)' : 'var(--red)';
 
   var nOut = t.rost.filter(function(p) { return !!injuryOf(p); }).length;
-  var h = gameplanPanelHTML();
-  h += '<div style="margin-bottom:8px;"><div class="sec-head">Depth chart</div>'
-    + '<div class="sec-sub">The top five start. Drag a player by the ☰ handle to reorder, and set minutes with the sliders.</div></div>';
+  var h = '<div style="margin-bottom:8px;"><div class="sec-head">Depth chart</div>'
+    + '<div class="sec-sub">Top five start. Drag ☰ to reorder; sliders set minutes.</div></div>';
 
   h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bdr);margin-bottom:4px;">'
     + '<div style="font-size:12.5px;color:var(--txt2);">Minutes <b style="font-size:14px;font-weight:600;color:' + totalCol + ';" data-min-total>' + total + '/200</b>'
@@ -127,6 +126,7 @@ export function renderRoster() {
     else if (i === 9) h += '<div class="tier-label">Bench</div>';
     h += depthRow(p, i);
   });
+  h += '<div style="margin-top:16px;">' + gameplanPanelHTML() + '</div>';
 
   el.innerHTML = h;
   bindRoster(el);
@@ -153,6 +153,7 @@ function bindRoster(el) {
   };
   // Full redistribution + re-render only when the drag ends.
   el.onchange = function(e) {
+    if (handleGameplanChange(e.target)) { renderRoster(); return; }
     var s = e.target.closest ? e.target.closest('[data-mins]') : null;
     if (s) rosterSliderCommit(s);
   };

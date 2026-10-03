@@ -83,7 +83,7 @@
     </div>
 
     <!-- NIL balance (P2: spendable currency, topbar display) -->
-    <div class="tb-nil" title="NIL budget: see Program finances on the home screen">
+    <div class="tb-nil" title="NIL budget: see the Program screen" data-action="nav" data-view="program" role="button" tabindex="0" style="cursor:pointer;">
       <span id="nil-balance">0</span><span class="nil-lbl">NIL</span>
     </div>
 
@@ -103,6 +103,7 @@
       <button class="nav-btn nav-main on" data-view="dashboard" data-action="nav"><span>Home</span></button>
       <button class="nav-btn nav-main" data-view="bracket" data-action="nav"><span>Bracket</span></button>
       <button class="nav-btn nav-more-btn" data-action="more" aria-haspopup="true"><span>More</span></button>
+      <button class="nav-btn nav-extra" data-view="program" data-action="nav"><span>Program</span></button>
       <button class="nav-btn nav-extra" data-view="stats" data-action="nav"><span>Stats</span></button>
       <button class="nav-btn nav-extra" data-view="standings" data-action="nav"><span>Rankings</span></button>
       <button class="nav-btn nav-extra" data-view="history" data-action="nav"><span>History</span></button>
@@ -120,6 +121,7 @@
     <div id="sheet-scrim" data-action="more"></div>
     <div id="more-sheet" role="dialog" aria-label="More">
       <div class="more-handle"></div>
+      <button class="nav-btn" data-view="program" data-action="nav"><span>Program</span></button>
       <button class="nav-btn" data-view="stats" data-action="nav"><span>Stats</span></button>
       <button class="nav-btn" data-view="standings" data-action="nav"><span>Rankings</span></button>
       <button class="nav-btn" data-view="history" data-action="nav"><span>History</span></button>
@@ -140,6 +142,7 @@
       <section id="v-bracket" class="view" aria-label="Bracket"><div id="bracket-content"></div></section>
       <section id="v-offseason" class="view" aria-label="Offseason"><div id="offseason-content"></div></section>
       <section id="v-strategy" class="view" aria-label="Strategy"><div id="strategy-content"></div></section>
+      <section id="v-program" class="view" aria-label="Program"><div id="program-content"></div></section>
       <section id="v-trophies" class="view" aria-label="Trophy room"><div id="trophies-content"></div></section>
       <section id="v-help" class="view" aria-label="How it works"><div id="help-content"></div></section>
     </main>

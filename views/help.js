@@ -70,8 +70,8 @@ export function renderHelp() {
     'NIL is your program budget, shown in the top bar. It comes from ticket sales after each home game, '
     + 'your conference TV share after week 1, the donor collective\'s check each offseason (bigger after a '
     + 'deep March run), NCAA tournament wins (each round pays more) and season-goal bonuses. You spend it on '
-    + 'player retention deals, transfer portal offers, facilities and boosts. The Program finances panel on the home screen shows '
-    + 'every source and what you\'ve spent this season. The boost shop on the dashboard sells '
+    + 'player retention deals, transfer portal offers, facilities and boosts. The Program screen (in the menu) shows '
+    + 'every source and what you\'ve spent this season, plus facilities and your coaching career. Its boost shop sells '
     + 'three weekly boosts: sellout crowd (80 NIL, +3 edge in your next home game), film session '
     + '(50 NIL, +2 to shooting, finishing and defense for two games), and recovery session '
     + '(60 NIL, clears every slump and negative effect on the roster). Each can be bought once per week.');

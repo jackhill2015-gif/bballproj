@@ -29,9 +29,9 @@ function pLink(name, tid) {
 
 // ── Cached POY race (recomputed when week/phase changes) ──
 var _raceCache = { key: '', rows: [] };
-function poyRace() {
+export function poyRace(n) {
   var key = G.yr + '-' + G.gi + '-' + G.phase;
-  if (_raceCache.key === key) return _raceCache.rows;
+  if (_raceCache.key === key) return _raceCache.rows.slice(0, n || 3);
   var rows = [];
   G.teams.forEach(function(tm) {
     tm.rost.forEach(function(p) {
@@ -45,8 +45,8 @@ function poyRace() {
     });
   });
   rows.sort(function(a, b) { return b.per - a.per; });
-  _raceCache = { key: key, rows: rows.slice(0, 3) };
-  return _raceCache.rows;
+  _raceCache = { key: key, rows: rows.slice(0, 10) };
+  return _raceCache.rows.slice(0, n || 3);
 }
 
 // ── Rivalry hooks: top conf threats + teams that beat you ──
@@ -129,7 +129,7 @@ function panel(title, body, opts) {
 // ═══════════════════════════════════════════════════════════
 
 function renderNotifications() {
-  var logs = (G.logs || []).slice(0, 6);
+  var logs = (G.logs || []).slice(0, 5);
   var body = '';
   if (!logs.length) body = '<div style="color:var(--txt3);padding:2px 0;">Nothing yet. Results and news show up here.</div>';
   logs.forEach(function(lg) {
@@ -173,12 +173,12 @@ function renderExpectations() {
     job = 'Job safe';
     cls = 'safe';
   }
-  var detail = gp === 0
-    ? 'job at risk under ' + exp.danger + ' wins'
-    : 'on pace for ' + proj + ', job at risk under ' + exp.danger;
-  return '<div class="exp-line" style="border:none;padding:6px 0 0;">Expected <b>' + exp.low + '–' + exp.high + ' wins</b>. '
+  // Keep it to one short line; the danger line only shows when it matters
+  var detail = gp === 0 ? '' : (cls === 'safe' ? 'on pace for ' + proj : 'on pace for ' + proj + ', at risk under ' + exp.danger);
+  return '<div class="exp-line" style="border:none;padding:6px 0 0;">Expected <b>' + exp.low + '–' + exp.high + ' wins</b>'
+    + (exp.ncaa ? ' and an NCAA bid' : '') + ' · '
     + '<span class="' + cls + '">' + job + '</span>'
-    + ' <span style="color:var(--txt3);">(' + detail + ')</span></div>';
+    + (detail ? ' <span style="color:var(--txt3);">· ' + detail + '</span>' : '') + '</div>';
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -205,7 +205,9 @@ function renderGameCard() {
         + '<div class="prob-row"><span>Win probability</span><span style="color:' + wpColor(wp) + ';font-weight:600;">' + wp + '%</span></div>'
         + '<div class="prob-bar"><div class="prob-fill" style="width:' + wp + '%;background:' + wpColor(wp) + ';"></div></div>'
         + buttons()
-        + '<button class="btn-quiet" style="margin-top:2px;padding-left:0;" data-action="nav" data-view="roster">Edit gameplan</button>'
+        + '<div style="display:flex;gap:16px;margin-top:2px;">'
+        + '<button class="btn-quiet" style="padding-left:0;" data-action="nav" data-view="roster">Edit gameplan</button>'
+        + '<button class="btn-quiet" style="padding-left:0;" data-action="nav" data-view="program">Boosts</button></div>'
         + renderExpectations();
       return panel('Next game', body, { right: 'Week ' + (G.gi + 1) + ', ' + (ng.conf ? t.conf : 'non-conference') });
     }
@@ -386,14 +388,35 @@ export function renderDashboard() {
     if (hub) { el.innerHTML = hub; return; }
   }
 
+  // Home is "what's next": record, last result, the next game, goals,
+  // conference race and news. Money, boosts, facilities and the coach
+  // live on the Program screen; the POY race lives in Stats.
   var h = '';
   h += renderSchoolCard();
   h += renderLastFinal();
   h += '<div class="grid-2">';
-  h += '<div>' + renderGameCard() + renderGoals() + renderNotifications() + renderShop() + '</div>';
-  h += '<div>' + renderMiniStandings() + renderRaces() + renderFinances() + renderFacilities() + renderCoach() + '</div>';
+  h += '<div>' + renderGameCard() + renderGoals() + '</div>';
+  h += '<div>' + renderMiniStandings() + renderNotifications() + '</div>';
   h += '</div>';
 
+  el.innerHTML = h;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  PROGRAM — the athletic department office: budget, boosts,
+//  facilities, coach. Same panels that used to sit on Home.
+// ═══════════════════════════════════════════════════════════
+
+export function renderProgram() {
+  var el = ge('program-content');
+  if (!el || !G.teams || !G.teams[G.tid]) return;
+  var t = G.teams[G.tid];
+  var h = '<div class="sec-head">' + t.name + ' program</div>'
+    + '<div class="sec-sub" style="margin-bottom:12px;">NIL budget, boosts, facilities and your coaching career.</div>';
+  h += '<div class="grid-2">';
+  h += '<div>' + renderFinances() + (G.phase === 'offseason' ? '' : renderShop()) + '</div>';
+  h += '<div>' + renderFacilities() + renderCoach() + '</div>';
+  h += '</div>';
   el.innerHTML = h;
 }
 

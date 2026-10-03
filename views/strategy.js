@@ -36,13 +36,15 @@ function ensureStrat(t) {
   (t.rost || []).forEach(function(p) { if (p.usage !== undefined) delete p.usage; });
 }
 
+// One compact dropdown per side, with a one-line description under it
 function group(list, kind, current) {
   var cur = list.find(function(x) { return x.key === current; }) || list[0];
-  var h = '<div class="fbar"><span class="flbl">' + (kind === 'off' ? 'Offense' : 'Defense') + '</span>';
+  var h = '<div class="gp-col"><label class="gp-lbl" for="gp-' + kind + '">' + (kind === 'off' ? 'Offense' : 'Defense') + '</label>'
+    + '<select class="sel" id="gp-' + kind + '" data-gpsel="' + kind + '">';
   list.forEach(function(x) {
-    h += '<button class="fchip' + (x.key === cur.key ? ' on' : '') + '" data-gp="' + kind + '" data-gpkey="' + x.key + '">' + x.name + '</button>';
+    h += '<option value="' + x.key + '"' + (x.key === cur.key ? ' selected' : '') + '>' + x.name + '</option>';
   });
-  return h + '</div><div class="gp-desc">' + cur.desc + '</div>';
+  return h + '</select><div class="gp-desc">' + cur.desc + '</div></div>';
 }
 
 export function gameplanPanelHTML() {
@@ -50,7 +52,22 @@ export function gameplanPanelHTML() {
   if (!t) return '';
   ensureStrat(t);
   return '<div class="panel" id="gameplan"><div class="panel-h"><span>Gameplan</span><small>Applies from your next game</small></div><div class="panel-b">'
-    + group(OFFENSE, 'off', t.strat.off) + group(DEFENSE, 'def', t.strat.def) + '</div></div>';
+    + '<div class="gp-row">' + group(OFFENSE, 'off', t.strat.off) + group(DEFENSE, 'def', t.strat.def) + '</div></div></div>';
+}
+
+// Dropdown change → returns true when the gameplan changed (caller re-renders)
+export function handleGameplanChange(target) {
+  var kind = target && target.getAttribute && target.getAttribute('data-gpsel');
+  if (!kind) return false;
+  var t = G.teams[G.tid];
+  ensureStrat(t);
+  var list = kind === 'off' ? OFFENSE : DEFENSE;
+  var pick = list.find(function(x) { return x.key === target.value; });
+  if (!pick) return false;
+  t.strat[kind] = pick.key;
+  saveState();
+  toast((kind === 'off' ? 'Offense' : 'Defense') + ' set to ' + pick.name.toLowerCase());
+  return true;
 }
 
 // Returns true if the click was a gameplan pick (caller re-renders).
