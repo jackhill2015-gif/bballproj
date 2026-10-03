@@ -5,6 +5,7 @@
 //  narrated recaps, coach XP, milestones, live sim modal.
 // ═══════════════════════════════════════════════════════════
 
+import { backupDynasty, restoreDynasty } from './backup.js';
 import { noteSpend } from './finance.js';
 import { upgradeFacility } from './facilities.js';
 import { ge, txt, fR, clamp } from './utils.js';
@@ -580,6 +581,12 @@ function handleAction(el) {
       break;
     case 'delete-save':
       if (window.deleteFromHome) window.deleteFromHome();
+      break;
+    case 'backup':
+      backupDynasty(toast);
+      break;
+    case 'restore':
+      restoreDynasty(toast);
       break;
     case 'new-dynasty':
       if (window.newDynasty) window.newDynasty();

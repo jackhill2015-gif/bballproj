@@ -206,3 +206,11 @@ window._renderSeasonRecap = renderSeasonRecap;
 buildUniverse();
 initOutsideClickHandlers();
 showHomeScreen();
+
+// Offline support: register the service worker (installed home-screen app
+// keeps working with no signal). Skipped where unsupported or on file://.
+if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator && typeof location !== 'undefined' && /^https?:/.test(location.protocol)) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('sw.js').catch(function(e) { console.warn('Offline support unavailable', e); });
+  });
+}

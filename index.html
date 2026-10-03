@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>Hoops OS</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Hoops OS">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
@@ -42,10 +49,12 @@
         <div class="home-play-btn" data-action="load-play" role="button" tabindex="0">Continue</div>
       </div>
       <div class="home-delete">
+        <button class="btn-quiet" data-action="backup">Back up</button>
         <button class="home-delete-btn" data-action="delete-save">Delete save</button>
       </div>
     </div>
   </div>
+  <div class="home-backup">Have a backup file? <button class="btn-quiet" data-action="restore">Restore from backup</button></div>
 </div>
 
 <!-- ═══ SETUP WIZARD (rendered by views/setup.js) ═══ -->
@@ -116,6 +125,7 @@
       <button class="nav-btn" data-view="history" data-action="nav"><span>History</span></button>
       <button class="nav-btn" data-view="trophies" data-action="nav"><span>Trophy room</span></button>
       <button class="nav-btn" data-view="help" data-action="nav"><span>How it works</span></button>
+      <button class="nav-btn" data-action="backup"><span>Back up dynasty</span></button>
       <button class="nav-btn" data-action="new-dynasty"><span>New Dynasty</span></button>
     </div>
 

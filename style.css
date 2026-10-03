@@ -1080,3 +1080,19 @@ th.sortable.on { color: var(--txt); }
 .help-body p { font-size: 13.5px; line-height: 1.65; color: var(--txt2); margin: 0; max-width: 72ch; }
 .help-body .panel { margin-bottom: 12px; }
 #v-help .dash-sum { margin-bottom: 14px; }
+
+/* ═══ Phone app polish ═══
+   Every tap is a tap: no double-tap zoom, no gray tap flash, no long-press
+   text selection on controls. Text fields are 16px so iOS doesn't zoom in
+   when you type. */
+html { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+button, [role="button"], .fchip, .btn-big, .btn-quiet, .nav-btn, .stepper, .drag-handle, tr.prow, tr.rrow { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+input[type="text"], input:not([type]), select, textarea, .setup-input { font-size: 16px; }
+/* Installed (home screen) app: keep content clear of the notch and home bar */
+@media (display-mode: standalone) {
+  #topbar { padding-top: max(6px, env(safe-area-inset-top)); }
+  #home-screen, #setup { padding-top: max(24px, env(safe-area-inset-top)); }
+}
+/* Backup controls on the title screen */
+.home-backup { margin-top: 18px; text-align: center; font-size: 13px; color: var(--txt3); }
+.home-backup .btn-quiet { margin: 0 6px; }
