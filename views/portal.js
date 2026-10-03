@@ -214,7 +214,7 @@ export function genPortalEntrants() {
       var pid = _nextPid++;
       p._portalPid = pid;
       G.portalEntrants.push({
-        pid: pid, name: p.name, pos: p.pos, ovr: p.ovr, pot: p.pot || p.ovr,
+        pid: pid, name: p.name, pos: p.pos, ovr: p.ovr, pot: p.pot || p.ovr, h: p.h || [], aw: p.aw || [],
         cls: p.cls, fromTid: tm.id, fromName: tm.name, mins: p.mins || 0,
         sht: p.sht, fin: p.fin, def: p.def, reb: p.reb, ply: p.ply,
         reason: c.reason, pickedBy: -1, offer: 0
@@ -274,7 +274,8 @@ function entrantToPlayer(e) {
   return {
     name: e.name, pos: e.pos, cls: e.cls, mins: 0,
     sht: e.sht, fin: e.fin, def: e.def, reb: e.reb, ply: e.ply,
-    ovr: e.ovr, pot: e.pot, s: freshS(), transfer: true
+    ovr: e.ovr, pot: e.pot, s: freshS(), transfer: true,
+    h: e.h || [], aw: e.aw || []
   };
 }
 

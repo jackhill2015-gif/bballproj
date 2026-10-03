@@ -10,7 +10,8 @@ import { practiceBonus, trainingChance, facilitiesFor } from './facilities.js';
 import { payGate, payTvShare, ledger as financeLedger } from './finance.js';
 import { ALL_TEAMS, POS, CLS, RECRUIT_STATE_POOL, COACH_FN, COACH_LN, calcSchoolPrestige, SKILL_POINT_TABLE, calcExpectations } from './constants.js';
 import {
-  ri, clamp, getTOvr, fixMins, freshS, getTeamStyle, getOvr, ge, txt, fmtScore
+  ri, clamp, getTOvr, fixMins, freshS, getTeamStyle, getOvr, ge, txt, fmtScore,
+  awardScore, pickPositionalTeam
 } from './utils.js';
 import { G, LS, SetupState, saveState } from './state.js';
 import { genPlayer, simGame, calcGrowth } from './simulation.js';
@@ -708,6 +709,30 @@ export function recordSeasonHistory(source) {
   });
 }
 
+// ── Player history (read by player pages) ───────────────
+// Every player keeps one row per season: p.h = [[yr, tid, ovr, gp, pts,
+// reb, ast, stl, blk], ...] (season totals, postseason included), and
+// p.aw = ['2025 Player of the Year', '2025 All-American', ...].
+// College careers are short, so this stays small.
+export function recordPlayerSeasons() {
+  var all = [];
+  G.teams.forEach(function(tm) {
+    tm.rost.forEach(function(p) {
+      var s = p.s || {};
+      if (!p.h) p.h = [];
+      if (p.h.length && p.h[p.h.length - 1][0] === G.yr) return; // already recorded
+      p.h.push([G.yr, tm.id, p.ovr, s.gp || 0, s.pts || 0, s.reb || 0, s.ast || 0, s.stl || 0, s.blk || 0]);
+      if ((s.gp || 0) >= 10) all.push({ p: p, tid: tm.id, per: awardScore(p, tm) });
+    });
+  });
+  all.sort(function(a, b) { return b.per - a.per; });
+  var give = function(p, label) { if (!p.aw) p.aw = []; if (p.aw.indexOf(label) < 0) p.aw.push(label); };
+  if (all[0]) give(all[0].p, G.yr + ' Player of the Year');
+  pickPositionalTeam(all, function(x) { return x.p.pos; }).forEach(function(x) { give(x.p, G.yr + ' All-American'); });
+  var fr = all.filter(function(x) { return x.p.cls === 'FR'; })[0];
+  if (fr) give(fr.p, G.yr + ' Freshman of the Year');
+}
+
 export function endSeason() {
   wireSeasonAchievements();
   var still = G.bracket.filter(function(b) { return b.active; });
@@ -722,6 +747,7 @@ export function endSeason() {
   // Records: season/career record checks + Hall of Fame inductions.
   // Runs while p.s still holds the finished season.
   processSeasonRecords();
+  recordPlayerSeasons();
 
   // Season goals: rewards land now (NIL + prestige inside settleGoals)
   checkAchievements();
@@ -886,6 +912,11 @@ export function doOffseason() {
 
   var commits = G.recruits.filter(function(r) { return r.signed === G.tid; });
 
+  // Development report: snapshot every returner before they develop
+  var _devBefore = t.rost.filter(function(p) { return p.cls !== 'SR' || p.rs; }).map(function(p) {
+    return { p: p, cls: p.cls, rs: !!p.rs, ovr: p.ovr, pot: p.pot || p.ovr, sht: p.sht, fin: p.fin, def: p.def, reb: p.reb, ply: p.ply };
+  });
+
   // Age up / develop returning players using calcGrowth.
   // Redshirts: no class change (the year doesn't count), +2 extra
   // development, and the redshirt is used up for good.
@@ -911,6 +942,18 @@ export function doOffseason() {
     var idx = CLS.indexOf(p.cls);
     if (idx < 3) p.cls = CLS[idx + 1];
   });
+
+  // G.devReport: what every returner gained this offseason (read by the
+  // development report screen). Attribute keys: sht fin def reb ply.
+  G.devReport = {
+    yr: G.yr + 1, school: t.name,
+    rows: _devBefore.map(function(b) {
+      var p = b.p, d = {};
+      ['sht', 'fin', 'def', 'reb', 'ply'].forEach(function(a) { d[a] = p[a] - b[a]; });
+      return { name: p.name, pos: p.pos, clsFrom: b.cls, clsTo: p.cls, redshirt: b.rs,
+               ovrFrom: b.ovr, ovrTo: p.ovr, pot: p.pot || p.ovr, delta: d };
+    })
+  };
 
   // Remove seniors (a senior who redshirted stays for one more year)
   t.rost = t.rost.filter(function(p) { var keep = p.cls !== 'SR' || p._rsKeep; delete p._rsKeep; return keep; });
