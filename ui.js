@@ -5,6 +5,7 @@
 //  narrated recaps, coach XP, milestones, live sim modal.
 // ═══════════════════════════════════════════════════════════
 
+import { noteSpend } from './finance.js';
 import { upgradeFacility } from './facilities.js';
 import { ge, txt, fR, clamp } from './utils.js';
 import { G, LS, SetupState, saveState } from './state.js';
@@ -683,6 +684,7 @@ export function buyBoost(itemId, btnEl) {
   }
 
   G.pts -= item.cost;
+  noteSpend('boosts', item.cost);
   bought[itemId] = true;
   toast(item.name + ' activated', 'var(--grn)');
   saveState();

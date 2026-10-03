@@ -7,6 +7,7 @@
 //  logic function keeps its name/signature/behavior.
 // ═══════════════════════════════════════════════════════════
 
+import { noteSpend } from '../finance.js';
 import { G, saveState } from '../state.js';
 import { ri, freshS, clamp, fixMins } from '../utils.js';
 import { CLS, TEAM_STATES, STATE_TO_REGION, RECRUIT_STATE_POOL } from '../constants.js';
@@ -294,9 +295,11 @@ export function adjustOffer(pid, delta) {
     if (!t || t.rost.length >= 15) { toast('Roster is full (15).', 'var(--gld)'); return false; }
     if ((G.pts || 0) < delta) { toast('Not enough NIL (' + delta + ' needed).', 'var(--gld)'); return false; }
     G.pts -= delta;
+    noteSpend('portal', delta);
   } else if (delta < 0) {
     var back = (G.portalStage || 0) >= 1 ? Math.round(-delta * Battle.PIVOT_REFUND) : -delta;
     G.pts += back;
+    noteSpend('portal', -back);
     if (back < -delta) toast('Offer reduced. ' + (-delta - back) + ' NIL not refunded.', 'var(--gld)');
   }
   e.offer = nv;
@@ -510,6 +513,7 @@ export function finalizePortal() {
       else {
         var off = e.offer || 0; e.offer = 0;
         G.pts += off; // refund on loss — matches recruiting point refunds
+        noteSpend('portal', -off);
         if (w && w.key !== 'user') {
           awardPortalToTeam(e, w.key);
           addLog('ev', G.gi, '<b>' + e.name + '</b> (' + e.pos + ', ' + e.ovr + ' OVR) chose <b>' + w.name + '</b> over you.');

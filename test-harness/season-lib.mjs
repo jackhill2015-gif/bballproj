@@ -19,7 +19,8 @@ export function newDynasty(tid = 0) {
     bracket: [], confTourneys: {}, confTitles: 0, championships: 0, logs: [], history: [], leagueChamps: [],
     recruitPhase: 0, recruitingBudget: 0, recruitingSpent: 0, recruitTargets: [], departingPlayers: [],
     offseasonStep: 'turnover', injuries: [], buffs: [], nextHomeBonus: 0, momentum: { tid: -1, pts: 0 }, prestige: 3,
-    records: null, expectations: null, skillPointsEarned: 0, skillPointsToSpend: 0 });
+    records: null, expectations: null, skillPointsEarned: 0, skillPointsToSpend: 0,
+    finance: null, goals: null, goalHistory: [], achievements: {}, facilities: null, jobMarket: null, lastResult: null });
   G.coach = { firstName: 'Test', lastName: 'Coach', age: 40, off: 70, def: 70, dev: 70, rec: 70, xp: 0, level: 1,
     careerWins: 0, careerLoss: 0, tenure: 0, hotSeat: false, titles: 0, confTitles: 0, finalFours: 0,
     tourneyApps: 0, awards: [], history: [] };

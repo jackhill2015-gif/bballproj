@@ -354,7 +354,7 @@ function _writeSave() {
       lastResult:G.lastResult||null,
       jobMarket:G.jobMarket||null,
       goals:G.goals||null,goalHistory:G.goalHistory||[],achievements:G.achievements||{},
-      facilities:G.facilities||null
+      facilities:G.facilities||null,finance:G.finance||null
     };
     var str=JSON.stringify(lean);
     try { localStorage.setItem(SAVE_KEY,str); }
@@ -458,7 +458,7 @@ export function loadState() {
     G.lastResult=s.lastResult||null;
     G.jobMarket=s.jobMarket||null;
     G.goals=s.goals||null; G.goalHistory=s.goalHistory||[]; G.achievements=s.achievements||{};
-    G.facilities=s.facilities||null;
+    G.facilities=s.facilities||null; G.finance=s.finance||null;
 
     // Recruits backward compat
     G.recruits.forEach(function(r){

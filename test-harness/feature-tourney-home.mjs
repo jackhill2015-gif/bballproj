@@ -112,7 +112,8 @@ G.phase = 'reg'; G.gi = 0; G.yr++;
 DASH.renderDashboard();
 html = _els['dash-content'].innerHTML;
 ok(html.includes('dash-sum'), 'new season (reg): home reverts to normal dashboard');
-ok(!html.includes('NCAA tournament'), 'new season: no tournament hub on home');
+// (goal text like "Make the NCAA tournament" may legitimately appear — check the hub itself)
+ok(!html.includes('br-champ') && !html.includes('br-region') && !html.includes('Around the country'), 'new season: no tournament hub on home');
 
 console.log('\n════════ RESULT: ' + (failCount === 0 ? 'ALL PASS (' + pass + ' passed)' : failCount + ' FAILURES') + ' ════════');
 process.exit(failCount === 0 ? 0 : 1);

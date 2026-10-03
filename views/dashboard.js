@@ -13,6 +13,7 @@ import { ge, clamp, getTOvr, fR, fmtScore, awardScore } from '../utils.js';
 import { rankMap } from '../ratings.js';
 import { ensureGoals, progress, GOAL_REWARD } from '../goals.js';
 import { FACILITIES, FACILITY_MAX, myFacilities, upgradeCost } from '../facilities.js';
+import { STREAMS, BUCKETS, ledger, totals, committed } from '../finance.js';
 import { G } from '../state.js';
 import { bracketHubHTML } from './bracket.js';
 import {
@@ -99,7 +100,7 @@ function renderSchoolCard() {
 var _lastFinalKey = '';
 function renderLastFinal() {
   var r = G.lastResult;
-  if (!r || G.phase === 'offseason') return '';
+  if (!r || G.phase === 'offseason' || (r.yr && r.yr !== G.yr)) return '';
   var opp = G.teams[r.oppId];
   if (!opp) return '';
   var key = G.yr + ':' + r.wk + ':' + r.oppId + ':' + r.u + '-' + r.o;
@@ -234,7 +235,7 @@ function renderBriefing() {
       rows += '<div class="brief-row"><span>Scout: <b>' + (ng.home ? 'vs' : '@') + ' ' + opp.name + '</b> (' + opp.wins + '-' + opp.loss + '). ' + scout + '</span></div>';
     }
   }
-  rows += '<div class="brief-row"><span><b>' + (G.pts || 0) + ' NIL</b> in the bank — spend it in the boost shop below.</span></div>';
+  rows += '<div class="brief-row"><span><b>' + (G.pts || 0) + ' NIL</b> in the budget.</span></div>';
   return '<div class="brief-card"><div class="bk">Week ' + (G.gi + 1) + ' Briefing</div>' + rows + '</div>';
 }
 
@@ -253,6 +254,31 @@ function renderGoals() {
   });
   h += '</tbody></table><div style="font-size:12px;color:var(--txt3);padding:6px 10px 8px;">Each goal met: +' + GOAL_REWARD.skill + ' skill point and +' + GOAL_REWARD.nil + ' NIL. All three also raise school prestige.</div>';
   return panel('Season goals', h, { flush: true, right: 'From the athletic director' });
+}
+
+function renderFinances() {
+  var l = ledger(), tot = totals(l), com = committed();
+  var NOTE = {
+    gate: l.notes.gate || 'Paid after each home game',
+    donors: l.notes.donors || 'Paid each offseason, before the transfer portal',
+    tv: l.notes.tv || 'Paid after week 1',
+    tourney: l.notes.tourney || 'Each NCAA tournament win pays, more each round',
+    ad: l.notes.ad || 'Season goals met, paid at season end'
+  };
+  var h = '<div class="kv" style="padding:8px 10px 6px;"><div><b>' + (G.pts || 0) + '</b><span>Budget</span></div>'
+    + '<div><b>' + tot.income + '</b><span>Earned this season</span></div>'
+    + '<div><b>' + tot.spend + '</b><span>Spent</span></div>'
+    + (com ? '<div><b>' + com + '</b><span>Committed</span></div>' : '') + '</div>';
+  h += '<table><tbody>';
+  STREAMS.forEach(function(s) {
+    h += '<tr><td>' + s[1] + '<div style="font-size:11.5px;color:var(--txt3);">' + NOTE[s[0]] + '</div></td><td class="num">' + (l.income[s[0]] ? '+' + l.income[s[0]] : '–') + '</td></tr>';
+  });
+  BUCKETS.forEach(function(b) {
+    if (!l.spend[b[0]]) return;
+    h += '<tr><td style="color:var(--txt2);">' + b[1] + '</td><td class="num" style="color:var(--txt2);">−' + l.spend[b[0]] + '</td></tr>';
+  });
+  h += '</tbody></table>';
+  return panel('Program finances', h, { flush: true, right: G.yr + ' season, NIL' });
 }
 
 function renderFacilities() {
@@ -282,7 +308,7 @@ function renderShop() {
              : '<button class="btn-quiet" style="width:56px;text-align:right;" data-action="nil-buy" data-item="' + item.id + '">Buy</button>')
       + '</div>';
   });
-  h += '<div style="font-size:12px;color:var(--txt3);padding-top:6px;">One of each per week. Winning earns NIL; ranked teams earn more.</div>';
+  h += '<div style="font-size:12px;color:var(--txt3);padding-top:6px;">One of each per week.</div>';
   return panel('NIL boosts', h, { right: (G.pts || 0) + ' available' });
 }
 
@@ -359,7 +385,7 @@ export function renderDashboard() {
   h += renderLastFinal();
   h += '<div class="grid-2">';
   h += '<div>' + renderGameCard() + renderGoals() + renderNotifications() + renderShop() + '</div>';
-  h += '<div>' + renderMiniStandings() + renderRaces() + renderFacilities() + renderCoach() + '</div>';
+  h += '<div>' + renderMiniStandings() + renderRaces() + renderFinances() + renderFacilities() + renderCoach() + '</div>';
   h += '</div>';
 
   el.innerHTML = h;

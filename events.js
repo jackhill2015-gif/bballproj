@@ -22,7 +22,8 @@ export function rollEvents(weekNum) {
       var rp = null;
       t.rost.forEach(function(p) { if (p.name === G.injuries[i].playerName) rp = p; });
       if (rp) {
-        rp.mins = G.injuries[i].origMins || 20;
+        // a redshirt stays out; everyone else gets their minutes back
+        rp.mins = rp.rs ? 0 : (G.injuries[i].origMins || 20);
         addLog('ev', weekNum, '<b>' + rp.name + '</b> cleared to play and returns to the lineup.');
         toast(rp.name + ' is back', 'var(--grn)');
       }
@@ -272,7 +273,7 @@ export function rollEvents(weekNum) {
 
   // 21. Transfer Portal Threat (4%)
   tryFire(4, function() {
-    var bench = t.rost.filter(function(p) { return p.mins === 0 || p.mins < 5; });
+    var bench = t.rost.filter(function(p) { return (p.mins === 0 || p.mins < 5) && !p.rs; });
     if (bench.length) {
       var p = bench[ri(0, bench.length - 1)];
       addLog('ev', weekNum, '<b>' + p.name + '</b> is reportedly unhappy with playing time and exploring the transfer portal.');
@@ -334,7 +335,7 @@ export function rollEvents(weekNum) {
 
   // 28. Walk-on Hero (3%)
   tryFire(3, function() {
-    var bench = t.rost.filter(function(p) { return p.mins === 0; });
+    var bench = t.rost.filter(function(p) { return p.mins === 0 && !p.rs; }); // redshirts stay out
     if (bench.length) {
       var p = bench[ri(0, bench.length - 1)];
       addLog('ev', weekNum, 'Walk-on <b>' + p.name + '</b> impresses in practice \u2014 earns rotation minutes next game.');

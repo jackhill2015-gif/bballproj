@@ -4,6 +4,7 @@
 //  Selection Sunday reveal, tournament game play/resolution.
 // ═══════════════════════════════════════════════════════════
 
+import { payTourneyWin } from './finance.js';
 import { recomputeRatings, resumeScore } from './ratings.js';
 import { ge, txt, fmtScore } from './utils.js';
 import { G, LS, SetupState, saveState } from './state.js';
@@ -742,7 +743,7 @@ export function resolveTournamentGame() {
     var userWon = (m.winner.id === G.tid);
     var oppName = (m.t1.id === G.tid ? m.t2 : m.t1).name;
     var oppTeam = (m.t1.id === G.tid ? m.t2 : m.t1);
-    G.lastResult = { oppId: oppTeam.id, home: null, u: uScore, o: oScore, won: userWon, wk: G.gi, label: conf + ' tournament' };
+    G.lastResult = { yr: G.yr, oppId: oppTeam.id, home: null, u: uScore, o: oScore, won: userWon, wk: G.gi, label: conf + ' tournament' };
     // Morale: tournament games swing moods too
     recordGameMorale(userWon ? userTeam : oppTeam, userWon ? oppTeam : userTeam);
     if (userWon) {
@@ -789,7 +790,9 @@ export function resolveTournamentGame() {
     recordGameMorale(userWon2 ? userTeam : oppTeam2, userWon2 ? oppTeam2 : userTeam);
     // Teams left AFTER the full round: 32 / 16 / 8 / 4 / 2 / 1
     var remaining = G.bracket.filter(function(b) { return b.active; }).length;
-    G.lastResult = { oppId: oppTeam2.id, home: null, u: uScore, o: oScore, won: userWon2, wk: G.gi, label: 'NCAA tournament' };
+    G.lastResult = { yr: G.yr, oppId: oppTeam2.id, home: null, u: uScore, o: oScore, won: userWon2, wk: G.gi, label: 'NCAA tournament' };
+    // Tournament payout per win, larger each round (remaining after the round: 32 → round of 64 win)
+    if (userWon2) payTourneyWin({ 32: 0, 16: 1, 8: 2, 4: 3, 2: 4, 1: 5 }[remaining] || 0);
 
     if (userWon2) {
       // Round-specific headlines and prestige bonuses

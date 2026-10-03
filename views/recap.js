@@ -5,6 +5,7 @@
 //  first stacking; delegated CTA, no inline onclick.
 // ═══════════════════════════════════════════════════════════
 
+import { STREAMS, BUCKETS, ledger, totals } from '../finance.js';
 import { G } from '../state.js';
 import { SKILL_POINT_TABLE } from '../constants.js';
 import { awardScore, pickPositionalTeam } from '../utils.js';
@@ -72,7 +73,29 @@ function calcSkillPoints() {
   SKILL_POINT_TABLE.forEach(function(row) {
     if (row.check(t, sa)) earned.push(row.label);
   });
+  // Season goals pay one skill point each
+  var gs = G.goals;
+  if (gs && gs.results && gs.yr === G.yr) gs.results.forEach(function(r) { if (r.done) earned.push('Season goal: ' + r.text.charAt(0).toLowerCase() + r.text.slice(1)); });
   return earned;
+}
+
+function moneyPanels() {
+  var h = '';
+  var gs = G.goals;
+  if (gs && gs.results && gs.yr === G.yr) {
+    h += '<div class="panel"><div class="panel-h"><span>Season goals</span><small>' + gs.results.filter(function(r) { return r.done; }).length + ' of ' + gs.results.length + ' met</small></div><div class="panel-b flush"><table><tbody>';
+    gs.results.forEach(function(r) {
+      h += '<tr><td style="width:22px;color:' + (r.done ? 'var(--grn2)' : 'var(--red)') + ';">' + (r.done ? '✓' : '✗') + '</td><td>' + r.text + '</td></tr>';
+    });
+    h += '</tbody></table></div></div>';
+  }
+  var l = ledger(), tot = totals(l);
+  h += '<div class="panel"><div class="panel-h"><span>Program finances</span><small>NIL</small></div><div class="panel-b flush"><table><tbody>';
+  STREAMS.forEach(function(s) { if (l.income[s[0]]) h += '<tr><td>' + s[1] + '</td><td class="num">+' + l.income[s[0]] + '</td></tr>'; });
+  BUCKETS.forEach(function(b) { if (l.spend[b[0]]) h += '<tr><td style="color:var(--txt2);">' + b[1] + '</td><td class="num" style="color:var(--txt2);">−' + l.spend[b[0]] + '</td></tr>'; });
+  h += '<tr><td><b>Net</b></td><td class="num"><b>' + (tot.net >= 0 ? '+' : '−') + Math.abs(tot.net) + '</b></td></tr>'
+    + '</tbody></table><div style="font-size:12px;color:var(--txt3);padding:6px 10px 8px;">The donor collective\'s check arrives next, before the transfer portal.</div></div></div>';
+  return h;
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -91,7 +114,9 @@ export function renderSeasonRecap() {
     if (still.length === 1) natChamp = still[0].team;
   }
 
-  var topTeams = G.teams.slice().sort(function(a, b) { return (b.wins - b.loss) - (a.wins - a.loss); }).slice(0, 10);
+  // Final top 10 = the final national rankings (not raw win margin, which
+  // put 30-win low-majors ahead of the best teams)
+  var topTeams = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; }).slice(0, 10);
   var sorted = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; });
   var rank = sorted.findIndex(function(x) { return x.id === G.tid; }) + 1;
 
@@ -155,6 +180,7 @@ export function renderSeasonRecap() {
     + '</div></div>'
     + '<div style="font-size:12px;color:var(--txt2);">Conference: ' + t.cWins + '-' + t.cLoss + ' (' + t.conf + ')</div>'
     + '</div></div>';
+  h += moneyPanels();
 
   if (awards.allAmerican.length) {
     h += '<div class="panel"><div class="panel-h"><span>All-American team</span></div>'

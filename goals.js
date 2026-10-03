@@ -7,6 +7,7 @@
 
 import { G } from './state.js';
 import { getTOvr } from './utils.js';
+import { earn } from './finance.js';
 
 // Rewards for each goal met at season's end
 export var GOAL_REWARD = { skill: 1, nil: 40 };
@@ -129,8 +130,7 @@ export function settleGoals() {
   var met = gs.list.filter(function(g) { return progress(g).done; });
   gs.settled = true;
   gs.results = gs.list.map(function(g) { return { text: g.text, done: progress(g).done }; });
-  var nil = met.length * GOAL_REWARD.nil;
-  G.pts = (G.pts || 0) + nil;
+  var nil = earn('ad', met.length * GOAL_REWARD.nil, met.length + ' of ' + gs.list.length + ' season goals met');
   var t = G.teams[G.tid];
   if (met.length === gs.list.length) {
     t.schoolPrestige = Math.min(100, (t.schoolPrestige || 50) + ALL_GOALS_PRESTIGE);

@@ -13,6 +13,7 @@
 //  re-render); board pagination kept.
 // ═══════════════════════════════════════════════════════════
 
+import { payDonors } from '../finance.js';
 import { ge, clamp, ri } from '../utils.js';
 import { hasRestlessStarAt } from '../morale.js';
 import { TEAM_STATES, STATE_TO_REGION, STATE_NAMES, SCHOOL_RECRUIT_GATES, COACH_FN, COACH_LN, RECRUIT_STATE_POOL } from '../constants.js';
@@ -205,14 +206,12 @@ export function proceedToRecruiting() {
   genRecruitsFn();
   // R9: transfer portal step sits between turnover and recruiting
   genPortalEntrants();
-  // Offseason NIL bonus lands here (moved up from doOffseason): it funds
-  // the portal battle, so the Open stage is "dump or spread" for real.
-  var ranked = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; });
-  var orank = ranked.findIndex(function(x) { return x.id === G.tid; }) + 1;
-  var bonus = orank <= 10 ? 200 : orank <= 25 ? 150 : orank <= 64 ? 100 : orank <= 150 ? 70 : 40;
-  G.pts += bonus;
-  addLog('ev', G.gi, 'Offseason NIL bonus: <b>+' + bonus + '</b> (ranked #' + orank + ') — spend it in the portal.');
-  toast('Offseason NIL bonus: +' + bonus + ' NIL (ranked #' + orank + ')', 'var(--grn)');
+  // The donor collective's check lands here: it funds the transfer portal.
+  var bonus = payDonors();
+  if (bonus) {
+    addLog('ev', G.gi, 'Donor collective check: <b>+' + bonus + ' NIL</b> for the transfer portal and facilities.');
+    toast('Donor check: +' + bonus + ' NIL', 'var(--grn)');
+  }
   G.offseasonStep = 'portal';
   saveState(); updateAll(); renderOffseason();
 }

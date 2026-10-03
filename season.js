@@ -6,7 +6,8 @@
 
 import { recomputeRatings, snapshotRanks } from './ratings.js';
 import { ensureGoals, noteUserResult, settleGoals, checkAchievements } from './goals.js';
-import { practiceBonus, arenaNil, trainingChance } from './facilities.js';
+import { practiceBonus, trainingChance, facilitiesFor } from './facilities.js';
+import { payGate, payTvShare, ledger as financeLedger } from './finance.js';
 import { ALL_TEAMS, POS, CLS, RECRUIT_STATE_POOL, COACH_FN, COACH_LN, calcSchoolPrestige, SKILL_POINT_TABLE, calcExpectations } from './constants.js';
 import {
   ri, clamp, getTOvr, fixMins, freshS, getTeamStyle, getOvr, ge, txt, fmtScore
@@ -400,11 +401,7 @@ export function simCPUWeek() {
       if (r.interest >= 100) r.signed = ri(0, G.teams.length - 1);
     }
   });
-  // Rank-based NIL earnings
-  var _nilRanked = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; });
-  var _nilRank = _nilRanked.findIndex(function(x) { return x.id === G.tid; }) + 1;
-  var _nilEarn = _nilRank <= 25 ? 40 : _nilRank <= 64 ? 30 : _nilRank <= 150 ? 22 : 14;
-  G.pts += _nilEarn + arenaNil(G.tid);
+  // (NIL now comes from named sources — see finance.js — not a weekly drip)
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -439,8 +436,10 @@ export function recordResult() {
   }
   // Rankings (t.pts) are recomputed from all results in advanceWeek — see ratings.js.
   // The final stays on the dashboard until the next game is played.
-  G.lastResult = { oppId: opp.id, home: !!uHome, u: uScore, o: oScore, won: won, wk: G.gi + 1, label: game.conf ? 'Conference' : 'Non-conference' };
+  G.lastResult = { yr: G.yr, oppId: opp.id, home: !!uHome, u: uScore, o: oScore, won: won, wk: G.gi + 1, label: game.conf ? 'Conference' : 'Non-conference' };
   noteUserResult(opp, won);
+  // Ticket sales for home games
+  if (uHome && G.phase === 'reg') payGate(facilitiesFor(G.tid).arena || 0);
   // Note: GP is counted once per game — simGame() increments it internally
   // for quick/auto-simmed games, and launchSim() increments at tipoff for live games.
   // Morale: both teams' players react to the result.
@@ -460,6 +459,7 @@ export function recordResult() {
 export function advanceWeek() {
   G.gi++;
   G.wk = G.gi;
+  if (G.phase === 'reg') payTvShare(); // once a season, after week 1
   snapshotRanks();    // last week's poll, for movement arrows
   recomputeRatings(); // rankings reflect every result through this week
   checkAchievements();
