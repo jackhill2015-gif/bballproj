@@ -178,6 +178,7 @@ function weightedWinner(entries) {
 // it's trimmed at random so the mix stays realistic (not top-heavy).
 export function entryOdds(p, tm, ctx) {
   if (p.cls === 'SR' || p.rs) return null;
+  if (p.keptYr === G.yr) return null; // signed a retention deal this offseason
   var m = (typeof p.morale === 'number') ? p.morale : MORALE_DEFAULT;
   var mins = p.mins || 0;
   var chance = 0, reason = 'Playing time';
@@ -213,13 +214,15 @@ export function genPortalEntrants() {
       weak: (tm.schoolPrestige || 50) < 45 || rankOf[tm.id] > 150,
       coachChange: !!(tm.coach && tm.coach.tenure === 0 && tm.id !== G.tid)
     };
-    var cands = [];
+    var cands = [], forced = [];
     tm.rost.forEach(function(p) {
+      // Let go at retention: always enters
+      if (p.forcePortal) { delete p.forcePortal; if (tm.id === G.tid) { forced.push({ p: p, reason: 'NIL deal', forced: true }); return; } }
       var o = entryOdds(p, tm, Object.assign({ depth: byOvr.indexOf(p) + 1 }, ctx0));
       if (o && Math.random() < o.chance) cands.push({ p: p, reason: o.reason });
     });
-    // At most 3 per team
-    cands.slice(0, 3).forEach(function(c) {
+    // At most 3 per team (retention let-gos always count, beyond the cap)
+    forced.concat(cands).slice(0, Math.max(3, forced.length)).forEach(function(c) {
       var p = c.p;
       var pid = _nextPid++;
       p._portalPid = pid;
@@ -227,7 +230,7 @@ export function genPortalEntrants() {
         pid: pid, name: p.name, pos: p.pos, ovr: p.ovr, pot: p.pot || p.ovr, h: p.h || [], aw: p.aw || [],
         cls: p.cls, fromTid: tm.id, fromName: tm.name, mins: p.mins || 0,
         sht: p.sht, fin: p.fin, def: p.def, reb: p.reb, ply: p.ply,
-        reason: c.reason, pickedBy: -1, offer: 0
+        reason: c.reason, pickedBy: -1, offer: 0, forced: !!c.forced
       });
     });
   });
@@ -235,6 +238,8 @@ export function genPortalEntrants() {
   if (G.portalEntrants.length > PORTAL_MAX_ENTRANTS) {
     var list = G.portalEntrants;
     for (var i = list.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var tmp = list[i]; list[i] = list[j]; list[j] = tmp; }
+    // retention let-gos are never trimmed
+    list.sort(function(a, b) { return (b.forced ? 1 : 0) - (a.forced ? 1 : 0); });
     var cut = list.slice(PORTAL_MAX_ENTRANTS);
     G.portalEntrants = list.slice(0, PORTAL_MAX_ENTRANTS);
     var cutIds = {};

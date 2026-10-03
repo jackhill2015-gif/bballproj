@@ -21,6 +21,7 @@ export var STREAMS = [
   ['ad', 'Athletic director bonuses']
 ];
 export var BUCKETS = [
+  ['retention', 'Player retention'],
   ['portal', 'Transfer portal offers'],
   ['facilities', 'Facilities'],
   ['boosts', 'Boosts']

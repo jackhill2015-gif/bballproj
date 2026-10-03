@@ -70,7 +70,7 @@ export function renderHelp() {
     'NIL is your program budget, shown in the top bar. It comes from ticket sales after each home game, '
     + 'your conference TV share after week 1, the donor collective\'s check each offseason (bigger after a '
     + 'deep March run), NCAA tournament wins (each round pays more) and season-goal bonuses. You spend it on '
-    + 'transfer portal offers, facilities and boosts. The Program finances panel on the home screen shows '
+    + 'player retention deals, transfer portal offers, facilities and boosts. The Program finances panel on the home screen shows '
     + 'every source and what you\'ve spent this season. The boost shop on the dashboard sells '
     + 'three weekly boosts: sellout crowd (80 NIL, +3 edge in your next home game), film session '
     + '(50 NIL, +2 to shooting, finishing and defense for two games), and recovery session '
@@ -84,8 +84,15 @@ export function renderHelp() {
     + 'when it matters.');
 
   h += sec('The offseason, in order',
-    'Season recap, then skill points, then the coaching carousel, then departures, then the '
-    + 'transfer portal, then recruiting. Each step advances with the top-bar button.');
+    'Season recap, then skill points, then the coaching carousel, then departures, then player '
+    + 'retention, then the transfer portal, then recruiting. Each step advances with the top-bar button.');
+
+  h += sec('Player retention',
+    'Before the portal opens, your two or three best returning players ask for an NIL deal to stay '
+    + '(a fourth may ask if he is unhappy). Keep pays the ask and he will not enter the portal this year. '
+    + 'Let go sends him into the portal; if no school signs him, he stays. Asks grow with rating, '
+    + 'production and your program\'s size, and happier players ask for less. You can switch a decision '
+    + 'until you open the portal; switching a keep to let go refunds it.');
 
   h += sec('The transfer portal',
     'The portal runs in three rounds: initial offers, follow-up, and decision day. Offers are '

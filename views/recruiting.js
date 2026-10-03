@@ -20,6 +20,7 @@ import { TEAM_STATES, STATE_TO_REGION, STATE_NAMES, SCHOOL_RECRUIT_GATES, COACH_
 import { G, LS, SetupState, saveState, calcRecruitingBudget } from '../state.js';
 import { renderPortal, genPortalEntrants, registerPortalCallbacks, adjustOffer, pivotOffer, advancePortalStage, advanceFromPortal, setPortalFilter, togglePortalDetail, PORTAL_OFFER_STEP } from './portal.js';
 import { genPlayer } from '../simulation.js';
+import { buildRetentionAsks, renderRetention, decideRetention, applyRetention, retentionPending } from './retention.js';
 import { teamLogo } from '../ui.js';
 import * as Battle from './battle.js';
 
@@ -219,18 +220,44 @@ export function proceedToRecruiting() {
   var dominated = G.departingPlayers.map(function(d) { return d.name; });
   t.rost = t.rost.filter(function(p) { return dominated.indexOf(p.name) < 0; });
   genRecruitsFn();
-  // R9: transfer portal step sits between turnover and recruiting
-  genPortalEntrants();
-  // The donor collective's check lands here: it funds the transfer portal.
+  // The donor collective's check lands here: it funds retention, the
+  // transfer portal and facilities.
   var bonus = payDonors();
   if (bonus) {
-    addLog('ev', G.gi, 'Donor collective check: <b>+' + bonus + ' NIL</b> for the transfer portal and facilities.');
+    addLog('ev', G.gi, 'Donor collective check: <b>+' + bonus + ' NIL</b> for retention, the transfer portal and facilities.');
     toast('Donor check: +' + bonus + ' NIL', 'var(--grn)');
   }
+  // Player retention: top returners ask for NIL before the portal opens
+  if (buildRetentionAsks().length) {
+    G.offseasonStep = 'retention';
+    saveState(); updateAll(); renderOffseason();
+    return;
+  }
+  openPortal();
+}
+window.proceedToRecruiting = proceedToRecruiting;
+
+// Retention decided → mark kept / let-go players, then build the portal
+function openPortal() {
+  applyRetention();
+  // R9: transfer portal step sits between turnover and recruiting
+  genPortalEntrants();
   G.offseasonStep = 'portal';
   saveState(); updateAll(); renderOffseason();
 }
-window.proceedToRecruiting = proceedToRecruiting;
+
+export function finishRetention() {
+  var n = retentionPending();
+  if (n) { toast('Decide on ' + n + ' more NIL request' + (n > 1 ? 's' : '') + ' first'); return false; }
+  var r = G.retention || { asks: [] };
+  var kept = r.asks.filter(function(a) { return a.decision === 'keep'; });
+  var gone = r.asks.filter(function(a) { return a.decision === 'go'; });
+  if (kept.length) addLog('ev', G.gi, 'Retention: kept ' + kept.map(function(a) { return a.name; }).join(', ') + ' for ' + kept.reduce(function(s, a) { return s + a.ask; }, 0) + ' NIL.');
+  if (gone.length) addLog('ev', G.gi, 'Entering the transfer portal: ' + gone.map(function(a) { return a.name; }).join(', ') + '.');
+  openPortal();
+  return true;
+}
+window.finishRetention = finishRetention;
 
 // We need to call genRecruits from season.js — use window bridge
 function genRecruitsFn() { if (window._genRecruits) window._genRecruits(); }
@@ -394,6 +421,8 @@ export function renderOffseason() {
 
   if (G.offseasonStep === 'carousel') { el.innerHTML = renderCarousel(); bindOffseason(el); return; }
 
+  if (G.offseasonStep === 'retention') { el.innerHTML = renderRetention(); bindOffseason(el); return; }
+
   if (G.offseasonStep === 'portal') { el.innerHTML = renderPortal(); bindOffseason(el); return; }
 
   if (G.offseasonStep === 'turnover' || !G.offseasonStep) { el.innerHTML = renderTurnover(); bindOffseason(el); return; }
@@ -483,6 +512,13 @@ function bindOffseason(el) {
     if ((m = q('[data-rtab]'))) { setRecruitTab(m.getAttribute('data-rtab')); return; }
     if (q('[data-phase-advance]')) { phaseAdvance(); return; }
     if (q('[data-proceed-portal]')) { proceedToRecruiting(); return; }
+    if ((m = q('[data-ret]'))) {
+      var _rr = decideRetention(parseInt(m.getAttribute('data-ri'), 10), m.getAttribute('data-ret'));
+      if (_rr.msg) toast(_rr.msg);
+      if (_rr.ok) { saveState(); updateAll(); renderOffseason(); }
+      return;
+    }
+    if (q('[data-ret-done]')) { finishRetention(); return; }
     if ((m = q('[data-skill-dec]'))) { deallocateSkillPoint(m.getAttribute('data-skill-dec')); return; }
     if ((m = q('[data-skill-inc]'))) { allocateSkillPoint(m.getAttribute('data-skill-inc')); return; }
     if (q('[data-finish-skills]')) { finishSkillPoints(); return; }

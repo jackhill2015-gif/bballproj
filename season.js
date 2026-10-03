@@ -571,6 +571,8 @@ export function doPlay(mode) {
       if (window.stayAtSchool) window.stayAtSchool();
     } else if (G.offseasonStep === 'turnover') {
       if (window.proceedToRecruiting) window.proceedToRecruiting();
+    } else if (G.offseasonStep === 'retention') {
+      if (window.finishRetention) window.finishRetention();
     } else if (G.offseasonStep === 'portal') {
       if (window.advancePortalStage) window.advancePortalStage();
     } else if (G.recruitPhase < 3) {

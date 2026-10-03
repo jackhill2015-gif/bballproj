@@ -108,6 +108,12 @@ check(G.offseasonStep === 'turnover', 'stayAtSchool routes to turnover');
 // turnover → portal via proceedToRecruiting
 const userRosterBefore = G.teams[G.tid].rost.length;
 R.proceedToRecruiting();
+// Player retention sits between turnover and the portal: keep everyone
+if (G.offseasonStep === 'retention') {
+  G.pts = 9999;
+  G.retention.asks.forEach(a => { a.decision = 'keep'; });
+  R.finishRetention();
+}
 check(G.offseasonStep === 'portal', 'proceedToRecruiting now routes to portal (R9)');
 check(Array.isArray(G.portalEntrants) && G.portalEntrants.length > 0,
   'portal entrants generated', 'count=' + (G.portalEntrants || []).length);

@@ -484,6 +484,7 @@ export function updateAdvanceBtn() {
   } else if (G.phase === 'offseason') {
     if (G.offseasonStep === 'recap') txtLbl = 'Begin offseason';
     else if (G.offseasonStep === 'turnover') txtLbl = 'To recruiting';
+    else if (G.offseasonStep === 'retention') txtLbl = 'Open portal';
     else if (G.offseasonStep === 'skillpoints') txtLbl = 'Finish';
     else if (G.offseasonStep === 'carousel') txtLbl = 'Continue';
     else if (G.offseasonStep === 'fired') txtLbl = 'Continue';
@@ -522,6 +523,7 @@ export function buildAdvanceMenu() {
     var stepLbl = 'Advance', stepSub = 'Move to the next step';
     if (G.offseasonStep === 'recap') { stepLbl = 'Begin offseason'; stepSub = 'Review departures, then recruit'; }
     else if (G.offseasonStep === 'turnover') { stepLbl = 'Proceed to recruiting'; stepSub = 'Review departures, then recruit'; }
+    else if (G.offseasonStep === 'retention') { stepLbl = 'Open the transfer portal'; stepSub = 'Decide on every NIL request first'; }
     else if (G.offseasonStep === 'skillpoints') { stepLbl = 'Finish skill points'; stepSub = 'Lock in coach upgrades'; }
     else if (G.offseasonStep === 'carousel') { stepLbl = 'Continue'; stepSub = 'Stay or take a new job'; }
     else if (G.offseasonStep === 'fired') { stepLbl = 'Continue'; stepSub = 'Find your next job'; }

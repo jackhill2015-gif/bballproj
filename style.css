@@ -1130,3 +1130,12 @@ table.atc .dim { color: var(--txt3); }
   .pbp-row { padding: 5px 10px; font-size: 12px; gap: 8px; }
   .p-sc { font-size: 11px; }
 }
+
+/* ── Player retention ── */
+table.ret td { vertical-align: middle; }
+.ret-btns { display: flex; gap: 4px; }
+.ret-btn { white-space: nowrap; font: inherit; font-size: 12.5px; padding: 5px 10px; border: 1px solid var(--bdr); background: var(--s1); color: var(--txt); border-radius: var(--radius); cursor: pointer; }
+.ret-btn.on { background: var(--blu); border-color: var(--blu); color: #fff; }
+.ret-btn.on.go { background: var(--txt2); border-color: var(--txt2); }
+.ret-btn:disabled { opacity: .45; cursor: not-allowed; }
+@media (max-width: 640px) { table.ret .hide-sm { display: none; } }
