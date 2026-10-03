@@ -78,7 +78,7 @@ function matchupMini(t1, t2, s1, s2, winner, seeds) {
 
 function renderConfBracketCard(conf, ct, expanded) {
   if (!ct || !ct.rounds) return '';
-  var rnames = { 1: 'R1', 2: 'QF', 3: 'SF', 4: 'FINAL' };
+  var rnames = { 1: 'R1', 2: 'QF', 3: 'SF', 4: 'Final' };
   var h = '<div class="br-region">'
     + '<div class="br-region-head">'
     + '<span class="br-region-name">' + conf + '</span>'
@@ -122,8 +122,8 @@ function renderScoutingCard(confMatch) {
     + '<span>OVR ' + getTOvr(opp) + ' · ' + opp.wins + '-' + opp.loss + '</span></div>'
     + '<div class="prob-row"><span>Win probability</span><span style="color:' + col + ';font-weight:800;">' + wp + '%</span></div>'
     + '<div class="prob-bar"><div class="prob-fill" style="width:' + wp + '%;background:' + col + ';"></div></div>'
-    + '<div class="action-btns"><button class="btn btn-red btn-full" data-action="play" data-mode="quick">QUICK SIM</button>'
-    + '<button class="btn btn-ghost btn-full" data-action="play" data-mode="live">LIVE SIM</button></div></div>';
+    + '<div class="action-btns"><button class="btn btn-red btn-full" data-action="play" data-mode="quick">Quick sim</button>'
+    + '<button class="btn btn-ghost btn-full" data-action="play" data-mode="live">Live sim</button></div></div>';
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -168,7 +168,7 @@ function renderNCAA_Hub() {
       + '<div style="flex:1;min-width:0;"><div class="sc-lab">#' + ue.seed + ' seed</div>'
       + '<div class="matchup-opp" style="font-size:16px;">' + ue.team.name + '</div>'
       + '<div style="font-size:11px;color:var(--txt3);">' + ue.team.wins + '-' + ue.team.loss + ' · OVR ' + getTOvr(ue.team) + '</div></div>'
-      + '<div style="font-size:11px;font-weight:800;color:var(--txt3);">VS</div>'
+      + '<div style="font-size:11px;font-weight:800;color:var(--txt3);">vs</div>'
       + '<div style="flex:1;min-width:0;text-align:right;"><div class="sc-lab">#' + oe.seed + ' seed</div>'
       + '<div class="matchup-opp" style="font-size:16px;">' + opp.name + '</div>'
       + '<div style="font-size:11px;color:var(--txt3);">' + opp.wins + '-' + opp.loss + ' · OVR ' + getTOvr(opp) + '</div></div></div>'
@@ -183,8 +183,8 @@ function renderNCAA_Hub() {
           + '<div class="leader-val">' + (p.s.pts / gp).toFixed(1) + ' ppg</div></div>';
       });
     }
-    h2 += '<div class="action-btns"><button class="btn btn-red btn-full" data-action="play" data-mode="quick">QUICK SIM</button>'
-      + '<button class="btn btn-ghost btn-full" data-action="play" data-mode="live">LIVE SIM</button></div></div>';
+    h2 += '<div class="action-btns"><button class="btn btn-red btn-full" data-action="play" data-mode="quick">Quick sim</button>'
+      + '<button class="btn btn-ghost btn-full" data-action="play" data-mode="live">Live sim</button></div></div>';
   } else if (active.length > 1) {
     h2 += '<div class="sec-block" style="text-align:center;"><div style="font-size:14px;font-weight:800;margin-bottom:4px;">Your run is over.</div>'
       + '<div style="font-size:12px;color:var(--txt2);margin-bottom:10px;">Watch the rest of the tournament unfold.</div>'

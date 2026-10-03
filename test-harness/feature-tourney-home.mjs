@@ -81,7 +81,7 @@ html = _els['dash-content'].innerHTML;
 ok(G.phase === 'conf_tourn', 'phase is conf_tourn after startConfTourney');
 ok(html.includes('Conference Tournaments'), 'conf_tourn phase: home shows tournament hub');
 ok(!html.includes('dash-sum'), 'conf_tourn phase: home does NOT show regular dashboard');
-ok(html.includes('QUICK SIM') || html.includes('ADVANCE'), 'conf_tourn home: user can play/advance from home');
+ok(html.includes('Quick sim') || html.includes('Advance'), 'conf_tourn home: user can play/advance from home');
 
 // sim through all conf tourneys (user's conf needs its game simmed too)
 let guard = 0;

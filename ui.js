@@ -170,21 +170,21 @@ function narrateResult(type, text) {
     var oppRank = teamRankOf(oppName);
     var ctx = '';
     if (oppRank > 0 && oppRank <= 25) {
-      ctx = won ? ' Statement win over #' + oppRank + '.' : ' Upset at the hands of #' + oppRank + '.';
+      ctx = won ? ' Ranked win over #' + oppRank + '.' : ' Upset at the hands of #' + oppRank + '.';
     } else if (!won && oppRank > 100) {
-      ctx = ' A resume-damaging loss.';
+      ctx = ' A costly loss.';
     }
 
     // Streak
     var streak = currentStreak();
     var streakTxt = '';
-    if (won && streak >= 2) streakTxt = ' Winners of ' + streak + ' straight.';
-    else if (!won && streak <= -2) streakTxt = ' Losers of ' + Math.abs(streak) + ' straight.';
+    if (won && streak >= 2) streakTxt = ' ' + streak + ' straight wins.';
+    else if (!won && streak <= -2) streakTxt = ' ' + Math.abs(streak) + ' straight losses.';
 
     var star = best ? ' ' + best.name.split(' ').slice(-1)[0] + ' (' + bestPpg.toFixed(1) + ' ppg) led the way.' : '';
     var tour = '';
     if (suffix.indexOf('Conf Tourney') >= 0) tour = won ? ' On to the next round.' : ' The run ends here.';
-    else if (suffix.indexOf('NCAA') >= 0) tour = won ? ' Survive and advance.' : ' The dream dies here.';
+    else if (suffix.indexOf('NCAA') >= 0) tour = won ? ' Survive and advance.' : ' Season over.';
     var narr = ' ' + t.name.split(' ').slice(-1)[0] + ' ' + verb + ' ' + oppName + '.' + star + ctx + streakTxt + tour;
     return { text: text + '<br><span style="color:var(--txt3);font-size:11px;">' + narr + '</span>' };
   } catch (e) { return null; }
@@ -231,7 +231,7 @@ function awardGameXP(type, text) {
   if (type === 'w' && G.phase === 'conf_tourn') xp += 25;
   if (type === 'w' && G.phase === 'ncaa') xp += 40;
   if (type === 'w' && oppRank > 0 && oppRank <= 25) {
-    toast('\uD83C\uDFC6 Ranked win! Beat #' + oppRank + ' ' + (m ? m[1] : ''), 'var(--gld)');
+    toast('Ranked win over #' + oppRank + ' ' + (m ? m[1] : ''), 'var(--gld)');
   }
   G.coach.xp = (G.coach.xp || 0) + xp;
   // Level-ups
@@ -241,8 +241,8 @@ function awardGameXP(type, text) {
     ['off', 'def', 'dev', 'rec'].forEach(function(k) {
       G.coach[k] = Math.min(99, (G.coach[k] || 70) + 1);
     });
-    toast('\u2B06\uFE0F COACH LEVEL UP — now Level ' + G.coach.level + '! +1 all attributes.', 'var(--blu)');
-    addLog('ev', G.gi, '<b>Coach leveled up to ' + G.coach.level + '!</b> All coaching attributes +1.');
+    toast('Coach level ' + G.coach.level + ': +1 to all attributes', 'var(--blu)');
+    addLog('ev', G.gi, '<b>Coach reached level ' + G.coach.level + '.</b> All coaching attributes +1.');
   }
 }
 
@@ -268,8 +268,8 @@ function checkMilestones(rank) {
   [100, 250, 500, 750, 1000].forEach(function(mn) {
     if (G.coach.careerWins >= mn && _milestones.wins < mn) {
       _milestones.wins = mn;
-      toast('\uD83C\uDFC6 Milestone: ' + mn + ' career wins!', 'var(--gld)');
-      addLog('ev', G.gi, '<b>\uD83C\uDFC6 MILESTONE:</b> Coach ' + G.coach.lastName + ' reaches <b>' + mn + ' career wins</b>.');
+      toast('Milestone: ' + mn + ' career wins', 'var(--gld)');
+      addLog('ev', G.gi, '<b>Milestone:</b> Coach ' + G.coach.lastName + ' reaches <b>' + mn + ' career wins</b>.');
     }
   });
   // Streak milestones
@@ -277,23 +277,23 @@ function checkMilestones(rank) {
   [5, 10, 15, 20].forEach(function(sn) {
     if (st >= sn && _milestones.streak < sn) {
       _milestones.streak = sn;
-      toast('\uD83D\uDD25 ' + sn + '-game win streak!', 'var(--grn)');
+      toast(sn + '-game win streak', 'var(--grn)');
     }
   });
   if (st < 5) _milestones.streak = Math.min(_milestones.streak, st > 0 ? st : 0);
   // Ranking milestones
   if (rank <= 25 && !_milestones.top25 && _prevRank > 25) {
     _milestones.top25 = true;
-    toast('\u2B50 First Top-25 ranking: #' + rank + '!', 'var(--blu)');
+    toast('First top-25 ranking: #' + rank, 'var(--blu)');
   }
   if (rank <= 10 && !_milestones.top10 && _prevRank > 10) {
     _milestones.top10 = true;
-    toast('\u2B50 Cracked the Top 10: #' + rank + '!', 'var(--blu)');
+    toast('Top 10 ranking: #' + rank, 'var(--blu)');
   }
   if (rank === 1 && !_milestones.no1) {
     _milestones.no1 = true;
-    toast('\uD83D\uDC51 #1 IN THE NATION!', 'var(--gld)');
-    addLog('ev', G.gi, '<b>\uD83D\uDC51 ' + G.teams[G.tid].name + ' is ranked #1 in the nation!</b>');
+    toast('Ranked #1 in the nation', 'var(--gld)');
+    addLog('ev', G.gi, '<b>' + G.teams[G.tid].name + ' is ranked #1 in the nation.</b>');
   }
   if (rank > 25) _milestones.top25 = false;
   if (rank > 10) _milestones.top10 = false;
@@ -614,7 +614,7 @@ export function initOutsideClickHandlers() {
 // ═══════════════════════════════════════════════════════════
 
 export var NIL_SHOP = [
-  { id: 'sellout', name: 'Sellout Crowd', desc: 'Next home game gets a +3 edge. Electric atmosphere.', cost: 80 },
+  { id: 'sellout', name: 'Sellout Crowd', desc: 'Next home game gets a +3 edge.', cost: 80 },
   { id: 'film', name: 'Film Session', desc: 'Team-wide +2 to shooting, finishing & defense for 2 games.', cost: 50 },
   { id: 'recovery', name: 'Recovery Session', desc: 'Clears every slump and negative effect on the roster.', cost: 60 }
 ];
@@ -639,7 +639,7 @@ export function buyBoost(itemId, btnEl) {
 
   if (itemId === 'sellout') {
     G.nextHomeBonus = 3; // consumed by simGame for the user's next home game
-    addLog('ev', G.gi, '<b>Sellout crowd</b> bought with NIL funds — next home game gets a major boost.');
+    addLog('ev', G.gi, '<b>Sellout crowd</b> bought with NIL funds — +3 edge for the next home game.');
   } else if (itemId === 'film') {
     t.rost.forEach(function(p) {
       if (p.mins > 0) {
@@ -650,7 +650,7 @@ export function buyBoost(itemId, btnEl) {
     });
     if (!G.buffs) G.buffs = [];
     G.buffs.push({ playerName: 'TEAM', attr: 'all', mod: 2, gamesLeft: 2 });
-    addLog('ev', G.gi, '<b>Film session</b> — the team is locked in (+2 all, 2 games).');
+    addLog('ev', G.gi, '<b>Film session</b> — all attributes +2 for 2 games.');
   } else if (itemId === 'recovery') {
     var cleared = 0;
     if (G.buffs) {
@@ -674,7 +674,7 @@ export function buyBoost(itemId, btnEl) {
 
   G.pts -= item.cost;
   bought[itemId] = true;
-  toast(item.name + ' activated!', 'var(--grn)');
+  toast(item.name + ' activated', 'var(--grn)');
   saveState();
   updateAll(); // single refresh path — updates NIL balance + shop state
 }
@@ -738,7 +738,7 @@ export function openModal(tH, tA, isTournament, roundName) {
     }, delay);
   }
   if (spd) spd.oninput = function() {
-    var labs = ['SLOW', 'SLOW', 'MED', 'FAST', 'MAX'];
+    var labs = ['Slow', 'Slow', 'Med', 'Fast', 'Max'];
     txt('spd-v', labs[parseInt(spd.value) - 1]);
     startInterval();
   };
@@ -843,7 +843,7 @@ export function stepSim() {
       txt('sb-per', 'Half 2');
       G.momentum = { tid: -1, pts: 0 };
       var log = ge('pbplog');
-      if (log) log.innerHTML = '<div class="pbp-banner" style="background:var(--s3);color:var(--txt2);">── HALFTIME ──</div>' + log.innerHTML;
+      if (log) log.innerHTML = '<div class="pbp-banner" style="background:var(--s3);color:var(--txt2);">── Halftime ──</div>' + log.innerHTML;
       return true;
     } else if (LS.half === 2) {
       if (LS.hs === LS.as) { LS.half = 3; LS.clock = 300; txt('sb-per', 'OT'); return true; }

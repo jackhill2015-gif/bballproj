@@ -66,7 +66,7 @@ export function showHomeScreen() {
         t = Object.assign({ name: td.n, conf: td.c }, t);
         var coachName = saved.coach ? saved.coach.firstName + ' ' + saved.coach.lastName : 'Coach';
         txt('home-team-name', t.name || '---');
-        var phases = { reg: 'Regular Season', conf_tourn: 'Conf Tournament', ncaa: 'NCAA Tournament', offseason: 'Offseason' };
+        var phases = { reg: 'Regular season', conf_tourn: 'Conf tournament', ncaa: 'NCAA tournament', offseason: 'Offseason' };
         var phaseStr = phases[saved.phase] || 'Preseason';
         var seasonNum = saved.yr ? saved.yr - 2024 : 1;
         txt('home-dynasty-meta', coachName + ' \u00b7 ' + (t.conf || '') + ' \u00b7 ' + phaseStr);

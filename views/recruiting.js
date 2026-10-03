@@ -280,7 +280,7 @@ function maybeLateRecruits() {
     p.rivals = weakPool.slice(0, 3).map(function(t) { return { tid: t.id, name: t.name }; });
     G.recruits.push(p);
   }
-  addLog('ev', G.gi, '<b>Two late risers hit the board</b> — unheralded prospects worth a flier.');
+  addLog('ev', G.gi, 'Two late risers emerge — unheralded prospects now available.');
   toast('Late risers: 2 new recruits available.', 'var(--blu)');
 }
 
@@ -316,7 +316,7 @@ export function advanceRecruitPhase() {
     userSign: function(r) {
       r.signed = G.tid; r.status = 'committed';
       refundRecruitPoints(r);
-      addLog('ev', G.gi, r.name + ' (' + r.stars + '★) <b>commits early!</b>');
+      addLog('ev', G.gi, r.name + ' (' + r.stars + '★) commits early.');
     },
     cpuSign: function(r) {
       var win = cpuWeightedSign(r);
@@ -348,13 +348,13 @@ export function resolveRecruitingClass() {
     var ub = calcUserBid(r); var schools = calcSchoolChances(r);
     var best = schools.filter(function(s) { return !s.isUser; }).sort(function(a, b) { return b.bid - a.bid; })[0];
     var bb = best ? best.bid : 0;
-    if (r.points >= 5 && ub > bb * 0.7) { r.signed = G.tid; r.status = 'committed'; addLog('ev', G.gi, r.name + ' (' + r.stars + '\u2605) <b>commits!</b> (late)'); }
+    if (r.points >= 5 && ub > bb * 0.7) { r.signed = G.tid; r.status = 'committed'; addLog('ev', G.gi, r.name + ' (' + r.stars + '\u2605) commits (late).'); }
     else if (best) { r.signed = best.tid; r.status = 'gone'; r.goneTo = best.name; }
     else { r.status = 'gone'; r.signed = -1; }
     r.points = 0;
   });
   var tot = G.recruits.filter(function(r) { return r.signed === G.tid; });
-  toast('Class finalized: ' + tot.length + ' signee' + (tot.length !== 1 ? 's' : '') + '!', tot.length >= 3 ? 'var(--grn)' : 'var(--gld)');
+  toast('Class finalized: ' + tot.length + ' signee' + (tot.length !== 1 ? 's' : ''), tot.length >= 3 ? 'var(--grn)' : 'var(--gld)');
   G.recruitPhase = 0; G.recruitingBudget = 0; G.recruitingSpent = 0; G.recruitTargets = [];
   saveState();
 }
@@ -642,7 +642,7 @@ function renderTurnover() {
     dep.forEach(function(d) {
       var reasonCol = d.reason === 'Graduated' ? 'var(--txt3)' : 'var(--gld2)';
       h += '<div class="leader-row"><span class="pos-chip">' + d.pos + '</span>'
-        + '<div class="leader-name">' + d.name + '<small>' + d.cls + ' · ' + d.ppg + ' PPG · ' + d.rpg + ' RPG · ' + (d.apg || '0.0') + ' APG · ' + d.mins + ' MIN</small></div>'
+        + '<div class="leader-name">' + d.name + '<small>' + d.cls + ' · ' + d.ppg + ' PPG · ' + d.rpg + ' RPG · ' + (d.apg || '0.0') + ' APG · ' + d.mins + ' min</small></div>'
         + '<div style="text-align:right;"><div class="leader-val" style="color:var(--red);">' + d.ovr + '</div>'
         + '<div style="font-size:10px;font-weight:700;color:' + reasonCol + ';">' + d.reason + '</div></div></div>';
     });
@@ -663,7 +663,7 @@ function renderTurnover() {
     var potCol = pot > p.ovr + 8 ? 'var(--grn2)' : pot > p.ovr + 3 ? 'var(--gld2)' : 'var(--txt3)';
     h += '<div class="leader-row"><span class="pos-chip">' + p.pos + '</span>'
       + '<div class="leader-name">' + p.name + ' <span style="font-size:10px;font-weight:800;color:var(--blu);">' + p.cls + '</span>'
-      + '<small>' + ppg + ' PPG · ' + rpg + ' RPG · ' + apg + ' APG · ' + p.mins + ' MIN</small></div>'
+      + '<small>' + ppg + ' PPG · ' + rpg + ' RPG · ' + apg + ' APG · ' + p.mins + ' min</small></div>'
       + '<div style="text-align:right;"><div class="leader-val" style="color:var(--blu);">' + p.ovr + '</div>'
       + '<div style="font-size:10px;font-weight:700;color:' + potCol + ';">POT ' + pot + '</div></div></div>';
   });
@@ -687,7 +687,7 @@ function renderFired() {
 
   var h = '<div style="max-width:600px;margin:0 auto;padding:24px 4px;text-align:center;">'
     + '<div class="tag t-rival" style="margin-bottom:10px;">End of the road</div>'
-    + '<div style="font-size:30px;font-weight:900;color:var(--red);margin:8px 0;">YOU\'VE BEEN FIRED</div>'
+    + '<div style="font-size:30px;font-weight:900;color:var(--red);margin:8px 0;">You\'ve been fired</div>'
     + '<div style="font-size:13px;color:var(--txt2);margin-bottom:20px;">' + schoolName + ' has relieved you of your duties after a ' + record + ' season.</div>';
 
   h += '<div class="sec-block" style="text-align:left;margin-bottom:16px;">'
@@ -700,7 +700,7 @@ function renderFired() {
     + '</div></div>';
 
   h += '<div style="font-size:12px;color:var(--txt3);margin-bottom:20px;">Your reputation has taken a hit. Fewer schools will be interested, but there\'s always a program looking for a fresh start.</div>'
-    + '<button class="btn-big btn-full" data-fired-go>FIND A NEW JOB</button>'
+    + '<button class="btn-big btn-full" data-fired-go>Find a new job</button>'
     + '</div>';
   return h;
 }
@@ -742,13 +742,13 @@ function renderSkillPoints() {
     + '<div style="font-size:12px;color:var(--txt2);">You earned <b style="color:var(--grn2);">' + G.skillPointsEarned + '</b> skill point' + (G.skillPointsEarned !== 1 ? 's' : '') + ' this season.</div></div>';
 
   h += '<div style="text-align:center;margin-bottom:16px;"><div style="font-size:34px;font-weight:900;color:' + (pts > 0 ? 'var(--grn2)' : 'var(--txt3)') + ';">' + pts + '</div>'
-    + '<div style="font-size:11px;color:var(--txt3);font-weight:700;letter-spacing:1px;">POINTS REMAINING</div></div>';
+    + '<div style="font-size:11px;color:var(--txt3);font-weight:700;">Points remaining</div></div>';
 
   var ratings = [
-    { key: 'off', label: 'Offense', desc: 'Boosts your team\u2019s scoring output', icon: '\ud83c\udfc0' },
-    { key: 'def', label: 'Defense', desc: 'Reduces opponent scoring', icon: '\ud83d\udee1\ufe0f' },
-    { key: 'dev', label: 'Development', desc: 'Players improve faster in offseason', icon: '\ud83d\udcc8' },
-    { key: 'rec', label: 'Recruiting', desc: 'Stronger bids, bigger budget', icon: '\ud83c\udf1f' }
+    { key: 'off', label: 'Offense', desc: 'Boosts your team\u2019s scoring output' },
+    { key: 'def', label: 'Defense', desc: 'Reduces opponent scoring' },
+    { key: 'dev', label: 'Development', desc: 'Players improve faster in offseason' },
+    { key: 'rec', label: 'Recruiting', desc: 'Stronger bids, bigger budget' }
   ];
 
   ratings.forEach(function(r) {
@@ -758,7 +758,6 @@ function renderSkillPoints() {
     var canRemove = val > initVal;
     var pct = Math.round((val - 40) / 59 * 100);
     h += '<div class="skill-row">'
-      + '<div style="font-size:26px;flex-shrink:0;" aria-hidden="true">' + r.icon + '</div>'
       + '<div style="flex:1;min-width:0;"><div style="font-size:14px;font-weight:800;">' + r.label + '</div>'
       + '<div style="font-size:11px;color:var(--txt3);">' + r.desc + '</div>'
       + '<div class="skill-bar"><div class="skill-fill" style="width:' + pct + '%;"></div></div></div>'
@@ -768,7 +767,7 @@ function renderSkillPoints() {
       + '</div>';
   });
 
-  h += '<button class="btn-big btn-full" style="margin-top:12px;" data-finish-skills>CONTINUE</button></div>';
+  h += '<button class="btn-big btn-full" style="margin-top:12px;" data-finish-skills>Continue</button></div>';
   return h;
 }
 
@@ -992,8 +991,8 @@ export function applyForJob(jobId) {
       G.recruitPhase = 0; G.recruitTargets = [];
       G.recruitingBudget = 0; G.recruitingSpent = 0;
 
-      addLog('ev', G.gi, 'Coach ' + G.coach.lastName + ' accepts the job at <b>' + newTeam.name + '</b>!');
-      toast('Welcome to ' + newTeam.name + '!', 'var(--grn)');
+      addLog('ev', G.gi, 'Coach ' + G.coach.lastName + ' accepts the job at <b>' + newTeam.name + '</b>.');
+      toast('Welcome to ' + newTeam.name, 'var(--grn)');
       G.offseasonStep = 'turnover';
       _rejectedJobs = [];
       saveState(); updateAll(); renderOffseason();
@@ -1018,10 +1017,10 @@ function showJobModal(job, offered, onContinue) {
     + '<div style="font-size:24px;font-weight:900;margin:8px 0 4px;">' + job.team.name + '</div>'
     + '<div style="font-size:12px;color:var(--txt2);margin-bottom:16px;">' + job.team.conf + ' \u00b7 Prestige ' + (job.team.schoolPrestige || '?') + '</div>';
   if (offered) {
-    content += '<div style="font-size:13px;color:var(--txt2);margin-bottom:20px;">The program wants you to lead them to glory. Do you accept?</div>'
+    content += '<div style="font-size:13px;color:var(--txt2);margin-bottom:20px;">The program has offered you the job. Do you accept?</div>'
       + '<div style="display:flex;gap:10px;">'
-      + '<button id="job-decline" class="btn btn-ghost" style="flex:1;">DECLINE</button>'
-      + '<button id="job-accept" class="btn btn-red" style="flex:1;">ACCEPT</button>'
+      + '<button id="job-decline" class="btn btn-ghost" style="flex:1;">Decline</button>'
+      + '<button id="job-accept" class="btn btn-red" style="flex:1;">Accept</button>'
       + '</div>';
   } else {
     content += '<div style="font-size:13px;color:var(--txt3);margin-bottom:20px;">' + job.team.name + ' has decided to go in a different direction.</div>'
@@ -1240,7 +1239,7 @@ function renderRosterNeeds() {
     var gp = p.s.gp || 0; var ppg = gp ? (p.s.pts / gp).toFixed(1) : '--';
     h += '<div class="leader-row"><span class="pos-chip">' + p.pos + '</span>'
       + '<div class="leader-name">' + p.name + ' <span style="font-size:10px;font-weight:800;color:var(--blu);">' + p.cls + '</span>'
-      + '<small>' + ppg + ' PPG · ' + p.mins + ' MIN</small></div>'
+      + '<small>' + ppg + ' PPG · ' + p.mins + ' min</small></div>'
       + '<div class="leader-val" style="color:var(--blu);font-size:15px;">' + p.ovr + '</div></div>';
   });
   return h;
