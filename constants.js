@@ -15,16 +15,6 @@ export const DIFF_DESC = {
 export const DIFF_MOD = { easy: 5, normal: 0, hard: -6, legend: -12 };
 
 // ── Recruiting Prestige Gates ────────────────────────────
-// Minimum prestige to have ANY shot at a recruit by star tier.
-// Below this, your bid is multiplied by a harsh penalty.
-export const RECRUIT_PRESTIGE_GATES = {
-  5: { minPrestige: 4, penalty: 0.15 },   // 5-stars: need prestige 4+, else 85% bid penalty
-  4: { minPrestige: 3, penalty: 0.35 },   // 4-stars: need prestige 3+, else 65% penalty
-  3: { minPrestige: 1, penalty: 0.70 },   // 3-stars: anyone can compete, slight penalty if prestige 0
-  2: { minPrestige: 1, penalty: 1.0 },    // 2-stars: open
-  1: { minPrestige: 1, penalty: 1.0 }     // 1-stars: open
-};
-
 // ── Positions & Classes ──────────────────────────────────
 export const POS = ['PG', 'SG', 'SF', 'PF', 'C'];
 export const CLS = ['FR', 'SO', 'JR', 'SR'];
@@ -357,13 +347,6 @@ export const COM = {
     function(a){return "That's a clutch bucket from "+a+". He lives for these moments.";},
     function(a){return a+" is ice cold under pressure. Unbelievable composure.";},
     function(a){return "The moment is not too big for "+a+". Money.";},
-  ],
-  run: [
-    function(t,n){return t+" on a "+n+"-0 run.";},
-    function(t,n){return ""+n+" straight for "+t+". Momentum shift.";},
-    function(t,n){return t+" can't miss right now — "+n+"-0 run.";},
-    function(t,n){return "How do you stop "+t+"? "+n+" unanswered. Timeout coming.";},
-    function(t,n){return t+" on an absolute tear. "+n+"-0 run changes everything.";},
   ]
 };
 

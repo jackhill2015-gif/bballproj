@@ -15,20 +15,8 @@ export function clamp(v, lo, hi) {
   return Math.min(hi, Math.max(lo, v));
 }
 
-export function pct(a, b) {
-  return b > 0 ? ((a / b) * 100).toFixed(1) + '%' : '--';
-}
-
 export function fR(w, l) {
   return w + '\u2013' + l;   // en-dash, matches original
-}
-
-export function fmtR(w, l) {
-  return w + '-' + l;
-}
-
-export function ord(n) {
-  return n + ([, 'st', 'nd', 'rd'][n % 100 >> 3 ^ 1 && n % 10] || 'th');
 }
 
 // ── DOM Shortcuts ────────────────────────────────────────

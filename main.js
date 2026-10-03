@@ -9,7 +9,7 @@ import { G, SetupState } from './state.js';
 import {
   buildUniverse, buildSchedules, genRecruits,
   launchSim, doPlay, advanceWeek, autoSimNext, updateAutoBtn,
-  recordResult, simCPUWeek, endSeason, showRecap, beginOffseason, doOffseason,
+  recordResult, simCPUWeek, endSeason, beginOffseason, doOffseason,
   registerSeasonCallbacks
 } from './season.js';
 import {
