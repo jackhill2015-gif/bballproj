@@ -55,6 +55,19 @@ export function rollEvents(weekNum) {
     if (ri(1, 100) <= chance) { fn(); fired++; }
   }
 
+  // Weekly honors post at most once per week: skip the roll entirely if
+  // this week's log already contains the honor. (The engine rolls each
+  // week once, but this guards against any double-roll of a week, e.g.
+  // after a mid-week save/load edge.)
+  function honorPosted(phrase) {
+    var logs = G.logs || [];
+    for (var hi = 0; hi < logs.length; hi++) {
+      var he = logs[hi];
+      if (he && he.type === 'ev' && he.wk === weekNum && String(he.text).indexOf(phrase) >= 0) return true;
+    }
+    return false;
+  }
+
   var active = t.rost.filter(function(p) { return p.mins > 0; });
   var starters = t.rost.slice(0, 5);
   if (!active.length) return;
@@ -112,7 +125,7 @@ export function rollEvents(weekNum) {
   });
 
   // 5. Player of the Week (20% — log only)
-  tryFire(20, function() {
+  if (!honorPosted('Player of the Week')) tryFire(20, function() {
     var best = null; var bestPpg = 0;
     starters.forEach(function(p) {
       var gp = p.s.gp || 1;
@@ -171,7 +184,7 @@ export function rollEvents(weekNum) {
 
   // 11. Coach of the Week (conditional)
   var recentWins = played.slice(-3).filter(function(g) { return g.uScore > g.oScore; }).length;
-  tryFire(recentWins >= 3 ? 40 : 0, function() {
+  if (!honorPosted('Coach of the Week')) tryFire(recentWins >= 3 ? 40 : 0, function() {
     addLog('ev', weekNum, 'Coach <b>' + G.coach.firstName + ' ' + G.coach.lastName + '</b> named ' + t.conf + ' Coach of the Week after 3 straight wins.');
   });
 
