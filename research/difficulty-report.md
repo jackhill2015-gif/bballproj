@@ -132,3 +132,17 @@ feel solved. The boredom risk is the season, not the bracket.
 
 ## Appendix: firings (0 across 72 seasons)
 - none
+
+## Update (Claude) — fixes 1 and 3 implemented
+
+- **Fix 1, CPU development:** CPU returners now run `calcGrowth` each offseason
+  with their own coach's dev rating (`season.js` doOffseason). Re-run: CPU
+  returners +0.80 OVR/yr vs user +0.79 (was +0.00 vs +0.99). Steady-state user
+  edge over the league fell from +15–20 to about +10–13 (top-10 teams sit near
+  +10 anyway). League average stays ~70.5 — no ratings inflation.
+- **Fix 3, expectations with teeth:** a roster ranked top 20 nationally at the
+  start of the season is now expected to make the NCAA tournament
+  (`calcExpectations(..., rosterRank)` → `exp.ncaa`). Missing it counts as a
+  disappointing season (hot seat, then a 40% firing chance) regardless of wins.
+- **Fix 2, two-way portal pressure:** coming next as player retention — key
+  players ask for NIL to stay, and the ones you don't pay enter the portal.

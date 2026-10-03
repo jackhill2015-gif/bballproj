@@ -10,6 +10,12 @@ import { G } from '../state.js';
 import { SKILL_POINT_TABLE } from '../constants.js';
 import { awardScore, pickPositionalTeam } from '../utils.js';
 
+// Clickable player name (opens the profile; convention in views/player.js)
+function pLink(name, tid) {
+  return '<span class="pname" data-action="player" data-player-name="' + String(name).replace(/"/g, '&quot;') + '" data-tid="' + tid + '" role="button" tabindex="0">' + name + '</span>';
+}
+
+
 // ═══════════════════════════════════════════════════════════
 //  AWARDS CALCULATION
 // ═══════════════════════════════════════════════════════════
@@ -123,10 +129,10 @@ export function renderSeasonRecap() {
   var lastHistory = G.history && G.history.length ? G.history[G.history.length - 1] : null;
   var tf = lastHistory ? lastHistory.tourneyFinish : 'N/A';
 
-  function awardCard(kicker, name, sub, yours) {
+  function awardCard(kicker, name, sub, yours, tid) {
     return '<div class="panel"><div class="panel-h"><span>' + kicker + '</span></div>'
       + '<div class="panel-b">'
-      + '<div style="font-size:15px;font-weight:600;">' + name
+      + '<div style="font-size:15px;font-weight:600;">' + (tid !== undefined ? pLink(name, tid) : name)
       + (yours ? ' <span class="tag t-home">Yours</span>' : '') + '</div>'
       + '<div style="font-size:12px;color:var(--txt2);margin-top:4px;">' + sub + '</div></div></div>';
   }
@@ -156,9 +162,9 @@ export function renderSeasonRecap() {
 
   if (awards.poy) h += awardCard('Player of the year', awards.poy.name,
     awards.poy.team + ' · ' + awards.poy.pos + ' · ' + awards.poy.ppg + ' PPG / ' + awards.poy.rpg + ' RPG / ' + awards.poy.apg + ' APG',
-    awards.poy.tid === G.tid);
+    awards.poy.tid === G.tid, awards.poy.tid);
   if (awards.foy) h += awardCard('Freshman of the year', awards.foy.name,
-    awards.foy.team + ' · ' + awards.foy.ppg + ' PPG', awards.foy.tid === G.tid);
+    awards.foy.team + ' · ' + awards.foy.ppg + ' PPG', awards.foy.tid === G.tid, awards.foy.tid);
   if (awards.coy) {
     var cn = awards.coy.coach ? awards.coy.coach.firstName + ' ' + awards.coy.coach.lastName : 'Staff';
     h += awardCard('Coach of the year', cn, awards.coy.name + ' (' + awards.coy.wins + '-' + awards.coy.loss + ')',
@@ -189,7 +195,7 @@ export function renderSeasonRecap() {
       + '<th style="text-align:right;">RPG</th><th style="text-align:right;">APG</th></tr></thead><tbody>';
     awards.allAmerican.forEach(function(p) {
       h += '<tr' + (p.tid === G.tid ? ' class="hl"' : '') + '>'
-        + '<td>' + p.name + ' <span style="font-size:11px;color:var(--txt3);">' + p.pos + '</span></td>'
+        + '<td>' + pLink(p.name, p.tid) + ' <span style="font-size:11px;color:var(--txt3);">' + p.pos + '</span></td>'
         + '<td style="font-size:12px;color:var(--txt2);">' + p.team + '</td>'
         + '<td style="font-family:var(--mono);text-align:right;">' + p.ppg + '</td>'
         + '<td style="font-family:var(--mono);text-align:right;">' + p.rpg + '</td>'
@@ -204,7 +210,7 @@ export function renderSeasonRecap() {
       + '<thead><tr><th>Player</th><th>Team</th><th style="text-align:right;">PPG</th></tr></thead><tbody>';
     awards.userAllConf.forEach(function(p) {
       h += '<tr' + (p.tid === G.tid ? ' class="hl"' : '') + '>'
-        + '<td>' + p.name + ' <span style="font-size:11px;color:var(--txt3);">' + p.pos + '</span></td>'
+        + '<td>' + pLink(p.name, p.tid) + ' <span style="font-size:11px;color:var(--txt3);">' + p.pos + '</span></td>'
         + '<td style="font-size:12px;color:var(--txt2);">' + p.team + '</td>'
         + '<td style="font-family:var(--mono);text-align:right;">' + p.ppg + '</td></tr>';
     });

@@ -796,18 +796,18 @@ export function endSeason() {
       G.coach.hotSeat = false;
     } else {
       G.coach.hotSeat = true;
-      addLog('ev', G.gi, '<b>\ud83d\udea8 HOT SEAT!</b> The administration is seriously concerned. Another bad season and you\'re gone.');
+      addLog('ev', G.gi, '<b>Hot seat.</b> The administration is concerned. Another season like this and you will be replaced.');
     }
-  } else if (t.wins < exp.low) {
+  } else if (t.wins < exp.low || (exp.ncaa && !(G.seasonAchievements || {}).madeNCAA)) {
     if (G.coach.hotSeat) {
       if (Math.random() < 0.4) {
         fired = true;
       } else {
-        addLog('ev', G.gi, '\u26a0\ufe0f The AD is giving you one more chance. Don\'t waste it.');
+        addLog('ev', G.gi, 'The athletic director is giving you one more season.');
       }
     } else {
       G.coach.hotSeat = true;
-      addLog('ev', G.gi, 'Disappointing season. The AD expects improvement next year.');
+      addLog('ev', G.gi, (t.wins >= exp.low ? 'Missing the NCAA tournament with this roster was a disappointment.' : 'Disappointing season.') + ' The athletic director expects improvement next year.');
     }
   } else {
     G.coach.hotSeat = false;
@@ -996,7 +996,15 @@ export function doOffseason() {
     tm.rost.forEach(function(p) { p.s = freshS(); p.morale = 50; }); // fresh vibes, new season
     if (tm.id !== G.tid) {
       tm.rost = tm.rost.filter(function(p) { return p.cls !== 'SR'; });
+      // CPU returners develop too, by their own coach's development rating
+      // (without this, CPU ratings froze after signing and every user
+      // program pulled away by season 4-5 — research/difficulty-report.md)
+      var _cdev = (tm.coach && tm.coach.dev) || 70;
       tm.rost.forEach(function(p) {
+        var _g = calcGrowth(p, _cdev);
+        ['sht', 'fin', 'def', 'reb', 'ply'].forEach(function(a) { p[a] = clamp(p[a] + (_g[a] || 0), 38, 99); });
+        p.ovr = getOvr(p);
+        if (p.pot && p.ovr > p.pot) p.pot = p.ovr;
         var i = CLS.indexOf(p.cls);
         if (i < 3) p.cls = CLS[i + 1];
         p.s = freshS();
@@ -1052,10 +1060,11 @@ export function doOffseason() {
   // Calculate season expectations
   var confTeams = G.teams.filter(function(x) { return x.conf === G.teams[G.tid].conf; });
   var confAvgOvr = confTeams.reduce(function(s, x) { return s + getTOvr(x); }, 0) / (confTeams.length || 1);
-  G.expectations = calcExpectations(getTOvr(G.teams[G.tid]), confAvgOvr);
+  var _myO = getTOvr(G.teams[G.tid]);
+  G.expectations = calcExpectations(_myO, confAvgOvr, G.teams.filter(function(x) { return getTOvr(x) > _myO; }).length + 1);
   G.seasonAchievements = { confTitleThisYear: false, madeNCAA: false, sweet16: false, finalFour: false, champGame: false, natChamp: false };
 
-  addLog('ev', 0, 'Season ' + G.yr + ' begins. Expectations: ' + G.expectations.low + '-' + G.expectations.high + ' wins.');
-  toast('Season ' + G.yr + ' starts now!');
+  addLog('ev', 0, 'Season ' + G.yr + ' begins. Expectations: ' + G.expectations.low + '-' + G.expectations.high + ' wins' + (G.expectations.ncaa ? ' and an NCAA tournament bid.' : '.'));
+  toast('Season ' + G.yr + ' has started');
   saveState(); updateAll(); navTo('dashboard');
 }

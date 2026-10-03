@@ -21,6 +21,12 @@ import {
   NIL_SHOP, shopBoughtThisWeek, teamLogo, teamColor, notifState
 } from '../ui.js';
 
+// Clickable player name (opens the profile; convention in views/player.js)
+function pLink(name, tid) {
+  return '<span class="pname" data-action="player" data-player-name="' + String(name).replace(/"/g, '&quot;') + '" data-tid="' + tid + '" role="button" tabindex="0">' + name + '</span>';
+}
+
+
 // ── Cached POY race (recomputed when week/phase changes) ──
 var _raceCache = { key: '', rows: [] };
 function poyRace() {
@@ -339,7 +345,7 @@ function renderRaces() {
   if (!rows.length) return '';
   var h = '<table><thead><tr><th>#</th><th>Player</th><th>Team</th><th class="num">PPG</th></tr></thead><tbody>';
   rows.forEach(function(r, i) {
-    h += '<tr' + (r.tid === G.tid ? ' class="hl"' : '') + '><td>' + (i + 1) + '</td><td>' + r.name + ' <span style="color:var(--txt3);">' + r.pos + '</span></td>'
+    h += '<tr' + (r.tid === G.tid ? ' class="hl"' : '') + '><td>' + (i + 1) + '</td><td>' + pLink(r.name, r.tid) + ' <span style="color:var(--txt3);">' + r.pos + '</span></td>'
       + '<td>' + r.team + '</td><td class="num">' + r.ppg.toFixed(1) + '</td></tr>';
   });
   return panel('Player of the year watch', h + '</tbody></table>', { flush: true });

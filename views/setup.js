@@ -386,7 +386,8 @@ export function startDynasty() {
   var t = G.teams[G.tid];
   var confTeams = G.teams.filter(function(x) { return x.conf === t.conf; });
   var confAvgOvr = confTeams.reduce(function(s, x) { return s + getTOvr(x); }, 0) / (confTeams.length || 1);
-  G.expectations = calcExpectations(getTOvr(t), confAvgOvr);
+  var _myO = getTOvr(t);
+  G.expectations = calcExpectations(_myO, confAvgOvr, G.teams.filter(function(x) { return getTOvr(x) > _myO; }).length + 1);
   G.seasonAchievements = { confTitleThisYear: false, madeNCAA: false, sweet16: false, finalFour: false, champGame: false, natChamp: false };
 
   ge('setup').style.display = 'none';

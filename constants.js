@@ -616,7 +616,7 @@ export const SKILL_POINT_TABLE = [
 // Pre-v11 overall scale (copy of utils.oldOvr; utils.js imports this module)
 function oldOvrC(v) { return v <= 60 ? v : v <= 82.5 ? 60 + (v - 60) / 0.75 : 90 + (v - 82.5) / 1.35; }
 
-export function calcExpectations(teamOvr, confAvgOvr) {
+export function calcExpectations(teamOvr, confAvgOvr, rosterRank) {
   // Inputs are team overalls on the display scale; compare on the pre-v11 scale
   var diff = oldOvrC(teamOvr) - oldOvrC(confAvgOvr);
   // Base wins expectation
@@ -624,5 +624,7 @@ export function calcExpectations(teamOvr, confAvgOvr) {
   var low = Math.max(5, base - 3);
   var high = Math.min(30, base + 3);
   var danger = Math.max(3, low - 5); // below this = hot seat
-  return { low: low, high: high, danger: danger, base: base };
+  // A top-20 roster is expected to make the NCAA tournament; missing it
+  // counts as a disappointing season no matter the win total
+  return { low: low, high: high, danger: danger, base: base, ncaa: !!rosterRank && rosterRank <= 20 };
 }

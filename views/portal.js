@@ -16,6 +16,12 @@ import { portalEntryChance, moralePortalReason, MORALE_DEFAULT } from '../morale
 import { teamLogo } from '../ui.js';
 import * as Battle from './battle.js';
 
+// Clickable player name (opens the profile; convention in views/player.js)
+function pLink(name, tid) {
+  return '<span class="pname" data-action="player" data-player-name="' + String(name).replace(/"/g, '&quot;') + '" data-tid="' + tid + '" role="button" tabindex="0">' + name + '</span>';
+}
+
+
 // ── Callbacks registered by views/recruiting.js (avoids an import cycle) ──
 var _ext = { render: null, toast: null, addLog: null };
 export function registerPortalCallbacks(cb) {
@@ -681,7 +687,7 @@ function detailRow(e) {
   var left = { FR: 3, SO: 2, JR: 1, SR: 0 }[e.cls];
   var attrs = [['Shooting', e.sht], ['Finishing', e.fin], ['Defense', e.def], ['Rebounding', e.reb], ['Playmaking', e.ply]];
   var h = '<div class="rdetail"><div style="display:flex;justify-content:space-between;gap:8px;">'
-    + '<div><div style="font-weight:600;">' + e.name + ', ' + e.pos + ' (' + e.cls + ')</div>'
+    + '<div><div style="font-weight:600;">' + pLink(e.name, e.fromTid) + ', ' + e.pos + ' (' + e.cls + ')</div>'
     + '<div style="font-size:12.5px;color:var(--txt2);">Leaving ' + e.fromName + ': ' + e.reason.toLowerCase() + '. '
     + (left === undefined ? '' : (left > 0 ? left + ' season' + (left > 1 ? 's' : '') + ' of eligibility after this one. ' : 'Final season. '))
     + (e.homeState ? 'Home state: ' + e.homeState + '.' : '') + '</div></div>'
