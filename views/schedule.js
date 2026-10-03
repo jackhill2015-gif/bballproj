@@ -41,9 +41,9 @@ export function renderScheduleView() {
     + '<div><div class="sec-head" style="margin:0;">' + team.name + ' schedule</div>'
     + '<div class="sec-sub" style="margin:2px 0 0;">' + team.conf + ' · Season ' + G.yr + '</div></div>'
     + '<div style="display:flex;gap:14px;">'
-    + '<div style="text-align:center;"><div style="font-family:var(--mono);font-size:18px;font-weight:900;color:var(--grn2);">' + wins + '</div><div style="font-size:10px;color:var(--txt3);">WINS</div></div>'
-    + '<div style="text-align:center;"><div style="font-family:var(--mono);font-size:18px;font-weight:900;color:var(--red);">' + losses + '</div><div style="font-size:10px;color:var(--txt3);">LOSSES</div></div>'
-    + '<div style="text-align:center;"><div style="font-family:var(--mono);font-size:18px;font-weight:900;color:var(--txt2);">' + left + '</div><div style="font-size:10px;color:var(--txt3);">LEFT</div></div>'
+    + '<div style="text-align:center;"><div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--grn2);">' + wins + '</div><div style="font-size:10px;color:var(--txt3);">Wins</div></div>'
+    + '<div style="text-align:center;"><div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--red);">' + losses + '</div><div style="font-size:10px;color:var(--txt3);">Losses</div></div>'
+    + '<div style="text-align:center;"><div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--txt2);">' + left + '</div><div style="font-size:10px;color:var(--txt3);">Left</div></div>'
     + '</div></div>';
 
   h += '<div class="card-title">Non-conference</div><div class="tbl-wrap" style="margin-bottom:16px;">';
@@ -78,7 +78,7 @@ function gameRow(game, week, natSorted, team, rivals) {
   if (isPlayed) {
     h += '<div class="sched-badge"><span class="badge ' + (isWin ? 'w' : 'l') + '">' + (isWin ? 'W' : 'L') + '</span></div>';
   } else if (isNext) {
-    h += '<div class="sched-badge"><span class="badge next">NEXT</span></div>';
+    h += '<div class="sched-badge"><span class="badge next">Next</span></div>';
   } else {
     h += '<div class="sched-badge"></div>';
   }

@@ -253,7 +253,7 @@ function renderJobOffers() {
   var h = '<div class="setup-wrap" style="max-width:720px;">'
     + stepHeader('Job offers', 'As a first-year coach, these programs will take a chance on you.')
     + '<div class="panel"><div class="panel-h"><span>Open positions</span><small>' + _jobOffers.length + ' programs</small></div>'
-    + '<div class="panel-b flush"><table>'
+    + '<div class="panel-b flush"><div class="tbl-wrap"><table>'
     + '<thead><tr><th></th><th>Program</th><th class="num">OVR</th><th class="num">Prestige</th></tr></thead><tbody>';
   _jobOffers.forEach(function(t) {
     var tier = getTier(t.baseOvr);
@@ -263,7 +263,7 @@ function renderJobOffers() {
       + '<td class="num">' + getTOvr(t) + '</td>'
       + '<td class="num">' + t.schoolPrestige + '</td></tr>';
   });
-  h += '</tbody></table></div></div></div>';
+  h += '</tbody></table></div></div></div></div>';
   return h;
 }
 
@@ -315,7 +315,7 @@ function renderNCSchedule() {
   var h = '<div class="setup-wrap" style="max-width:720px;">'
     + stepHeader(t.name, t.conf + ' · Prestige ' + t.schoolPrestige + ' · OVR ' + getTOvr(t))
     + '<div class="panel"><div class="panel-h"><span>Non-conference schedule</span><small>Auto-generated · swap any opponent</small></div>'
-    + '<div class="panel-b flush"><table>'
+    + '<div class="panel-b flush"><div class="tbl-wrap"><table>'
     + '<thead><tr><th></th><th>Opponent</th><th class="num">OVR</th><th class="num">Edge</th><th></th></tr></thead><tbody>';
   SetupState.NC_PICKS.forEach(function(id, i) {
     var opp = G.teams[id];
@@ -330,7 +330,7 @@ function renderNCSchedule() {
       + '<td class="num" style="color:' + diffCol + ';">' + diffStr + '</td>'
       + '<td><button class="btn-quiet" data-swapnc="' + i + '">Swap</button></td></tr>';
   });
-  h += '</tbody></table></div></div>'
+  h += '</tbody></table></div></div></div>'
     + '<div class="big-btn-row">'
     + '<button class="btn-big secondary" data-setup="back-jobs">Back</button>'
     + '<button class="btn-big" data-setup="start-dynasty">Start season</button></div>'
