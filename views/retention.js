@@ -12,7 +12,7 @@
 
 import { G } from '../state.js';
 import { oldOvr } from '../utils.js';
-import { noteSpend } from '../finance.js';
+import { noteSpend, totals } from '../finance.js';
 
 var MORALE_DEFAULT = 50;
 
@@ -71,6 +71,14 @@ export function buildRetentionAsks() {
       ppg: ppg === null ? null : Math.round(ppg * 10) / 10,
       ask: retentionAsk(p), why: whyAsk(p, i), decision: null });
   });
+  // Keeping everyone should be possible but expensive: the combined asks
+  // never exceed 75% of what the program brought in this season
+  var cap = Math.round(totals().income * 0.75);
+  var sum = asks.reduce(function(s, a) { return s + a.ask; }, 0);
+  if (cap > 0 && sum > cap) {
+    var f = cap / sum;
+    asks.forEach(function(a) { a.ask = Math.max(25, Math.floor(a.ask * f / 5) * 5); });
+  }
   G.retention = { yr: G.yr, asks: asks };
   return asks;
 }

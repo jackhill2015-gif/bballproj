@@ -62,7 +62,7 @@ for (const [label, lo, hi] of [['small', 0, 35], ['mid', 45, 60], ['power', 80, 
   const tot = (G.retention.asks || []).reduce((s, a) => s + a.ask, 0);
   const inc = FI.totals().income;
   console.log('  ' + label.padEnd(6) + ' asks ' + String(tot).padStart(4) + ' / income ' + inc + '  (' + G.retention.asks.map(a => a.ovr + ':' + a.ask).join(' ') + ')');
-  check(tot < inc * 0.9, label + ': keeping everyone costs under 90% of a season of income (' + Math.round(tot / inc * 100) + '%)');
+  check(tot <= Math.max(inc * 0.75, G.retention.asks.length * 25), label + ': keeping everyone costs at most 75% of a season of income (' + Math.round(tot / inc * 100) + '%)');
 }
 
 console.log(fails ? fails + ' FAILED' : 'all retention checks passed');

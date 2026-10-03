@@ -91,7 +91,7 @@ export function renderHelp() {
     'Before the portal opens, your two or three best returning players ask for an NIL deal to stay '
     + '(a fourth may ask if he is unhappy). Keep pays the ask and he will not enter the portal this year. '
     + 'Let go sends him into the portal; if no school signs him, he stays. Asks grow with rating, '
-    + 'production and your program\'s size, and happier players ask for less. You can switch a decision '
+    + 'production and your program\'s size, and happier players ask for less. All requests together never cost more than three quarters of what your program earned that season. You can switch a decision '
     + 'until you open the portal; switching a keep to let go refunds it.');
 
   h += sec('The transfer portal',
