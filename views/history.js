@@ -143,7 +143,7 @@ export function renderHistory() {
     ['pts', 'reb', 'ast', 'stl', 'blk'].forEach(function(st) {
       var e = pb[sc[0]][st];
       h += '<tr><td class="tname">' + STAT_LABELS[st]
-        + (e ? ' <span class="dim">' + e.name + ' · ' + e.yr + '</span>'
+        + (e ? ' <span class="dim"><span class="pname" data-action="player" data-player-name="' + e.name + '" data-tid="' + G.tid + '" role="button" tabindex="0">' + e.name + '</span> · ' + e.yr + '</span>'
              : ' <span class="dim">No record yet</span>')
         + '</td><td class="num" style="font-size:14px;font-weight:800;">' + (e ? e.v : '—') + '</td></tr>';
     });
@@ -161,7 +161,7 @@ export function renderHistory() {
     hof.forEach(function(x) {
       var tags = x.honors.map(function(hh) { return '<span class="tag t-home">' + hh + '</span>'; }).join(' ');
       if (x.retired) tags += ' <span class="tag t-cf">Jersey Retired</span>';
-      h += '<div class="leader-row"><div class="leader-name" style="font-weight:800;">' + x.name
+      h += '<div class="leader-row"><div class="leader-name" style="font-weight:800;"><span class="pname" data-action="player" data-player-name="' + x.name + '" data-tid="' + x.tid + '" role="button" tabindex="0">' + x.name + '</span>'
         + '<small>' + x.pos + ' · ' + x.yrs + (x.yrs === 1 ? ' yr' : ' yrs') + ' · ' + x.yr
         + ' · ' + x.pts + ' pts, ' + x.reb + ' reb, ' + x.ast + ' ast</small></div>'
         + '<div style="text-align:right;max-width:45%;">' + tags + '</div></div>';

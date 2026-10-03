@@ -1101,3 +1101,20 @@ table.atc td { font-size: 12.5px; vertical-align: top; }
 table.atc td:first-child { white-space: nowrap; }
 table.atc .dim { color: var(--txt3); }
 @media (max-width: 640px) { table.atc th:nth-child(2), table.atc td:nth-child(2) { display: none; } }
+
+/* Muse: job1-players */
+.pname { color: var(--blu); cursor: pointer; font-weight: 600; }
+.pname:hover { text-decoration: underline; }
+#sheet { position: fixed; inset: 0; z-index: 9200; display: none; align-items: flex-end; justify-content: center; background: rgba(20,30,50,.4); }
+#sheet.open { display: flex; }
+@media (min-width: 700px) { #sheet { align-items: center; padding: 20px; } }
+.sheet-panel { background: #fff; width: 100%; max-width: 600px; max-height: 88vh; overflow-y: auto; border-radius: 12px 12px 0 0; }
+@media (min-width: 700px) { .sheet-panel { border-radius: 12px; } }
+.sheet-head { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--bdr); position: sticky; top: 0; background: #fff; z-index: 2; font-weight: 700; }
+#sheet-body { padding: 14px; }
+.pf-top { margin-bottom: 12px; }
+.pf-name { font-size: 20px; font-weight: 800; }
+.pf-sub { font-size: 12.5px; color: var(--txt2); margin-top: 2px; }
+.pf-ovr { margin-top: 6px; font-size: 13px; color: var(--txt2); }
+.pf-ovr b { font-size: 22px; color: var(--txt); font-weight: 800; }
+>>>>>>> 5763dd4 (Job 1: player pages)

@@ -24,10 +24,10 @@ function computeLeaders() {
 
   var players = [];
   G.teams.forEach(function(t) {
-    t.rost.forEach(function(p) {
+    t.rost.forEach(function(p, pi) {
       if (!(p.s.gp > 0)) return;
       players.push({
-        name: p.name, pos: p.pos, cls: p.cls, team: t.name, tid: t.id, gp: p.s.gp,
+        name: p.name, pos: p.pos, cls: p.cls, team: t.name, tid: t.id, idx: pi, gp: p.s.gp,
         ppg: p.s.pts / p.s.gp,
         rpg: p.s.reb / p.s.gp,
         apg: p.s.ast / p.s.gp,
@@ -81,7 +81,7 @@ export function renderStats() {
       var isU = r.tid === G.tid;
       h += '<tr' + (isU ? ' class="hl"' : '') + '>'
         + '<td style="color:var(--txt3);font-family:var(--mono);">' + (i + 1) + '</td>'
-        + '<td style="font-weight:600;' + (isU ? 'color:var(--blu);' : '') + '">' + r.name
+        + '<td style="font-weight:600;' + (isU ? 'color:var(--blu);' : '') + '"><span class="pname" data-action="player" data-player="' + r.tid + ':' + r.idx + '" role="button" tabindex="0">' + r.name + '</span>'
         + ' <span style="font-weight:400;color:var(--txt3);font-size:11px;">' + r.pos + ' · ' + r.cls + '</span></td>'
         + '<td style="color:var(--txt3);font-size:12px;">' + r.team + '</td>'
         + '<td style="text-align:right;font-family:var(--mono);font-weight:800;">' + entry.cat.fmt(entry.cat.val(r)) + '</td></tr>';

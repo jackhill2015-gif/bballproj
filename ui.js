@@ -11,6 +11,8 @@ import { upgradeFacility } from './facilities.js';
 import { ge, txt, fR, clamp } from './utils.js';
 import { G, LS, SetupState, saveState } from './state.js';
 import { simPoss, simGame } from './simulation.js';
+import { openPlayerFromEl } from './views/player.js';
+import { closeSheet } from './views/sheet.js';
 
 // ── Late-Binding Registry ────────────────────────────────
 var _views = {
@@ -565,6 +567,12 @@ function handleAction(el) {
     case 'gcast-tab':
       switchGcastTab(el.getAttribute('data-tab'));
       break;
+    case 'player':
+      openPlayerFromEl(el);
+      break;
+    case 'sheet-close':
+      closeSheet();
+      break;
     case 'more':
       toggleMoreSheet();
       break;
@@ -799,7 +807,7 @@ function boxDeltas(team, snap) {
   team.rost.forEach(function(p, i) {
     var s0 = (snap && snap[i]) || {};
     var d = function(k) { return (p.s[k] || 0) - (s0[k] || 0); };
-    out.push({ p: p, pts: d('pts'), reb: d('reb'), ast: d('ast'), fgm: d('fgm'), fga: d('fga'), stl: d('stl'), blk: d('blk') });
+    out.push({ p: p, idx: i, pts: d('pts'), reb: d('reb'), ast: d('ast'), fgm: d('fgm'), fga: d('fga'), stl: d('stl'), blk: d('blk') });
   });
   return out;
 }
@@ -844,7 +852,7 @@ function renderGcastBox() {
       + '<table><thead><tr><th>Player</th><th class="num">PTS</th>'
       + '<th class="num">REB</th><th class="num">AST</th></tr></thead><tbody>';
     rows.forEach(function(r) {
-      html += '<tr><td>' + r.p.name + ' <span class="pt-sub">' + r.p.pos + '</span></td>'
+      html += '<tr><td><span class="pname" data-action="player" data-player="' + team.id + ':' + r.idx + '" role="button" tabindex="0">' + r.p.name + '</span> <span class="pt-sub">' + r.p.pos + '</span></td>'
         + '<td class="num">' + r.pts + '</td>'
         + '<td class="num">' + r.reb + '</td>'
         + '<td class="num">' + r.ast + '</td></tr>';
