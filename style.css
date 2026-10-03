@@ -1011,13 +1011,13 @@ th.sortable.on { color: var(--txt); }
   .flbl { width: 56px; }
   .fchip { padding: 2px 8px; min-height: 30px; font-size: 12px; }
   .ptbl { min-width: 0; }
-  .ptbl thead { display: none; }
-  .ptbl tbody tr {
+  .ptbl > thead { display: none; }
+  .ptbl > tbody > tr {
     display: grid; grid-template-columns: 26px 1fr auto auto auto;
     grid-template-areas: "pos name name name ovr" ". offer pot ask odds";
     column-gap: 10px; row-gap: 4px; padding: 7px 0; border-bottom: 1px solid var(--bdr);
   }
-  .ptbl tbody td { border: none; padding: 0; background: none !important; }
+  .ptbl > tbody > tr > td { border: none; padding: 0; background: none !important; }
   .ptbl .c-pos { grid-area: pos; color: var(--txt3); font-size: 12px; padding-top: 1px; }
   .ptbl .c-name { grid-area: name; min-width: 0; }
   .ptbl .c-ovr { grid-area: ovr; font-size: 15px; }
@@ -1030,5 +1030,42 @@ th.sortable.on { color: var(--txt); }
     content: attr(data-l) " "; color: var(--txt3); font-size: 11px;
   }
   .ptbl .c-odds div { display: none; }
-  .ptbl tbody tr.hl { background: var(--blu-soft); }
+  .ptbl > tbody > tr.hl { background: var(--blu-soft); }
 }
+
+/* Recruiting board table */
+.rtbl > tbody > tr.rrow { cursor: pointer; }
+.rtbl tbody tr.rrow.open td { background: var(--blu-soft); }
+.rtbl .stars { color: var(--gld2); letter-spacing: 1px; white-space: nowrap; }
+.rtbl .tgt-on { font-size: 12px; color: var(--blu); white-space: nowrap; }
+.rtbl .c-act { text-align: right; white-space: nowrap; }
+.rtbl tr.detail-row td { background: #fff !important; padding: 10px; border-bottom: 1px solid var(--bdr2); }
+.rdetail .school-name { width: 120px; font-size: 12px; }
+@media (max-width: 640px) {
+  .rtbl > tbody > tr.rrow {
+    display: grid; grid-template-columns: 30px 1fr auto auto;
+    grid-template-areas: "rank name name ovr" "pos stars pot act";
+    column-gap: 10px; row-gap: 3px; padding: 7px 0; border-bottom: 1px solid var(--bdr);
+  }
+  .rtbl tbody tr.rrow.open { background: var(--blu-soft); }
+  .rtbl .c-rank { grid-area: rank; color: var(--txt3); font-size: 12px; text-align: left; }
+  .rtbl .c-pos { grid-area: pos; }
+  .rtbl .c-stars { grid-area: stars; align-self: center; }
+  .rtbl .c-act { grid-area: act; align-self: center; }
+  .rtbl .c-stars::before { content: none; }
+  .rtbl > tbody > tr.detail-row { display: block; }
+  .rtbl > tbody > tr.detail-row > td { display: block; padding: 10px 0; }
+}
+.ptbl tbody tr.prow { cursor: pointer; }
+.ptbl tbody tr.prow.open td { background: var(--blu-soft); }
+.ptbl tr.detail-row td { background: #fff !important; padding: 10px; border-bottom: 1px solid var(--bdr2); }
+.rdetail table { font-size: 12.5px; }
+.rdetail tbody tr:nth-child(even) td { background: none; }
+@media (max-width: 640px) {
+  .ptbl > tbody > tr.detail-row { display: block; }
+  .ptbl > tbody > tr.detail-row > td { display: block; padding: 10px 0; }
+}
+
+/* nested tables inside detail panels keep normal table layout */
+.rdetail table { min-width: 0; }
+.rdetail td { padding: 4px 0 !important; }

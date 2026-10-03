@@ -576,7 +576,7 @@ function chanceColor(pct) {
 }
 
 // ── Board view state (filters + sort). Not saved: it's a view preference.
-var _pf = { pos: 'All', tier: 'all', mine: false, sort: 'ovr', dir: -1 };
+var _pf = { pos: 'All', tier: 'all', mine: false, need: false, sort: 'ovr', dir: -1 };
 var TIERS = [
   { id: 'all', label: 'All', test: function() { return true; } },
   { id: 'a', label: '90+', test: function(e) { return e.ovr >= 90; } },
@@ -585,10 +585,62 @@ var TIERS = [
   { id: 'd', label: '75–79', test: function(e) { return e.ovr >= 75 && e.ovr < 80; } },
   { id: 'e', label: 'Under 75', test: function(e) { return e.ovr < 75; } }
 ];
+var _pDetail = -1;
+export function togglePortalDetail(pid) { _pDetail = (_pDetail === pid) ? -1 : pid; rerender(); }
+
+// Your roster at a position: count and best overall (the incumbent starter).
+function posDepth(pos) {
+  var t = G.teams[G.tid], n = 0, best = 0;
+  (t && t.rost || []).forEach(function(p) { if (p.pos === pos) { n++; if (p.ovr > best) best = p.ovr; } });
+  return { n: n, best: best };
+}
+
+// The entrant's season line, read off the player still sitting on his old roster.
+function entrantStats(e) {
+  var ot = G.teams[e.fromTid];
+  var p = ot && (ot.rost || []).find(function(x) { return x._portalPid === e.pid; });
+  if (!p || !p.s || !p.s.gp) return null;
+  var gp = p.s.gp;
+  return { gp: gp, ppg: p.s.pts / gp, rpg: p.s.reb / gp, apg: p.s.ast / gp, fg: p.s.fga ? p.s.fgm / p.s.fga : 0 };
+}
+
+function detailRow(e) {
+  var ch = portalChance(e);
+  var d = posDepth(e.pos);
+  var st = entrantStats(e);
+  var left = { FR: 3, SO: 2, JR: 1, SR: 0 }[e.cls];
+  var attrs = [['Shooting', e.sht], ['Finishing', e.fin], ['Defense', e.def], ['Rebounding', e.reb], ['Playmaking', e.ply]];
+  var h = '<div class="rdetail"><div style="display:flex;justify-content:space-between;gap:8px;">'
+    + '<div><div style="font-weight:600;">' + e.name + ', ' + e.pos + ' (' + e.cls + ')</div>'
+    + '<div style="font-size:12.5px;color:var(--txt2);">Leaving ' + e.fromName + ': ' + e.reason.toLowerCase() + '. '
+    + (left === undefined ? '' : (left > 0 ? left + ' season' + (left > 1 ? 's' : '') + ' of eligibility after this one. ' : 'Final season. '))
+    + (e.homeState ? 'Home state: ' + e.homeState + '.' : '') + '</div></div>'
+    + '<button class="btn-quiet" data-pdetail="' + e.pid + '">Close</button></div>';
+  h += '<div class="grid-2" style="margin-top:8px;gap:16px;"><div><table><tbody>';
+  attrs.forEach(function(a) { h += '<tr><td>' + a[0] + '</td><td class="num"><b>' + a[1] + '</b></td></tr>'; });
+  h += '</tbody></table></div><div><table><tbody>'
+    + '<tr><td>Last season</td><td class="num">' + (st ? st.ppg.toFixed(1) + ' pts, ' + st.rpg.toFixed(1) + ' reb, ' + st.apg.toFixed(1) + ' ast' : 'No games played') + '</td></tr>'
+    + (st ? '<tr><td>FG%, games</td><td class="num">' + (st.fg * 100).toFixed(1) + '%, ' + st.gp + '</td></tr>' : '')
+    + '<tr><td>Your ' + e.pos + 's</td><td class="num">' + d.n + (d.best ? ' (best ' + d.best + ')' : '') + '</td></tr>'
+    + '<tr><td>Ask</td><td class="num">' + portalCost(e) + ' NIL</td></tr>'
+    + '</tbody></table></div></div>';
+  var total = ch.bid; ch.suitors.forEach(function(x) { total += x.bid; });
+  h += '<div class="card-title" style="margin-top:10px;">Schools recruiting him</div>';
+  var rowsS = ch.suitors.map(function(x) { return { name: x.name, pct: Math.round(x.bid / total * 100), me: false }; });
+  rowsS.push({ name: G.teams[G.tid].name + (e.offer ? '' : ' (no offer yet)'), pct: ch.pct, me: true });
+  rowsS.sort(function(a, b) { return b.pct - a.pct; });
+  rowsS.forEach(function(x) {
+    h += '<div class="school-row"><div class="school-name" style="' + (x.me ? 'color:var(--blu);font-weight:600;' : '') + '">' + x.name + '</div>'
+      + '<div class="school-bar"><div class="school-fill" style="width:' + x.pct + '%;background:' + (x.me ? 'var(--blu)' : 'var(--bdr2)') + ';"></div></div>'
+      + '<div class="school-pct">' + x.pct + '%</div></div>';
+  });
+  return h + '</div>';
+}
+
 export function setPortalFilter(key, val) {
   if (key === 'sort') {
     if (_pf.sort === val) _pf.dir = -_pf.dir; else { _pf.sort = val; _pf.dir = val === 'name' || val === 'pos' ? 1 : -1; }
-  } else if (key === 'mine') _pf.mine = !_pf.mine;
+  } else if (key === 'mine' || key === 'need') _pf[key] = !_pf[key];
   else _pf[key] = val;
   rerender();
 }
@@ -638,10 +690,14 @@ function entrantRow(e, stage) {
       : '<span style="color:var(--txt3);">' + ch.pct + '%</span>';
   }
   var chase = ch.suitors.slice(0, 2).map(function(s) { return s.name; }).join(', ');
-  return '<tr' + (offer > 0 ? ' class="hl"' : '') + '>'
+  var dep = posDepth(e.pos);
+  var need = dep.n < 2 ? ' <span class="tag t-ok">Need</span>' : '';
+  var vs = dep.best ? (e.ovr - dep.best) : null;
+  var vsTxt = vs === null ? 'no ' + e.pos + ' on your roster' : (vs > 0 ? '+' + vs : vs) + ' vs your best ' + e.pos;
+  return '<tr class="prow' + (offer > 0 ? ' hl' : '') + (_pDetail === e.pid ? ' open' : '') + '" data-pdetail="' + e.pid + '">'
     + '<td class="c-pos">' + e.pos + '</td>'
-    + '<td class="pt-name c-name"><b>' + e.name + '</b> <span class="dim">' + e.cls + '</span>' + (e.late ? ' <span class="tag t-ok">Late entry</span>' : '')
-    + '<div class="pt-sub">' + e.fromName + ', ' + e.reason.toLowerCase() + (chase ? '. Interest: ' + chase : '') + '</div></td>'
+    + '<td class="pt-name c-name"><b>' + e.name + '</b> <span class="dim">' + e.cls + '</span>' + need + (e.late ? ' <span class="tag t-ok">Late entry</span>' : '')
+    + '<div class="pt-sub">' + e.fromName + '. <span style="color:' + (vs !== null && vs > 0 ? 'var(--grn2)' : 'var(--txt3)') + ';">' + vsTxt + '</span></div></td>'
     + '<td class="num c-ovr" data-l="Ovr"><b>' + e.ovr + '</b></td>'
     + '<td class="num c-pot" data-l="Pot" style="color:' + potCol + ';">' + (e.pot || e.ovr) + '</td>'
     + '<td class="num dim c-ask" data-l="Ask">' + portalCost(e) + '</td>'
@@ -683,6 +739,7 @@ export function renderPortal() {
   h += '</div><div class="fbar"><span class="flbl">Overall</span>';
   TIERS.forEach(function(t) { h += chip('tier', t.id, t.label, _pf.tier === t.id); });
   h += chip('mine', '1', 'My offers only', _pf.mine);
+  h += chip('need', '1', 'Positions of need', _pf.need);
   h += '</div><div class="fbar fbar-sort"><span class="flbl">Sort</span>';
   [['ovr', 'Overall'], ['pot', 'Potential'], ['odds', 'Odds'], ['ask', 'Ask']].forEach(function(s) {
     h += chip('sort', s[0], s[1] + (_pf.sort === s[0] ? (_pf.dir < 0 ? ' ▾' : ' ▴') : ''), _pf.sort === s[0]);
@@ -693,6 +750,7 @@ export function renderPortal() {
     if (_pf.pos !== 'All' && e.pos !== _pf.pos) return false;
     if (!tier.test(e)) return false;
     if (_pf.mine && !(e.offer > 0)) return false;
+    if (_pf.need && posDepth(e.pos).n >= 2) return false;
     return true;
   }).map(function(e) { return { e: e, ch: portalChance(e) }; });
   rows.sort(function(a, b) {
@@ -701,12 +759,15 @@ export function renderPortal() {
     return b.e.ovr - a.e.ovr;
   });
 
-  h += '<div class="sec-sub" style="margin:6px 0;">' + rows.length + ' of ' + avail.length + ' players shown. Ask is the typical NIL offer for that player.</div>';
+  h += '<div class="sec-sub" style="margin:6px 0;">' + rows.length + ' of ' + avail.length + ' players shown. Ask is the typical NIL offer for that player. Select a player for details.</div>';
   h += '<div class="tbl-wrap"><table class="ptbl"><thead><tr>'
     + th('pos', 'Pos') + th('name', 'Player') + th('ovr', 'Ovr', 'num') + th('pot', 'Pot', 'num')
     + th('ask', 'Ask', 'num') + th('offer', 'Your offer') + th('odds', 'Odds', 'num')
     + '</tr></thead><tbody>';
-  rows.forEach(function(r) { h += entrantRow(r.e, stage); });
+  rows.forEach(function(r) {
+    h += entrantRow(r.e, stage);
+    if (r.e.pid === _pDetail) h += '<tr class="detail-row"><td colspan="7">' + detailRow(r.e) + '</td></tr>';
+  });
   h += '</tbody></table></div>';
   if (!avail.length) h += '<div class="empty-state">No players are in the portal this year.</div>';
   else if (!rows.length) h += '<div class="empty-state">No players match these filters.</div>';
