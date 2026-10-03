@@ -7,6 +7,7 @@
 //  logic function keeps its name/signature/behavior.
 // ═══════════════════════════════════════════════════════════
 
+import { oldOvr } from '../utils.js';
 import { noteSpend } from '../finance.js';
 import { G, saveState } from '../state.js';
 import { ri, freshS, clamp, fixMins } from '../utils.js';
@@ -59,7 +60,7 @@ function getGeoBonus(ts, rs) { if (!ts || !rs || ts === 'XX') return 0; if (ts =
 // CPU suitors heat up as stages advance — your % decays unless you
 // invest more in the follow-up round.
 export function portalCost(e) {
-  return 20 + Math.max(0, e.ovr - 65) * 5;
+  return 20 + Math.round(Math.max(0, oldOvr(e.ovr) - 65) * 5);
 }
 
 function portalEsc() {
@@ -70,6 +71,7 @@ function portalEsc() {
 // a 60-prestige school can dream about an 85 OVR transfer, but the math
 // punishes it hard.
 function portalGate(ovr) {
+  ovr = oldOvr(ovr); // pre-v11 scale thresholds
   if (ovr >= 84) return 80;
   if (ovr >= 78) return 60;
   if (ovr >= 72) return 40;
@@ -80,7 +82,8 @@ function portalGate(ovr) {
 // programs — top-25 schools chase the 84+ guys, everyone fights over the rest.
 function assignSuitors(e, maxN) {
   var ranked = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; });
-  var poolSize = e.ovr >= 84 ? 25 : e.ovr >= 79 ? 60 : e.ovr >= 74 ? 120 : ranked.length;
+  var _o = oldOvr(e.ovr);
+  var poolSize = _o >= 84 ? 25 : _o >= 79 ? 60 : _o >= 74 ? 120 : ranked.length;
   var pool = ranked.slice(0, poolSize).filter(function(t) { return t.id !== e.fromTid && t.id !== G.tid; });
   for (var j = pool.length - 1; j > 0; j--) { var k = ri(0, j); var tmp = pool[j]; pool[j] = pool[k]; pool[k] = tmp; }
   e.suitors = pool.slice(0, maxN || ri(3, 6)).map(function(t) { return { tid: t.id, name: t.name }; });
@@ -98,7 +101,7 @@ function ensureEntrant(e) {
 // rival bids): prestige dominates, geography and entrant quality nudge it.
 // Bids escalate by stage — CPU suitors heat up on their targets.
 function calcSuitorBids(e) {
-  var desir = 1 + Math.max(0, e.ovr - 70) / 60; // elite transfers get pursued harder
+  var desir = 1 + Math.max(0, oldOvr(e.ovr) - 70) / 60; // elite transfers get pursued harder
   var esc = portalEsc();
   var out = [];
   (e.suitors || []).forEach(function(s) {
@@ -174,8 +177,9 @@ export function entryOdds(p, tm, ctx) {
   var chance = 0, reason = 'Playing time';
   if (mins < 15 && ctx.depth > 7) chance = 0.16;
   if (mins < 18 && p.ovr >= ctx.fifthBest - 2 && ctx.depth > 5) { chance = Math.max(chance, 0.30); reason = 'Bigger role'; }
-  if (ctx.depth <= 3 && ctx.weak && p.ovr >= 80 && (p.cls === 'SO' || p.cls === 'JR')) {
-    chance = Math.max(chance, 0.10 + (p.ovr - 80) * 0.012); reason = 'Moving up';
+  var _po = oldOvr(p.ovr);
+  if (ctx.depth <= 3 && ctx.weak && _po >= 80 && (p.cls === 'SO' || p.cls === 'JR')) {
+    chance = Math.max(chance, 0.10 + (_po - 80) * 0.012); reason = 'Moving up';
   }
   if (!chance) chance = 0.015; // a contented starter, rarely
   chance *= (1.6 - m / 100);   // morale 20 → x1.4, 50 → x1.1, 80 → x0.8
@@ -413,7 +417,7 @@ function eligiblePortalSuitors(e) {
     if (wt.rost.length < 13) return true;
     var pc = 0;
     wt.rost.forEach(function(p) { if (p.pos === e.pos) pc++; });
-    return pc < 2 || e.ovr >= 82;
+    return pc < 2 || oldOvr(e.ovr) >= 82;
   });
 }
 
@@ -477,7 +481,7 @@ function maybeLatePortalEntries() {
     (tm.rost || []).forEach(function(p) {
       if (p.cls === 'SR' || p._portalPid) return;
       if ((p.mins || 0) > 8) return;
-      if (p.ovr < 64 || p.ovr > 80) return;
+      if (oldOvr(p.ovr) < 64 || oldOvr(p.ovr) > 80) return;
       cands.push({ tm: tm, p: p });
     });
   });
@@ -596,7 +600,7 @@ export function resolvePortalCPU() {
       if (wt.rost.length < 13) return true;
       var pc = 0;
       wt.rost.forEach(function(p) { if (p.pos === e.pos) pc++; });
-      return pc < 2 || e.ovr >= 82;
+      return pc < 2 || oldOvr(e.ovr) >= 82;
     });
     if (!suitors.length) return; // nobody with room wanted them — they stay
     var win = weightedWinner(suitors.map(function(s) { return { key: s.tid, bid: s.bid, name: s.name }; }));
@@ -645,11 +649,11 @@ function chanceColor(pct) {
 var _pf = { pos: 'All', tier: 'all', mine: false, need: false, sort: 'ovr', dir: -1 };
 var TIERS = [
   { id: 'all', label: 'All', test: function() { return true; } },
-  { id: 'a', label: '90+', test: function(e) { return e.ovr >= 90; } },
-  { id: 'b', label: '85–89', test: function(e) { return e.ovr >= 85 && e.ovr < 90; } },
-  { id: 'c', label: '80–84', test: function(e) { return e.ovr >= 80 && e.ovr < 85; } },
-  { id: 'd', label: '75–79', test: function(e) { return e.ovr >= 75 && e.ovr < 80; } },
-  { id: 'e', label: 'Under 75', test: function(e) { return e.ovr < 75; } }
+  { id: 'a', label: '85+', test: function(e) { return e.ovr >= 85; } },
+  { id: 'b', label: '80–84', test: function(e) { return e.ovr >= 80 && e.ovr < 85; } },
+  { id: 'c', label: '75–79', test: function(e) { return e.ovr >= 75 && e.ovr < 80; } },
+  { id: 'd', label: '70–74', test: function(e) { return e.ovr >= 70 && e.ovr < 75; } },
+  { id: 'e', label: 'Under 70', test: function(e) { return e.ovr < 70; } }
 ];
 var _pDetail = -1;
 export function togglePortalDetail(pid) { _pDetail = (_pDetail === pid) ? -1 : pid; rerender(); }
@@ -738,7 +742,7 @@ function entrantRow(e, stage) {
   var ch = portalChance(e);
   var nil = G.pts || 0;
   var offer = e.offer || 0;
-  var potCol = (e.pot || e.ovr) > e.ovr + 6 ? 'var(--grn2)' : 'var(--txt2)';
+  var potCol = (e.pot || e.ovr) > e.ovr + 5 ? 'var(--grn2)' : 'var(--txt2)';
   var offerCell, oddsCell;
   if (e.fromTid === G.tid) {
     offerCell = '<span style="color:var(--txt3);">Your player</span>';
@@ -759,7 +763,7 @@ function entrantRow(e, stage) {
   var dep = posDepth(e.pos);
   var need = dep.n < 2 ? ' <span class="tag t-ok">Need</span>' : '';
   var vs = dep.best ? (e.ovr - dep.best) : null;
-  var vsTxt = vs === null ? 'no ' + e.pos + ' on your roster' : (vs > 0 ? '+' + vs : vs) + ' vs your best ' + e.pos;
+  var vsTxt = vs === null ? 'No ' + e.pos + ' on your roster' : (vs > 0 ? '+' + vs : vs) + ' vs your best ' + e.pos;
   return '<tr class="prow' + (offer > 0 ? ' hl' : '') + (_pDetail === e.pid ? ' open' : '') + '" data-pdetail="' + e.pid + '">'
     + '<td class="c-pos">' + e.pos + '</td>'
     + '<td class="pt-name c-name"><b>' + e.name + '</b> <span class="dim">' + e.cls + '</span>' + need + (e.late ? ' <span class="tag t-ok">Late entry</span>' : '')

@@ -75,11 +75,12 @@ export function updateMoraleAfterGame(team, won) {
     }
 
     // Bench frustration: good player, no run
-    if (p.ovr >= 75 && mins < 12) d -= 3;
-    else if (p.ovr >= 70 && mins < 8) d -= 2;
+    var _o = oldOvr(p.ovr); // thresholds are on the pre-v11 overall scale
+    if (_o >= 75 && mins < 12) d -= 3;
+    else if (_o >= 70 && mins < 8) d -= 2;
 
     // Stars getting real run feel valued
-    if (p.ovr >= 78 && mins >= 25) d += 1;
+    if (_o >= 78 && mins >= 25) d += 1;
     // Freshmen earning minutes
     if (p.cls === 'FR' && mins >= 15) d += 1;
     // Seniors on a contender — title-run energy
@@ -107,7 +108,7 @@ export function portalEntryChance(p) {
 export function moralePortalReason(p) {
   var m = (typeof p.morale === 'number') ? p.morale : MORALE_DEFAULT;
   if (m < 25) return 'Lost faith in program';
-  if (p.ovr >= 78 && (p.mins || 0) < 18) return 'Bigger role';
+  if (oldOvr(p.ovr) >= 78 && (p.mins || 0) < 18) return 'Bigger role';
   return 'Playing time';
 }
 
@@ -119,6 +120,9 @@ export function hasRestlessStarAt(team, pos) {
   if (!team || !team.rost || !pos) return false;
   return team.rost.some(function(pl) {
     var pm = (typeof pl.morale === 'number') ? pl.morale : MORALE_DEFAULT;
-    return pl.pos === pos && pl.ovr >= 75 && pm < 45;
+    return pl.pos === pos && oldOvr(pl.ovr) >= 75 && pm < 45;
   });
 }
+
+// Pre-v11 overall scale (copy of utils.oldOvr; this module has no imports)
+function oldOvr(v) { return v <= 60 ? v : v <= 82.5 ? 60 + (v - 60) / 0.75 : 90 + (v - 82.5) / 1.35; }

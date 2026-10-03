@@ -71,7 +71,7 @@ function depthRow(p, i) {
   var _injLine = injuryOf(p);
   if (_injLine) line = _injLine.type.charAt(0).toUpperCase() + _injLine.type.slice(1) + ', back in ' + _injLine.weeksLeft + ' wk. ' + line;
   var pot = p.pot || p.ovr;
-  var potCol = pot > p.ovr + 8 ? 'var(--grn2)' : pot > p.ovr + 3 ? 'var(--gld2)' : 'var(--txt3)';
+  var potCol = pot > p.ovr + 6 ? 'var(--grn2)' : pot > p.ovr + 2 ? 'var(--gld2)' : 'var(--txt3)';
   var benched = p.mins === 0;
   // Mood tag — roster page only, per jack (no dashboard meter)
   var _mor = (typeof p.morale === 'number') ? p.morale : MORALE_DEFAULT;

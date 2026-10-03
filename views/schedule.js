@@ -6,7 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { DIFF_MOD } from '../constants.js';
-import { clamp, getTOvr, fmtScore } from '../utils.js';
+import { clamp, getTOvr, fmtScore, winProb } from '../utils.js';
 import { G } from '../state.js';
 
 function oppRankOf(oppId, natSorted) {
@@ -93,7 +93,7 @@ function gameRow(game, week, natSorted, team, rivals) {
     h += '<div class="sched-score" style="color:' + (isWin ? 'var(--grn2)' : 'var(--txt2)') + ';">' + (isWin ? 'W ' : 'L ') + fmtScore(game.uScore, game.oScore) + '</div>';
   } else {
     var dm = DIFF_MOD[G.difficulty] || 0;
-    var wp = clamp(Math.round(50 + (getTOvr(team) + dm - getTOvr(opp)) * 1.3 + (game.home ? 4 : -4)), 5, 95);
+    var wp = winProb(getTOvr(team), getTOvr(opp), game.home ? 4 : -4, dm);
     var col = wp >= 55 ? 'var(--grn2)' : wp >= 40 ? 'var(--gld2)' : 'var(--red)';
     h += '<div class="sched-score" style="color:' + col + ';font-size:12px;">' + wp + '%</div>';
   }

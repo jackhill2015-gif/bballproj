@@ -3,11 +3,11 @@
 //  Versioned save system with automatic migrations.
 // ═══════════════════════════════════════════════════════════
 
-import { getTOvr } from './utils.js';
+import { getTOvr, getOvr, rawOvr, scaleOvr } from './utils.js';
 import { RECRUIT_STATE_POOL, calcSchoolPrestige, COACH_FN, COACH_LN } from './constants.js';
 
 // ── Current save version — bump this when adding new fields ──
-var SAVE_VERSION = 10;
+var SAVE_VERSION = 11;
 var SAVE_KEY = 'hoops_os_v3';
 
 // ── Main Game State ──
@@ -179,8 +179,32 @@ var MIGRATIONS = {
   // v9→v10: Whole league persists (every CPU roster, strategy, coach history).
   // Older saves only stored the user's roster; CPU teams in those saves keep
   // the freshly generated rosters from buildUniverse() — nothing to migrate.
-  10: function(s) { return s; }
+  10: function(s) { return s; },
+  // v10→v11: overall/potential moved to the tighter display scale. The
+  // conversion needs unpacked rosters, so it happens in loadState
+  // (see _rescaleV11), keyed off the save's original version.
+  11: function(s) { return s; }
 };
+
+// Convert a pre-v11 player: overall recomputed from skills (new scale),
+// potential mapped onto the new scale with the same headroom rule as new
+// players, history rows' overall converted too.
+function _rescalePlayer(p) {
+  if (!p || typeof p.sht !== 'number') return;
+  var oldPot = typeof p.pot === 'number' ? p.pot : p.ovr;
+  var oldOv = typeof p.ovr === 'number' ? p.ovr : rawOvr(p);
+  p.ovr = getOvr(p);
+  var raw = rawOvr(p);
+  var head = Math.max(0.2, Math.min(1, (99 - raw) / 30)); // same rule as genPlayer
+  p.pot = Math.max(p.ovr, scaleOvr(raw + Math.max(0, oldPot - oldOv) * head));
+  (p.h || []).forEach(function(row) { if (row && typeof row[2] === 'number') row[2] = scaleOvr(row[2]); });
+}
+function _rescaleV11() {
+  G.teams.forEach(function(t) { (t.rost || []).forEach(_rescalePlayer); });
+  (G.recruits || []).forEach(_rescalePlayer);
+  (G.portalEntrants || []).forEach(_rescalePlayer);
+  if (G.devReport) G.devReport = null; // last report was on the old scale
+}
 
 function runMigrations(s) {
   var ver = s._saveVersion || 1;
@@ -425,6 +449,7 @@ export function loadState() {
     _flushPendingSave();
     var raw=localStorage.getItem(SAVE_KEY);if(!raw)return false;
     var s=JSON.parse(raw);
+    var _origVer = s._saveVersion || 1;
 
     // Run migrations if needed
     var ver = s._saveVersion || 1;
@@ -511,9 +536,14 @@ export function loadState() {
         });
       }
     });}
+    var _resave = false;
+    if (_origVer < 11) { _rescaleV11(); _resave = true; }
     // S10: rehydrate slimmed tournament data (team IDs → team objects)
     G.bracket=_fattenBracket(s.bracket);
     G.confTourneys=_fattenConfTourneys(s.confTourneys);
+    // Converted saves are written back right away so a quick reload can't
+    // read the old-scale numbers again
+    if (_resave) _writeSave();
     console.log('[Load] v'+(s._saveVersion||1)+' Season '+G.yr+' gi='+G.gi);
     return true;
   }catch(e){console.error('Load failed',e);return false;}

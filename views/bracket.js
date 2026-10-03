@@ -5,7 +5,7 @@
 //  Delegated actions, no inline onclick.
 // ═══════════════════════════════════════════════════════════
 
-import { ge, clamp, getTOvr, fmtScore } from '../utils.js';
+import { ge, clamp, getTOvr, fmtScore, winProb } from '../utils.js';
 import { G } from '../state.js';
 import { allConfDone, getUserNCAAmatchup, getUserConfMatchup, getConfRoundName } from '../tournament.js';
 
@@ -114,7 +114,7 @@ function renderConfBracketCard(conf, ct, expanded) {
 function renderScoutingCard(confMatch) {
   var m = confMatch.matchup;
   var opp = m.t1.id === G.tid ? m.t2 : m.t1;
-  var wp = clamp(Math.round(50 + (getTOvr(G.teams[G.tid]) - getTOvr(opp)) * 1.3), 5, 95);
+  var wp = winProb(getTOvr(G.teams[G.tid]), getTOvr(opp), 0, 0);
   var col = wp >= 55 ? 'var(--grn2)' : wp >= 40 ? 'var(--gld2)' : 'var(--red)';
   return '<div class="panel"><div class="panel-h"><span>Your next game</span><small>' + getConfRoundName(confMatch.ct, confMatch.conf) + '</small></div>'
     + '<div class="panel-b">'
@@ -160,7 +160,7 @@ function renderNCAA_Hub() {
     var uIsB1 = um.b1.team.id === G.tid;
     var ue = uIsB1 ? um.b1 : um.b2, oe = uIsB1 ? um.b2 : um.b1;
     var opp = oe.team;
-    var wp = clamp(Math.round(50 + (getTOvr(ue.team) - getTOvr(opp)) * 1.3), 5, 95);
+    var wp = winProb(getTOvr(ue.team), getTOvr(opp), 0, 0);
     var col = wp >= 55 ? 'var(--grn2)' : wp >= 40 ? 'var(--gld2)' : 'var(--red)';
     var stars = opp.rost.filter(function(p) { return p.mins > 0; }).sort(function(a, b) { return b.ovr - a.ovr; }).slice(0, 3);
     h2 += '<div class="panel"><div class="panel-h"><span>Scouting report</span><small>' + currentRound + '</small></div>'

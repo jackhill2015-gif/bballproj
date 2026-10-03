@@ -9,7 +9,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { DIFF_MOD } from '../constants.js';
-import { ge, clamp, getTOvr, fR, fmtScore, awardScore } from '../utils.js';
+import { ge, clamp, getTOvr, fR, fmtScore, awardScore, winProb as sharedWinProb } from '../utils.js';
 import { rankMap } from '../ratings.js';
 import { ensureGoals, progress, GOAL_REWARD } from '../goals.js';
 import { FACILITIES, FACILITY_MAX, myFacilities, upgradeCost } from '../facilities.js';
@@ -63,7 +63,7 @@ function revengeIds() {
 
 function winProb(t, opp, home) {
   var dm = DIFF_MOD[G.difficulty] || 0;
-  return clamp(Math.round(50 + (getTOvr(t) + dm - getTOvr(opp)) * 1.3 + (home ? 4 : -4)), 5, 95);
+  return sharedWinProb(getTOvr(t), getTOvr(opp), home ? 4 : -4, dm);
 }
 function wpColor(wp) { return wp >= 55 ? 'var(--grn2)' : wp >= 40 ? 'var(--gld2)' : 'var(--red)'; }
 

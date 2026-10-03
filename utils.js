@@ -60,14 +60,32 @@ export function getTier(ovr) {
 }
 
 // ── Player / Team Rating ─────────────────────────────────
-export function getOvr(p) {
-  if (p.pos === 'PG') return Math.round(p.sht * 0.25 + p.fin * 0.20 + p.def * 0.15 + p.reb * 0.10 + p.ply * 0.30);
-  if (p.pos === 'SG') return Math.round(p.sht * 0.30 + p.fin * 0.25 + p.def * 0.15 + p.reb * 0.15 + p.ply * 0.15);
-  if (p.pos === 'SF') return Math.round(p.sht * 0.22 + p.fin * 0.22 + p.def * 0.22 + p.reb * 0.17 + p.ply * 0.17);
-  if (p.pos === 'PF') return Math.round(p.sht * 0.15 + p.fin * 0.25 + p.def * 0.25 + p.reb * 0.25 + p.ply * 0.10);
-  if (p.pos === 'C')  return Math.round(p.sht * 0.10 + p.fin * 0.24 + p.def * 0.28 + p.reb * 0.28 + p.ply * 0.10);
-  return Math.round(p.sht * 0.22 + p.fin * 0.22 + p.def * 0.22 + p.reb * 0.17 + p.ply * 0.17);
+// ── Overall rating scale ─────────────────────────────────
+// The five skill ratings (sht fin def reb ply) drive the game engine and are
+// unchanged. Overall is a weighted average of them, shown on a tighter scale
+// so 90+ is rare and 99 is close to unreachable:
+//   up to 60: unchanged · 60-90: compressed (x0.75) · above 90: a little steeper
+// Rules that depend on overall convert back with oldOvr(), so game balance is
+// identical to before the rescale (save v11).
+export function rawOvr(p) {
+  if (p.pos === 'PG') return p.sht * 0.25 + p.fin * 0.20 + p.def * 0.15 + p.reb * 0.10 + p.ply * 0.30;
+  if (p.pos === 'SG') return p.sht * 0.30 + p.fin * 0.25 + p.def * 0.15 + p.reb * 0.15 + p.ply * 0.15;
+  if (p.pos === 'SF') return p.sht * 0.22 + p.fin * 0.22 + p.def * 0.22 + p.reb * 0.17 + p.ply * 0.17;
+  if (p.pos === 'PF') return p.sht * 0.15 + p.fin * 0.25 + p.def * 0.25 + p.reb * 0.25 + p.ply * 0.10;
+  if (p.pos === 'C')  return p.sht * 0.10 + p.fin * 0.24 + p.def * 0.28 + p.reb * 0.28 + p.ply * 0.10;
+  return p.sht * 0.22 + p.fin * 0.22 + p.def * 0.22 + p.reb * 0.17 + p.ply * 0.17;
 }
+export function scaleOvr(a) {
+  var v = a <= 60 ? a : 60 + (a - 60) * 0.75 + (a > 90 ? (a - 90) * 0.6 : 0);
+  return Math.max(1, Math.min(99, Math.round(v)));
+}
+// Inverse of scaleOvr (unrounded): new-scale overall -> old-scale overall
+export function oldOvr(v) {
+  if (v <= 60) return v;
+  if (v <= 82.5) return 60 + (v - 60) / 0.75;
+  return 90 + (v - 82.5) / 1.35;
+}
+export function getOvr(p) { return scaleOvr(rawOvr(p)); }
 
 export function getTOvr(t) {
   var act = t.rost.filter(function(p) { return p.mins > 0; });
@@ -155,4 +173,11 @@ export function pickPositionalTeam(sorted, posOf) {
 export function fmtScore(a, b, sep) {
   sep = sep || '\u2013';
   return Math.max(a, b) + sep + Math.min(a, b);
+}
+
+// Win probability shown before a game (percent). Team overalls on the
+// display scale; homeAdj: +4 home, -4 away, 0 neutral; dm: difficulty edge.
+export function winProb(myOvr, oppOvr, homeAdj, dm) {
+  var p = Math.round(50 + (oldOvr(myOvr) + (dm || 0) - oldOvr(oppOvr)) * 1.3 + (homeAdj || 0));
+  return Math.max(5, Math.min(95, p));
 }

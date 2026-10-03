@@ -786,8 +786,8 @@ export function endSeason() {
   // Fallback: if no expectations, generate them now based on current data
   if (!exp) {
     var confT = G.teams.filter(function(x) { return x.conf === t.conf; });
-    var cAvg = confT.reduce(function(s, x) { return s + (x.baseOvr || 70); }, 0) / (confT.length || 1);
-    exp = calcExpectations(t.baseOvr || 70, cAvg);
+    var cAvg = confT.reduce(function(s, x) { return s + getTOvr(x); }, 0) / (confT.length || 1);
+    exp = calcExpectations(getTOvr(t), cAvg);
   }
 
   if (t.wins < exp.danger) {

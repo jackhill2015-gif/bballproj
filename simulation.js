@@ -6,7 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { COM, DIFF_MOD } from './constants.js';
-import { ri, clamp, gn, getOvr, getTOvr, pick, freshS } from './utils.js';
+import { ri, clamp, gn, getOvr, getTOvr, pick, freshS, rawOvr, scaleOvr, oldOvr } from './utils.js';
 import { moraleAttrMod, MORALE_DEFAULT } from './morale.js';
 import { G, LS } from './state.js';
 import { snapRoster, diffRoster } from './records.js';
@@ -77,7 +77,10 @@ export function genPlayer(base, pos, cls) {
   var potGap = (cls === 'FR') ? ri(5, 18) : (cls === 'SO') ? ri(3, 12) : (cls === 'JR') ? ri(1, 7) : ri(0, 3);
   if (cls === 'FR' && ri(1, 100) <= 8) { potGap = ri(18, 30); if (p.devCurve === 'normal') p.devCurve = 'late'; }
   if (p.devCurve === 'late') potGap += ri(4, 9);
-  p.pot = clamp(p.ovr + potGap, p.ovr, 99);
+  // Elite players have little room left: headroom shrinks the gap near the top
+  var raw = rawOvr(p);
+  var headroom = clamp((99 - raw) / 30, 0.2, 1);
+  p.pot = Math.max(p.ovr, scaleOvr(raw + potGap * headroom));
 
   return p;
 }
@@ -112,7 +115,7 @@ export function getEngineStrat(t) {
   var o = (t.strat && t.strat.off) || 'balanced';
   if (o === 'early') return 'Pace & Space';
   if (o === 'set') return 'Grit & Grind';
-  var ovr = getTOvr(t);
+  var ovr = oldOvr(getTOvr(t));
   if (ovr >= 88) return 'Pace & Space';
   if (ovr >= 78) return 'Standard';
   return 'Grit & Grind';

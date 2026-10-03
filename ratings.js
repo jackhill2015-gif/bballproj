@@ -12,7 +12,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { G } from './state.js';
-import { getTOvr } from './utils.js';
+import { getTOvr, oldOvr } from './utils.js';
 
 var MARGIN_CAP = 20;      // blowouts past this don't count extra
 var HCA = 3.5;            // home-court points removed from home margins
@@ -57,7 +57,7 @@ function collectGames() {
 export function recomputeRatings() {
   var n = G.teams.length;
   if (!n) return;
-  var ovr = G.teams.map(function(t) { return t.rost && t.rost.length ? getTOvr(t) : (t.baseOvr || 70); });
+  var ovr = G.teams.map(function(t) { return t.rost && t.rost.length ? oldOvr(getTOvr(t)) : (t.baseOvr || 70); });
   var meanOvr = ovr.reduce(function(a, b) { return a + b; }, 0) / n;
   var prior = ovr.map(function(o) { return (o - meanOvr) * PTS_PER_OVR; });
   var games = collectGames();

@@ -295,12 +295,13 @@ window.selectJob = selectJob;
 //  STEP 4: NC Schedule
 // ═══════════════════════════════════════════════════════════
 
+// (overall gaps sized for the v11 overall scale)
 function autoGenNC() {
   var myOvr = getTOvr(G.teams[G.tid]);
   var pool = G.teams.filter(function(t) { return t.conf !== G.teams[G.tid].conf && t.id !== G.tid; });
-  var tough = pool.filter(function(t) { return Math.abs(getTOvr(t) - myOvr) <= 8; }).sort(function() { return 0.5 - Math.random(); }).slice(0, 3);
-  var mid = pool.filter(function(t) { return getTOvr(t) >= myOvr - 15 && getTOvr(t) < myOvr + 5; }).sort(function() { return 0.5 - Math.random(); }).slice(0, 4);
-  var easy = pool.filter(function(t) { return getTOvr(t) < myOvr - 10; }).sort(function() { return 0.5 - Math.random(); }).slice(0, 3);
+  var tough = pool.filter(function(t) { return Math.abs(getTOvr(t) - myOvr) <= 6; }).sort(function() { return 0.5 - Math.random(); }).slice(0, 3);
+  var mid = pool.filter(function(t) { return getTOvr(t) >= myOvr - 11 && getTOvr(t) < myOvr + 4; }).sort(function() { return 0.5 - Math.random(); }).slice(0, 4);
+  var easy = pool.filter(function(t) { return getTOvr(t) < myOvr - 8; }).sort(function() { return 0.5 - Math.random(); }).slice(0, 3);
   var picks = tough.concat(mid).concat(easy);
   var seen = {}; SetupState.NC_PICKS = [];
   picks.forEach(function(t) { if (!seen[t.id] && SetupState.NC_PICKS.length < 10) { seen[t.id] = true; SetupState.NC_PICKS.push(t.id); } });
@@ -321,7 +322,7 @@ function renderNCSchedule() {
     var opp = G.teams[id];
     var myOvr = getTOvr(t);
     var diff = getTOvr(opp) - myOvr;
-    var diffCol = diff >= 5 ? 'var(--red)' : diff >= -5 ? 'var(--gld2)' : 'var(--grn2)';
+    var diffCol = diff >= 4 ? 'var(--red)' : diff >= -4 ? 'var(--gld2)' : 'var(--grn2)';
     var diffStr = diff > 0 ? '+' + diff : '' + diff;
     h += '<tr>'
       + '<td>' + teamLogo(opp.name, 'sm') + '</td>'

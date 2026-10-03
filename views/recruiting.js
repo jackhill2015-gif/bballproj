@@ -1133,7 +1133,7 @@ function renderBoard(open, left) {
   filtered.forEach(function(r) {
     var isTarget = G.recruitTargets.indexOf(r.id) >= 0;
     var stName = STATE_NAMES[r.homeState] || r.homeState;
-    var potCol = r.pot > r.ovr + 8 ? 'var(--grn2)' : 'var(--txt2)';
+    var potCol = r.pot > r.ovr + 6 ? 'var(--grn2)' : 'var(--txt2)';
     var act = isTarget
       ? '<span class="tgt-on">Targeted</span>'
       : '<button class="btn-quiet btn-sm" data-add-target="' + r.id + '">Target</button>';

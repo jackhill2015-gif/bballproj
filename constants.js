@@ -613,8 +613,12 @@ export const SKILL_POINT_TABLE = [
 ];
 
 // Season expectations based on roster OVR vs conference average
+// Pre-v11 overall scale (copy of utils.oldOvr; utils.js imports this module)
+function oldOvrC(v) { return v <= 60 ? v : v <= 82.5 ? 60 + (v - 60) / 0.75 : 90 + (v - 82.5) / 1.35; }
+
 export function calcExpectations(teamOvr, confAvgOvr) {
-  var diff = teamOvr - confAvgOvr;
+  // Inputs are team overalls on the display scale; compare on the pre-v11 scale
+  var diff = oldOvrC(teamOvr) - oldOvrC(confAvgOvr);
   // Base wins expectation
   var base = 15 + Math.round(diff * 0.5);
   var low = Math.max(5, base - 3);
