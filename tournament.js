@@ -22,6 +22,14 @@ var _ext = {
   renderBracket: null
 };
 
+// Postseason games count in each team's overall record (conference and
+// NCAA tournaments), like real season W-L. Conference W-L is unaffected.
+function tallyPostseason(winner, loser) {
+  if (!winner || !loser) return;
+  winner.wins = (winner.wins || 0) + 1;
+  loser.loss = (loser.loss || 0) + 1;
+}
+
 export function registerTournamentCallbacks(callbacks) {
   Object.keys(callbacks).forEach(function(k) {
     if (_ext.hasOwnProperty(k)) _ext[k] = callbacks[k];
@@ -199,6 +207,7 @@ export function simConfFull(conf) {
       var res = simGame(m.t1, m.t2, true);
       m.s1 = res.homeScore; m.s2 = res.awayScore;
       m.winner = res.homeScore > res.awayScore ? m.t1 : m.t2;
+      tallyPostseason(m.winner, m.winner === m.t1 ? m.t2 : m.t1);
     });
     buildNextConfRound(conf);
   }
@@ -221,6 +230,7 @@ function advanceConfRoundExceptUser(conf) {
     var res = simGame(m.t1, m.t2, true);
     m.s1 = res.homeScore; m.s2 = res.awayScore;
     m.winner = res.homeScore > res.awayScore ? m.t1 : m.t2;
+    tallyPostseason(m.winner, m.winner === m.t1 ? m.t2 : m.t1);
   });
   // If all games in this round are done, build next round
   var allDone = last.every(function(m) { return m.winner !== null; });
@@ -244,6 +254,7 @@ export function advanceConfTourney() {
       var res = simGame(m.t1, m.t2, true);
       m.s1 = res.homeScore; m.s2 = res.awayScore;
       m.winner = res.homeScore > res.awayScore ? m.t1 : m.t2;
+      tallyPostseason(m.winner, m.winner === m.t1 ? m.t2 : m.t1);
     });
     buildNextConfRound(conf);
   });
@@ -271,6 +282,7 @@ export function simConfRound(conf) {
     var res = simGame(m.t1, m.t2, true);
     m.s1 = res.homeScore; m.s2 = res.awayScore;
     m.winner = res.homeScore > res.awayScore ? m.t1 : m.t2;
+    tallyPostseason(m.winner, m.winner === m.t1 ? m.t2 : m.t1);
   });
   buildNextConfRound(conf);
 }
@@ -579,6 +591,7 @@ export function simNCAAround() {
     b1.score = res.homeScore; b2.score = res.awayScore;
     if (res.homeScore > res.awayScore) { b1.won = true; b2.won = false; b2.active = false; }
     else { b2.won = true; b1.won = false; b1.active = false; }
+    tallyPostseason(b1.won ? b1.team : b2.team, b1.won ? b2.team : b1.team);
   }
   checkNCAAdone();
   saveState(); updateAll();
@@ -598,6 +611,7 @@ function simNCAArimExceptUser() {
     b1.score = res.homeScore; b2.score = res.awayScore;
     if (res.homeScore > res.awayScore) { b1.won = true; b2.won = false; b2.active = false; }
     else { b2.won = true; b1.won = false; b1.active = false; }
+    tallyPostseason(b1.won ? b1.team : b2.team, b1.won ? b2.team : b1.team);
   }
 }
 
@@ -724,6 +738,7 @@ export function resolveTournamentGame() {
     var conf = game._conf;
     m.s1 = LS.hs; m.s2 = LS.as;
     m.winner = LS.hs > LS.as ? m.t1 : m.t2;
+    tallyPostseason(m.winner, m.winner === m.t1 ? m.t2 : m.t1);
     var userWon = (m.winner.id === G.tid);
     var oppName = (m.t1.id === G.tid ? m.t2 : m.t1).name;
     var oppTeam = (m.t1.id === G.tid ? m.t2 : m.t1);
@@ -750,6 +765,7 @@ export function resolveTournamentGame() {
         var res3 = simGame(rm.t1, rm.t2, true);
         rm.s1 = res3.homeScore; rm.s2 = res3.awayScore;
         rm.winner = res3.homeScore > res3.awayScore ? rm.t1 : rm.t2;
+        tallyPostseason(rm.winner, rm.winner === rm.t1 ? rm.t2 : rm.t1);
       });
       buildNextConfRound(c);
     });
@@ -765,6 +781,7 @@ export function resolveTournamentGame() {
     b1.score = LS.hs; b2.score = LS.as;
     if (LS.hs > LS.as) { b1.won = true; b2.won = false; b2.active = false; }
     else { b2.won = true; b1.won = false; b1.active = false; }
+    tallyPostseason(b1.won ? b1.team : b2.team, b1.won ? b2.team : b1.team);
     var userWon2 = (b1.team.id === G.tid) ? (LS.hs > LS.as) : (LS.as > LS.hs);
     var oppName2 = (b1.team.id === G.tid ? b2 : b1).team.name;
     var oppTeam2 = (b1.team.id === G.tid ? b2 : b1).team;

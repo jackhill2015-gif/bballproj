@@ -591,10 +591,13 @@ export function simGame(home, away, userIsHome) {
         var tiredness = Math.min((fatigue.get(off) || 0) / 80, 0.15);
         ftPct = Math.round(ftPct * (1 - tiredness * 0.5));
         ftPct = clamp(ftPct, 60, 90);
+        var lastFtMade = false;
         for (var ft = 0; ft < 2; ft++) {
-          if (ri(1, 100) <= ftPct) { if (isHomeOff) hScore++; else aScore++; off.s.pts++; off.s.ftm = (off.s.ftm || 0) + 1; }
+          lastFtMade = ri(1, 100) <= ftPct;
+          if (lastFtMade) { if (isHomeOff) hScore++; else aScore++; off.s.pts++; off.s.ftm = (off.s.ftm || 0) + 1; }
         }
         off.s.fta = (off.s.fta || 0) + 2;
+        if (!lastFtMade) ftRebound(offTeam, defTeam);
         if (isHomeOff) { aMomentum++; hMomentum = 0; } else { hMomentum++; aMomentum = 0; }
         return;
       }
@@ -603,16 +606,19 @@ export function simGame(home, away, userIsHome) {
         var ftPct2 = clamp(55 + Math.round(off.sht * 0.2), 65, 85);
         var tiredness2 = Math.min((fatigue.get(off) || 0) / 80, 0.15);
         ftPct2 = Math.round(ftPct2 * (1 - tiredness2 * 0.5));
+        var lastFt2 = false;
         for (var ft2 = 0; ft2 < 2; ft2++) {
-          if (ri(1, 100) <= ftPct2) { if (isHomeOff) hScore++; else aScore++; off.s.pts++; off.s.ftm = (off.s.ftm || 0) + 1; }
+          lastFt2 = ri(1, 100) <= ftPct2;
+          if (lastFt2) { if (isHomeOff) hScore++; else aScore++; off.s.pts++; off.s.ftm = (off.s.ftm || 0) + 1; }
         }
         off.s.fta = (off.s.fta || 0) + 2;
+        if (!lastFt2) ftRebound(offTeam, defTeam);
         if (isHomeOff) { aMomentum++; hMomentum = 0; } else { hMomentum++; aMomentum = 0; }
         return;
       }
 
       if (playType !== 'fastbreak') {
-        var blkChance = isThree ? 1 : (isRim ? 7 : 5);
+        var blkChance = isThree ? 1 : (isRim ? 8 : 6);
         blkChance = clamp(blkChance + Math.round((def.reb - 50) * 0.08), 1, 18);
         if (ri(1, 100) <= blkChance) {
           if (typeof def.s.blk !== 'number') def.s.blk = 0;
@@ -625,7 +631,7 @@ export function simGame(home, away, userIsHome) {
 
       if (makePct === 0) {
         if (isThree) {
-          makePct = clamp(38 + Math.round((off.sht - def.def) * 0.2) + shotBonus, 28, 48);
+          makePct = clamp(37 + Math.round((off.sht - def.def) * 0.2) + shotBonus, 28, 48);
           if (defScheme === '2-3' || defScheme === 'zone') makePct += 4;
           else if (defScheme === '3-2') makePct -= 5;
           else if (defScheme === '1-3-1') makePct += 2;
@@ -636,7 +642,7 @@ export function simGame(home, away, userIsHome) {
           else if (defScheme === '3-2') makePct += 4;
           if (defScheme === 'press') makePct += 2;
         } else {
-          makePct = clamp(50 + Math.round((off.sht - def.def) * 0.25) + shotBonus, 36, 60);
+          makePct = clamp(51 + Math.round((off.sht - def.def) * 0.25) + shotBonus, 36, 60);
           if (defScheme === '3-2') makePct -= 2;
           if (defScheme === 'press') makePct += 2;
         }
@@ -727,6 +733,12 @@ export function simGame(home, away, userIsHome) {
     if (over <= 0) return 0;
     var adj = Math.min(SCORE_EFFECT_MAX, over * SCORE_EFFECT_RATE);
     return lead > 0 ? -adj : adj;
+  }
+
+  // A missed final free throw is a live ball: the defense usually secures it.
+  function ftRebound(offTeam, defTeam) {
+    if (ri(1, 100) <= 14) { var o = getFloor(offTeam, rebW); o.s.reb++; o.s.oreb = (o.s.oreb || 0) + 1; }
+    else { var d = getFloor(defTeam, rebW); d.s.reb++; }
   }
 
   // Box-and-one targets, computed once per game.
