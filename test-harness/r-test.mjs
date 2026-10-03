@@ -282,7 +282,7 @@ G.coach.history.push({ yr: G.yr, school: 'New School', action: 'Left for New Sch
 R.stayAtSchool();
 check(G.offseasonStep === 'turnover', 'non-fired coach can still stay');
 
-console.log('── R3: rejected jobs hidden by stable team id ──');
+console.log('── R3: job market is fixed; rejections are marked, not reshuffled ──');
 G.coach.history.push({ yr: G.yr, school: 'New School', action: 'Stayed' });
 G.offseasonStep = 'carousel';
 // give some CPU teams fake losing records so the carousel has open jobs
@@ -290,34 +290,22 @@ let faked = 0;
 G.teams.forEach(tm => {
   if (tm.id !== G.tid && faked < 20) { tm.wins = 5; tm.loss = 25; faked++; }
 });
+G.jobMarket = null; // new market for this offseason
+R.renderOffseason();
+const jobs1 = (globalThis.window._carouselJobs || []).map(j => j.team.id);
+check(jobs1.length > 0, 'R3: carousel has open jobs', 'n=' + jobs1.length);
 const realRandom = Math.random;
 Math.random = () => 0.9999; // force rejection (roll ~99.99 > max 95% chance)
-let r3ok = false, attempts = 0;
-while (!r3ok && attempts < 12) {
-  attempts++;
-  R.renderOffseason();
-  const jobs = globalThis.window._carouselJobs || [];
-  if (!jobs.length) break;
-  const target = jobs[0];
-  const tid = target.team.id;
-  R.applyForJob(tid); // rejected → hidden by team id
-  R.renderOffseason();
-  const jobs2 = globalThis.window._carouselJobs || [];
-  const html3 = _els['offseason-content'].innerHTML;
-  if (jobs2.some(j => j.team.id === tid)) {
-    r3ok = html3.indexOf('data-apply-job="' + tid + '"') < 0;
-    check(r3ok, 'R3: rejected team id ' + tid + ' hidden on re-render (attempt ' + attempts + ')');
-  }
-}
+R.applyForJob(jobs1[0]);
 Math.random = realRandom;
-if (!r3ok) { failures++; console.log('  FAIL: R3 — rejected job never regenerated within 12 attempts'); }
-else console.log('  ok: R3 stable-id hiding verified');
-// data-apply-job ids are team ids, not render indices
 R.renderOffseason();
-const html4 = _els['offseason-content'].innerHTML;
-const ids = (html4.match(/data-apply-job="(\d+)"/g) || []).map(s => +s.match(/\d+/)[0]);
-const jobIds = (globalThis.window._carouselJobs || []).map(j => j.team.id);
-check(ids.length > 0 && ids.every(id => jobIds.indexOf(id) >= 0),
+const jobs2 = (globalThis.window._carouselJobs || []).map(j => j.team.id);
+const html3 = _els['offseason-content'].innerHTML;
+check(JSON.stringify(jobs1) === JSON.stringify(jobs2), 'R3: same job list after a rejection');
+check(html3.indexOf('data-apply-job="' + jobs1[0] + '"') < 0 && html3.indexOf('Not selected') >= 0, 'R3: rejected job shown as not selected, no apply button');
+// data-apply-job ids are team ids, not render indices
+const ids = (html3.match(/data-apply-job="(\d+)"/g) || []).map(s => +s.match(/\d+/)[0]);
+check(ids.length > 0 && ids.every(id => jobs2.indexOf(id) >= 0),
   'R3: applyForJob wired with team ids', 'ids=' + ids.slice(0, 5).join(','));
 
 console.log('── R8: slider never silently drops minutes ──');

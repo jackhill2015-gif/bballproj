@@ -1069,3 +1069,16 @@ th.sortable.on { color: var(--txt); }
 /* nested tables inside detail panels keep normal table layout */
 .rdetail table { min-width: 0; }
 .rdetail td { padding: 4px 0 !important; }
+/* Top bar shows the record only */
+.tb-vs, .tb-rec, .tb-opp:empty { display: none; }
+.tb-wk { color: var(--txt); font-size: 13px; font-weight: 600; }
+/* Roster drag: handle is the whole grab target; the row lifts and follows */
+.drag-handle { display: flex; align-items: center; justify-content: center; width: 32px; min-height: 40px; font-size: 15px; cursor: grab; color: var(--txt3); }
+.drag-handle:active { cursor: grabbing; color: var(--blu); }
+.depth-row.dragging { position: relative; z-index: 5; background: #fff; outline: 1px solid var(--bdr2); opacity: .95; }
+.drop-line { height: 2px; background: var(--blu); margin: -1px 0; }
+.nudge { display: none; }
+/* Gameplan panel on the roster screen */
+#gameplan .fbar .flbl { width: 64px; }
+.gp-desc { font-size: 12px; color: var(--txt3); margin: 0 0 8px 68px; }
+@media (max-width: 640px) { .gp-desc { margin-left: 0; } }

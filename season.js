@@ -32,7 +32,8 @@ var _ext = {
   simConfRoundAll: null,
   simNCAAround: null,
   playTournamentGame: null,
-  renderSeasonRecap: null
+  renderSeasonRecap: null,
+  updateAdvance: null
 };
 
 export function registerSeasonCallbacks(callbacks) {
@@ -520,17 +521,13 @@ export function doPlay(mode) {
   var dd = ge('play-dropdown');
   if (dd) dd.classList.remove('open');
 
-  if (mode === 'auto') {
-    if (SetupState.G_AUTO) {
-      SetupState.G_AUTO = false;
-      updateAutoBtn();
-      return;
-    } else {
-      SetupState.G_AUTO = true;
-      updateAutoBtn();
-      autoSimNext();
-      return;
-    }
+  // Multi-game sims: run to a milestone, or stop one that's running
+  if (mode === 'auto' || mode === 'stop') { stopAutoSim(); return; }
+  if (mode === 'sim-reg' || mode === 'sim-conf' || mode === 'sim-season') {
+    SetupState.G_AUTO = mode;
+    updateAutoBtn();
+    autoSimNext();
+    return;
   }
   // Manual play — stop any running auto sim
   SetupState.G_AUTO = false;
@@ -576,81 +573,49 @@ export function doPlay(mode) {
 // ═══════════════════════════════════════════════════════════
 
 export function updateAutoBtn() {
-  var lbl = ge('auto-label'), sub = ge('auto-sub'), opt = ge('auto-opt');
-  if (!lbl) return;
-  if (SetupState.G_AUTO) {
-    lbl.textContent = 'Stop Auto Sim';
-    lbl.style.color = 'var(--red)';
-    if (sub) sub.textContent = 'Click to stop';
-    if (opt) opt.style.background = 'rgba(229,62,62,.06)';
-  } else {
-    lbl.textContent = 'Auto Sim Season';
-    lbl.style.color = '';
-    if (sub) sub.textContent = 'Runs until you stop';
-    if (opt) opt.style.background = '';
-  }
+  // The top-bar button and menu reflect whether a multi-game sim is running
+  if (_ext.updateAdvance) _ext.updateAdvance();
 }
 
+export function stopAutoSim() {
+  SetupState.G_AUTO = false;
+  updateAutoBtn();
+}
+
+// Has the running sim reached its milestone?
+function autoSimDone(target) {
+  if (G.phase === 'offseason') return true;
+  if (target === 'sim-reg') return G.phase !== 'reg';
+  if (target === 'sim-conf') return G.phase === 'ncaa' || G.phase === 'offseason';
+  return false; // sim-season runs until the offseason
+}
+
+// One step per tick (a game week or a tournament round) so the screen keeps
+// up and Stop works between steps. Every step goes through the same code a
+// manual click does, so rankings, events and records all update.
 export function autoSimNext() {
-  if (!SetupState.G_AUTO) return;
+  var target = SetupState.G_AUTO;
+  if (!target) return;
+  if (autoSimDone(target)) { stopAutoSim(); return; }
 
-  // Tournament phases
-  if (G.phase === 'conf_tourn') {
+  if (G.phase === 'reg') {
+    if (G.gi >= 30) { advanceWeek(); }
+    else {
+      var game = G.teams[G.tid].sched[G.gi];
+      if (!game || game.played) { simCPUWeek(); advanceWeek(); }
+      else launchSim(false);
+    }
+  } else if (G.phase === 'conf_tourn' || G.phase === 'ncaa') {
+    // A full-season sim skips the Selection Sunday reveal
+    var rev = ge('bracket-reveal');
+    if (rev && rev.style.display === 'block' && target === 'sim-season') {
+      if (window.closeBracketReveal) window.closeBracketReveal();
+    }
     if (_ext.playTournamentGame) _ext.playTournamentGame(false);
-    if (SetupState.G_AUTO) setTimeout(autoSimNext, 500);
-    return;
-  }
-  if (G.phase === 'ncaa') {
-    if (_ext.playTournamentGame) _ext.playTournamentGame(false);
-    if (SetupState.G_AUTO) setTimeout(autoSimNext, 500);
-    return;
-  }
-  if (G.phase === 'offseason' || G.phase === 'recap') {
-    SetupState.G_AUTO = false;
-    updateAutoBtn();
-    return;
-  }
-  // Season done — advance
-  if (G.gi >= 30 && G.phase === 'reg') {
-    SetupState.G_AUTO = false;
-    updateAutoBtn();
-    advanceWeek();
-    return;
   }
 
-  var t = G.teams[G.tid];
-  var game = t.sched[G.gi];
-
-  // Skip empty slot
-  if (!game || game.played) {
-    G.gi++; G.wk = G.gi;
-    saveState(); updateAll();
-    setTimeout(autoSimNext, 50);
-    return;
-  }
-
-  // Sim user game
-  var tH = game.home ? t : G.teams[game.opp];
-  var tA = game.home ? G.teams[game.opp] : t;
-  LS.tH = tH; LS.tA = tA; LS.game = game; LS.userTeam = t;
-  LS.clock = 1200; LS.half = 1; LS.hs = 0; LS.as = 0;
-  LS.h1 = null; LS.a1 = null; LS.poss = 'A';
-  var res = simGame(tH, tA, game.home);
-  LS.hs = res.homeScore; LS.as = res.awayScore;
-  recordResult();
-  simCPUWeek();
-
-  // Finish line — game 29 is the 30th game
-  if (G.gi >= 29) {
-    SetupState.G_AUTO = false;
-    updateAutoBtn();
-    advanceWeek();
-    return;
-  }
-
-  G.gi++; G.wk = G.gi;
-  saveState(); updateAll();
-  setTimeout(autoSimNext, 320);
+  if (autoSimDone(target)) { stopAutoSim(); return; }
+  if (SetupState.G_AUTO) setTimeout(autoSimNext, 60);
 }
 
 // ═══════════════════════════════════════════════════════════

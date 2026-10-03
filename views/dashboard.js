@@ -196,7 +196,7 @@ function renderGameCard() {
         + '<div class="prob-row"><span>Win probability</span><span style="color:' + wpColor(wp) + ';font-weight:600;">' + wp + '%</span></div>'
         + '<div class="prob-bar"><div class="prob-fill" style="width:' + wp + '%;background:' + wpColor(wp) + ';"></div></div>'
         + buttons()
-        + '<button class="btn-quiet" style="margin-top:2px;padding-left:0;" data-action="nav" data-view="strategy">Edit gameplan</button>'
+        + '<button class="btn-quiet" style="margin-top:2px;padding-left:0;" data-action="nav" data-view="roster">Edit gameplan</button>'
         + renderExpectations();
       return panel('Next game', body, { right: 'Week ' + (G.gi + 1) + ', ' + (ng.conf ? t.conf : 'non-conference') });
     }

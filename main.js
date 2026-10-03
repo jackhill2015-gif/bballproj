@@ -22,7 +22,7 @@ import {
   toast, addLog, updateAll, navTo, refreshView,
   openModal, stepSim, skipGame, finalizeModal,
   togglePlayMenu, renderLog,
-  registerUICallbacks, initOutsideClickHandlers
+  registerUICallbacks, initOutsideClickHandlers, updateAdvanceBtn
 } from './ui.js';
 
 // ── Views ────────────────────────────────────────────────
@@ -75,7 +75,8 @@ registerSeasonCallbacks({
   simConfRoundAll: simConfRoundAll,
   simNCAAround: simNCAAround,
   playTournamentGame: playTournamentGame,
-  renderSeasonRecap: renderSeasonRecap
+  renderSeasonRecap: renderSeasonRecap,
+  updateAdvance: updateAdvanceBtn
 });
 
 registerTournamentCallbacks({

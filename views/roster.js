@@ -14,6 +14,7 @@
 import { ge, clamp } from '../utils.js';
 import { G, saveState } from '../state.js';
 import { moodTag, moodColors, MORALE_DEFAULT } from '../morale.js';
+import { gameplanPanelHTML, handleGameplanClick } from './strategy.js';
 
 var _dragIdx = -1;
 
@@ -57,11 +58,7 @@ function depthRow(p, i) {
   var h = '<div class="depth-row ' + tier + (benched ? ' benched' : '') + '" data-row="' + i + '">'
     + '<div class="dr-top">'
     // drag handle (desktop) — nudge buttons are the touch path
-    + '<div class="drag-handle" draggable="true" data-drag="' + i + '" aria-hidden="true" title="Drag to reorder">☰</div>'
-    + '<div class="nudge" role="group" aria-label="Move ' + p.name + '">'
-    + '<button class="nudge-btn" data-rmove="' + i + '" data-dir="-1" aria-label="Move ' + p.name + ' up"' + (i === 0 ? ' disabled' : '') + '>▲</button>'
-    + '<button class="nudge-btn" data-rmove="' + i + '" data-dir="1" aria-label="Move ' + p.name + ' down">▼</button>'
-    + '</div>'
+    + '<div class="drag-handle" data-drag="' + i + '" role="button" tabindex="0" aria-label="Drag ' + p.name + ' to reorder (or use arrow keys)" title="Drag to reorder">☰</div>'
     + '<span class="pos-chip">' + p.pos + '</span>'
     + '<div class="dr-name">' + p.name + ' <span class="cls-txt">' + p.cls + '</span>' + moodPill
     + '<div class="dr-sub">' + line + '</div></div>'
@@ -85,8 +82,9 @@ export function renderRoster() {
   var totalCol = total === 200 ? 'var(--grn2)' : 'var(--red)';
 
   var nOut = t.rost.filter(function(p) { return !!injuryOf(p); }).length;
-  var h = '<div style="margin-bottom:8px;"><div class="sec-head">Depth chart</div>'
-    + '<div class="sec-sub">The top five start. Reorder with the arrows (or drag on desktop) and set minutes with the sliders.</div></div>';
+  var h = gameplanPanelHTML();
+  h += '<div style="margin-bottom:8px;"><div class="sec-head">Depth chart</div>'
+    + '<div class="sec-sub">The top five start. Drag a player by the ☰ handle to reorder, and set minutes with the sliders.</div></div>';
 
   h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bdr);margin-bottom:4px;">'
     + '<div style="font-size:12.5px;color:var(--txt2);">Minutes <b style="font-size:14px;font-weight:600;color:' + totalCol + ';" data-min-total>' + total + '/200</b>'
@@ -115,6 +113,7 @@ function bindRoster(el) {
       return;
     }
     if (q('[data-roster-auto]')) { autoOptimizeRoster(); return; }
+    if (handleGameplanClick(e.target)) { renderRoster(); return; }
   };
   // In-place fill/label updates while dragging — no re-render, no logic.
   el.oninput = function(e) {
@@ -126,25 +125,81 @@ function bindRoster(el) {
     var s = e.target.closest ? e.target.closest('[data-mins]') : null;
     if (s) rosterSliderCommit(s);
   };
-  // Desktop drag-and-drop (kept alongside nudge buttons)
-  el.ondragstart = function(e) {
+  // Reorder: press the ☰ handle and drag (mouse or touch). The row follows
+  // the pointer and a line marks where it will land; release to drop.
+  el.onpointerdown = function(e) {
     var hd = e.target.closest ? e.target.closest('[data-drag]') : null;
-    if (hd) rosterDragStart(e, parseInt(hd.getAttribute('data-drag'), 10));
+    if (hd) startPointerDrag(e, el, parseInt(hd.getAttribute('data-drag'), 10));
   };
-  el.ondragover = function(e) {
-    var row = e.target.closest ? e.target.closest('[data-row]') : null;
-    if (row) rosterDragOver(e);
-  };
-  el.ondrop = function(e) {
-    var row = e.target.closest ? e.target.closest('[data-row]') : null;
-    if (row) { e.preventDefault(); rosterDrop(e, parseInt(row.getAttribute('data-row'), 10)); }
+  // Keyboard: focus a handle, arrow up/down to move one slot
+  el.onkeydown = function(e) {
+    var hd = e.target.closest ? e.target.closest('[data-drag]') : null;
+    if (!hd) return;
+    var i = parseInt(hd.getAttribute('data-drag'), 10);
+    if (e.key === 'ArrowUp' && i > 0) { e.preventDefault(); moveTo(i, i - 1, true); }
+    if (e.key === 'ArrowDown') { e.preventDefault(); moveTo(i, i + 1, true); }
   };
 }
 
 // ═══════════════════════════════════════════════════════════
 //  DRAG AND DROP — auto-adjusts minutes on tier change
-//  (desktop path; touch users get the ▲▼ nudge buttons)
+//  (pointer drag on the ☰ handle — mouse and touch)
 // ═══════════════════════════════════════════════════════════
+
+function moveTo(from, to, refocus) {
+  var t = G.teams[G.tid];
+  if (to < 0 || to >= t.rost.length || to === from) return;
+  var player = t.rost.splice(from, 1)[0];
+  t.rost.splice(to, 0, player);
+  autoAdjustMinutes(t);
+  saveState();
+  renderRoster();
+  if (refocus) {
+    var h = document.querySelector('#roster-content [data-drag="' + to + '"]');
+    if (h && h.focus) h.focus();
+  }
+}
+
+function startPointerDrag(e, container, idx) {
+  var rows = Array.prototype.slice.call(container.querySelectorAll('.depth-row'));
+  var row = rows[idx];
+  if (!row) return;
+  e.preventDefault();
+  var startY = e.clientY;
+  var rects = rows.map(function(r) { return r.getBoundingClientRect(); });
+  var target = idx;
+  var marker = document.createElement('div');
+  marker.className = 'drop-line';
+  row.classList.add('dragging');
+  if (e.target.setPointerCapture) { try { e.target.setPointerCapture(e.pointerId); } catch (err) {} }
+
+  var others = rows.filter(function(r, k) { return k !== idx; });
+  var otherRects = rects.filter(function(r, k) { return k !== idx; });
+  function onMove(ev) {
+    row.style.transform = 'translateY(' + (ev.clientY - startY) + 'px)';
+    // New index = how many other rows sit above the pointer
+    var slot = 0;
+    for (var k = 0; k < otherRects.length; k++) {
+      if (ev.clientY > otherRects[k].top + otherRects[k].height / 2) slot = k + 1;
+    }
+    target = slot;
+    if (target === idx) { if (marker.parentNode) marker.parentNode.removeChild(marker); return; }
+    if (slot >= others.length) others[others.length - 1].parentNode.insertBefore(marker, others[others.length - 1].nextSibling);
+    else others[slot].parentNode.insertBefore(marker, others[slot]);
+  }
+  function onUp() {
+    document.removeEventListener('pointermove', onMove);
+    document.removeEventListener('pointerup', onUp);
+    document.removeEventListener('pointercancel', onUp);
+    row.classList.remove('dragging');
+    row.style.transform = '';
+    if (marker.parentNode) marker.parentNode.removeChild(marker);
+    if (target !== idx) moveTo(idx, target);
+  }
+  document.addEventListener('pointermove', onMove);
+  document.addEventListener('pointerup', onUp);
+  document.addEventListener('pointercancel', onUp);
+}
 
 export function rosterDragStart(e, idx) {
   _dragIdx = idx;

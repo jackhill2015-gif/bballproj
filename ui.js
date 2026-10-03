@@ -414,28 +414,11 @@ export function updateAll() {
   refreshView(); // single render path — no double renders
 }
 
+// Top bar: just your record. (The next opponent lives on the home screen.)
 function updateMatchupChip() {
   var t = G.teams[G.tid];
-  if (G.phase === 'reg') {
-    var s = t.sched[G.gi];
-    txt('tb-wk', 'Game ' + Math.min(G.gi + 1, 30) + '/30');
-    if (s && s.opp !== undefined && s.opp !== null && !s.played) {
-      var opp = G.teams[s.opp];
-      txt('tb-opp', opp ? ((s.home ? 'vs ' : 'at ') + opp.name) : '—');
-    } else if (!s) {
-      txt('tb-opp', 'Bye week');
-    } else {
-      txt('tb-opp', '—');
-    }
-  } else if (G.phase === 'conf_tourn') {
-    txt('tb-wk', 'Conf. tournament'); txt('tb-opp', t.conf);
-  } else if (G.phase === 'ncaa') {
-    var active = G.bracket ? G.bracket.filter(function(b) { return b.active; }).length : 0;
-    var rn = { 64: 'Rd of 64', 32: 'Rd of 32', 16: 'Sweet 16', 8: 'Elite 8', 4: 'Final Four', 2: 'Title Game' };
-    txt('tb-wk', 'NCAA'); txt('tb-opp', rn[active] || 'Tournament');
-  } else {
-    txt('tb-wk', 'Offseason'); txt('tb-opp', '');
-  }
+  txt('tb-wk', fR(t.wins, t.loss));
+  txt('tb-opp', '');
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -449,12 +432,11 @@ export function updateAdvanceBtn() {
   var t = G.teams[G.tid];
   var txtLbl = 'Continue';
 
-  if (G.phase === 'reg') {
-    if (SetupState.G_AUTO) {
-      txtLbl = 'Stop';
-      btn.classList.add('stop');
-    } else {
-      btn.classList.remove('stop');
+  btn.classList.toggle('stop', !!SetupState.G_AUTO && G.phase !== 'offseason');
+  if (SetupState.G_AUTO && G.phase !== 'offseason') {
+    txtLbl = 'Simming…';
+  } else if (G.phase === 'reg') {
+    {
       var s = t.sched[G.gi];
       if (G.gi >= 30) txtLbl = 'Conf. tournament';
       else if (s && s.opp !== undefined && s.opp !== null && !s.played) {
@@ -487,16 +469,21 @@ export function buildAdvanceMenu() {
   var dd = ge('play-dropdown');
   if (!dd) return;
   var h = '';
-  if (G.phase === 'reg') {
+  if (SetupState.G_AUTO && (G.phase === 'reg' || G.phase === 'conf_tourn' || G.phase === 'ncaa')) {
+    h += playOpt('Stop simming', 'Pause after the current game', 'stop');
+  } else if (G.phase === 'reg') {
     h += playOpt('Sim game', 'Instant result', 'quick');
-    h += playOpt('Sim game (live)', 'Watch play by play', 'live');
+    h += playOpt('Watch game', 'Play by play', 'live');
     h += '<div class="play-sep"></div>';
-    h += '<button class="play-opt" role="menuitem" data-action="play" data-mode="auto" id="auto-opt">'
-      + '<span id="auto-label">' + (SetupState.G_AUTO ? 'Stop auto-sim' : 'Auto-sim season') + '</span>'
-      + '<span class="play-opt-sub" id="auto-sub">' + (SetupState.G_AUTO ? 'Click to stop' : 'Runs until you stop') + '</span></button>';
+    h += playOpt('Sim to end of regular season', 'Stops before the conference tournament', 'sim-reg');
+    h += playOpt('Sim through conference tournament', 'Stops at Selection Sunday', 'sim-conf');
+    h += playOpt('Sim through end of season', 'Stops at the offseason', 'sim-season');
   } else if (G.phase === 'conf_tourn' || G.phase === 'ncaa') {
     h += playOpt('Sim game', 'Instant result', 'quick');
-    h += playOpt('Sim game (live)', 'Watch play by play', 'live');
+    h += playOpt('Watch game', 'Play by play', 'live');
+    h += '<div class="play-sep"></div>';
+    if (G.phase === 'conf_tourn') h += playOpt('Sim through conference tournament', 'Stops at Selection Sunday', 'sim-conf');
+    h += playOpt('Sim through end of season', 'Stops at the offseason', 'sim-season');
   } else {
     var stepLbl = 'Advance', stepSub = 'Move to the next step';
     if (G.offseasonStep === 'recap') { stepLbl = 'Begin offseason'; stepSub = 'Review departures, then recruit'; }

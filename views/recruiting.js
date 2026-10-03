@@ -831,6 +831,7 @@ function generateOpenJobs() {
 }
 
 export function calcOfferChance(job) {
+  if (job.guaranteed) return 100;
   var sp = job.team.schoolPrestige || 30;
   var coachAvg = (G.coach.off + G.coach.def + G.coach.dev + G.coach.rec) / 4;
   var totalGames = G.coach.careerWins + G.coach.careerLoss;
@@ -855,8 +856,38 @@ function chanceColor(chance) {
   return chance >= 60 ? 'var(--grn2)' : chance >= 30 ? 'var(--gld2)' : 'var(--red)';
 }
 
+// The job market is set once per offseason and saved, so the list never
+// reshuffles when you're turned down or reload the game.
+function jobMarket() {
+  var jm = G.jobMarket;
+  if (!jm || jm.yr !== G.yr) {
+    var gen = generateOpenJobs();
+    jm = G.jobMarket = {
+      yr: G.yr, rejected: [],
+      jobs: gen.map(function(j) { return { tid: j.team.id, firedCoach: j.firedCoach, record: j.record, reason: j.reason }; })
+    };
+  }
+  var list = jm.jobs.map(function(j) {
+    return { team: G.teams[j.tid], firedCoach: j.firedCoach, record: j.record, reason: j.reason };
+  }).filter(function(j) { return !!j.team; });
+  // A fired coach turned down everywhere still needs a job: a small program
+  // offers one outright, so the offseason can never dead-end.
+  var allOut = list.every(function(j) { return jm.rejected.indexOf(j.team.id) >= 0; });
+  if (isFiredCoach() && allOut) {
+    if (jm.fallback === undefined) {
+      var pool = G.teams.filter(function(t) { return t.id !== G.tid && jm.rejected.indexOf(t.id) < 0; });
+      pool.sort(function(a, b) { return (a.schoolPrestige || 0) - (b.schoolPrestige || 0); });
+      jm.fallback = pool.length ? pool[Math.floor(Math.random() * Math.min(10, pool.length))].id : -1;
+    }
+    var ft = G.teams[jm.fallback];
+    if (ft) list.push({ team: ft, firedCoach: ft.coach ? ft.coach.firstName + ' ' + ft.coach.lastName : 'Unknown', record: ft.wins + '-' + ft.loss, reason: 'Offered you the job', guaranteed: true });
+  }
+  return list;
+}
+
 function renderCarousel() {
-  var jobs = generateOpenJobs();
+  var jobs = jobMarket();
+  var rejected = (G.jobMarket && G.jobMarket.rejected) || [];
   var c = G.coach;
   var currentTeam = G.teams[G.tid];
   var fired = isFiredCoach();
@@ -877,7 +908,7 @@ function renderCarousel() {
     h += '<div class="strat-sec-label">' + jobs.length + ' open positions</div><div class="job-grid">';
     jobs.forEach(function(job) {
       var jobId = job.team.id;
-      if (_rejectedJobs.indexOf(jobId) >= 0) return; // hide rejected jobs by stable team id (R3)
+      var turnedDown = rejected.indexOf(jobId) >= 0;
       var chance = calcOfferChance(job);
       var t = job.team;
       h += '<div style="padding:10px 0;border-bottom:1px solid var(--bdr);">'
@@ -886,8 +917,10 @@ function renderCarousel() {
         + '<div style="font-size:11px;color:var(--txt3);">' + t.conf + ' · OVR ' + (t.baseOvr || '?') + ' · Prestige ' + (t.schoolPrestige || '?') + '</div></div></div>'
         + '<div style="font-size:11px;color:var(--txt3);margin-bottom:10px;">Previous: ' + job.firedCoach + ' · ' + job.reason + '</div>'
         + '<div style="display:flex;justify-content:space-between;align-items:center;">'
-        + '<div class="chance" style="color:' + chanceColor(chance) + ';">' + chance + '% chance</div>'
-        + '<button class="btn btn-red btn-sm" data-apply-job="' + jobId + '">Apply</button>'
+        + (turnedDown
+          ? '<div style="color:var(--txt3);">Not selected. The school hired someone else.</div><span></span>'
+          : '<div class="chance" style="color:' + chanceColor(chance) + ';">' + chance + '% chance</div>'
+            + '<button class="btn btn-red btn-sm" data-apply-job="' + jobId + '">Apply</button>')
         + '</div></div>';
     });
     h += '</div>';
@@ -966,8 +999,9 @@ export function applyForJob(jobId) {
       saveState(); updateAll(); renderOffseason();
     });
   } else {
-    // Rejected — show modal and remove from list (by stable team id)
-    _rejectedJobs.push(jobId);
+    // Rejected: the job stays on the list, marked as not selected
+    if (G.jobMarket && G.jobMarket.rejected.indexOf(jobId) < 0) G.jobMarket.rejected.push(jobId);
+    saveState();
     showJobModal(job, false, function() {
       renderOffseason();
     });

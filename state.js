@@ -351,7 +351,8 @@ function _writeSave() {
       bracket:_slimBracket(G.bracket),
       confTourneys:_slimConfTourneys(G.confTourneys),
       injuries:G.injuries||[],buffs:G.buffs||[],nextHomeBonus:G.nextHomeBonus||0,
-      lastResult:G.lastResult||null
+      lastResult:G.lastResult||null,
+      jobMarket:G.jobMarket||null
     };
     var str=JSON.stringify(lean);
     try { localStorage.setItem(SAVE_KEY,str); }
@@ -453,6 +454,7 @@ export function loadState() {
     G.buffs=s.buffs||[];
     G.nextHomeBonus=s.nextHomeBonus||0;
     G.lastResult=s.lastResult||null;
+    G.jobMarket=s.jobMarket||null;
 
     // Recruits backward compat
     G.recruits.forEach(function(r){
