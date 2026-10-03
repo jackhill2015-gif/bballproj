@@ -1,5 +1,5 @@
 // Diagnostic: categorize standings mismatches after one regular season
-const REPO = '/home/hatch/workspace/bballproj';
+const REPO = new URL('..', import.meta.url).pathname.replace(/\/$/, '');
 const _store = {};
 globalThis.localStorage = { getItem:k=>_store[k]??null, setItem:(k,v)=>{_store[k]=String(v);}, removeItem:k=>{delete _store[k];} };
 const se=()=>({textContent:'',innerHTML:'',value:'',onclick:null,style:{},classList:{add(){},remove(){},toggle(){},contains(){return false;}},appendChild(){},removeChild(){},querySelector(){return null;},querySelectorAll(){return[];},setAttribute(){},getAttribute(){return null;},addEventListener(){},remove(){}});

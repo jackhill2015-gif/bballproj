@@ -7,6 +7,7 @@
 
 import { G } from '../state.js';
 import { SKILL_POINT_TABLE } from '../constants.js';
+import { awardScore, pickPositionalTeam } from '../utils.js';
 
 // ═══════════════════════════════════════════════════════════
 //  AWARDS CALCULATION
@@ -25,14 +26,14 @@ function calcAwards() {
         rpg: +(p.s.reb / gp).toFixed(1),
         apg: +(p.s.ast / gp).toFixed(1),
         fgp: p.s.fga > 0 ? +(p.s.fgm / p.s.fga * 100).toFixed(1) : 0,
-        per: +(((p.s.pts + p.s.reb + p.s.ast) / gp)).toFixed(1)
+        per: +awardScore(p, t).toFixed(1)
       });
     });
   });
 
   allPlayers.sort(function(a, b) { return b.per - a.per; });
   var poy = allPlayers[0] || null;
-  var allAmerican = allPlayers.slice(0, 5);
+  var allAmerican = pickPositionalTeam(allPlayers);
 
   var freshmen = allPlayers.filter(function(p) { return p.cls === 'FR'; });
   freshmen.sort(function(a, b) { return b.per - a.per; });
@@ -46,7 +47,7 @@ function calcAwards() {
   });
   Object.keys(confs).forEach(function(conf) {
     confs[conf].sort(function(a, b) { return b.per - a.per; });
-    confTeams[conf] = confs[conf].slice(0, 5);
+    confTeams[conf] = pickPositionalTeam(confs[conf]);
   });
 
   var coachCandidates = G.teams.map(function(t) {

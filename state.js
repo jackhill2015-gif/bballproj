@@ -7,7 +7,7 @@ import { getTOvr } from './utils.js';
 import { RECRUIT_STATE_POOL, calcSchoolPrestige, COACH_FN, COACH_LN } from './constants.js';
 
 // ── Current save version — bump this when adding new fields ──
-var SAVE_VERSION = 9;
+var SAVE_VERSION = 10;
 var SAVE_KEY = 'hoops_os_v3';
 
 // ── Main Game State ──
@@ -175,7 +175,11 @@ var MIGRATIONS = {
     if (!s.portalCpuTakes) s.portalCpuTakes = {};
     if (typeof s.portalUserSigns !== 'number') s.portalUserSigns = 0;
     return s;
-  }
+  },
+  // v9→v10: Whole league persists (every CPU roster, strategy, coach history).
+  // Older saves only stored the user's roster; CPU teams in those saves keep
+  // the freshly generated rosters from buildUniverse() — nothing to migrate.
+  10: function(s) { return s; }
 };
 
 function runMigrations(s) {
@@ -271,6 +275,45 @@ function _slimRecruits(recruits) {
   });
 }
 
+// ── v10: compact roster packing. Every team's roster is saved (the whole
+// league must survive Continue). Players are packed column-wise against a
+// shared key table so 365 x 13 players stays well inside localStorage limits.
+function _packRosters(teams) {
+  var schemas = [], schemaIdx = {};
+  function schemaFor(o) {
+    var keys = Object.keys(o);
+    var sig = keys.join('|');
+    if (schemaIdx[sig] === undefined) { schemaIdx[sig] = schemas.length; schemas.push(keys); }
+    return schemaIdx[sig];
+  }
+  function pack(o) {
+    var si = schemaFor(o), keys = schemas[si], row = [si];
+    for (var i = 0; i < keys.length; i++) {
+      var v = o[keys[i]];
+      // nested plain objects (season stats) are packed too, flagged with {_:row}
+      row.push(v && typeof v === 'object' && !Array.isArray(v) ? { _: pack(v) } : v);
+    }
+    return row;
+  }
+  return {
+    schemas: schemas,
+    rosters: teams.map(function(t) { return (t.rost || []).map(pack); })
+  };
+}
+
+function _unpackRosters(packed) {
+  var schemas = packed.schemas || [];
+  function unpack(row) {
+    var keys = schemas[row[0]], o = {};
+    for (var i = 0; i < keys.length; i++) {
+      var v = row[i + 1];
+      o[keys[i]] = v && typeof v === 'object' && !Array.isArray(v) && v._ ? unpack(v._) : v;
+    }
+    return o;
+  }
+  return (packed.rosters || []).map(function(r) { return (r || []).map(unpack); });
+}
+
 function _writeSave() {
   try {
     var lean = {
@@ -291,21 +334,32 @@ function _writeSave() {
       skillPointsEarned:G.skillPointsEarned,skillPointsToSpend:G.skillPointsToSpend,
       teams:G.teams.map(function(t,i){
         var b={id:t.id,wins:t.wins,loss:t.loss,cWins:t.cWins,cLoss:t.cLoss,
-          pts:t.pts,ts:t.ts,schoolPrestige:t.schoolPrestige,coach:t.coach};
-        if(i===G.tid){b.rost=t.rost;b.sched=t.sched;}
-        else{b.sched=t.sched.map(function(s){
-          if(!s||!s.played)return s;
-          return{opp:s.opp,home:s.home,conf:s.conf,played:true,uScore:s.uScore,oScore:s.oScore};
-        });}
+          pts:t.pts,ts:t.ts,schoolPrestige:t.schoolPrestige,coach:t.coach,
+          strat:t.strat,streak:t.streak||0,coachHistory:t.coachHistory||[]};
+        if(i===G.tid){b.sched=t.sched;}
+        else{
+          // v10: CPU schedule entries packed as [opp, home, conf, played, uScore, oScore]
+          b.sched=t.sched.map(function(s){
+            if(!s)return null;
+            return[s.opp,s.home?1:0,s.conf?1:0,s.played?1:0,s.uScore||0,s.oScore||0];
+          });}
         return b;
       }),
+      // v10: every roster in the league (user's included), packed
+      rosters:_packRosters(G.teams),
       recruits:_slimRecruits(G.recruits),
       bracket:_slimBracket(G.bracket),
       confTourneys:_slimConfTourneys(G.confTourneys),
       injuries:G.injuries||[],buffs:G.buffs||[],nextHomeBonus:G.nextHomeBonus||0
     };
     var str=JSON.stringify(lean);
-    localStorage.setItem(SAVE_KEY,str);
+    try { localStorage.setItem(SAVE_KEY,str); }
+    catch (qe) {
+      // Out of space: drop the activity log (non-essential) and retry once
+      lean.logs = [];
+      str = JSON.stringify(lean);
+      localStorage.setItem(SAVE_KEY,str);
+    }
     console.log('[Save] v'+SAVE_VERSION+' '+Math.round(str.length/1024)+'KB');
   }catch(e){console.error('Save failed',e);}
 }
@@ -406,16 +460,25 @@ export function loadState() {
     });
 
     // Teams
+    var _rosters = s.rosters ? _unpackRosters(s.rosters) : null;
     if(s.teams){s.teams.forEach(function(st,i){
       if(!G.teams[i])return;
       G.teams[i].wins=st.wins||0;G.teams[i].loss=st.loss||0;
       G.teams[i].cWins=st.cWins||0;G.teams[i].cLoss=st.cLoss||0;
       G.teams[i].pts=st.pts||G.teams[i].pts;G.teams[i].ts=st.ts||G.teams[i].ts;
-      G.teams[i].sched=st.sched||[];
+      G.teams[i].sched=(st.sched||[]).map(function(e){
+        if(!Array.isArray(e))return e;
+        return{opp:e[0],home:!!e[1],conf:!!e[2],played:!!e[3],uScore:e[4],oScore:e[5]};
+      });
       if(st.schoolPrestige)G.teams[i].schoolPrestige=st.schoolPrestige;
       if(st.coach)G.teams[i].coach=st.coach;
-      if(i===G.tid&&st.rost){
-        G.teams[i].rost=st.rost;
+      if(st.strat)G.teams[i].strat=st.strat;
+      if(typeof st.streak==='number')G.teams[i].streak=st.streak;
+      if(st.coachHistory)G.teams[i].coachHistory=st.coachHistory;
+      // v10 saves carry every roster; v9 and older only had the user's (st.rost)
+      var _r = (_rosters && _rosters[i] && _rosters[i].length) ? _rosters[i] : (i===G.tid ? st.rost : null);
+      if(_r)G.teams[i].rost=_r;
+      if(_r){
         G.teams[i].rost.forEach(function(p){
           if(typeof p.pot!=='number'){
             var pg=p.cls==='FR'?12:p.cls==='SO'?8:p.cls==='JR'?4:1;

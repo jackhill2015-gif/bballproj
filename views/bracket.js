@@ -5,7 +5,7 @@
 //  Delegated actions, no inline onclick.
 // ═══════════════════════════════════════════════════════════
 
-import { ge, clamp, getTOvr } from '../utils.js';
+import { ge, clamp, getTOvr, fmtScore } from '../utils.js';
 import { G } from '../state.js';
 import { allConfDone, getUserNCAAmatchup, getUserConfMatchup, getConfRoundName } from '../tournament.js';
 
@@ -104,7 +104,7 @@ function renderConfBracketCard(conf, ct, expanded) {
         h += '<div class="br-result">'
           + '<span><b>' + m.winner.name + '</b> def. '
           + (m.winner.id === m.t1.id ? m.t2.name : m.t1.name) + '</span>'
-          + '<span class="br-score" style="color:var(--txt3);">' + m.s1 + '-' + m.s2 + '</span></div>';
+          + '<span class="br-score" style="color:var(--txt3);">' + fmtScore(m.s1, m.s2, '-') + '</span></div>';
       }
     });
   }

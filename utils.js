@@ -134,3 +134,37 @@ export function getTeamStyle(conf, ovr) {
   var dnames = { 'man': 'Man-to-Man', '2-3': '2-3 Zone', '3-2': '3-2 Zone', '1-3-1': '1-3-1 Zone', 'box1': 'Box-and-One' };
   return { off: off, def: def, identity: onames[off] + ' / ' + dnames[def] };
 }
+
+// ── Season awards (shared by the recap view and the record book) ──
+// Award score: scoring first; boards and dimes count but don't dominate (raw
+// pts+reb+ast handed every award to rebounders), plus a nudge for winning.
+export function awardScore(p, t) {
+  var gp = p.s.gp || 0;
+  if (!gp) return 0;
+  return (p.s.pts + p.s.reb * 0.45 + p.s.ast * 0.7) / gp
+    + (t.wins / Math.max(1, t.wins + t.loss)) * 4;
+}
+
+// A real five: two guards, two forwards, one center, best available by
+// .per (callers pass a list sorted best-first). Falls back to the best
+// remaining player if a position group runs short. Returned best-first.
+export function pickPositionalTeam(sorted, posOf) {
+  posOf = posOf || function(x) { return x.pos; };
+  var slots = { G: 2, F: 2, C: 1 };
+  var grp = function(pos) { return (pos === 'PG' || pos === 'SG') ? 'G' : (pos === 'SF' || pos === 'PF') ? 'F' : 'C'; };
+  var team = [];
+  sorted.forEach(function(x) {
+    var g = grp(posOf(x));
+    if (team.length < 5 && slots[g] > 0) { slots[g]--; team.push(x); }
+  });
+  for (var i = 0; team.length < 5 && i < sorted.length; i++) {
+    if (team.indexOf(sorted[i]) < 0) team.push(sorted[i]);
+  }
+  return team.sort(function(a, b) { return b.per - a.per; });
+}
+
+// Scores read winner-first, like a box score line: "W 78-71", "L 72-60".
+export function fmtScore(a, b, sep) {
+  sep = sep || '\u2013';
+  return Math.max(a, b) + sep + Math.min(a, b);
+}

@@ -1,6 +1,6 @@
 // HOOPS OS feature test: home-page tournament swap + full-bracket reveal
 // Usage: node test-harness/feature-tourney-home.mjs
-const REPO = '/home/hatch/workspace/bballproj';
+const REPO = new URL('..', import.meta.url).pathname.replace(/\/$/, '');
 
 // ── browser shims with id-keyed persistent elements ──
 const _store = {};

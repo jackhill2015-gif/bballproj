@@ -1,6 +1,6 @@
 // Scheme effect verification: each scheme must produce its identity.
 // Also: per-player usage slider test (star 35 vs 15).
-const REPO = '/home/hatch/workspace/bballproj';
+const REPO = new URL('..', import.meta.url).pathname.replace(/\/$/, '');
 const _store = {};
 globalThis.localStorage = { getItem: k => _store[k] ?? null, setItem: (k, v) => { _store[k] = String(v); }, removeItem: k => { delete _store[k]; }, clear: () => {} };
 function stubEl() { return { textContent: '', innerHTML: '', style: {}, dataset: {}, classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } }, appendChild() {}, remove() {}, querySelector() { return null; }, querySelectorAll: () => [], setAttribute() {}, addEventListener() {}, removeEventListener() {}, click() {} }; }

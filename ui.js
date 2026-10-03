@@ -133,7 +133,10 @@ function narrateResult(type, text) {
     if (!m) return null;
     var won = type === 'w';
     var oppName = m[2];
-    var uScore = parseInt(m[3], 10), oScore = parseInt(m[4], 10);
+    // Logged scores are winner-first (fmtScore); map back to user/opp
+    var sA = parseInt(m[3], 10), sB = parseInt(m[4], 10);
+    var uScore = won ? Math.max(sA, sB) : Math.min(sA, sB);
+    var oScore = won ? Math.min(sA, sB) : Math.max(sA, sB);
     var suffix = m[5] || '';
     var margin = Math.abs(uScore - oScore);
 

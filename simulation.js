@@ -163,18 +163,23 @@ export function getFloor(team, wFn) {
 // slider (0-100, default 20 = neutral); missing/0 treated as 20 (old saves).
 // Schemes stack on top: drive funnels through PG, set feeds PF/C, motion
 // flattens distribution. Normalized by the pool, so extremes can't break it.
+// Positional shot share: in college ball the ball lives in the guards' and
+// wings' hands; bigs score mostly off post-ups, rolls and putbacks (which the
+// play-type logic already routes to them). Without this, bigs' inflated ovr
+// (reb/def-weighted) made them the top shot-takers too.
+var POS_USAGE = { PG: 1.0, SG: 1.05, SF: 1.1, PF: 0.95, C: 0.85 };
 function shooterWeight(p, offTeam) {
   var u = (typeof p.usage === 'number' && p.usage > 0) ? p.usage : 20;
   u = clamp(u, 1, 100);
   var scheme = offTeam ? ((offTeam.strat && offTeam.strat.off) || 'balanced') : 'balanced';
-  var ovrExp = (scheme === 'motion') ? 1 : 3.5; // motion: even shot distribution
-  var w = p.mins * Math.pow(Math.max(40, p.ovr) / 72, ovrExp) * (u / 20);
+  var ovrExp = (scheme === 'motion') ? 1 : 2.0; // motion: even shot distribution
+  var w = p.mins * Math.pow(Math.max(40, p.ovr) / 72, ovrExp) * (u / 20) * (POS_USAGE[p.pos] || 1);
   if (scheme === 'drive' && p.pos === 'PG') w *= 1.8;
   if (scheme === 'set' && (p.pos === 'PF' || p.pos === 'C')) w *= 1.75;
   return w;
 }
 function astW(p) { return p.mins * Math.pow(Math.max(40, p.ply) / 62, 2); }
-function rebW(p) { return p.mins * Math.pow(Math.max(40, p.reb) / 62, 3.5); }
+function rebW(p) { return p.mins * Math.pow(Math.max(40, p.reb) / 62, 3); }
 
 // Primary-playmaker assist: 55% of assists go to the highest-ply player on
 // the floor (not the scorer), the rest are weighted by playmaking.
@@ -350,6 +355,15 @@ export function simPoss(offT, defT) {
     if (offStarS && off === offStarS) makePct -= 6;
   }
   if (isClutch) makePct -= 4;
+  // Home court + score effects, matching simGame so watched games play like
+  // simmed ones. Tournament games are neutral-site.
+  var liveHome = (G.phase === 'reg' && offT === LS.tH);
+  if (liveHome) makePct += HOME_BONUS;
+  if (LS.half >= 2) {
+    var liveLead = (offT === LS.tH) ? (LS.hs - LS.as) : (LS.as - LS.hs);
+    var liveOver = Math.abs(liveLead) - SCORE_EFFECT_START;
+    if (liveOver > 0) makePct += (liveLead > 0 ? -1 : 1) * Math.min(SCORE_EFFECT_MAX, liveOver * SCORE_EFFECT_RATE);
+  }
   makePct = Math.round(makePct * (1 - tiredness));
   makePct = clamp(makePct, 26, 78);
 
@@ -380,6 +394,18 @@ export function simPoss(offT, defT) {
   }
 }
 
+
+// ── Engine tuning (calibrated with test-harness/calib-run.mjs + season-diag.mjs)
+// HOME_BONUS: shooting-% points for the home offense (~+3.5 pts/game HCA).
+// PUTBACK_PCT: share of offensive rebounds that go straight back up (the rest
+//   kick out and reset to a normal, perimeter-weighted shot).
+// SCORE_EFFECT_*: second-half lead beyond START costs the leader RATE shooting-%
+//   points per point of lead, capped at MAX (trailer gains the same).
+var HOME_BONUS = 6;
+var PUTBACK_PCT = 50;
+var SCORE_EFFECT_START = 7;
+var SCORE_EFFECT_RATE = 0.7;
+var SCORE_EFFECT_MAX = 9;
 
 // ── Full Game Simulation (Final Engine) ──────────────────
 // Possession-based with play types, clutch, momentum, fouls, fatigue, schemes.
@@ -414,8 +440,10 @@ export function simGame(home, away, userIsHome) {
   });
   // M8 FIX: wire the sellout-crowd event (events.js sets G.nextHomeBonus=3).
   // Applies to the user's next home game only, consumed once.
-  var homeBonus = 5;
-  if (userIsHomeActual && (G.nextHomeBonus || 0) > 0) {
+  // Conference and NCAA tournament games are neutral-site: no home court.
+  var neutralSite = G.phase === 'conf_tourn' || G.phase === 'ncaa';
+  var homeBonus = neutralSite ? 0 : HOME_BONUS;
+  if (!neutralSite && userIsHomeActual && (G.nextHomeBonus || 0) > 0) {
     homeBonus += G.nextHomeBonus;
     G.nextHomeBonus = 0;
   }
@@ -508,7 +536,7 @@ export function simGame(home, away, userIsHome) {
       var playType = 'standard';
       var isoT = (oScheme === 'drive') ? 22 : 15;
       var pnrT = isoT + 25;
-      var postT = pnrT + ((oScheme === 'set') ? 32 : 20);
+      var postT = pnrT + ((oScheme === 'set') ? 22 : 12);
       if (playRoll <= isoT) playType = 'iso';
       else if (playRoll <= pnrT) playType = 'pnr';
       else if (playRoll <= 50 && lastTransition) playType = 'fastbreak';
@@ -544,7 +572,7 @@ export function simGame(home, away, userIsHome) {
         do { off = getFloor(offTeam, sw); triesP++; } while ((off.pos !== 'PF' && off.pos !== 'C') && triesP < 3);
         isRim = true; foulExtra = 3;
       } else {
-        isThree = ri(1, 100) <= (58 + schemeThreeMod(offTeam));
+        isThree = ri(1, 100) <= (48 + schemeThreeMod(offTeam));
         var rimCh = (oScheme === 'drive') ? 38 : 25;
         isRim = !isThree && ri(1, 100) <= rimCh;
       }
@@ -617,6 +645,7 @@ export function simGame(home, away, userIsHome) {
       }
       if (isClutch) makePct -= 3;
       makePct += momMakeBonus;
+      makePct += scoreEffect(isHomeOff);
       var tiredness3 = Math.min((fatigue.get(off) || 0) / 80, 0.15);
       makePct = Math.round(makePct * (1 - tiredness3));
       makePct = clamp(makePct, 25, 78);
@@ -640,6 +669,28 @@ export function simGame(home, away, userIsHome) {
           // Second-chance putback: the rebounder goes right back up (rim attempt).
           // This is what makes FGA/rebound volume match real D1 (OREB extends
           // the possession instead of ending it).
+          if (ri(1, 100) > PUTBACK_PCT) {
+            // Kick-out: the possession resets and the offense runs its normal
+            // shot selection (perimeter-weighted) instead of a big's putback.
+            var ko = getFloor(offTeam, sw), koDef = getFloor(defTeam);
+            var ko3 = ri(1, 100) <= 45;
+            var koPct = ko3 ? clamp(38 + Math.round((ko.sht - koDef.def) * 0.2) + shotBonus, 28, 48)
+                            : clamp(50 + Math.round((ko.sht - koDef.def) * 0.25) + shotBonus, 36, 60);
+            koPct += scoreEffect(isHomeOff);
+            koPct = Math.round(koPct * (1 - Math.min((fatigue.get(ko) || 0) / 80, 0.15)));
+            ko.s.fga++; if (ko3) ko.s.tpa = (ko.s.tpa || 0) + 1;
+            if (ri(1, 100) <= koPct) {
+              var kp = ko3 ? 3 : 2;
+              if (isHomeOff) hScore += kp; else aScore += kp;
+              ko.s.pts += kp; ko.s.fgm++; if (ko3) ko.s.tpm = (ko.s.tpm || 0) + 1;
+              if (ri(1, 100) <= 70) pickAssister(offTeam, ko);
+              if (isHomeOff) { hMomentum++; aMomentum = 0; } else { aMomentum++; hMomentum = 0; }
+            } else {
+              var koReb = getFloor(defTeam, rebW); koReb.s.reb++;
+              if (isHomeOff) { aMomentum++; hMomentum = 0; } else { hMomentum++; aMomentum = 0; }
+            }
+            return;
+          }
           var pbDef = getFloor(defTeam);
           var pbPct = clamp(52 + Math.round((oReb.fin - pbDef.def) * 0.3) + shotBonus, 38, 72);
           var pbTired = Math.min((fatigue.get(oReb) || 0) / 80, 0.15);
@@ -664,9 +715,24 @@ export function simGame(home, away, userIsHome) {
       }
   }
 
+  // Score effects (garbage time / comeback pressure): once a lead gets big in
+  // the second half, the leader empties the bench and coasts while the trailer
+  // gambles and presses. Real games compress this way, which is why college
+  // blowouts rarely snowball to 40+. Close games are untouched.
+  var curPoss = 0;
+  function scoreEffect(isHomeOff) {
+    if (curPoss < gamePoss * 0.45) return 0;
+    var lead = isHomeOff ? (hScore - aScore) : (aScore - hScore);
+    var over = Math.abs(lead) - SCORE_EFFECT_START;
+    if (over <= 0) return 0;
+    var adj = Math.min(SCORE_EFFECT_MAX, over * SCORE_EFFECT_RATE);
+    return lead > 0 ? -adj : adj;
+  }
+
   // Box-and-one targets, computed once per game.
   var homeStar = teamStar(home), awayStar = teamStar(away);
   for (var pi = 0; pi < gamePoss; pi++) {
+    curPoss = pi;
     var pClutch = (pi >= gamePoss - 8);
     runOnePoss(home, away, true, pClutch);
     runOnePoss(away, home, false, pClutch);

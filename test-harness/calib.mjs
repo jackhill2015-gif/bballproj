@@ -1,6 +1,6 @@
 // HOOPS OS sim-engine calibration + M-fix regression script
 // Measures engine output vs research/cbb-calibration-targets.md bands.
-const REPO = '/home/hatch/workspace/bballproj';
+const REPO = new URL('..', import.meta.url).pathname.replace(/\/$/, '');
 
 // ── browser shims ──
 const _store = {};

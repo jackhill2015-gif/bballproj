@@ -1,6 +1,6 @@
 // HOOPS OS — morale system test
 // Usage: node test-harness/morale-test.mjs
-const REPO = '/home/hatch/workspace/bballproj';
+const REPO = new URL('..', import.meta.url).pathname.replace(/\/$/, '');
 
 // ── browser shims ──
 const _store = {};

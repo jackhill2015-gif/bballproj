@@ -4,7 +4,8 @@
 //  Selection Sunday reveal, tournament game play/resolution.
 // ═══════════════════════════════════════════════════════════
 
-import { ge, txt } from './utils.js';
+import { recomputeRatings, resumeScore } from './ratings.js';
+import { ge, txt, fmtScore } from './utils.js';
 import { G, LS, SetupState, saveState } from './state.js';
 import { simGame } from './simulation.js';
 import { recordGameMorale } from './morale.js';
@@ -103,7 +104,6 @@ function buildNextConfRound(conf) {
     ct.done = true;
     ct.champ = survivors[0] || null;
     if (ct.champ) {
-      ct.champ.pts += 200;
       if (ct.champ.id === G.tid) {
         G.confTitles++; G.prestige = Math.min(5, G.prestige + 1);
         addLog('ev', G.gi, '<b>' + conf + ' CONFERENCE CHAMPIONS!</b>');
@@ -302,6 +302,8 @@ function ncaaSeedEntry(region, seed) {
 // ═══════════════════════════════════════════════════════════
 
 export function buildNCAA() {
+  // Rankings fold in the conference tournaments before the committee meets.
+  recomputeRatings();
   // ── SELECTION COMMITTEE ──
   // Step 1: Conference champs get automatic bids
   var autoBids = [];
@@ -315,15 +317,14 @@ export function buildNCAA() {
   }
 
   // Step 2: Build resume score for at-large selection
-  // Resume = NET pts + win% bonus + strength of schedule
+  // Resume = SOS-adjusted power rating + small win% credit (ratings.js)
   var allTeams = G.teams.map(function(t) {
     var totalGames = t.wins + t.loss;
     var winPct = totalGames > 0 ? t.wins / totalGames : 0;
-    var winBonus = Math.round((winPct - 0.5) * 80); // +40 for .750, -40 for .250
     var isAutoBid = autoBids.some(function(ab) { return ab.id === t.id; });
     return {
       team: t,
-      resume: t.pts + winBonus,
+      resume: resumeScore(t),
       isAutoBid: isAutoBid
     };
   });
@@ -452,7 +453,7 @@ export function showBracketReveal(userSeed) {
   // Build bubble report
   var bubble = ge('br-bubble');
   if (bubble) {
-    var allSorted = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; });
+    var allSorted = G.teams.slice().sort(function(a, b) { return resumeScore(b) - resumeScore(a); });
     var firstOut = [];
     for (var bi = 0; bi < allSorted.length; bi++) {
       var inBracket = G.bracket.some(function(br) { return br.team.id === allSorted[bi].id; });
@@ -470,7 +471,7 @@ export function showBracketReveal(userSeed) {
     }
     var atLarge = G.bracket.filter(function(b) { return !autoBidIds[b.team.id]; });
     atLarge.sort(function(a, b) {
-      var aResume = a.team.pts || 0; var bResume = b.team.pts || 0;
+      var aResume = resumeScore(a.team); var bResume = resumeScore(b.team);
       return aResume - bResume;
     });
     var lastIn = atLarge.slice(0, 4).map(function(b) { return b.team; });
@@ -729,11 +730,11 @@ export function resolveTournamentGame() {
     // Morale: tournament games swing moods too
     recordGameMorale(userWon ? userTeam : oppTeam, userWon ? oppTeam : userTeam);
     if (userWon) {
-      toast(userTeam.name + ' ADVANCES! ' + uScore + '-' + oScore, 'var(--grn)');
-      addLog('w', G.gi, '<b>W</b> vs <b>' + oppName + '</b> ' + uScore + '\u2013' + oScore + ' (Conf Tourney)');
+      toast(userTeam.name + ' ADVANCES! ' + fmtScore(uScore, oScore, '-'), 'var(--grn)');
+      addLog('w', G.gi, '<b>W</b> vs <b>' + oppName + '</b> ' + fmtScore(uScore, oScore) + ' (Conf Tourney)');
     } else {
-      toast('Eliminated by ' + oppName + ' ' + uScore + '-' + oScore, 'var(--red)');
-      addLog('l', G.gi, '<b>L</b> vs <b>' + oppName + '</b> ' + uScore + '\u2013' + oScore + ' (Conf Tourney)');
+      toast('Eliminated by ' + oppName + ', ' + fmtScore(uScore, oScore, '-'), 'var(--red)');
+      addLog('l', G.gi, '<b>L</b> vs <b>' + oppName + '</b> ' + fmtScore(uScore, oScore) + ' (Conf Tourney)');
     }
     advanceConfRoundExceptUser(conf);
     // Also advance other conferences one round
@@ -796,7 +797,7 @@ export function resolveTournamentGame() {
       // Upset bonus
       if (isUpset) {
         prestigeGain += 2;
-        addLog('ev', G.gi, '\ud83d\udea8 <b>UPSET!</b> #' + userSeed + ' ' + userTeam.name + ' stuns #' + oppSeed + ' ' + oppName2 + '! ' + uScore + '-' + oScore);
+        addLog('ev', G.gi, '\ud83d\udea8 <b>UPSET!</b> #' + userSeed + ' ' + userTeam.name + ' stuns #' + oppSeed + ' ' + oppName2 + '! ' + fmtScore(uScore, oScore, '-'));
       }
 
       // Apply prestige
@@ -804,12 +805,12 @@ export function resolveTournamentGame() {
       t.schoolPrestige = Math.min(100, (t.schoolPrestige || 50) + prestigeGain);
 
       toast(userTeam.name + ' ADVANCES! ' + roundMsg, 'var(--grn)');
-      addLog('w', G.gi, '<b>W</b> vs <b>' + oppName2 + '</b> ' + uScore + '\u2013' + oScore + ' (NCAA \u2014 ' + roundMsg + ')');
+      addLog('w', G.gi, '<b>W</b> vs <b>' + oppName2 + '</b> ' + fmtScore(uScore, oScore) + ' (NCAA \u2014 ' + roundMsg + ')');
     } else {
       // Elimination — record how far we got (post-round team counts)
       var finalRound = remaining <= 1 ? 'Championship Game' : remaining <= 2 ? 'Final Four' : remaining <= 4 ? 'Elite Eight' : remaining <= 8 ? 'Sweet 16' : remaining <= 16 ? 'Round of 32' : 'Round of 64';
       toast('Season over. Eliminated in the ' + finalRound + '.', 'var(--red)');
-      addLog('l', G.gi, '<b>L</b> vs <b>' + oppName2 + '</b> ' + uScore + '\u2013' + oScore + ' (NCAA \u2014 ' + finalRound + ')');
+      addLog('l', G.gi, '<b>L</b> vs <b>' + oppName2 + '</b> ' + fmtScore(uScore, oScore) + ' (NCAA \u2014 ' + finalRound + ')');
       G.seasonAchievements = G.seasonAchievements || {};
       G.seasonAchievements.tourneyFinish = finalRound;
     }

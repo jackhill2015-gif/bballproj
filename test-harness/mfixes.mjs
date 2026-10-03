@@ -1,6 +1,6 @@
 // M-fix regression tests: M1, M2, M3, M4, M5, M7, M8.
 // (M6 phantom=0 verified in calib.mjs; M9/M10 covered by code review + calib.)
-const REPO = '/home/hatch/workspace/bballproj';
+const REPO = new URL('..', import.meta.url).pathname.replace(/\/$/, '');
 const _store = {};
 globalThis.localStorage = { getItem: k => _store[k] ?? null, setItem: (k, v) => { _store[k] = String(v); }, removeItem: k => { delete _store[k]; }, clear: () => {} };
 function stubEl() {

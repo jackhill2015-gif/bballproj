@@ -8,6 +8,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { G, LS } from './state.js';
+import { awardScore, pickPositionalTeam } from './utils.js';
 
 // ── Late-binding UI hooks (registered by main.js) ─────────
 var _hooks = { log: null, toast: null };
@@ -147,9 +148,13 @@ function checkScope(book, scope, items, getVal, getName, yr, silent) {
 
 export function checkGameRecords(tid, lines, wk) {
   var book = bookFor(tid);
+  // Year one: the book is empty, so every big night would "break" a record
+  // set a week earlier. Until the first season is in the books (season marks
+  // exist), single-game marks are written quietly.
+  var inaugural = STATS.every(function(st) { return !book.season[st]; });
   var breaks = checkScope(book, 'game', lines,
     function(L, st) { return L[st]; },
-    function(L) { return L.p.name; }, G.yr);
+    function(L) { return L.p.name; }, G.yr, inaugural);
   breaks.forEach(function(b) { b.wk = (wk === undefined ? G.gi : wk); });
   return breaks;
 }
@@ -162,11 +167,11 @@ function seasonHonors() {
     tm.rost.forEach(function(p) {
       var gp = p.s.gp || 0;
       if (gp < 10) return;
-      all.push({ p: p, tid: tm.id, per: (p.s.pts + p.s.reb + p.s.ast) / gp });
+      all.push({ p: p, tid: tm.id, per: awardScore(p, tm) });
     });
   });
   all.sort(function(a, b) { return b.per - a.per; });
-  return { poy: all[0] || null, aa: all.slice(0, 5) };
+  return { poy: all[0] || null, aa: pickPositionalTeam(all, function(x) { return x.p.pos; }) };
 }
 
 // ── Ambient announcement ──────────────────────────────────
@@ -174,9 +179,12 @@ function seasonHonors() {
 function announce(breaks) {
   breaks.forEach(function(b) {
     if (_hooks.log) _hooks.log('r', (b.wk === undefined ? G.gi : b.wk), b.text);
-    if (_hooks.toast) _hooks.toast(b.short, 'var(--gld2)');
     seasonBreaks().push(b);
   });
+  // One toast per batch, not one per record
+  if (!breaks.length || !_hooks.toast) return;
+  if (breaks.length === 1) _hooks.toast(breaks[0].short, 'var(--gld2)');
+  else _hooks.toast(breaks.length + ' school records broken! See the log.', 'var(--gld2)');
 }
 
 // Surface the user's just-finished game. Reads LS._recLines (quick-sim

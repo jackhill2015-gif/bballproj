@@ -8,7 +8,7 @@
 //  (f) thin board → late entries surface on Signing Day
 //  (g) old-save entrants (no suitors/homeState/offer) backfill cleanly
 // Usage: node test-harness/portal-pitch-test.mjs
-const REPO = '/home/hatch/workspace/bballproj';
+const REPO = new URL('..', import.meta.url).pathname.replace(/\/$/, '');
 
 const _store = {};
 globalThis.localStorage = {

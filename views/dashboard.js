@@ -126,24 +126,37 @@ function renderExpectations() {
   var c = G.coach;
   if (!exp) return '';
   var wins = t.wins;
+  var gp = t.wins + t.loss;
+  var total = (t.sched || []).filter(function(s) { return !!s; }).length || 30;
+  // Judge the season by its pace, not raw wins — at 0-0 nobody is in danger.
+  // Early on the projection leans on expectations, then on actual results.
+  var expPct = ((exp.low + exp.high) / 2) / total;
+  var pacePct = (wins + 4 * expPct) / (gp + 4);
+  var proj = Math.round(wins + Math.max(0, total - gp) * pacePct);
   var job, cls;
   if (c.hotSeat) {
     job = 'Hot seat';
     cls = 'danger';
-  } else if (wins < exp.danger) {
+  } else if (gp === 0) {
+    job = 'Season about to tip';
+    cls = 'safe';
+  } else if (proj < exp.danger) {
     job = 'Job in danger';
     cls = 'warn';
-  } else if (wins < exp.low) {
+  } else if (proj < exp.low) {
     job = 'Below expectations';
     cls = 'warn';
   } else {
     job = 'Job safe';
     cls = 'safe';
   }
+  var detail = gp === 0
+    ? 'firing line: under ' + exp.danger + ' wins'
+    : 'on pace for ' + proj + ' · firing line: under ' + exp.danger;
   return '<div class="exp-card">'
     + '<div class="exp-line">Expect <b>' + exp.low + '–' + exp.high + ' wins</b>'
     + ' · <span class="' + cls + '">' + job + '</span>'
-    + ' <span style="color:var(--txt3);">(' + wins + ' wins so far · firing line: under ' + exp.danger + ')</span></div></div>';
+    + ' <span style="color:var(--txt3);">(' + detail + ')</span></div></div>';
 }
 
 // ═══════════════════════════════════════════════════════════

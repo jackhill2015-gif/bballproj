@@ -1,6 +1,6 @@
 // HOOPS OS — R1..R9 regression test (recruiting / carousel / portal)
 // Usage: node test-harness/r-test.mjs
-const REPO = '/home/hatch/workspace/bballproj';
+const REPO = new URL('..', import.meta.url).pathname.replace(/\/$/, '');
 
 // ── browser shims ──
 const _store = {};

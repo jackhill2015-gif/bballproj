@@ -1,7 +1,7 @@
 // HOOPS OS runtime bug-hunt harness
 // Runs the REAL modules from ~/workspace/bballproj with minimal browser shims.
 // Usage: node /tmp/hoops-fuzz/harness.mjs
-const REPO = '/home/hatch/workspace/bballproj';
+const REPO = new URL('..', import.meta.url).pathname.replace(/\/$/, '');
 
 // ── browser shims (set BEFORE dynamic imports evaluate module bodies) ──
 const _store = {};

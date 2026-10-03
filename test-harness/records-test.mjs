@@ -1,6 +1,6 @@
 // HOOPS OS — record book / Hall of Fame test
 // Usage: node test-harness/records-test.mjs
-const REPO = '/home/hatch/workspace/bballproj';
+const REPO = new URL('..', import.meta.url).pathname.replace(/\/$/, '');
 
 // ── browser shims ──
 const _store = {};
@@ -58,6 +58,10 @@ function resetG() {
   logged.length = 0; toasted.length = 0;
 }
 
+// A book with at least one finished season (single-game records only
+// announce once the inaugural season is in the books).
+function establish(tid) { R.bookFor(tid).season.pts = { v: 999, name: 'Old Timer', yr: 2020 }; }
+
 console.log('== shape / defaults ==');
 resetG();
 t('defaultRecords has books+hof', (() => { const d = R.defaultRecords(); return d.books && Array.isArray(d.hof); })());
@@ -72,6 +76,14 @@ t('bookFor creates empty book', (() => {
 console.log('== game records ==');
 resetG();
 G.teams = [{ id: 0, name: 'Test U', rost: [fakePlayer('Alpha', 'JR', {})] }];
+t('inaugural season: game records update quietly', (() => {
+  R.checkGameRecords(0, [{ p: G.teams[0].rost[0], pts: 20, reb: 0, ast: 0, stl: 0, blk: 0 }], 1);
+  const q = R.checkGameRecords(0, [{ p: G.teams[0].rost[0], pts: 40, reb: 0, ast: 0, stl: 0, blk: 0 }], 2);
+  const ok = q.length === 0 && G.records.books[0].game.pts.v === 40;
+  resetG(); G.teams = [{ id: 0, name: 'Test U', rost: [fakePlayer('Alpha', 'JR', {})] }];
+  return ok;
+})());
+establish(0);
 const L1 = [{ p: G.teams[0].rost[0], pts: 28, reb: 5, ast: 4, stl: 1, blk: 0 }];
 let br = R.checkGameRecords(0, L1, 5);
 t('first marks set silently (no breaks)', br.length === 0 && G.records.books[0].game.pts.v === 28);
@@ -104,6 +116,7 @@ t('userLinesFromRes null when absent', R.userLinesFromRes({}) === null);
 console.log('== surface (ambient notify) ==');
 resetG();
 G.teams = [{ id: 0, name: 'Test U', rost: [fakePlayer('Alpha', 'JR', {})] }];
+establish(0);
 R.checkGameRecords(0, [{ p: G.teams[0].rost[0], pts: 20, reb: 0, ast: 0, stl: 0, blk: 0 }], 1); // silent set
 LS._recLines = [{ p: G.teams[0].rost[0], pts: 31, reb: 0, ast: 0, stl: 0, blk: 0 }];
 const sb = R.surfaceUserGameRecords();
@@ -120,12 +133,21 @@ resetG();
 const tH = { id: 0, name: 'Test U', rost: [fakePlayer('Alpha', 'JR', { pts: 500 })] };
 const tA = { id: 9, name: 'Opp', rost: [fakePlayer('Zed', 'SR', { pts: 100 })] };
 G.teams = [tH, tA]; G.tid = 0;
+establish(0);
 R.checkGameRecords(0, [{ p: tH.rost[0], pts: 25, reb: 0, ast: 0, stl: 0, blk: 0 }], 1);
 LS.tH = tH; LS.tA = tA;
 LS._recPre = { h: R.snapRoster(tH), a: R.snapRoster(tA), hid: 0, aid: 9 };
 tH.rost[0].s.pts += 30; // live accumulation
 const lb = R.surfaceUserGameRecords();
 t('live path diffs vs pre-game snapshot', lb.length === 1 && lb[0].value === 30);
+
+t('several breaks in one game make one toast', (() => {
+  resetG(); G.teams = [{ id: 0, name: 'Test U', rost: [fakePlayer('Alpha', 'JR', {})] }]; establish(0);
+  R.checkGameRecords(0, [{ p: G.teams[0].rost[0], pts: 10, reb: 5, ast: 2, stl: 1, blk: 1 }], 1);
+  LS._recLines = [{ p: G.teams[0].rost[0], pts: 30, reb: 15, ast: 9, stl: 1, blk: 1 }];
+  const b = R.surfaceUserGameRecords();
+  return b.length === 3 && toasted.length === 1 && logged.length === 3;
+})());
 
 console.log('== season / career / HOF ==');
 resetG();

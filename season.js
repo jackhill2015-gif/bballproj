@@ -4,9 +4,10 @@
 //  week advancement, game launching, auto-sim, offseason.
 // ═══════════════════════════════════════════════════════════
 
+import { recomputeRatings } from './ratings.js';
 import { ALL_TEAMS, POS, CLS, RECRUIT_STATE_POOL, COACH_FN, COACH_LN, calcSchoolPrestige, SKILL_POINT_TABLE, calcExpectations } from './constants.js';
 import {
-  ri, clamp, getTOvr, fixMins, freshS, getTeamStyle, getOvr, ge, txt
+  ri, clamp, getTOvr, fixMins, freshS, getTeamStyle, getOvr, ge, txt, fmtScore
 } from './utils.js';
 import { G, LS, SetupState, saveState } from './state.js';
 import { genPlayer, simGame, calcGrowth } from './simulation.js';
@@ -92,6 +93,15 @@ export function buildUniverse() {
 //  SCHEDULE BUILDING
 // ═══════════════════════════════════════════════════════════
 
+// Non-conference home court: like real "buy games", the bigger program
+// usually hosts. Stronger school hosts 80% of the time.
+function oocHostIsFirst(a, b) {
+  var pa = a.schoolPrestige || 50, pb = b.schoolPrestige || 50;
+  if (pa === pb) return ri(0, 1) === 0;
+  var strongerIsA = pa > pb;
+  return ri(1, 100) <= 80 ? strongerIsA : !strongerIsA;
+}
+
 export function buildSchedules() {
   var tid = G.tid;
 
@@ -158,8 +168,9 @@ export function buildSchedules() {
         var other = G.teams[j];
         if (other.id === tm.id || other.id === tid || other.conf === tm.conf) continue;
         if (other.sched[w]) continue;
-        tm.sched[w] = { opp: other.id, home: true, conf: false, played: false, uScore: 0, oScore: 0 };
-        other.sched[w] = { opp: tm.id, home: false, conf: false, played: false, uScore: 0, oScore: 0 };
+        var tmHosts = oocHostIsFirst(tm, other);
+        tm.sched[w] = { opp: other.id, home: tmHosts, conf: false, played: false, uScore: 0, oScore: 0 };
+        other.sched[w] = { opp: tm.id, home: !tmHosts, conf: false, played: false, uScore: 0, oScore: 0 };
         break;
       }
     }
@@ -184,13 +195,14 @@ export function buildSchedules() {
     // Pair up (leave last unpaired if odd)
     for (var p = 0; p + 1 < needGame.length; p += 2) {
       var t1 = needGame[p], t2 = needGame[p + 1];
-      var h = ri(0, 1) === 0;
+      var h = oocHostIsFirst(t1, t2);
       t1.sched[w] = { opp: t2.id, home: h, conf: false, played: false, uScore: 0, oScore: 0 };
       t2.sched[w] = { opp: t1.id, home: !h, conf: false, played: false, uScore: 0, oScore: 0 };
     }
   }
 
   G.gi = 0;
+  recomputeRatings(); // preseason rankings from roster strength
 }
 
 // ── Assign user's OOC picks into the master schedule as matched pairs ──
@@ -353,11 +365,11 @@ export function simCPUWeek() {
 
     // Record results for both teams
     if (hScore > aScore) {
-      homeTeam.wins++; homeTeam.pts += 45; awayTeam.loss++; awayTeam.pts -= 15;
+      homeTeam.wins++; awayTeam.loss++;
       if (s.conf) { homeTeam.cWins++; awayTeam.cLoss++; }
       recordGameMorale(homeTeam, awayTeam);
     } else {
-      awayTeam.wins++; awayTeam.pts += 45; homeTeam.loss++; homeTeam.pts -= 15;
+      awayTeam.wins++; homeTeam.loss++;
       if (s.conf) { awayTeam.cWins++; homeTeam.cLoss++; }
       recordGameMorale(awayTeam, homeTeam);
     }
@@ -416,27 +428,20 @@ export function recordResult() {
     oppEntry.oScore = uScore;
   }
   if (won) {
-    t.wins++; opp.loss++; opp.pts -= 15;
+    t.wins++; opp.loss++;
     if (game.conf) { t.cWins++; opp.cLoss++; }
-    // Quality win bonus: more pts for beating ranked teams
-    var oppRank = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; }).findIndex(function(x) { return x.id === opp.id; }) + 1;
-    var winBonus = oppRank <= 10 ? 65 : oppRank <= 25 ? 55 : oppRank <= 64 ? 45 : 35;
-    t.pts += winBonus;
   } else {
-    t.loss++; opp.wins++; opp.pts += 45;
+    t.loss++; opp.wins++;
     if (game.conf) { t.cLoss++; opp.cWins++; }
-    // Bad loss penalty: lose more pts for losing to weak teams
-    var oppRank2 = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; }).findIndex(function(x) { return x.id === opp.id; }) + 1;
-    var lossPenalty = oppRank2 > 150 ? -35 : oppRank2 > 64 ? -25 : -15;
-    t.pts += lossPenalty;
   }
+  // Rankings (t.pts) are recomputed from all results in advanceWeek — see ratings.js.
   // Note: GP is counted once per game — simGame() increments it internally
   // for quick/auto-simmed games, and launchSim() increments at tipoff for live games.
   // Morale: both teams' players react to the result.
   recordGameMorale(won ? t : opp, won ? opp : t);
   addLog(won ? 'w' : 'l', G.gi + 1,
-    '<b>' + (won ? 'W' : 'L') + '</b> vs <b>' + opp.name + '</b>  ' + uScore + '\u2013' + oScore);
-  toast((won ? 'W ' : 'L ') + uScore + '-' + oScore + ' vs ' + opp.name,
+    '<b>' + (won ? 'W' : 'L') + '</b> vs <b>' + opp.name + '</b>  ' + fmtScore(uScore, oScore));
+  toast((won ? 'W ' : 'L ') + fmtScore(uScore, oScore, '-') + ' vs ' + opp.name,
     won ? 'var(--grn)' : 'var(--red)');
   // Records: surface any broken single-game school records (no-op if none).
   surfaceUserGameRecords();
@@ -449,6 +454,7 @@ export function recordResult() {
 export function advanceWeek() {
   G.gi++;
   G.wk = G.gi;
+  recomputeRatings(); // rankings reflect every result through this week
 
   // Fire mid-season events during regular season
   if (G.phase === 'reg' && G.gi < 30) {
