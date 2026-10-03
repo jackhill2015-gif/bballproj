@@ -35,6 +35,7 @@ var APP_FILES = [
   "views/battle.js",
   "views/bracket.js",
   "views/dashboard.js",
+  "views/devreport.js",
   "views/help.js",
   "views/history.js",
   "views/player.js",

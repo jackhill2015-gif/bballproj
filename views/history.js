@@ -9,6 +9,7 @@
 import { ge, fR } from '../utils.js';
 import { G } from '../state.js';
 import { bookFor, ensureRecords, STAT_LABELS } from '../records.js';
+import { devReportHTML } from './devreport.js';
 
 function finishBadge(tf) {
   if (tf === 'CHAMP') return '<span class="tag t-cf">National Champion</span>';
@@ -75,6 +76,9 @@ export function renderHistory() {
 
   var h = '<div style="margin-bottom:12px;"><div class="sec-head">Dynasty history</div>'
     + '<div class="sec-sub">Every season, every title, every milestone — the permanent record.</div></div>';
+
+  // ── Development report (this offseason's gains, while current) ──
+  if (G.devReport && G.devReport.yr === G.yr) h += devReportHTML();
 
   // ── Coach resume ──
   h += '<div class="sec-block"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:12px;">'

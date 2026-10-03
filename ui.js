@@ -13,6 +13,7 @@ import { G, LS, SetupState, saveState } from './state.js';
 import { simPoss, simGame } from './simulation.js';
 import { openPlayerFromEl } from './views/player.js';
 import { closeSheet } from './views/sheet.js';
+import { openDevReport } from './views/devreport.js';
 
 // ── Late-Binding Registry ────────────────────────────────
 var _views = {
@@ -572,6 +573,9 @@ function handleAction(el) {
       break;
     case 'sheet-close':
       closeSheet();
+      break;
+    case 'devreport':
+      openDevReport();
       break;
     case 'more':
       toggleMoreSheet();
