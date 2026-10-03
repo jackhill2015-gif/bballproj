@@ -31,7 +31,7 @@ export function bracketHubHTML() {
 function renderConfHub() {
   var myConf = G.teams[G.tid].conf;
   var ct = G.confTourneys[myConf];
-  var h = '<div style="margin-bottom:12px;"><div class="sec-head">Conference Tournaments</div>'
+  var h = '<div style="margin-bottom:12px;"><div class="sec-head">Conference tournaments</div>'
     + '<div class="sec-sub">' + myConf + ' · Season ' + G.yr + '</div></div>';
 
   if (ct) h += renderConfBracketCard(myConf, ct, true);
@@ -41,20 +41,21 @@ function renderConfHub() {
 
   var others = Object.keys(G.confTourneys).filter(function(c) { return c !== myConf; });
   if (others.length) {
-    h += '<div class="sec-head" style="font-size:15px;margin-top:18px;">Around the Country</div>'
+    h += '<div class="sec-head">Around the country</div>'
+      + '<div class="sec-sub">Finalists and latest results from every conference.</div>'
       + '<div class="grid-2">';
     others.slice(0, 8).forEach(function(c) {
       h += renderConfBracketCard(c, G.confTourneys[c], false);
     });
     h += '</div>';
-    if (others.length > 8) h += '<div style="font-size:12px;color:var(--txt3);margin-top:6px;">Showing 8 of ' + others.length + ' conferences.</div>';
+    if (others.length > 8) h += '<div class="sec-sub" style="margin-top:6px;">Showing 8 of ' + others.length + ' conferences.</div>';
   }
 
   if (allConfDone() && (!G.bracket || !G.bracket.length)) {
-    h += '<div class="sec-block" style="text-align:center;margin-top:12px;">'
-      + '<div style="font-size:13px;font-weight:800;margin-bottom:10px;">All conference tournaments complete</div>'
-      + '<button class="btn btn-red" data-action="build-ncaa">Selection Sunday</button>'
-      + '<div style="font-size:11px;color:var(--txt3);margin-top:8px;">Use the Advance button up top to build the NCAA field.</div></div>';
+    h += '<div class="panel"><div class="panel-h"><span>Conference tournaments</span></div><div class="panel-b">'
+      + '<div style="font-size:13px;font-weight:600;margin-bottom:10px;">All conference tournaments complete</div>'
+      + '<button class="btn-big" data-action="build-ncaa">Selection Sunday</button>'
+      + '<div class="sec-sub" style="margin:8px 0 0;">Use the Advance button up top to build the NCAA field.</div></div></div>';
   }
   return h;
 }
@@ -79,12 +80,11 @@ function matchupMini(t1, t2, s1, s2, winner, seeds) {
 function renderConfBracketCard(conf, ct, expanded) {
   if (!ct || !ct.rounds) return '';
   var rnames = { 1: 'R1', 2: 'QF', 3: 'SF', 4: 'Final' };
-  var h = '<div class="br-region">'
-    + '<div class="br-region-head">'
-    + '<span class="br-region-name">' + conf + '</span>'
+  var h = '<div class="panel"><div class="panel-h"><span>' + conf + '</span>'
     + (ct.done && ct.champ
-      ? '<span class="br-region-meta">Champ: <b>' + ct.champ.name + '</b></span>'
-      : '<span class="tag t-rival">Live</span>') + '</div>';
+      ? '<small>Champion: ' + ct.champ.name + '</small>'
+      : '<span class="tag t-rival">Live</span>') + '</div>'
+    + '<div class="panel-b"><div class="br-region">';
 
   if (expanded) {
     h += '<div style="display:flex;overflow-x:auto;">';
@@ -108,7 +108,7 @@ function renderConfBracketCard(conf, ct, expanded) {
       }
     });
   }
-  return h + '</div>';
+  return h + '</div></div></div>';
 }
 
 function renderScoutingCard(confMatch) {
@@ -116,14 +116,15 @@ function renderScoutingCard(confMatch) {
   var opp = m.t1.id === G.tid ? m.t2 : m.t1;
   var wp = clamp(Math.round(50 + (getTOvr(G.teams[G.tid]) - getTOvr(opp)) * 1.3), 5, 95);
   var col = wp >= 55 ? 'var(--grn2)' : wp >= 40 ? 'var(--gld2)' : 'var(--red)';
-  return '<div class="sec-block"><div class="card-title">Your next game · ' + getConfRoundName(confMatch.ct, confMatch.conf) + '</div>'
+  return '<div class="panel"><div class="panel-h"><span>Your next game</span><small>' + getConfRoundName(confMatch.ct, confMatch.conf) + '</small></div>'
+    + '<div class="panel-b">'
     + '<div class="matchup-opp">' + opp.name + '</div>'
-    + '<div class="matchup-meta"><span class="tag t-cf">Conf Tourney</span>'
+    + '<div class="matchup-meta"><span class="tag t-cf">Conf tourney</span>'
     + '<span>OVR ' + getTOvr(opp) + ' · ' + opp.wins + '-' + opp.loss + '</span></div>'
-    + '<div class="prob-row"><span>Win probability</span><span style="color:' + col + ';font-weight:800;">' + wp + '%</span></div>'
+    + '<div class="prob-row"><span>Win probability</span><span style="color:' + col + ';">' + wp + '%</span></div>'
     + '<div class="prob-bar"><div class="prob-fill" style="width:' + wp + '%;background:' + col + ';"></div></div>'
-    + '<div class="action-btns"><button class="btn btn-red btn-full" data-action="play" data-mode="quick">Quick sim</button>'
-    + '<button class="btn btn-ghost btn-full" data-action="play" data-mode="live">Live sim</button></div></div>';
+    + '<div class="big-btn-row"><button class="btn-big" data-action="play" data-mode="quick">Quick sim</button>'
+    + '<button class="btn-big secondary" data-action="play" data-mode="live">Live sim</button></div></div></div>';
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -141,16 +142,15 @@ function renderNCAA_Hub() {
     var h = '<div class="br-champ">'
       + '<div class="br-champ-kicker">' + G.yr + ' National Champion</div>'
       + '<div class="br-champ-team' + (isu ? ' is-user' : '') + '">' + ch.name + '</div>'
-      + (isu ? '<div class="br-champ-sub">Your dynasty. Your legacy.</div>' : '')
-      + '<div style="margin-top:14px;"><button class="btn btn-red" data-action="end-season">View Season Recap</button></div></div>';
+      + '<div style="margin-top:14px;"><button class="btn-big" data-action="end-season">View Season Recap</button></div></div>';
     h += renderCinderellaTracker();
     h += renderResultsFeed();
     h += renderFullBracket();
     return h;
   }
 
-  var h2 = '<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">'
-    + '<div><div class="sec-head" style="margin:0;">NCAA Tournament</div><div class="sec-sub" style="margin:2px 0 0;">March Madness ' + G.yr + '</div></div>'
+  var h2 = '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:12px;">'
+    + '<div><div class="sec-head" style="margin:0;">NCAA tournament</div><div class="sec-sub" style="margin:2px 0 0;">March Madness ' + G.yr + '</div></div>'
     + '<span class="tag">' + currentRound + '</span></div></div>';
 
   h2 += renderCinderellaTracker();
@@ -163,16 +163,17 @@ function renderNCAA_Hub() {
     var wp = clamp(Math.round(50 + (getTOvr(ue.team) - getTOvr(opp)) * 1.3), 5, 95);
     var col = wp >= 55 ? 'var(--grn2)' : wp >= 40 ? 'var(--gld2)' : 'var(--red)';
     var stars = opp.rost.filter(function(p) { return p.mins > 0; }).sort(function(a, b) { return b.ovr - a.ovr; }).slice(0, 3);
-    h2 += '<div class="sec-block"><div class="card-title">Scouting report · ' + currentRound + '</div>'
+    h2 += '<div class="panel"><div class="panel-h"><span>Scouting report</span><small>' + currentRound + '</small></div>'
+      + '<div class="panel-b">'
       + '<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:6px;">'
       + '<div style="flex:1;min-width:0;"><div class="sc-lab">#' + ue.seed + ' seed</div>'
       + '<div class="matchup-opp" style="font-size:16px;">' + ue.team.name + '</div>'
       + '<div style="font-size:11px;color:var(--txt3);">' + ue.team.wins + '-' + ue.team.loss + ' · OVR ' + getTOvr(ue.team) + '</div></div>'
-      + '<div style="font-size:11px;font-weight:800;color:var(--txt3);">vs</div>'
+      + '<div style="font-size:11px;font-weight:600;color:var(--txt3);">vs</div>'
       + '<div style="flex:1;min-width:0;text-align:right;"><div class="sc-lab">#' + oe.seed + ' seed</div>'
       + '<div class="matchup-opp" style="font-size:16px;">' + opp.name + '</div>'
       + '<div style="font-size:11px;color:var(--txt3);">' + opp.wins + '-' + opp.loss + ' · OVR ' + getTOvr(opp) + '</div></div></div>'
-      + '<div class="prob-row"><span>Win probability</span><span style="color:' + col + ';font-weight:800;">' + wp + '%</span></div>'
+      + '<div class="prob-row"><span>Win probability</span><span style="color:' + col + ';">' + wp + '%</span></div>'
       + '<div class="prob-bar" style="margin-bottom:8px;"><div class="prob-fill" style="width:' + wp + '%;background:' + col + ';"></div></div>';
     if (stars.length) {
       h2 += '<div class="card-title" style="margin-top:10px;">Players to watch</div>';
@@ -183,12 +184,13 @@ function renderNCAA_Hub() {
           + '<div class="leader-val">' + (p.s.pts / gp).toFixed(1) + ' ppg</div></div>';
       });
     }
-    h2 += '<div class="action-btns"><button class="btn btn-red btn-full" data-action="play" data-mode="quick">Quick sim</button>'
-      + '<button class="btn btn-ghost btn-full" data-action="play" data-mode="live">Live sim</button></div></div>';
+    h2 += '<div class="big-btn-row"><button class="btn-big" data-action="play" data-mode="quick">Quick sim</button>'
+      + '<button class="btn-big secondary" data-action="play" data-mode="live">Live sim</button></div></div></div>';
   } else if (active.length > 1) {
-    h2 += '<div class="sec-block" style="text-align:center;"><div style="font-size:14px;font-weight:800;margin-bottom:4px;">Your run is over.</div>'
-      + '<div style="font-size:12px;color:var(--txt2);margin-bottom:10px;">Watch the rest of the tournament unfold.</div>'
-      + '<button class="btn btn-red" data-action="play" data-mode="quick">Sim Next Round</button></div>';
+    h2 += '<div class="panel"><div class="panel-b">'
+      + '<div style="font-size:14px;font-weight:600;margin-bottom:4px;">Your run is over.</div>'
+      + '<div class="sec-sub">Watch the rest of the tournament unfold.</div>'
+      + '<button class="btn-big" data-action="play" data-mode="quick">Sim next round</button></div></div>';
   }
 
   h2 += renderResultsFeed();
@@ -207,7 +209,7 @@ function renderResultsFeed() {
   if (!results.length) return '';
   results.sort(function(a, b) { return (b.isUpset ? 1 : 0) - (a.isUpset ? 1 : 0); });
 
-  var h = '<div class="card-title" style="margin-top:16px;">Latest Results</div>';
+  var h = '<div class="panel"><div class="panel-h"><span>Latest results</span></div><div class="panel-b">';
   results.slice(0, 8).forEach(function(r) {
     var isU = r.winner.team.id === G.tid || r.loser.team.id === G.tid;
     h += '<div class="br-result' + (isU ? ' hl-row' : '') + '">'
@@ -217,7 +219,7 @@ function renderResultsFeed() {
       + '<span style="color:var(--txt3);"><span class="br-seed">#' + r.loser.seed + '</span> ' + r.loser.team.name
       + ' <span class="br-score">' + r.loser.score + '</span></span></div>';
   });
-  return h;
+  return h + '</div></div>';
 }
 
 function renderCinderellaTracker() {
@@ -227,17 +229,19 @@ function renderCinderellaTracker() {
     return active.some(function(b) { return b.team.id === c.tid; });
   });
   if (!alive.length) return '';
-  var h = '<div class="sec-block"><div class="card-title">Cinderella Watch</div><div style="display:flex;flex-wrap:wrap;gap:6px;">';
+  var h = '<div class="panel"><div class="panel-h"><span>Cinderella watch</span></div>'
+    + '<div class="panel-b"><div style="display:flex;flex-wrap:wrap;gap:6px;">';
   alive.forEach(function(c) {
     var isU = c.tid === G.tid;
     h += '<span class="tag' + (isU ? ' t-home' : '') + '">#' + c.seed + ' ' + c.name + '</span>';
   });
-  return h + '</div></div>';
+  return h + '</div></div></div>';
 }
 
 function renderFullBracket() {
   var regions = ['East', 'West', 'South', 'Midwest'];
-  var h = '<div class="card-title" style="margin-top:16px;">Full Bracket</div><div class="grid-2">';
+  var h = '<div class="panel"><div class="panel-h"><span>Full bracket</span></div>'
+    + '<div class="panel-b"><div class="grid-2">';
   for (var r = 0; r < 4; r++) {
     var regionTeams = G.bracket.slice(r * 16, r * 16 + 16);
     if (!regionTeams.length) continue;
@@ -264,5 +268,5 @@ function renderFullBracket() {
     }
     h += '</div>';
   }
-  return h + '</div>';
+  return h + '</div></div></div>';
 }

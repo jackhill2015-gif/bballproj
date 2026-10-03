@@ -1085,3 +1085,10 @@ th.sortable.on { color: var(--txt); }
 .rs-tag { font-size: 10.5px; font-weight: 600; color: var(--blu); background: var(--blu-soft); border-radius: 2px; padding: 0 5px; margin-left: 4px; }
 .rs-note { flex: 1; font-size: 12px; color: var(--txt3); padding: 6px 0; }
 .dr-bot .btn-quiet.btn-sm { min-height: 28px; padding: 2px 4px; font-size: 12px; flex-shrink: 0; }
+/* Job 2 additions — setup wizard hero (was inline styles) */
+.setup-hero { text-align: center; margin-bottom: 20px; }
+
+/* Job 2 additions — gamecast box-score team header + play-by-play run banners */
+.box-team { display: flex; align-items: center; gap: 8px; margin: 10px 0 6px; font-size: 13px; font-weight: 600; }
+.pbp-banner.run-user { background: var(--gld-soft); color: var(--txt); }
+.pbp-banner.run-opp { background: var(--red-soft); color: var(--txt); }

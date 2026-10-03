@@ -73,13 +73,13 @@ console.log('── 1. home swap: reg → conf_tourn → ncaa ──');
 DASH.renderDashboard();
 let html = _els['dash-content'].innerHTML;
 ok(html.includes('dash-sum'), 'reg phase: home shows normal dashboard (school card)');
-ok(!html.includes('Conference Tournaments'), 'reg phase: home does NOT show tournament hub');
+ok(!html.includes('Conference tournaments'), 'reg phase: home does NOT show tournament hub');
 
 T.startConfTourney(); // sets phase='conf_tourn', navTo('dashboard')
 DASH.renderDashboard();
 html = _els['dash-content'].innerHTML;
 ok(G.phase === 'conf_tourn', 'phase is conf_tourn after startConfTourney');
-ok(html.includes('Conference Tournaments'), 'conf_tourn phase: home shows tournament hub');
+ok(html.includes('Conference tournaments'), 'conf_tourn phase: home shows tournament hub');
 ok(!html.includes('dash-sum'), 'conf_tourn phase: home does NOT show regular dashboard');
 ok(html.includes('Quick sim') || html.includes('Advance'), 'conf_tourn home: user can play/advance from home');
 
@@ -92,7 +92,7 @@ T.buildNCAA(); // sets phase='ncaa', opens reveal overlay
 ok(G.phase === 'ncaa', 'phase is ncaa after buildNCAA');
 DASH.renderDashboard();
 html = _els['dash-content'].innerHTML;
-ok(html.includes('NCAA Tournament'), 'ncaa phase: home shows NCAA hub');
+ok(html.includes('NCAA tournament'), 'ncaa phase: home shows NCAA hub');
 ok(!html.includes('dash-sum'), 'ncaa phase: home does NOT show regular dashboard');
 
 console.log('── 2. full-bracket reveal (no region stepping) ──');
@@ -112,7 +112,7 @@ G.phase = 'reg'; G.gi = 0; G.yr++;
 DASH.renderDashboard();
 html = _els['dash-content'].innerHTML;
 ok(html.includes('dash-sum'), 'new season (reg): home reverts to normal dashboard');
-ok(!html.includes('NCAA Tournament'), 'new season: no tournament hub on home');
+ok(!html.includes('NCAA tournament'), 'new season: no tournament hub on home');
 
 console.log('\n════════ RESULT: ' + (failCount === 0 ? 'ALL PASS (' + pass + ' passed)' : failCount + ' FAILURES') + ' ════════');
 process.exit(failCount === 0 ? 0 : 1);

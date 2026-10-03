@@ -620,7 +620,7 @@ function renderTurnover() {
   var needs = [];
   Object.keys(posCount).forEach(function(pos) { if (posCount[pos] < 2) needs.push(pos); });
 
-  var h = '<div style="margin-bottom:14px;"><div class="sec-head">Roster Turnover</div>'
+  var h = '<div style="margin-bottom:12px;"><div class="sec-head">Roster turnover</div>'
     + '<div class="sec-sub">Offseason ' + G.yr + ' · ' + t.name + ' — review departures before recruiting</div></div>';
 
   h += '<div class="stat-strip" style="grid-template-columns:repeat(4,1fr);">'
@@ -630,48 +630,54 @@ function renderTurnover() {
     + '<div class="stat-cell"><div class="sv">' + lostMins + '</div><div class="sl">Mins to replace</div></div></div>';
 
   if (needs.length) {
-    h += '<div style="font-size:13px;margin-bottom:12px;"><b style="color:var(--red);">Position needs: ' + needs.join(', ') + '</b>'
-      + ' <span style="color:var(--txt2);">— target these in recruiting</span></div>';
+    h += '<div class="sec-sub" style="margin-bottom:14px;">Position needs: ' + needs.join(', ') + ' — target these in recruiting</div>';
   }
 
   h += '<div class="grid-2">';
 
-  // Departing
-  h += '<div class="sec-block"><div class="card-title">Departing · ' + dep.length + '</div>';
+  // Departing — dense panel table
+  h += '<div class="panel"><div class="panel-h"><span>Departing</span><small>' + dep.length + ' player' + (dep.length !== 1 ? 's' : '') + '</small></div>';
   if (dep.length) {
+    h += '<div class="panel-b flush"><table>'
+      + '<thead><tr><th>Player</th><th>Pos</th><th>Class</th><th class="num">OVR</th><th>Status</th></tr></thead><tbody>';
     dep.forEach(function(d) {
       var reasonCol = d.reason === 'Graduated' ? 'var(--txt3)' : 'var(--gld2)';
-      h += '<div class="leader-row"><span class="pos-chip">' + d.pos + '</span>'
-        + '<div class="leader-name">' + d.name + '<small>' + d.cls + ' · ' + d.ppg + ' PPG · ' + d.rpg + ' RPG · ' + (d.apg || '0.0') + ' APG · ' + d.mins + ' min</small></div>'
-        + '<div style="text-align:right;"><div class="leader-val" style="color:var(--red);">' + d.ovr + '</div>'
-        + '<div style="font-size:10px;font-weight:700;color:' + reasonCol + ';">' + d.reason + '</div></div></div>';
+      h += '<tr><td><div style="font-weight:600;">' + d.name + '</div>'
+        + '<div style="font-size:11px;color:var(--txt3);">' + d.ppg + ' PPG · ' + d.rpg + ' RPG · ' + (d.apg || '0.0') + ' APG · ' + d.mins + ' min</div></td>'
+        + '<td style="color:var(--txt3);">' + d.pos + '</td>'
+        + '<td style="color:var(--txt3);">' + d.cls + '</td>'
+        + '<td class="num">' + d.ovr + '</td>'
+        + '<td><span style="color:' + reasonCol + ';font-size:12px;">' + d.reason + '</span></td></tr>';
     });
+    h += '</tbody></table></div>';
   } else {
-    h += '<div style="padding:20px 0;text-align:center;color:var(--txt3);font-size:13px;">No players departing. Full squad returning.</div>';
+    h += '<div class="panel-b"><div class="empty-state" style="padding:20px;">No players departing. Full squad returning.</div></div>';
   }
   h += '</div>';
 
-  // Returning — FULL roster, no truncation
+  // Returning — FULL roster, no truncation; dense panel table
   returning.sort(function(a, b) { return b.ovr - a.ovr; });
-  h += '<div class="sec-block"><div class="card-title">Returning · ' + returning.length + '</div>';
+  h += '<div class="panel"><div class="panel-h"><span>Returning</span><small>' + returning.length + ' player' + (returning.length !== 1 ? 's' : '') + '</small></div>'
+    + '<div class="panel-b flush"><table>'
+    + '<thead><tr><th>Player</th><th>Pos</th><th>Class</th><th class="num">OVR</th><th class="num">POT</th></tr></thead><tbody>';
   returning.forEach(function(p) {
     var gp = p.s.gp || 0;
     var ppg = gp ? (p.s.pts / gp).toFixed(1) : '--';
     var rpg = gp ? (p.s.reb / gp).toFixed(1) : '--';
     var apg = gp ? (p.s.ast / gp).toFixed(1) : '--';
     var pot = p.pot || p.ovr;
-    var potCol = pot > p.ovr + 8 ? 'var(--grn2)' : pot > p.ovr + 3 ? 'var(--gld2)' : 'var(--txt3)';
-    h += '<div class="leader-row"><span class="pos-chip">' + p.pos + '</span>'
-      + '<div class="leader-name">' + p.name + ' <span style="font-size:10px;font-weight:800;color:var(--blu);">' + p.cls + '</span>'
-      + '<small>' + ppg + ' PPG · ' + rpg + ' RPG · ' + apg + ' APG · ' + p.mins + ' min</small></div>'
-      + '<div style="text-align:right;"><div class="leader-val" style="color:var(--blu);">' + p.ovr + '</div>'
-      + '<div style="font-size:10px;font-weight:700;color:' + potCol + ';">POT ' + pot + '</div></div></div>';
+    h += '<tr><td><div style="font-weight:600;">' + p.name + '</div>'
+      + '<div style="font-size:11px;color:var(--txt3);">' + ppg + ' PPG · ' + rpg + ' RPG · ' + apg + ' APG · ' + p.mins + ' min</div></td>'
+      + '<td style="color:var(--txt3);">' + p.pos + '</td>'
+      + '<td style="color:var(--blu);">' + p.cls + '</td>'
+      + '<td class="num">' + p.ovr + '</td>'
+      + '<td class="num" style="color:var(--txt3);">' + pot + '</td></tr>';
   });
-  h += '</div>';
+  h += '</tbody></table></div></div>';
 
   h += '</div>'; // close grid-2
 
-  h += '<button class="btn-big btn-full" style="margin-top:8px;" data-proceed-portal>Open transfer portal</button>';
+  h += '<div class="big-btn-row"><button class="btn-big btn-full" data-proceed-portal>Open transfer portal</button></div>';
   return h;
 }
 
@@ -685,22 +691,21 @@ function renderFired() {
   var schoolName = lastJob ? lastJob.school : 'your school';
   var record = lastJob ? lastJob.wins + '-' + lastJob.loss : '?-?';
 
-  var h = '<div style="max-width:600px;margin:0 auto;padding:24px 4px;text-align:center;">'
-    + '<div class="tag t-rival" style="margin-bottom:10px;">End of the road</div>'
-    + '<div style="font-size:30px;font-weight:900;color:var(--red);margin:8px 0;">You\'ve been fired</div>'
-    + '<div style="font-size:13px;color:var(--txt2);margin-bottom:20px;">' + schoolName + ' has relieved you of your duties after a ' + record + ' season.</div>';
+  var h = '<div style="max-width:600px;margin:0 auto;">'
+    + '<div style="margin-bottom:12px;"><div class="sec-head">Contract terminated</div>'
+    + '<div class="sec-sub">' + schoolName + ' has relieved you of your duties after a ' + record + ' season.</div></div>';
 
-  h += '<div class="sec-block" style="text-align:left;margin-bottom:16px;">'
-    + '<div class="card-title">Coach ' + c.firstName + ' ' + c.lastName + '</div>'
+  h += '<div class="panel"><div class="panel-h"><span>Coach ' + c.firstName + ' ' + c.lastName + '</span></div>'
+    + '<div class="panel-b">'
     + '<div class="stat-strip" style="grid-template-columns:repeat(4,1fr);margin-bottom:0;">'
     + '<div class="stat-cell"><div class="sv">' + c.age + '</div><div class="sl">Age</div></div>'
     + '<div class="stat-cell"><div class="sv">' + c.careerWins + '-' + c.careerLoss + '</div><div class="sl">Career</div></div>'
     + '<div class="stat-cell"><div class="sv">' + (c.titles || 0) + '</div><div class="sl">Titles</div></div>'
     + '<div class="stat-cell"><div class="sv">' + c.history.length + '</div><div class="sl">Seasons</div></div>'
-    + '</div></div>';
+    + '</div></div></div>';
 
-  h += '<div style="font-size:12px;color:var(--txt3);margin-bottom:20px;">Your reputation has taken a hit. Fewer schools will be interested, but there\'s always a program looking for a fresh start.</div>'
-    + '<button class="btn-big btn-full" data-fired-go>Find a new job</button>'
+  h += '<div class="sec-sub" style="margin-bottom:16px;">Your reputation has taken a hit. Fewer schools will be interested, but there\'s always a program looking for a fresh start.</div>'
+    + '<div class="big-btn-row"><button class="btn-big btn-full" data-fired-go>Find a new job</button></div>'
     + '</div>';
   return h;
 }
@@ -736,13 +741,13 @@ function renderSkillPoints() {
     if (G.coach) G.coach.skillInitial = _skillInitial;
   }
   var h = '<div style="max-width:600px;margin:0 auto;">'
-    + '<div style="text-align:center;margin-bottom:18px;">'
-    + '<div class="tag t-cf" style="margin-bottom:8px;">Coaching development</div>'
-    + '<div style="font-size:26px;font-weight:900;margin:8px 0 4px;">Skill Points</div>'
-    + '<div style="font-size:12px;color:var(--txt2);">You earned <b style="color:var(--grn2);">' + G.skillPointsEarned + '</b> skill point' + (G.skillPointsEarned !== 1 ? 's' : '') + ' this season.</div></div>';
+    + '<div style="margin-bottom:12px;"><div class="sec-head">Skill points</div>'
+    + '<div class="sec-sub">You earned <b>' + G.skillPointsEarned + '</b> skill point' + (G.skillPointsEarned !== 1 ? 's' : '') + ' this season.</div></div>';
 
-  h += '<div style="text-align:center;margin-bottom:16px;"><div style="font-size:34px;font-weight:900;color:' + (pts > 0 ? 'var(--grn2)' : 'var(--txt3)') + ';">' + pts + '</div>'
-    + '<div style="font-size:11px;color:var(--txt3);font-weight:700;">Points remaining</div></div>';
+  h += '<div class="panel"><div class="panel-h"><span>Coaching ratings</span>'
+    + '<small><span style="font-weight:600;color:' + (pts > 0 ? 'var(--grn2)' : 'var(--txt3)') + ';">' + pts + '</span> point' + (pts !== 1 ? 's' : '') + ' remaining</small></div>'
+    + '<div class="panel-b flush"><table>'
+    + '<thead><tr><th>Skill</th><th class="num">Rating</th></tr></thead><tbody>';
 
   var ratings = [
     { key: 'off', label: 'Offense', desc: 'Boosts your team\u2019s scoring output' },
@@ -756,18 +761,19 @@ function renderSkillPoints() {
     var initVal = (_skillInitial && _skillInitial[r.key]) || val;
     var canAdd = pts > 0 && val < 99;
     var canRemove = val > initVal;
-    var pct = Math.round((val - 40) / 59 * 100);
-    h += '<div class="skill-row">'
-      + '<div style="flex:1;min-width:0;"><div style="font-size:14px;font-weight:800;">' + r.label + '</div>'
-      + '<div style="font-size:11px;color:var(--txt3);">' + r.desc + '</div>'
-      + '<div class="skill-bar"><div class="skill-fill" style="width:' + pct + '%;"></div></div></div>'
+    h += '<tr>'
+      + '<td><div style="font-weight:600;">' + r.label + '</div>'
+      + '<div style="font-size:11px;color:var(--txt3);">' + r.desc + '</div></td>'
+      + '<td class="num"><div style="display:flex;align-items:center;justify-content:flex-end;gap:6px;">'
       + '<button class="stepper' + (canRemove ? '' : ' off') + '" data-skill-dec="' + r.key + '" aria-label="Remove point from ' + r.label + '" aria-disabled="' + (canRemove ? 'false' : 'true') + '">−</button>'
-      + '<div class="pts-val" style="color:var(--blu);">' + val + '</div>'
+      + '<div class="pts-val">' + val + '</div>'
       + '<button class="stepper plus' + (canAdd ? '' : ' off') + '" data-skill-inc="' + r.key + '" aria-label="Add point to ' + r.label + '" aria-disabled="' + (canAdd ? 'false' : 'true') + '">+</button>'
-      + '</div>';
+      + '</div></td></tr>';
   });
 
-  h += '<button class="btn-big btn-full" style="margin-top:12px;" data-finish-skills>Continue</button></div>';
+  h += '</tbody></table></div></div>';
+
+  h += '<div class="big-btn-row"><button class="btn-big btn-full" data-finish-skills>Continue</button></div></div>';
   return h;
 }
 
@@ -892,43 +898,45 @@ function renderCarousel() {
   var fired = isFiredCoach();
 
   var h = '<div style="max-width:800px;margin:0 auto;">'
-    + '<div style="margin-bottom:14px;"><div class="sec-head">Job Market</div>'
+    + '<div style="margin-bottom:12px;"><div class="sec-head">Job market</div>'
     + '<div class="sec-sub">Coaching carousel · ' + c.firstName + ' ' + c.lastName + ' · Age ' + c.age + ' · Career ' + c.careerWins + '-' + c.careerLoss + '</div></div>';
 
   // Stay option — hidden for fired coaches (R4)
   if (!fired) {
-    h += '<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bdr);margin-bottom:8px;">' + teamLogo(currentTeam.name, 'sm')
-      + '<div style="flex:1;min-width:0;"><div style="font-size:15px;font-weight:800;">Stay at ' + currentTeam.name + '</div>'
+    h += '<div class="panel"><div class="panel-b"><div style="display:flex;align-items:center;gap:10px;">' + teamLogo(currentTeam.name, 'sm')
+      + '<div style="flex:1;min-width:0;"><div style="font-weight:600;">Stay at ' + currentTeam.name + '</div>'
       + '<div style="font-size:12px;color:var(--txt3);margin-top:2px;">' + currentTeam.conf + ' · Prestige ' + (currentTeam.schoolPrestige || '?') + ' · Year ' + (c.tenure + 1) + ' tenure</div></div>'
-      + '<button class="btn btn-ghost" data-stay>Stay</button></div>';
+      + '<button class="btn-quiet" data-stay>Stay</button></div></div></div>';
   }
 
+  h += '<div class="panel"><div class="panel-h"><span>Open positions</span><small>' + jobs.length + '</small></div>';
   if (jobs.length) {
-    h += '<div class="strat-sec-label">' + jobs.length + ' open positions</div><div class="job-grid">';
+    h += '<div class="panel-b flush"><table>'
+      + '<thead><tr><th>School</th><th class="num">Prestige</th><th class="num">Chance</th><th></th></tr></thead><tbody>';
     jobs.forEach(function(job) {
       var jobId = job.team.id;
       var turnedDown = rejected.indexOf(jobId) >= 0;
       var chance = calcOfferChance(job);
       var t = job.team;
-      h += '<div style="padding:10px 0;border-bottom:1px solid var(--bdr);">'
-        + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">' + teamLogo(t.name, 'sm')
-        + '<div style="flex:1;min-width:0;"><div style="font-size:15px;font-weight:800;">' + t.name + '</div>'
-        + '<div style="font-size:11px;color:var(--txt3);">' + t.conf + ' · OVR ' + (t.baseOvr || '?') + ' · Prestige ' + (t.schoolPrestige || '?') + '</div></div></div>'
-        + '<div style="font-size:11px;color:var(--txt3);margin-bottom:10px;">Previous: ' + job.firedCoach + ' · ' + job.reason + '</div>'
-        + '<div style="display:flex;justify-content:space-between;align-items:center;">'
+      h += '<tr>'
+        + '<td><div style="display:flex;align-items:center;gap:8px;">' + teamLogo(t.name, 'sm')
+        + '<div style="min-width:0;"><div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + t.name + '</div>'
+        + '<div style="font-size:11px;color:var(--txt3);">' + t.conf + ' · ' + job.firedCoach + ' · ' + job.reason + '</div></div></div></td>'
+        + '<td class="num">' + (t.schoolPrestige || '?') + '</td>'
         + (turnedDown
-          ? '<div style="color:var(--txt3);">Not selected. The school hired someone else.</div><span></span>'
-          : '<div class="chance" style="color:' + chanceColor(chance) + ';">' + chance + '% chance</div>'
-            + '<button class="btn btn-red btn-sm" data-apply-job="' + jobId + '">Apply</button>')
-        + '</div></div>';
+          ? '<td class="num" colspan="2" style="color:var(--txt3);font-size:12px;">Not selected</td>'
+          : '<td class="num"><span class="chance" style="color:' + chanceColor(chance) + ';">' + chance + '%</span></td>'
+            + '<td class="num"><button class="btn-quiet" data-apply-job="' + jobId + '">Apply</button></td>')
+        + '</tr>';
     });
-    h += '</div>';
+    h += '</tbody></table></div>';
   } else {
-    h += '<div class="empty-state">No coaching vacancies this year.</div>';
+    h += '<div class="panel-b"><div class="empty-state">No coaching vacancies this year.</div></div>';
   }
+  h += '</div>';
 
   if (!fired) {
-    h += '<div style="text-align:center;margin-top:14px;font-size:11px;color:var(--txt3);">You can also skip the carousel and stay at your current school.</div>';
+    h += '<div class="sec-sub" style="margin-top:12px;">You can also skip the carousel and stay at your current school.</div>';
   }
 
   h += '</div>';
@@ -1011,20 +1019,19 @@ window.applyForJob = applyForJob;
 function showJobModal(job, offered, onContinue) {
   var overlay = document.createElement('div');
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(10,25,50,.55);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;';
-  var headCol = offered ? 'var(--grn2)' : 'var(--red)';
-  var content = '<div style="background:#fff;border:1px solid var(--bdr);border-radius:14px;padding:28px;width:min(420px,100%);text-align:center;box-shadow:0 12px 48px rgba(0,0,0,.3);">'
-    + '<div class="tag" style="background:' + (offered ? 'var(--grn-soft)' : 'var(--red-soft)') + ';color:' + headCol + ';margin-bottom:10px;">' + (offered ? 'Job offered' : 'Not interested') + '</div>'
-    + '<div style="font-size:24px;font-weight:900;margin:8px 0 4px;">' + job.team.name + '</div>'
-    + '<div style="font-size:12px;color:var(--txt2);margin-bottom:16px;">' + job.team.conf + ' \u00b7 Prestige ' + (job.team.schoolPrestige || '?') + '</div>';
+  var content = '<div style="background:#fff;border:1px solid var(--bdr);border-radius:10px;padding:24px;width:min(420px,100%);text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.18);">'
+    + '<div class="tag ' + (offered ? 't-ok' : 't-rival') + '" style="margin-bottom:10px;">' + (offered ? 'Job offered' : 'Not interested') + '</div>'
+    + '<div style="font-size:19px;font-weight:600;margin:8px 0 4px;">' + job.team.name + '</div>'
+    + '<div class="sec-sub" style="margin-bottom:16px;">' + job.team.conf + ' \u00b7 Prestige ' + (job.team.schoolPrestige || '?') + '</div>';
   if (offered) {
     content += '<div style="font-size:13px;color:var(--txt2);margin-bottom:20px;">The program has offered you the job. Do you accept?</div>'
       + '<div style="display:flex;gap:10px;">'
-      + '<button id="job-decline" class="btn btn-ghost" style="flex:1;">Decline</button>'
-      + '<button id="job-accept" class="btn btn-red" style="flex:1;">Accept</button>'
+      + '<button id="job-decline" class="btn-big secondary" style="flex:1;">Decline</button>'
+      + '<button id="job-accept" class="btn-big" style="flex:1;">Accept</button>'
       + '</div>';
   } else {
     content += '<div style="font-size:13px;color:var(--txt3);margin-bottom:20px;">' + job.team.name + ' has decided to go in a different direction.</div>'
-      + '<button id="job-ok" class="btn btn-ghost btn-full">OK</button>';
+      + '<button id="job-ok" class="btn-big btn-full">OK</button>';
   }
   content += '</div>';
   overlay.innerHTML = content;

@@ -37,10 +37,10 @@ function stepHeader(title, sub) {
     h += '<div class="setup-step' + (i <= curIdx ? ' on' : '') + '"><div class="sdot"></div><div class="slbl">' + s.label + '</div></div>';
   });
   h += '</div>';
-  h += '<div style="text-align:center;margin-bottom:20px;">'
+  h += '<div class="setup-hero">'
     + '<div class="setup-title">Hoops <em>OS</em></div>'
-    + '<div style="font-size:17px;font-weight:900;margin-top:10px;">' + title + '</div>'
-    + (sub ? '<div style="font-size:12px;color:var(--txt2);margin-top:4px;">' + sub + '</div>' : '')
+    + '<div class="sec-head">' + title + '</div>'
+    + (sub ? '<div class="sec-sub">' + sub + '</div>' : '')
     + '</div>';
   return h;
 }
@@ -159,6 +159,10 @@ function bindSetup(el) {
       var t = e.target;
       if (t && (t.id === 'coach-first' || t.id === 'coach-last')) { e.preventDefault(); submitCoachName(); }
     }
+    if ((e.key === 'Enter' || e.key === ' ') && _currentStep === 'job-offers') {
+      var r = e.target.closest ? e.target.closest('tr[data-job]') : null;
+      if (r) { e.preventDefault(); selectJob(parseInt(r.getAttribute('data-job'), 10)); }
+    }
   };
 }
 
@@ -169,12 +173,13 @@ function bindSetup(el) {
 function renderCoachName() {
   return '<div class="setup-wrap">'
     + stepHeader('Create your coach', 'Your legacy starts on the sideline.')
-    + '<div style="margin-bottom:16px;"><div class="field-label">First Name</div>'
+    + '<div class="panel"><div class="panel-h"><span>Name</span></div><div class="panel-b">'
+    + '<div style="margin-bottom:12px;"><div class="field-label">First name</div>'
     + '<input id="coach-first" class="setup-input" type="text" placeholder="John" maxlength="20" autocomplete="off"></div>'
-    + '<div style="margin-bottom:20px;"><div class="field-label">Last Name</div>'
+    + '<div style="margin-bottom:16px;"><div class="field-label">Last name</div>'
     + '<input id="coach-last" class="setup-input" type="text" placeholder="Smith" maxlength="20" autocomplete="off"></div>'
-    + '<button class="btn-big btn-full" data-setup="coach-name-submit">Continue ›</button>'
-    + '</div>';
+    + '<button class="btn-big btn-full" data-setup="coach-name-submit">Continue</button>'
+    + '</div></div></div>';
 }
 
 export function submitCoachName() {
@@ -201,7 +206,7 @@ window.submitCoachName = submitCoachName;
 function renderDifficulty() {
   var h = '<div class="setup-wrap">'
     + stepHeader('Welcome, Coach ' + G.coach.lastName, 'Age 30 · first year on the sideline')
-    + '<div class="field-label" style="margin-bottom:10px;">Select difficulty</div>';
+    + '<div class="panel"><div class="panel-h"><span>Difficulty</span></div><div class="panel-b">';
   ['easy', 'normal', 'hard', 'legend'].forEach(function(key) {
     var on = SetupState.DIFF === key;
     var label = key.charAt(0).toUpperCase() + key.slice(1);
@@ -210,8 +215,8 @@ function renderDifficulty() {
       + '<span class="sm-desc" style="display:block;">' + DIFF_DESC[key] + '</span></span>'
       + '<span class="scheme-check">' + (on ? '✓' : '') + '</span></button>';
   });
-  h += '<button class="btn-big btn-full" style="margin-top:16px;" data-setup="diff-submit">Find a job ›</button>'
-    + '</div>';
+  h += '<button class="btn-big btn-full" style="margin-top:14px;" data-setup="diff-submit">Find a job</button>'
+    + '</div></div></div>';
   return h;
 }
 
@@ -246,18 +251,19 @@ function generateJobOffers() {
 
 function renderJobOffers() {
   var h = '<div class="setup-wrap" style="max-width:720px;">'
-    + stepHeader('Job Offers', 'As a first-year coach, these programs will take a chance on you.')
-    + '<div class="job-grid">';
+    + stepHeader('Job offers', 'As a first-year coach, these programs will take a chance on you.')
+    + '<div class="panel"><div class="panel-h"><span>Open positions</span><small>' + _jobOffers.length + ' programs</small></div>'
+    + '<div class="panel-b flush"><table>'
+    + '<thead><tr><th></th><th>Program</th><th class="num">OVR</th><th class="num">Prestige</th></tr></thead><tbody>';
   _jobOffers.forEach(function(t) {
     var tier = getTier(t.baseOvr);
-    var sp = t.schoolPrestige;
-    h += '<button class="scheme-row" data-job="' + t.id + '" style="margin-bottom:0;">'
-      + teamLogo(t.name, 'sm')
-      + '<span class="sm-body"><span class="sm-name">' + t.name + '</span>'
-      + '<span class="sm-desc" style="display:block;">' + t.conf + ' · Prestige ' + sp + ' · <span style="color:' + tier.col + ';font-weight:700;">' + tier.label + '</span></span></span>'
-      + '<span style="font-family:var(--mono);font-size:17px;font-weight:900;color:var(--blu);flex-shrink:0;">' + getTOvr(t) + '</span></button>';
+    h += '<tr data-job="' + t.id + '" tabindex="0" role="button" aria-label="Take the job at ' + t.name + '" style="cursor:pointer;">'
+      + '<td>' + teamLogo(t.name, 'sm') + '</td>'
+      + '<td><div>' + t.name + '</div><div class="pt-sub">' + t.conf + ' · ' + tier.label + '</div></td>'
+      + '<td class="num">' + getTOvr(t) + '</td>'
+      + '<td class="num">' + t.schoolPrestige + '</td></tr>';
   });
-  h += '</div></div>';
+  h += '</tbody></table></div></div></div>';
   return h;
 }
 
@@ -308,25 +314,26 @@ function renderNCSchedule() {
   var t = G.teams[G.tid];
   var h = '<div class="setup-wrap" style="max-width:720px;">'
     + stepHeader(t.name, t.conf + ' · Prestige ' + t.schoolPrestige + ' · OVR ' + getTOvr(t))
-    + '<div class="sec-head">Non-conference schedule</div>'
-    + '<div class="sec-sub">Auto-generated. Swap any opponent you don\'t want.</div>'
-    + '<div class="nc-grid">';
+    + '<div class="panel"><div class="panel-h"><span>Non-conference schedule</span><small>Auto-generated · swap any opponent</small></div>'
+    + '<div class="panel-b flush"><table>'
+    + '<thead><tr><th></th><th>Opponent</th><th class="num">OVR</th><th class="num">Edge</th><th></th></tr></thead><tbody>';
   SetupState.NC_PICKS.forEach(function(id, i) {
     var opp = G.teams[id];
     var myOvr = getTOvr(t);
     var diff = getTOvr(opp) - myOvr;
     var diffCol = diff >= 5 ? 'var(--red)' : diff >= -5 ? 'var(--gld2)' : 'var(--grn2)';
     var diffStr = diff > 0 ? '+' + diff : '' + diff;
-    h += '<div class="nc-row">'
-      + teamLogo(opp.name, 'sm')
-      + '<div style="flex:1;min-width:0;"><div style="font-size:13px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + opp.name + '</div>'
-      + '<div style="font-size:11px;color:var(--txt3);">' + (i % 2 === 0 ? 'HOME' : 'AWAY') + ' · ' + opp.conf + ' · OVR ' + getTOvr(opp) + ' <span style="color:' + diffCol + ';font-weight:800;">(' + diffStr + ')</span></div></div>'
-      + '<button class="btn-quiet" data-swapnc="' + i + '">Swap</button></div>';
+    h += '<tr>'
+      + '<td>' + teamLogo(opp.name, 'sm') + '</td>'
+      + '<td><div>' + opp.name + '</div><div class="pt-sub">' + (i % 2 === 0 ? 'Home' : 'Away') + ' · ' + opp.conf + '</div></td>'
+      + '<td class="num">' + getTOvr(opp) + '</td>'
+      + '<td class="num" style="color:' + diffCol + ';">' + diffStr + '</td>'
+      + '<td><button class="btn-quiet" data-swapnc="' + i + '">Swap</button></td></tr>';
   });
-  h += '</div>'
-    + '<div style="display:flex;gap:8px;margin-top:20px;align-items:center;">'
-    + '<button class="btn-quiet" data-setup="back-jobs" aria-label="Back to job offers">‹ Back</button>'
-    + '<button class="btn-big" style="flex:1;" data-setup="start-dynasty">Start season</button></div>'
+  h += '</tbody></table></div></div>'
+    + '<div class="big-btn-row">'
+    + '<button class="btn-big secondary" data-setup="back-jobs">Back</button>'
+    + '<button class="btn-big" data-setup="start-dynasty">Start season</button></div>'
     + '</div>';
   return h;
 }
@@ -341,22 +348,25 @@ export function swapNC(idx) {
     return t.conf !== G.teams[G.tid].conf && t.id !== G.tid && SetupState.NC_PICKS.indexOf(t.id) < 0;
   }).sort(function(a, b) { return b.baseOvr - a.baseOvr; });
   var overlay = document.createElement('div');
-  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(10,25,50,.55);z-index:99999;display:flex;align-items:center;justify-content:center;padding:12px;';
-  overlay.innerHTML = '<div style="background:#fff;border:1px solid var(--bdr);border-radius:12px;width:min(480px,100%);max-height:80vh;display:flex;flex-direction:column;overflow:hidden;">'
-    + '<div style="padding:14px 16px;border-bottom:1px solid var(--bdr);display:flex;justify-content:space-between;align-items:center;">'
-    + '<div style="font-size:14px;font-weight:800;color:var(--txt);">Swap Opponent</div>'
-    + '<button class="btn btn-ghost btn-sm" id="swap-close" aria-label="Close">✕</button></div>'
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(31,38,48,.45);z-index:99999;display:flex;align-items:center;justify-content:center;padding:12px;';
+  overlay.innerHTML = '<div class="panel" style="width:min(480px,100%);max-height:80vh;display:flex;flex-direction:column;overflow:hidden;margin-bottom:0;" role="dialog" aria-label="Swap opponent">'
+    + '<div class="panel-h"><span>Swap opponent</span>'
+    + '<button class="btn-quiet" id="swap-close">Close</button></div>'
     + '<input id="swap-search" class="setup-input" placeholder="Search teams..." style="border:none;border-bottom:1px solid var(--bdr);border-radius:0;" autocomplete="off">'
-    + '<div id="swap-list" style="overflow-y:auto;max-height:50vh;"></div></div>';
+    + '<div id="swap-list" style="overflow-y:auto;"></div></div>';
   document.body.appendChild(overlay);
   function renderSwapList(f) {
     var list = document.getElementById('swap-list'); list.innerHTML = '';
     pool.filter(function(t) { return !f || t.name.toLowerCase().indexOf(f) >= 0 || t.conf.toLowerCase().indexOf(f) >= 0; })
     .forEach(function(t) {
       var d = document.createElement('div');
-      d.style.cssText = 'padding:12px 16px;cursor:pointer;border-bottom:1px solid var(--bdr);display:flex;justify-content:space-between;align-items:center;font-size:13px;min-height:52px;';
-      d.innerHTML = '<span style="font-weight:700;color:var(--txt);">' + t.name + '</span><span style="color:var(--txt3);font-size:11px;">' + t.conf + ' • OVR ' + getTOvr(t) + '</span>';
-      d.addEventListener('click', function() { SetupState.NC_PICKS[idx] = t.id; document.body.removeChild(overlay); showStep('nc-schedule'); });
+      d.setAttribute('role', 'button');
+      d.setAttribute('tabindex', '0');
+      d.style.cssText = 'padding:10px 12px;cursor:pointer;border-bottom:1px solid var(--bdr);display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;';
+      d.innerHTML = '<span style="font-weight:600;">' + t.name + '</span><span style="color:var(--txt3);font-size:11px;flex-shrink:0;">' + t.conf + ' · OVR ' + getTOvr(t) + '</span>';
+      function pick() { SetupState.NC_PICKS[idx] = t.id; document.body.removeChild(overlay); showStep('nc-schedule'); }
+      d.addEventListener('click', pick);
+      d.addEventListener('keydown', function(ev) { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); pick(); } });
       list.appendChild(d);
     });
   }

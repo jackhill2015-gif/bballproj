@@ -795,12 +795,12 @@ function renderGcastTeam() {
     ['FG%', fg(a), fg(h)], ['REB', a.reb, h.reb], ['AST', a.ast, h.ast],
     ['STL', a.stl, h.stl], ['BLK', a.blk, h.blk]
   ];
-  var html = '<table><thead><tr><th></th><th style="text-align:right;">' + teamAbbr(LS.tA.name) + '</th>'
-    + '<th style="text-align:right;">' + teamAbbr(LS.tH.name) + '</th></tr></thead><tbody>';
+  var html = '<table><thead><tr><th></th><th class="num">' + teamAbbr(LS.tA.name) + '</th>'
+    + '<th class="num">' + teamAbbr(LS.tH.name) + '</th></tr></thead><tbody>';
   rows.forEach(function(r) {
-    html += '<tr><td style="color:var(--txt3);font-size:11px;font-weight:800;">' + r[0] + '</td>'
-      + '<td style="text-align:right;font-family:var(--mono);font-weight:700;">' + r[1] + '</td>'
-      + '<td style="text-align:right;font-family:var(--mono);font-weight:700;">' + r[2] + '</td></tr>';
+    html += '<tr><td class="pt-sub">' + r[0] + '</td>'
+      + '<td class="num">' + r[1] + '</td>'
+      + '<td class="num">' + r[2] + '</td></tr>';
   });
   el.innerHTML = html + '</tbody></table>';
 }
@@ -812,17 +812,15 @@ function renderGcastBox() {
     var rows = boxDeltas(team, snap)
       .filter(function(r) { return r.p.mins > 0; })
       .sort(function(x, y) { return y.pts - x.pts; });
-    var html = '<div style="display:flex;align-items:center;gap:8px;margin:10px 0 6px;">'
-      + teamLogo(team.name, 'sm')
-      + '<span style="font-size:13px;font-weight:800;">' + team.name + '</span></div>'
-      + '<table><thead><tr><th>Player</th><th style="text-align:right;">PTS</th>'
-      + '<th style="text-align:right;">REB</th><th style="text-align:right;">AST</th></tr></thead><tbody>';
+    var html = '<div class="box-team">' + teamLogo(team.name, 'sm')
+      + '<span>' + team.name + '</span></div>'
+      + '<table><thead><tr><th>Player</th><th class="num">PTS</th>'
+      + '<th class="num">REB</th><th class="num">AST</th></tr></thead><tbody>';
     rows.forEach(function(r) {
-      html += '<tr><td style="font-weight:600;">' + r.p.name
-        + ' <span style="font-weight:400;color:var(--txt3);font-size:11px;">' + r.p.pos + '</span></td>'
-        + '<td style="text-align:right;font-family:var(--mono);font-weight:800;">' + r.pts + '</td>'
-        + '<td style="text-align:right;font-family:var(--mono);">' + r.reb + '</td>'
-        + '<td style="text-align:right;font-family:var(--mono);">' + r.ast + '</td></tr>';
+      html += '<tr><td>' + r.p.name + ' <span class="pt-sub">' + r.p.pos + '</span></td>'
+        + '<td class="num">' + r.pts + '</td>'
+        + '<td class="num">' + r.reb + '</td>'
+        + '<td class="num">' + r.ast + '</td></tr>';
     });
     return html + '</tbody></table>';
   }
@@ -843,7 +841,7 @@ export function stepSim() {
       txt('sb-per', 'Half 2');
       G.momentum = { tid: -1, pts: 0 };
       var log = ge('pbplog');
-      if (log) log.innerHTML = '<div class="pbp-banner" style="background:var(--s3);color:var(--txt2);">── Halftime ──</div>' + log.innerHTML;
+      if (log) log.innerHTML = '<div class="pbp-banner">── Halftime ──</div>' + log.innerHTML;
       return true;
     } else if (LS.half === 2) {
       if (LS.hs === LS.as) { LS.half = 3; LS.clock = 300; txt('sb-per', 'OT'); return true; }
@@ -875,8 +873,7 @@ export function stepSim() {
     if (logEl) {
       var entry = '';
       if (res.run) {
-        var bc = res.run.isUser ? 'var(--gld)' : '#fc8181';
-        entry += '<div class="pbp-banner" style="background:' + bc + ';color:#000;">' + res.run.text + '</div>';
+        entry += '<div class="pbp-banner' + (res.run.isUser ? ' run-user' : ' run-opp') + '">' + res.run.text + '</div>';
       }
       entry += pbpRow(ts, res.pbp, score, res.big ? 'big' : (res.type === 'turn' || res.type === 'block' ? 'bad' : ''));
       if (logEl.childNodes && logEl.childNodes.length > 220) {
@@ -919,7 +916,7 @@ export function skipGame() {
 // ── Finalize Modal ───────────────────────────────────────
 export function finalizeModal() {
   if (G.simInterval) { clearInterval(G.simInterval); G.simInterval = null; }
-  txt('sb-clk', 'FINAL');
+  txt('sb-clk', 'Final');
   renderGcastTeam();
   renderGcastBox();
 

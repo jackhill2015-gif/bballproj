@@ -99,90 +99,103 @@ export function renderSeasonRecap() {
   var tf = lastHistory ? lastHistory.tourneyFinish : 'N/A';
 
   function awardCard(kicker, name, sub, yours) {
-    return '<div class="sec-block">'
-      + '<div class="card-title">' + kicker + '</div>'
-      + '<div style="font-size:18px;font-weight:900;' + (yours ? 'color:var(--blu);' : '') + '">' + name
+    return '<div class="panel"><div class="panel-h"><span>' + kicker + '</span></div>'
+      + '<div class="panel-b">'
+      + '<div style="font-size:15px;font-weight:600;">' + name
       + (yours ? ' <span class="tag t-home">Yours</span>' : '') + '</div>'
-      + '<div style="font-size:12px;color:var(--txt2);margin-top:4px;">' + sub + '</div></div>';
+      + '<div style="font-size:12px;color:var(--txt2);margin-top:4px;">' + sub + '</div></div></div>';
   }
 
-  var h = '<div style="margin-bottom:20px;">'
-    + '<div class="sec-head">Season ' + year + ' Recap</div>'
-    + '<div class="sec-sub">National champion · awards · your program</div></div>';
+  var h = '<div class="sec-head">Season ' + year + ' Recap</div>'
+    + '<div class="sec-sub" style="margin-bottom:12px;">National champion · awards · your program</div>';
 
   h += '<div class="grid-2">';
 
   // LEFT — league
   h += '<div>';
-  h += '<div class="sec-block">'
-    + '<div class="card-title">National Champion</div>'
-    + '<div class="br-champ-team">' + natChamp.name + '</div></div>';
+  h += '<div class="panel"><div class="panel-h"><span>National champion</span></div>'
+    + '<div class="panel-b"><div class="br-champ-team' + (natChamp.id === G.tid ? ' is-user' : '') + '">'
+    + natChamp.name + '</div></div></div>';
 
-  h += '<div class="sec-block"><div class="card-title">Final Top 10</div>';
+  h += '<div class="panel"><div class="panel-h"><span>Final top 10</span></div>'
+    + '<div class="panel-b flush"><table>'
+    + '<thead><tr><th>Rank</th><th>Team</th><th style="text-align:right;">Record</th></tr></thead><tbody>';
   topTeams.forEach(function(tm, i) {
-    var isU = tm.id === G.tid;
-    h += '<div class="leader-row"><div class="leader-rank">' + (i + 1) + '</div>'
-      + '<div class="leader-name" style="' + (isU ? 'font-weight:900;color:var(--blu);' : '') + '">' + tm.name + '</div>'
-      + '<div style="font-family:var(--mono);font-weight:800;color:' + (tm.wins > tm.loss ? 'var(--grn2)' : 'var(--txt2)') + ';">' + tm.wins + '-' + tm.loss + '</div></div>';
+    h += '<tr' + (tm.id === G.tid ? ' class="hl"' : '') + '>'
+      + '<td style="font-family:var(--mono);">' + (i + 1) + '</td>'
+      + '<td>' + tm.name + '</td>'
+      + '<td style="font-family:var(--mono);text-align:right;color:' + (tm.wins > tm.loss ? 'var(--grn2)' : 'var(--txt2)') + ';">'
+      + tm.wins + '-' + tm.loss + '</td></tr>';
   });
-  h += '</div>';
+  h += '</tbody></table></div></div>';
 
-  if (awards.poy) h += awardCard('Player of the Year', awards.poy.name,
+  if (awards.poy) h += awardCard('Player of the year', awards.poy.name,
     awards.poy.team + ' · ' + awards.poy.pos + ' · ' + awards.poy.ppg + ' PPG / ' + awards.poy.rpg + ' RPG / ' + awards.poy.apg + ' APG',
     awards.poy.tid === G.tid);
-  if (awards.foy) h += awardCard('Freshman of the Year', awards.foy.name,
+  if (awards.foy) h += awardCard('Freshman of the year', awards.foy.name,
     awards.foy.team + ' · ' + awards.foy.ppg + ' PPG', awards.foy.tid === G.tid);
   if (awards.coy) {
     var cn = awards.coy.coach ? awards.coy.coach.firstName + ' ' + awards.coy.coach.lastName : 'Staff';
-    h += awardCard('Coach of the Year', cn, awards.coy.name + ' (' + awards.coy.wins + '-' + awards.coy.loss + ')',
+    h += awardCard('Coach of the year', cn, awards.coy.name + ' (' + awards.coy.wins + '-' + awards.coy.loss + ')',
       awards.coy.id === G.tid);
   }
   h += '</div>';
 
   // RIGHT — your program
   h += '<div>';
-  h += '<div class="sec-block"><div class="card-title">Your Season</div>'
-    + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">'
-    + '<div><div style="font-size:22px;font-weight:900;">' + t.name + '</div>'
-    + '<div style="font-size:13px;color:var(--blu);font-weight:700;margin-top:2px;">' + t.wins + '-' + t.loss + ' (' + t.cWins + '-' + t.cLoss + ' ' + t.conf + ')</div></div>'
-    + '<div style="text-align:right;"><div style="font-size:10px;color:var(--txt3);font-weight:700;">NET</div><div style="font-family:var(--mono);font-size:24px;font-weight:900;">#' + rank + '</div></div></div>'
-    + '<div class="leader-row"><div class="leader-name">Tournament finish</div><div class="leader-val" style="font-size:14px;">' + tf + '</div></div>'
-    + '<div class="leader-row"><div class="leader-name">Prestige</div><div class="leader-val" style="font-size:14px;">' + (t.schoolPrestige || '—') + '</div></div>'
-    + '</div>';
+  h += '<div class="panel"><div class="panel-h"><span>Your season</span></div><div class="panel-b">'
+    + '<div class="dash-sum">'
+    + '<div class="dash-team"><h1>' + t.name + '</h1>'
+    + '<div class="sub">' + t.conf + ' · season ' + year + '</div></div>'
+    + '<div class="kv">'
+    + '<div><b>' + t.wins + '-' + t.loss + '</b><span>Record</span></div>'
+    + '<div><b style="font-family:var(--mono);">#' + rank + '</b><span>NET</span></div>'
+    + '<div><b>' + tf + '</b><span>Tourney finish</span></div>'
+    + '<div><b>' + (t.schoolPrestige || '—') + '</b><span>Prestige</span></div>'
+    + '</div></div>'
+    + '<div style="font-size:12px;color:var(--txt2);">Conference: ' + t.cWins + '-' + t.cLoss + ' (' + t.conf + ')</div>'
+    + '</div></div>';
 
   if (awards.allAmerican.length) {
-    h += '<div class="sec-block"><div class="card-title">All-American Team</div>';
+    h += '<div class="panel"><div class="panel-h"><span>All-American team</span></div>'
+      + '<div class="panel-b flush"><table>'
+      + '<thead><tr><th>Player</th><th>Team</th><th style="text-align:right;">PPG</th>'
+      + '<th style="text-align:right;">RPG</th><th style="text-align:right;">APG</th></tr></thead><tbody>';
     awards.allAmerican.forEach(function(p) {
-      var isU = p.tid === G.tid;
-      h += '<div class="leader-row"><div class="leader-name" style="' + (isU ? 'font-weight:900;color:var(--blu);' : '') + '">' + p.name
-        + '<small>' + p.pos + ' · ' + p.team + '</small></div>'
-        + '<div style="font-family:var(--mono);font-size:12px;color:var(--txt2);">' + p.ppg + ' / ' + p.rpg + ' / ' + p.apg + '</div></div>';
+      h += '<tr' + (p.tid === G.tid ? ' class="hl"' : '') + '>'
+        + '<td>' + p.name + ' <span style="font-size:11px;color:var(--txt3);">' + p.pos + '</span></td>'
+        + '<td style="font-size:12px;color:var(--txt2);">' + p.team + '</td>'
+        + '<td style="font-family:var(--mono);text-align:right;">' + p.ppg + '</td>'
+        + '<td style="font-family:var(--mono);text-align:right;">' + p.rpg + '</td>'
+        + '<td style="font-family:var(--mono);text-align:right;">' + p.apg + '</td></tr>';
     });
-    h += '</div>';
+    h += '</tbody></table></div></div>';
   }
 
   if (awards.userAllConf.length) {
-    h += '<div class="sec-block"><div class="card-title">All-' + awards.userConf + ' Team</div>';
+    h += '<div class="panel"><div class="panel-h"><span>All-' + awards.userConf + ' team</span></div>'
+      + '<div class="panel-b flush"><table>'
+      + '<thead><tr><th>Player</th><th>Team</th><th style="text-align:right;">PPG</th></tr></thead><tbody>';
     awards.userAllConf.forEach(function(p) {
-      var isU = p.tid === G.tid;
-      h += '<div class="leader-row"><div class="leader-name" style="' + (isU ? 'font-weight:900;color:var(--blu);' : '') + '">' + p.name
-        + '<small>' + p.team + '</small></div>'
-        + '<div style="font-family:var(--mono);font-size:12px;color:var(--txt2);">' + p.ppg + ' PPG</div></div>';
+      h += '<tr' + (p.tid === G.tid ? ' class="hl"' : '') + '>'
+        + '<td>' + p.name + ' <span style="font-size:11px;color:var(--txt3);">' + p.pos + '</span></td>'
+        + '<td style="font-size:12px;color:var(--txt2);">' + p.team + '</td>'
+        + '<td style="font-family:var(--mono);text-align:right;">' + p.ppg + '</td></tr>';
     });
-    h += '</div>';
+    h += '</tbody></table></div></div>';
   }
 
   // Record book: everything that fell this season + HOF inductions
   var _rb = G._recBreaks || [];
   if (_rb.length) {
-    h += '<div class="sec-block"><div class="card-title">Record Book</div>';
+    h += '<div class="panel"><div class="panel-h"><span>Record book</span></div><div class="panel-b">';
     _rb.forEach(function(b) { h += b.line; });
-    h += '</div>';
+    h += '</div></div>';
   }
 
-  h += '<div class="sec-block">'
-    + '<div class="card-title">Coaching XP Earned</div>'
-    + '<div style="font-family:var(--mono);font-size:26px;font-weight:900;margin-bottom:8px;">' + skillPts.length + ' <span style="font-size:13px;font-weight:700;color:var(--txt2);">skill point' + (skillPts.length !== 1 ? 's' : '') + '</span></div>';
+  h += '<div class="panel"><div class="panel-h"><span>Coaching XP earned</span></div><div class="panel-b">'
+    + '<div style="font-family:var(--mono);font-size:20px;margin-bottom:8px;">' + skillPts.length
+    + ' <span style="font-size:12px;color:var(--txt2);">skill point' + (skillPts.length !== 1 ? 's' : '') + '</span></div>';
   if (skillPts.length) {
     skillPts.forEach(function(label) {
       h += '<div style="font-size:12px;color:var(--grn2);padding:3px 0;">✓ ' + label + '</div>';
@@ -190,11 +203,11 @@ export function renderSeasonRecap() {
   } else {
     h += '<div style="font-size:12px;color:var(--txt3);">No achievements this season.</div>';
   }
-  h += '</div>';
+  h += '</div></div>';
 
   h += '</div></div>';
 
-  h += '<div style="margin-top:20px;text-align:center;">'
+  h += '<div class="big-btn-row" style="text-align:center;">'
     + '<button class="btn-big" data-action="begin-offseason">Begin offseason</button></div>';
 
   return h;
