@@ -26,7 +26,8 @@ export function upgradeCost(level) { return 120 + level * 90; }
 export function facilitiesFor(tid) {
   if (!G.facilities || typeof G.facilities !== 'object') G.facilities = {};
   if (!G.facilities[tid]) {
-    var t = G.teams[tid];
+    var t = G.teams && G.teams[tid];
+    if (!t) return { practice: 0, arena: 0, training: 0 }; // unknown team: no bonuses
     var base = Math.max(0, Math.min(3, Math.floor(((t && t.schoolPrestige) || 50) / 25) - 1));
     G.facilities[tid] = { practice: base, arena: base, training: base };
   }
