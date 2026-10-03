@@ -257,7 +257,9 @@ runFullBattle();
 let badRoster = 0, dupPortal = 0;
 G.teams.forEach(tm => {
   if (tm.rost.length > 15) badRoster++;
-  tm.rost.forEach(p => { if (p._portalPid) dupPortal++; });
+  // Unclaimed entrants stay flagged until the offseason's global CPU pass
+  // (resolvePortalCPU) — only a flag with no pending entrant is a leak.
+  tm.rost.forEach(p => { if (p._portalPid && !(G.portalEntrants || []).some(e => e.pid === p._portalPid && e.pickedBy === -1)) dupPortal++; });
 });
 check(badRoster === 0, 'no roster exceeds 15 after full battle', 'bad=' + badRoster);
 check(dupPortal === 0, 'no _portalPid flags leak onto rosters', 'leaked=' + dupPortal);

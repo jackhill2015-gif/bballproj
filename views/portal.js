@@ -158,44 +158,74 @@ function weightedWinner(entries) {
 // Build the portal class from low-minute / unhappy returners across every
 // team. Entrants STAY on their rosters until picked (flagged with _portalPid),
 // so a save/reload mid-portal loses nothing.
+// Who enters the portal, modeled on why real players transfer:
+//  - Playing time: stuck deep on the bench (most entrants)
+//  - Bigger role: good enough to start elsewhere but buried on the depth chart
+//  - Moving up: a standout at a weak or low-profile program chases a bigger stage
+//  - Coaching change: a new coach shakes the roster loose
+//  - Lost faith: low morale makes any of these likelier
+// Starters at healthy programs rarely leave. If the class is over the cap,
+// it's trimmed at random so the mix stays realistic (not top-heavy).
+export function entryOdds(p, tm, ctx) {
+  if (p.cls === 'SR' || p.rs) return null;
+  var m = (typeof p.morale === 'number') ? p.morale : MORALE_DEFAULT;
+  var mins = p.mins || 0;
+  var chance = 0, reason = 'Playing time';
+  if (mins < 15 && ctx.depth > 7) chance = 0.16;
+  if (mins < 18 && p.ovr >= ctx.fifthBest - 2 && ctx.depth > 5) { chance = Math.max(chance, 0.30); reason = 'Bigger role'; }
+  if (ctx.depth <= 3 && ctx.weak && p.ovr >= 80 && (p.cls === 'SO' || p.cls === 'JR')) {
+    chance = Math.max(chance, 0.10 + (p.ovr - 80) * 0.012); reason = 'Moving up';
+  }
+  if (!chance) chance = 0.015; // a contented starter, rarely
+  chance *= (1.6 - m / 100);   // morale 20 → x1.4, 50 → x1.1, 80 → x0.8
+  // The reason shown is the most specific one that applies
+  if (m < 15 && reason === 'Playing time') reason = 'Lost faith in program';
+  // A new coach shakes things loose — mostly rotation players who'd have stayed
+  if (ctx.coachChange) {
+    chance = Math.min(0.6, chance * 1.5 + (mins >= 15 ? 0.06 : 0));
+    if (mins >= 15 || reason === 'Playing time') reason = 'Coaching change';
+  }
+  return { chance: Math.min(0.75, chance), reason: reason };
+}
+
 export function genPortalEntrants() {
   G.portalEntrants = [];
   _nextPid = 1;
+  var rankOf = {};
+  G.teams.slice().sort(function(a, b) { return b.pts - a.pts; }).forEach(function(t, i) { rankOf[t.id] = i + 1; });
   G.teams.forEach(function(tm) {
     if (!tm.rost) return;
-    var count = 0;
+    var byOvr = tm.rost.slice().sort(function(a, b) { return b.ovr - a.ovr; });
+    var fifthBest = byOvr[4] ? byOvr[4].ovr : 0;
+    var ctx0 = {
+      fifthBest: fifthBest,
+      weak: (tm.schoolPrestige || 50) < 45 || rankOf[tm.id] > 150,
+      coachChange: !!(tm.coach && tm.coach.tenure === 0 && tm.id !== G.tid)
+    };
+    var cands = [];
     tm.rost.forEach(function(p) {
-      if (p.cls === 'SR') return;              // seniors already departing
-      if (p.rs) return;                        // redshirting this season by choice
-      if (count >= 3) return;                  // max 3 entrants per team
-      if ((p.mins || 0) >= 18) {
-        // Rotation players stay put — unless they're checked out (morale < 25)
-        var _m = (typeof p.morale === 'number') ? p.morale : MORALE_DEFAULT;
-        if (_m >= 25) return;
-      }
-      var unhappy = p.mins <= 10 || (p.ovr >= 78 && p.mins < 18) || (p.cls === 'FR' && p.mins <= 8);
-      if (!unhappy) {
-        var _m2 = (typeof p.morale === 'number') ? p.morale : MORALE_DEFAULT;
-        if (_m2 >= 25) return;                 // content players with minutes stay
-      }
-      // Morale-weighted: lower morale → substantially more likely to enter
-      if (Math.random() > portalEntryChance(p)) return;
+      var o = entryOdds(p, tm, Object.assign({ depth: byOvr.indexOf(p) + 1 }, ctx0));
+      if (o && Math.random() < o.chance) cands.push({ p: p, reason: o.reason });
+    });
+    // At most 3 per team
+    cands.slice(0, 3).forEach(function(c) {
+      var p = c.p;
       var pid = _nextPid++;
       p._portalPid = pid;
       G.portalEntrants.push({
         pid: pid, name: p.name, pos: p.pos, ovr: p.ovr, pot: p.pot || p.ovr,
         cls: p.cls, fromTid: tm.id, fromName: tm.name, mins: p.mins || 0,
         sht: p.sht, fin: p.fin, def: p.def, reb: p.reb, ply: p.ply,
-        reason: portalReason(p), pickedBy: -1, offer: 0
+        reason: c.reason, pickedBy: -1, offer: 0
       });
-      count++;
     });
   });
-  // Cap total entrants, preferring higher OVR; cut players keep their roster spot
+  // Over the cap: trim at random (keeps the talent mix), cut players stay home
   if (G.portalEntrants.length > PORTAL_MAX_ENTRANTS) {
-    G.portalEntrants.sort(function(a, b) { return b.ovr - a.ovr; });
-    var cut = G.portalEntrants.slice(PORTAL_MAX_ENTRANTS);
-    G.portalEntrants = G.portalEntrants.slice(0, PORTAL_MAX_ENTRANTS);
+    var list = G.portalEntrants;
+    for (var i = list.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var tmp = list[i]; list[i] = list[j]; list[j] = tmp; }
+    var cut = list.slice(PORTAL_MAX_ENTRANTS);
+    G.portalEntrants = list.slice(0, PORTAL_MAX_ENTRANTS);
     var cutIds = {};
     cut.forEach(function(e) { cutIds[e.pid] = true; });
     G.teams.forEach(function(tm) {
