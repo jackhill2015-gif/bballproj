@@ -39,10 +39,19 @@ function computeLeaders() {
     });
   });
 
+  // Top 10 per category in one pass (no full sort of ~4,700 players)
   var cats = CATS.map(function(c) {
-    var arr = players.filter(function(r) { return !c.minFga || r.fga >= c.minFga; });
-    arr.sort(function(a, b) { return c.val(b) - c.val(a); });
-    return { cat: c, rows: arr.slice(0, 10) };
+    var top = [];
+    for (var i = 0; i < players.length; i++) {
+      var r = players[i];
+      if (c.minFga && r.fga < c.minFga) continue;
+      var v = c.val(r);
+      if (top.length === 10 && v <= c.val(top[9])) continue;
+      var j = top.length < 10 ? top.length : 9;
+      top[j] = r;
+      while (j > 0 && c.val(top[j - 1]) < v) { top[j] = top[j - 1]; top[j - 1] = r; j--; }
+    }
+    return { cat: c, rows: top };
   });
 
   _cache = { key: key, cats: cats };

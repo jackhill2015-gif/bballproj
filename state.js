@@ -209,20 +209,33 @@ export function saveState() {
   if (_saveTimer) clearTimeout(_saveTimer);
   _saveTimer = setTimeout(function() {
     _saveTimer = null;
-    _writeSave();
+    // Write when the browser is idle so the ~1 MB save never lands in the
+    // middle of a tap or a scroll (falls back to an immediate write)
+    if (typeof requestIdleCallback === 'function') {
+      _idlePending = true;
+      requestIdleCallback(function() { if (_idlePending) { _idlePending = false; _writeSave(); } }, { timeout: 3000 });
+    } else {
+      _writeSave();
+    }
   }, 1000);
   // Don't hold the node event loop open for the trailing write alone
   if (_saveTimer && typeof _saveTimer.unref === 'function') _saveTimer.unref();
 }
 
+var _idlePending = false;
+
 export function saveStateNow() {
   if (_saveTimer) { clearTimeout(_saveTimer); _saveTimer = null; }
+  _idlePending = false;
   _writeSave();
 }
 
 function _flushPendingSave() {
-  if (_saveTimer) saveStateNow();
+  if (_saveTimer || _idlePending) saveStateNow();
 }
+// Finish a save that's already waiting (never creates a new one — the title
+// screen must not overwrite the stored dynasty). Used on tab hide/close.
+export function flushPendingSave() { _flushPendingSave(); }
 
 // ── S10: slim serializers. bracket/confTourneys embed full team objects
 // (with 13-player rosters) — serialize them as team IDs and rehydrate on load.

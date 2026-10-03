@@ -162,7 +162,22 @@ window.adjustPoints = adjustPoints;
 
 export function addTarget(rid) {
   if (G.recruitTargets.indexOf(rid) < 0) G.recruitTargets.push(rid);
-  saveState(); renderOffseason();
+  saveState();
+  // On the board, just flip that row (no 400-row rebuild); elsewhere re-render
+  if (_tab === 'board' && _detailId !== rid && patchTargetRow(rid)) return;
+  renderOffseason();
+}
+
+function patchTargetRow(rid) {
+  if (typeof document === 'undefined' || !document.querySelector) return false;
+  var row = document.querySelector('tr.rrow[data-rid="' + rid + '"]');
+  if (!row) return false;
+  row.classList.add('hl');
+  var act = row.querySelector('.c-act');
+  if (act) act.innerHTML = '<span class="tgt-on">Targeted</span>';
+  var tab = document.querySelector('[data-rtab="targets"]');
+  if (tab) tab.textContent = 'Targets (' + G.recruitTargets.length + ')';
+  return true;
 }
 window.addTarget = addTarget;
 

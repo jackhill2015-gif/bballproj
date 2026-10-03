@@ -5,7 +5,7 @@
 // ═══════════════════════════════════════════════════════════
 
 // ── Core ─────────────────────────────────────────────────
-import { G, SetupState } from './state.js';
+import { G, SetupState, flushPendingSave } from './state.js';
 import {
   buildUniverse, buildSchedules, genRecruits,
   launchSim, doPlay, advanceWeek, autoSimNext, updateAutoBtn,
@@ -140,6 +140,14 @@ window.closeTournamentResult = closeTournamentResult;
 // Setup / Home screen
 window.showHomeScreen = showHomeScreen;
 window.loadAndPlay = loadAndPlay;
+// Never lose the last move: write any pending save when the tab is hidden,
+// switched away from on a phone, or closed.
+if (typeof document !== 'undefined' && document.addEventListener) {
+  document.addEventListener('visibilitychange', function() { if (document.visibilityState === 'hidden') flushPendingSave(); });
+}
+if (typeof window !== 'undefined' && window.addEventListener) {
+  window.addEventListener('pagehide', function() { flushPendingSave(); });
+}
 // goals.js announces unlocks without importing the UI
 window._hoopsToast = function(msg) { toast(msg); addLog('ev', G.gi, msg + '.'); };
 window.startNewDynasty = startNewDynasty;

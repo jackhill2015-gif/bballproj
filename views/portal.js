@@ -303,10 +303,40 @@ export function adjustOffer(pid, delta) {
     if (back < -delta) toast('Offer reduced. ' + (-delta - back) + ' NIL not refunded.', 'var(--gld)');
   }
   e.offer = nv;
-  saveState(); rerender();
+  saveState();
+  if (!patchOfferRow(e)) rerender();
   return true;
 }
 window.adjustOffer = adjustOffer;
+
+// In-place update after an offer change: just this player's row, its open
+// detail panel, the header numbers and the + buttons' enabled state —
+// instead of rebuilding the whole 160-row table.
+function patchOfferRow(e) {
+  if (typeof document === 'undefined' || !document.querySelector) return false;
+  var row = document.querySelector('tr.prow[data-pdetail="' + e.pid + '"]');
+  if (!row || !row.outerHTML) return false;
+  var tmp = document.createElement('tbody');
+  if (!tmp || !('innerHTML' in tmp)) return false;
+  tmp.innerHTML = entrantRow(e, G.portalStage || 0);
+  var fresh = tmp.firstElementChild;
+  if (!fresh || !row.parentNode) return false;
+  row.parentNode.replaceChild(fresh, row);
+  var det = fresh.nextElementSibling;
+  if (det && det.classList && det.classList.contains('detail-row') && _pDetail === e.pid) {
+    det.innerHTML = '<td colspan="7">' + detailRow(e) + '</td>';
+  }
+  var nil = G.pts || 0;
+  var avail = portalBoard().filter(function(x) { return x.fromTid !== G.tid; });
+  var set = function(sel, v) { var n = document.querySelector(sel); if (n) n.textContent = v; };
+  set('[data-nil-left]', nil);
+  set('[data-nil-offered]', avail.reduce(function(sum, x) { return sum + (x.offer || 0); }, 0));
+  set('[data-offers-out]', avail.filter(function(x) { return (x.offer || 0) > 0; }).length);
+  var nb = document.getElementById('nil-balance'); if (nb) nb.textContent = nil;
+  var off = nil < PORTAL_OFFER_STEP;
+  document.querySelectorAll('[data-poff-inc]').forEach(function(b) { b.classList.toggle('off', off); });
+  return true;
+}
 
 // Pivot: pull out of a lost cause entirely (partial refund after Open stage).
 export function pivotOffer(pid) {
@@ -758,8 +788,8 @@ export function renderPortal() {
 
   h += '<div class="kv" style="margin-bottom:12px;">'
     + '<div><b data-nil-left>' + (G.pts || 0) + '</b><span>NIL available</span></div>'
-    + '<div><b>' + committed + '</b><span>NIL offered</span></div>'
-    + '<div><b>' + offersOut + '</b><span>Open offers</span></div>'
+    + '<div><b data-nil-offered>' + committed + '</b><span>NIL offered</span></div>'
+    + '<div><b data-offers-out>' + offersOut + '</b><span>Open offers</span></div>'
     + '<div><b>' + avail.length + '</b><span>In portal</span></div></div>';
 
   if (mine.length) {

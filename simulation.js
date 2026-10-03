@@ -147,15 +147,22 @@ function teamStar(t) {
 // Picks a random active player weighted by minutes, with an optional weight
 // function for role-based usage: stars shoot more per minute, playmakers
 // create more assists, bigs grab more boards.
+// Weighted pick without building a pool array (same distribution as before:
+// integer weights, uniform draw over their sum). Called ~20k times per game.
 export function getFloor(team, wFn) {
-  var pool = [];
-  team.rost.forEach(function(p) {
-    var w = wFn ? wFn(p) : p.mins;
+  var rost = team.rost, n = rost.length, total = 0, i, w;
+  var ws = _floorW.length >= n ? _floorW : (_floorW = new Array(n * 2));
+  for (i = 0; i < n; i++) {
+    w = wFn ? wFn(rost[i]) : rost[i].mins;
     w = Math.max(0, Math.round(w));
-    for (var i = 0; i < w; i++) pool.push(p);
-  });
-  return pool.length ? pool[ri(0, pool.length - 1)] : team.rost[0];
+    ws[i] = w; total += w;
+  }
+  if (!total) return rost[0];
+  var r = ri(0, total - 1);
+  for (i = 0; i < n; i++) { r -= ws[i]; if (r < 0) return rost[i]; }
+  return rost[n - 1];
 }
+var _floorW = new Array(32);
 
 // Usage weights: concentrate shots on high-ovr players, assists on
 // playmakers, rebounds on bigs — produces realistic star lines.
