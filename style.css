@@ -1226,3 +1226,30 @@ table.ups td { vertical-align: middle; }
 .brv-games .bx-sc { color: var(--txt3); font-size: 11.5px; }
 @media (max-width: 420px) { .brv-games { grid-template-columns: 1fr; } }
 #br-bubble { margin-bottom: 12px; }
+
+/* ═══ Scouting report (recruiting + portal) ═══ */
+.sc-type { color: var(--txt); font-weight: 500; }
+.scout { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 10px; }
+@media (max-width: 640px) { .scout { grid-template-columns: 1fr; gap: 12px; } }
+.scout-col { min-width: 0; }
+.scout-type { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+.scout-type span { font-size: 12px; font-weight: 400; color: var(--txt3); margin-left: 4px; }
+.scout-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+.sc-tag { font-size: 11.5px; padding: 2px 7px; border-radius: var(--radius); border: 1px solid var(--bdr2); color: var(--txt2); background: var(--s1); }
+.sc-tag.up { border-color: var(--grn); color: var(--grn2); background: var(--grn-soft); }
+.sc-tag.dn { border-color: var(--red); color: var(--red); background: var(--red-soft); }
+.sc-bar { display: grid; grid-template-columns: 82px 1fr 26px; align-items: center; gap: 8px; font-size: 12.5px; padding: 2px 0; }
+.sc-bl { color: var(--txt2); }
+.sc-track { height: 6px; background: var(--inset); border-radius: 3px; overflow: hidden; }
+.sc-track span { display: block; height: 100%; }
+.sc-bar b { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+.scout-fit { list-style: none; margin: 0 0 8px; padding: 0; }
+.scout-fit li { font-size: 12.5px; color: var(--txt2); padding: 4px 0 4px 12px; position: relative; line-height: 1.45; }
+.scout-fit li::before { content: ''; position: absolute; left: 0; top: 11px; width: 5px; height: 5px; border-radius: 50%; background: var(--bdr2); }
+.scout-fit li.good::before { background: var(--grn2); }
+.scout-fit li.bad::before { background: var(--red); }
+.scout-fit li b { color: var(--txt); }
+.scout-depth { font-size: 12px; color: var(--txt2); line-height: 1.45; }
+.scout-depth span { color: var(--txt3); }
+.scout-stats { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 10px; font-size: 12.5px; color: var(--txt3); }
+.scout-stats b { color: var(--txt); font-weight: 600; font-variant-numeric: tabular-nums; }

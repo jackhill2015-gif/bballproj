@@ -15,6 +15,7 @@ import { CLS, TEAM_STATES, STATE_TO_REGION, RECRUIT_STATE_POOL } from '../consta
 import { portalEntryChance, moralePortalReason, MORALE_DEFAULT } from '../morale.js';
 import { teamLogo } from '../ui.js';
 import * as Battle from './battle.js';
+import { scoutLine, scoutingHTML, fitReport } from './scouting.js';
 
 // Clickable player name (opens the profile; convention in views/player.js)
 function pLink(name, tid) {
@@ -663,7 +664,7 @@ function chanceColor(pct) {
 }
 
 // ── Board view state (filters + sort). Not saved: it's a view preference.
-var _pf = { pos: 'All', tier: 'all', mine: false, need: false, sort: 'ovr', dir: -1 };
+var _pf = { pos: 'All', tier: 'all', mine: false, fit: 'all', sort: 'ovr', dir: -1 };
 var TIERS = [
   { id: 'all', label: 'All', test: function() { return true; } },
   { id: 'a', label: '85+', test: function(e) { return e.ovr >= 85; } },
@@ -703,14 +704,11 @@ function detailRow(e) {
     + (left === undefined ? '' : (left > 0 ? left + ' season' + (left > 1 ? 's' : '') + ' of eligibility after this one. ' : 'Final season. '))
     + (e.homeState ? 'Home state: ' + e.homeState + '.' : '') + '</div></div>'
     + '<button class="btn-quiet" data-pdetail="' + e.pid + '">Close</button></div>';
-  h += '<div class="grid-2" style="margin-top:8px;gap:16px;"><div><table><tbody>';
-  attrs.forEach(function(a) { h += '<tr><td>' + a[0] + '</td><td class="num"><b>' + a[1] + '</b></td></tr>'; });
-  h += '</tbody></table></div><div><table><tbody>'
-    + '<tr><td>Last season</td><td class="num">' + (st ? st.ppg.toFixed(1) + ' pts, ' + st.rpg.toFixed(1) + ' reb, ' + st.apg.toFixed(1) + ' ast' : 'No games played') + '</td></tr>'
-    + (st ? '<tr><td>FG%, games</td><td class="num">' + (st.fg * 100).toFixed(1) + '%, ' + st.gp + '</td></tr>' : '')
-    + '<tr><td>Your ' + e.pos + 's</td><td class="num">' + d.n + (d.best ? ' (best ' + d.best + ')' : '') + '</td></tr>'
-    + '<tr><td>Ask</td><td class="num">' + portalCost(e) + ' NIL</td></tr>'
-    + '</tbody></table></div></div>';
+  h += '<div class="scout-stats">'
+    + '<span><b>' + (st ? st.ppg.toFixed(1) : '–') + '</b> ppg</span><span><b>' + (st ? st.rpg.toFixed(1) : '–') + '</b> rpg</span>'
+    + '<span><b>' + (st ? st.apg.toFixed(1) : '–') + '</b> apg</span><span><b>' + (st ? (st.fg * 100).toFixed(1) + '%' : '–') + '</b> FG</span>'
+    + '<span><b>' + (st ? st.gp : 0) + '</b> games</span><span><b>' + portalCost(e) + '</b> NIL ask</span></div>';
+  h += scoutingHTML(e);
   var total = ch.bid; ch.suitors.forEach(function(x) { total += x.bid; });
   h += '<div class="card-title" style="margin-top:10px;">Schools recruiting him</div>';
   var rowsS = ch.suitors.map(function(x) { return { name: x.name, pct: Math.round(x.bid / total * 100), me: false }; });
@@ -727,7 +725,7 @@ function detailRow(e) {
 export function setPortalFilter(key, val) {
   if (key === 'sort') {
     if (_pf.sort === val) _pf.dir = -_pf.dir; else { _pf.sort = val; _pf.dir = val === 'name' || val === 'pos' ? 1 : -1; }
-  } else if (key === 'mine' || key === 'need') _pf[key] = !_pf[key];
+  } else if (key === 'mine') _pf[key] = !_pf[key];
   else _pf[key] = val;
   rerender();
 }
@@ -784,7 +782,7 @@ function entrantRow(e, stage) {
   return '<tr class="prow' + (offer > 0 ? ' hl' : '') + (_pDetail === e.pid ? ' open' : '') + '" data-pdetail="' + e.pid + '">'
     + '<td class="c-pos">' + e.pos + '</td>'
     + '<td class="pt-name c-name"><b>' + e.name + '</b> <span class="dim">' + e.cls + '</span>' + need + (e.late ? ' <span class="tag t-ok">Late entry</span>' : '')
-    + '<div class="pt-sub">' + e.fromName + '. <span style="color:' + (vs !== null && vs > 0 ? 'var(--grn2)' : 'var(--txt3)') + ';">' + vsTxt + '</span></div></td>'
+    + '<div class="pt-sub">' + scoutLine(e) + '</div><div class="pt-sub">From ' + e.fromName + '</div></td>'
     + '<td class="num c-ovr" data-l="Ovr"><b>' + e.ovr + '</b></td>'
     + '<td class="num c-pot" data-l="Pot" style="color:' + potCol + ';">' + (e.pot || e.ovr) + '</td>'
     + '<td class="num dim c-ask" data-l="Ask">' + portalCost(e) + '</td>'
@@ -826,7 +824,8 @@ export function renderPortal() {
   h += '</div><div class="fbar"><span class="flbl">Overall</span>';
   TIERS.forEach(function(t) { h += chip('tier', t.id, t.label, _pf.tier === t.id); });
   h += chip('mine', '1', 'My offers only', _pf.mine);
-  h += chip('need', '1', 'Positions of need', _pf.need);
+  h += '</div><div class="fbar"><span class="flbl">Fit</span>';
+  [['all', 'All'], ['start', 'Would start'], ['rot', 'Starter or rotation'], ['need', 'Fills a need']].forEach(function(f) { h += chip('fit', f[0], f[1], _pf.fit === f[0]); });
   h += '</div><div class="fbar fbar-sort"><span class="flbl">Sort</span>';
   [['ovr', 'Overall'], ['pot', 'Potential'], ['odds', 'Odds'], ['ask', 'Ask']].forEach(function(s) {
     h += chip('sort', s[0], s[1] + (_pf.sort === s[0] ? (_pf.dir < 0 ? ' ▾' : ' ▴') : ''), _pf.sort === s[0]);
@@ -837,7 +836,12 @@ export function renderPortal() {
     if (_pf.pos !== 'All' && e.pos !== _pf.pos) return false;
     if (!tier.test(e)) return false;
     if (_pf.mine && !(e.offer > 0)) return false;
-    if (_pf.need && posDepth(e.pos).n >= 2) return false;
+    if (_pf.fit !== 'all') {
+      var fr = fitReport(e);
+      if (_pf.fit === 'start' && fr.role !== 'Starter') return false;
+      if (_pf.fit === 'rot' && fr.role === 'Bench') return false;
+      if (_pf.fit === 'need' && !fr.fillsNeed) return false;
+    }
     return true;
   }).map(function(e) { return { e: e, ch: portalChance(e) }; });
   rows.sort(function(a, b) {

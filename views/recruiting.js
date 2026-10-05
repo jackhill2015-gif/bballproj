@@ -23,6 +23,7 @@ import { genPlayer } from '../simulation.js';
 import { buildRetentionAsks, renderRetention, decideRetention, applyRetention, retentionPending } from './retention.js';
 import { teamLogo } from '../ui.js';
 import * as Battle from './battle.js';
+import { scoutLine, scoutingHTML, fitReport } from './scouting.js';
 
 var _ext = { toast: null, addLog: null, updateAll: null };
 export function registerRecruitingCallbacks(cb) {
@@ -40,7 +41,7 @@ registerPortalCallbacks({
 
 // ── Current recruiting tab ──
 var _tab = 'board';
-var _filter = { pos: 'All', stars: 0, sort: 'rank', dir: 1, near: false, targets: false };
+var _filter = { pos: 'All', stars: 0, sort: 'rank', dir: 1, near: false, targets: false, fit: 'all' };
 var _detailId = -1; // recruit ID shown in detail, -1 = none
 
 // ═══════════════════════════════════════════════════════════
@@ -1143,6 +1144,11 @@ function renderBoard(open, left) {
   h += '</div><div class="fbar"><span class="flbl">Show</span>'
     + rChip('near', '1', 'Home state and region', !!_filter.near)
     + rChip('targets', '1', 'My targets only', !!_filter.targets) + '</div>';
+  h += '<div class="fbar"><span class="flbl">Fit</span>';
+  [['all', 'All'], ['start', 'Would start'], ['rot', 'Starter or rotation'], ['need', 'Fills a need']].forEach(function(f) {
+    h += rChip('fit', f[0], f[1], (_filter.fit || 'all') === f[0]);
+  });
+  h += '</div>';
   h += '<div class="fbar fbar-sort"><span class="flbl">Sort</span>';
   [['rank', 'Rank'], ['ovr', 'Overall'], ['pot', 'Potential'], ['stars', 'Stars']].forEach(function(o) {
     h += rChip('sort', o[0], o[1] + (_filter.sort === o[0] ? (_filter.dir > 0 ? ' ▴' : ' ▾') : ''), _filter.sort === o[0]);
@@ -1154,6 +1160,12 @@ function renderBoard(open, left) {
     if (_filter.stars > 0 && r.stars < _filter.stars) return false;
     if (_filter.targets && G.recruitTargets.indexOf(r.id) < 0) return false;
     if (_filter.near && !getGeoLabel(ts, r.homeState)) return false;
+    if (_filter.fit && _filter.fit !== 'all') {
+      var fr = fitReport(r);
+      if (_filter.fit === 'start' && fr.role !== 'Starter') return false;
+      if (_filter.fit === 'rot' && fr.role === 'Bench') return false;
+      if (_filter.fit === 'need' && !fr.fillsNeed) return false;
+    }
     return true;
   });
   filtered.sort(function(a, b) {
@@ -1177,7 +1189,7 @@ function renderBoard(open, left) {
       + '<td class="num c-rank">' + r.natRank + '</td>'
       + '<td class="c-pos">' + r.pos + '</td>'
       + '<td class="pt-name c-name"><b>' + r.name + '</b> ' + geoBadges(r, sp)
-      + '<div class="pt-sub">' + stName + '</div></td>'
+      + '<div class="pt-sub">' + scoutLine(r) + '</div><div class="pt-sub">' + stName + '</div></td>'
       + '<td class="c-stars" data-l=""><span class="stars">' + starStr(r.stars) + '</span></td>'
       + '<td class="num c-ovr" data-l="Ovr"><b>' + r.ovr + '</b></td>'
       + '<td class="num c-pot" data-l="Pot" style="color:' + potCol + ';">' + (r.pot || r.ovr) + '</td>'
@@ -1210,7 +1222,8 @@ function renderDetailPanel(r, left) {
   } else {
     h += '<div style="margin-bottom:10px;">' + stepperRow(r, left, true) + '</div>';
   }
-  h += '<div class="card-title" style="margin-top:4px;">Schools recruiting him</div>'
+  h += scoutingHTML(r);
+  h += '<div class="card-title" style="margin-top:12px;">Schools recruiting him</div>'
     + '<div data-schools-for="' + r.id + '" data-schools-n="0">' + schoolRaceHTML(r, 0) + '</div>';
   h += '</div>';
   return h;

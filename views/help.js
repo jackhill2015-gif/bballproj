@@ -94,6 +94,13 @@ export function renderHelp() {
     + 'production and your program\'s size, and happier players ask for less. All requests together never cost more than three quarters of what your program earned that season. You can switch a decision '
     + 'until you open the portal; switching a keep to let go refunds it.');
 
+  h += sec('Scouting reports',
+    'Every recruit and transfer shows his player type (for example Floor general, Sharpshooter, Rim protector) '
+    + 'and where he would land on your roster next season: would start, rotation minutes, or bench. Open a player for '
+    + 'the full report: strengths and weaknesses judged against his position, rating bars, whether he upgrades your '
+    + 'roster\'s thinnest area, how he suits your gameplan, and who he would compete with at his position. The Fit '
+    + 'filter narrows the list to players who would start, play in the rotation, or fill a need.');
+
   h += sec('The transfer portal',
     'The portal runs in three rounds: initial offers, follow-up, and decision day. Offers are '
     + 'escrowed in NIL, placed in steps of 10, and your odds against the field of suitor schools '
