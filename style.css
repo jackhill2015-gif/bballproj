@@ -1148,3 +1148,81 @@ table.ret td { vertical-align: middle; }
 .gp-col .sel { width: 100%; }
 .gp-col .gp-desc { margin-top: 4px; }
 @media (max-width: 420px) { .gp-row { gap: 8px; } }
+
+/* ═══ NCAA bracket tree ═══ */
+.bx-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -12px; padding: 0 12px 4px; scroll-behavior: smooth; }
+.bx-tree { display: flex; min-width: max-content; }
+.bx-col { width: 186px; flex: 0 0 186px; display: flex; flex-direction: column; }
+.bx-rh { font-size: 11.5px; color: var(--txt3); padding: 0 14px 8px; white-space: nowrap; }
+.bx-col:first-child .bx-rh { padding-left: 0; }
+.bx-col.cur .bx-rh { color: var(--blu); font-weight: 600; }
+.bx-body { height: 560px; display: flex; flex-direction: column; }
+.bx-tree.ff .bx-body { height: 220px; }
+.bx-pair, .bx-single { flex: 1; display: flex; flex-direction: column; position: relative; }
+.bx-m { flex: 1; display: flex; align-items: center; position: relative; padding: 0 14px; }
+.bx-col:first-child .bx-m { padding-left: 0; }
+/* bracket arm joining a pair of games to the next round */
+.bx-pair::after { content: ''; position: absolute; right: 0; width: 14px; top: 25%; bottom: 25%;
+  border: 1px solid var(--bdr2); border-left: none; }
+/* stub from the arm into the next game */
+.bx-col + .bx-col .bx-m::before { content: ''; position: absolute; left: 0; width: 14px; top: 50%; border-top: 1px solid var(--bdr2); }
+.bx-single .bx-m::after { content: ''; position: absolute; right: 0; width: 14px; top: 50%; border-top: 1px solid var(--bdr2); }
+.bx-win .bx-m::after { display: none; }
+.bx { width: 100%; border: 1px solid var(--bdr2); background: var(--s1); border-radius: var(--radius); overflow: hidden; }
+.bx.mine { border-color: var(--blu); }
+.bx-team { display: flex; align-items: center; gap: 6px; height: 25px; padding: 0 7px; font-size: 12.5px; color: var(--txt); }
+.bx-team + .bx-team { border-top: 1px solid var(--bdr); }
+.bx-seed { width: 16px; flex: 0 0 16px; font-size: 11px; color: var(--txt3); font-variant-numeric: tabular-nums; text-align: right; }
+.bx-name { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bx-sc { font-variant-numeric: tabular-nums; min-width: 18px; text-align: right; color: var(--txt2); }
+.bx-team.w { font-weight: 600; }
+.bx-team.w .bx-sc { color: var(--txt); }
+.bx-team.l { color: var(--txt3); }
+.bx-team.me { background: var(--blu-soft); color: var(--blu-d); font-weight: 600; }
+.bx-team.tbd { background: var(--s2); }
+.bx-champ { width: 100%; border: 1px solid var(--txt); border-radius: var(--radius); padding: 9px 10px; font-size: 14px; font-weight: 600; display: flex; gap: 8px; align-items: center; background: var(--s1); }
+.bx-champ.me { border-color: var(--blu); color: var(--blu-d); background: var(--blu-soft); }
+.bx-champ.tbd { border: 1px dashed var(--bdr2); color: var(--txt3); font-weight: 400; font-size: 12.5px; }
+.bx-note { font-size: 12px; color: var(--txt3); margin-top: 8px; }
+
+/* Your NCAA matchup */
+.mu { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.mu-t { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; }
+.mu-t.r { justify-content: flex-end; text-align: right; }
+.mu-seed { display: inline-flex; align-items: center; justify-content: center; min-width: 24px; height: 24px; padding: 0 4px; border: 1px solid var(--bdr2); border-radius: var(--radius); font-size: 12px; font-weight: 600; color: var(--txt2); font-variant-numeric: tabular-nums; }
+.mu-n { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mu-n.me { color: var(--blu-d); }
+.mu-m { font-size: 12px; color: var(--txt3); }
+.mu-vs { font-size: 12px; color: var(--txt3); }
+.mu-watch { font-size: 12.5px; color: var(--txt2); margin-bottom: 10px; line-height: 1.5; }
+.mu-watch > span { color: var(--txt3); }
+.champ-card { text-align: center; padding: 20px 12px !important; }
+.champ-k { font-size: 12px; color: var(--txt3); margin-bottom: 6px; }
+.champ-n { font-size: 24px; font-weight: 700; display: inline-flex; align-items: center; gap: 10px; }
+.champ-n.me { color: var(--blu-d); }
+.champ-s { font-size: 12.5px; color: var(--txt2); margin-top: 6px; }
+@media (max-width: 640px) {
+  .bx-col { width: 168px; flex-basis: 168px; }
+  .bx-body { height: 520px; }
+  .mu-n { font-size: 14px; }
+}
+table.ups td { vertical-align: middle; }
+.ups-r { font-size: 11.5px; color: var(--txt3); font-weight: 400; }
+/* Tournament game result (inside the gamecast) */
+.tres { background: var(--s1); display: flex; align-items: center; justify-content: center; padding: 24px; }
+.tres-in { width: 100%; max-width: 340px; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+.tres-k { font-size: 12px; color: var(--txt3); }
+.tres-v { font-size: 26px; font-weight: 700; }
+.tres-v.w { color: var(--grn2); }
+.tres-v.l { color: var(--red); }
+.tres-rows { width: 100%; border: 1px solid var(--bdr); border-radius: var(--radius); }
+.tres-row { display: flex; justify-content: space-between; padding: 10px 12px; font-size: 15px; color: var(--txt2); }
+.tres-row + .tres-row { border-top: 1px solid var(--bdr); }
+.tres-row b { font-variant-numeric: tabular-nums; font-size: 18px; font-weight: 600; }
+.tres-row.w { color: var(--txt); font-weight: 600; }
+.tres-s { font-size: 13px; color: var(--txt2); }
+/* Selection Sunday reveal */
+.brv-games { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.brv-games .bx-sc { color: var(--txt3); font-size: 11.5px; }
+@media (max-width: 420px) { .brv-games { grid-template-columns: 1fr; } }
+#br-bubble { margin-bottom: 12px; }

@@ -15,7 +15,7 @@ import { ensureGoals, progress, GOAL_REWARD } from '../goals.js';
 import { FACILITIES, FACILITY_MAX, myFacilities, upgradeCost } from '../facilities.js';
 import { STREAMS, BUCKETS, ledger, totals, committed } from '../finance.js';
 import { G } from '../state.js';
-import { bracketHubHTML } from './bracket.js';
+import { bracketHubHTML, bindBracket, scrollBracketToRound } from './bracket.js';
 import {
   userRank, rankDelta, currentStreak, coachXpToNext,
   NIL_SHOP, shopBoughtThisWeek, teamLogo, teamColor, notifState
@@ -385,7 +385,7 @@ export function renderDashboard() {
   // tournament data is present yet. New season (phase 'reg') reverts.
   if (G.phase === 'conf_tourn' || G.phase === 'ncaa') {
     var hub = bracketHubHTML();
-    if (hub) { el.innerHTML = hub; return; }
+    if (hub) { el.innerHTML = hub; bindBracket(el, renderDashboard); scrollBracketToRound(el); return; }
   }
 
   // Home is "what's next": record, last result, the next game, goals,

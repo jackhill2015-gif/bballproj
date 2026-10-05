@@ -270,7 +270,7 @@ function _slimBracket(bracket) {
     var t = b.team;
     return {
       team: (t === null || t === undefined) ? null : (typeof t === 'number' ? t : t.id),
-      seed: b.seed, region: b.region, active: !!b.active, score: b.score, won: !!b.won
+      seed: b.seed, region: b.region, active: !!b.active, score: b.score, won: !!b.won, sc: b.sc || []
     };
   });
 }
@@ -421,7 +421,7 @@ function _teamRef(x) {
 
 function _fattenBracket(slim) {
   return (slim || []).map(function(b) {
-    return { team: _teamRef(b.team), seed: b.seed, region: b.region, active: !!b.active, score: b.score, won: !!b.won };
+    return { team: _teamRef(b.team), seed: b.seed, region: b.region, active: !!b.active, score: b.score, won: !!b.won, sc: b.sc || [] };
   });
 }
 

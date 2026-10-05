@@ -435,11 +435,8 @@ export function showBracketReveal(userSeed) {
   if (userSeed > 0) {
     var uc = ge('br-user-card'); if (uc) uc.style.display = 'block';
     txt('br-user-team', G.teams[G.tid].name);
-    var seedDesc = userSeed === 1 ? 'Top seed. The road runs through you.' :
-                   userSeed <= 4 ? 'Strong seed. Favorable draw.' :
-                   userSeed <= 8 ? 'Middle of the pack. Road gets tough.' :
-                   'Low seed \u2014 the country loves an underdog.';
-    txt('br-user-seed', '#' + userSeed + ' Seed \u2014 ' + seedDesc);
+    var seedDesc = userSeed === 1 ? 'a top seed' : userSeed <= 4 ? 'a protected seed' : userSeed <= 8 ? 'a middle seed' : 'a double-digit seed';
+    txt('br-user-seed', userSeed + ' seed, ' + seedDesc);
     // Find the user's entry, then its real first-round opponent: the team
     // holding the paired seed in the same region — the exact game the sim
     // will play (see NCAA BRACKET MODEL above).
@@ -456,7 +453,7 @@ export function showBracketReveal(userSeed) {
         else if (pair[1] === userEntry.seed) opp = ncaaSeedEntry(userEntry.region, pair[0]);
       }
     }
-    txt('br-user-opp', opp ? userRegionName + ' Region \u2014 First Round vs #' + opp.seed + ' ' + opp.team.name : '');
+    txt('br-user-opp', opp ? userRegionName + ' region. First round vs ' + opp.seed + ' ' + opp.team.name + ' (' + opp.team.wins + '-' + opp.team.loss + ').' : '');
     txt('br-seed-line', bidLine.charAt(0).toUpperCase() + bidLine.slice(1) + ' confirmed.');
   } else {
     txt('br-seed-line', 'The field of 64 is set (' + bidLine + '). Your program did not qualify.');
@@ -489,19 +486,14 @@ export function showBracketReveal(userSeed) {
     });
     var lastIn = atLarge.slice(0, 4).map(function(b) { return b.team; });
 
-    var bh = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">';
-    bh += '<div style="background:var(--s1);border:1px solid var(--grn);border-radius:6px;padding:10px;">';
-    bh += '<div style="font-size:9px;font-weight:800;color:var(--grn2);letter-spacing:1px;margin-bottom:6px;">LAST FOUR IN</div>';
-    lastIn.forEach(function(t) {
-      bh += '<div style="font-size:11px;padding:3px 0;color:' + (t.id === G.tid ? 'var(--gld2)' : 'var(--txt)') + ';font-weight:' + (t.id === G.tid ? '800' : '500') + ';">' + t.name + ' (' + t.wins + '-' + t.loss + ')</div>';
-    });
-    bh += '</div>';
-    bh += '<div style="background:var(--s1);border:1px solid #dc2626;border-radius:6px;padding:10px;">';
-    bh += '<div style="font-size:9px;font-weight:800;color:#dc2626;letter-spacing:1px;margin-bottom:6px;">FIRST FOUR OUT</div>';
-    firstOut.forEach(function(t) {
-      bh += '<div style="font-size:11px;padding:3px 0;color:var(--txt2);">' + t.name + ' (' + t.wins + '-' + t.loss + ')</div>';
-    });
-    bh += '</div></div>';
+    function bubbleList(title, list, note) {
+      var h = '<div class="panel"><div class="panel-h"><span>' + title + '</span><small>' + note + '</small></div><div class="panel-b flush"><table><tbody>';
+      list.forEach(function(t) {
+        h += '<tr' + (t.id === G.tid ? ' class="hl"' : '') + '><td>' + t.name + '</td><td class="dim">' + t.conf + '</td><td class="num">' + t.wins + '-' + t.loss + '</td></tr>';
+      });
+      return h + '</tbody></table></div></div>';
+    }
+    var bh = '<div class="grid-2">' + bubbleList('Last four in', lastIn, 'At-large') + bubbleList('First four out', firstOut, 'Missed the field') + '</div>';
     bubble.innerHTML = bh;
     bubble.style.display = 'block';
   }
@@ -519,35 +511,21 @@ export function showBracketReveal(userSeed) {
 // the sim plays, so the reveal always matches the games.
 function buildRevealRegionCard(step) {
   var col = document.createElement('div');
-  col.className = 'br-region brv-fade';
-
-  var header = document.createElement('div');
-  header.className = 'br-region-head';
-  header.innerHTML = '<span class="br-region-name">' + NCAA_REGIONS[step] + ' Region</span>';
-  col.appendChild(header);
-
-  var hasUser = false;
+  col.className = 'panel brv-fade';
+  var hasUser = G.bracket.some(function(b) { return b.region === step && b.team.id === G.tid; });
+  var h = '<div class="panel-h"><span>' + NCAA_REGIONS[step] + ' region</span><small>' + (hasUser ? 'Your region' : 'First round') + '</small></div><div class="panel-b"><div class="brv-games">';
   NCAA_FIRST_ROUND.forEach(function(pair) {
-    var s1 = pair[0], s2 = pair[1];
-    var b1 = ncaaSeedEntry(step, s1), b2 = ncaaSeedEntry(step, s2);
+    var b1 = ncaaSeedEntry(step, pair[0]), b2 = ncaaSeedEntry(step, pair[1]);
     if (!b1 || !b2) return;
-
-    var isU1 = b1.team.id === G.tid, isU2 = b2.team.id === G.tid;
-    if (isU1 || isU2) hasUser = true;
-
-    var matchup = document.createElement('div');
-    matchup.className = 'br-match';
-
-    [{ b: b1, s: s1, isu: isU1 }, { b: b2, s: s2, isu: isU2 }].forEach(function(entry) {
-      var row = document.createElement('div');
-      row.className = 'br-team' + (entry.isu ? ' is-user' : '');
-      row.innerHTML = '<span class="br-seed">' + entry.s + '</span>'
-        + '<span class="br-tname">' + entry.b.team.name + '</span>'
-        + '<span style="font-size:10.5px;color:var(--txt3);font-variant-numeric:tabular-nums;">' + entry.b.team.wins + '-' + entry.b.team.loss + '</span>';
-      matchup.appendChild(row);
+    var mine = b1.team.id === G.tid || b2.team.id === G.tid;
+    h += '<div class="bx' + (mine ? ' mine' : '') + '">';
+    [b1, b2].forEach(function(b) {
+      h += '<div class="bx-team' + (b.team.id === G.tid ? ' me' : '') + '"><span class="bx-seed">' + b.seed + '</span>'
+        + '<span class="bx-name">' + b.team.name + '</span><span class="bx-sc">' + b.team.wins + '-' + b.team.loss + '</span></div>';
     });
-    col.appendChild(matchup);
+    h += '</div>';
   });
+  col.innerHTML = h + '</div></div>';
   return col;
 }
 
@@ -583,16 +561,25 @@ export function closeBracketReveal() {
 //  NCAA ROUND SIMULATION
 // ═══════════════════════════════════════════════════════════
 
+// Resolve one NCAA game. Each entry keeps its score from every round in
+// b.sc (round 0 = round of 64), so the bracket view can draw the full tree.
+function scoreNCAAgame(b1, b2, s1, s2) {
+  if (!b1.sc) b1.sc = [];
+  if (!b2.sc) b2.sc = [];
+  b1.sc.push(s1); b2.sc.push(s2);
+  b1.score = s1; b2.score = s2;
+  if (s1 > s2) { b1.won = true; b2.won = false; b2.active = false; }
+  else { b2.won = true; b1.won = false; b1.active = false; }
+  tallyPostseason(b1.won ? b1.team : b2.team, b1.won ? b2.team : b1.team);
+}
+
 export function simNCAAround() {
   var active = G.bracket.filter(function(b) { return b.active; });
   if (active.length <= 1) return;
   for (var i = 0; i < active.length - 1; i += 2) {
     var b1 = active[i], b2 = active[i + 1];
     var res = simGame(b1.team, b2.team, true);
-    b1.score = res.homeScore; b2.score = res.awayScore;
-    if (res.homeScore > res.awayScore) { b1.won = true; b2.won = false; b2.active = false; }
-    else { b2.won = true; b1.won = false; b1.active = false; }
-    tallyPostseason(b1.won ? b1.team : b2.team, b1.won ? b2.team : b1.team);
+    scoreNCAAgame(b1, b2, res.homeScore, res.awayScore);
   }
   checkNCAAdone();
   saveState(); updateAll();
@@ -609,10 +596,7 @@ function simNCAArimExceptUser() {
     var b1 = active[i], b2 = active[i + 1];
     if (b1.team.id === G.tid || b2.team.id === G.tid) continue;
     var res = simGame(b1.team, b2.team, true);
-    b1.score = res.homeScore; b2.score = res.awayScore;
-    if (res.homeScore > res.awayScore) { b1.won = true; b2.won = false; b2.active = false; }
-    else { b2.won = true; b1.won = false; b1.active = false; }
-    tallyPostseason(b1.won ? b1.team : b2.team, b1.won ? b2.team : b1.team);
+    scoreNCAAgame(b1, b2, res.homeScore, res.awayScore);
   }
 }
 
@@ -625,7 +609,7 @@ function detectCPUCinderellas() {
       var already = G.cinderellas.some(function(c) { return c.tid === b.team.id; });
       if (!already) {
         G.cinderellas.push({ tid: b.team.id, name: b.team.name, seed: b.seed, round: active.length });
-        addLog('ev', G.gi, '\ud83d\udc60 <b>Cinderella!</b> #' + b.seed + ' ' + b.team.name + ' advances \u2014 the clock hasn\u2019t struck midnight!');
+        addLog('ev', G.gi, '<b>Cinderella run:</b> #' + b.seed + ' ' + b.team.name + ' advances.');
       }
     }
   });
@@ -779,10 +763,7 @@ export function resolveTournamentGame() {
     // drop its loser from the list, shifting every later pairing and even
     // leaving one team with no game at all (T1).
     simNCAArimExceptUser();
-    b1.score = LS.hs; b2.score = LS.as;
-    if (LS.hs > LS.as) { b1.won = true; b2.won = false; b2.active = false; }
-    else { b2.won = true; b1.won = false; b1.active = false; }
-    tallyPostseason(b1.won ? b1.team : b2.team, b1.won ? b2.team : b1.team);
+    scoreNCAAgame(b1, b2, LS.hs, LS.as);
     var userWon2 = (b1.team.id === G.tid) ? (LS.hs > LS.as) : (LS.as > LS.hs);
     var oppName2 = (b1.team.id === G.tid ? b2 : b1).team.name;
     var oppTeam2 = (b1.team.id === G.tid ? b2 : b1).team;
@@ -862,19 +843,22 @@ export function showTournamentResult() {
   var panel = ge('gmod').querySelector('.gpanel');
   if (!panel) { ge('gmod').classList.remove('open'); resolveTournamentGame(); return; }
   var overlay = document.createElement('div');
-  overlay.style.cssText = 'position:absolute;inset:0;background:var(--s1);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:32px;border-radius:10px;z-index:10;';
-  overlay.innerHTML = '<div style="font-size:10px;font-weight:700;color:var(--txt3);letter-spacing:2px;text-transform:uppercase;">' + roundName + '</div>'
-    + '<div style="font-size:40px;font-weight:900;color:' + (won ? 'var(--grn2)' : '#fc8181') + ';">' + (won ? 'VICTORY' : 'ELIMINATED') + '</div>'
-    + '<div style="display:flex;align-items:center;gap:24px;">'
-    + '<div style="text-align:center;"><div style="font-size:13px;font-weight:700;color:var(--red);">' + G.teams[G.tid].name + '</div>'
-    + '<div style="font-size:52px;font-weight:900;font-family:monospace;color:' + (won ? 'var(--grn2)' : '#fc8181') + ';">' + uScore + '</div></div>'
-    + '<div style="font-size:18px;color:var(--bdr2);">\u2014</div>'
-    + '<div style="text-align:center;"><div style="font-size:13px;font-weight:700;color:var(--txt2);">' + opp.name + '</div>'
-    + '<div style="font-size:52px;font-weight:900;font-family:monospace;color:var(--txt2);">' + oScore + '</div></div>'
+  overlay.className = 'tres';
+  overlay.style.cssText = 'position:absolute;inset:0;z-index:10;';
+  var me = G.teams[G.tid];
+  var nextLine = won
+    ? (G.phase === 'ncaa' ? 'On to the next round.' : 'On to the next round of the conference tournament.')
+    : (G.phase === 'ncaa' ? 'Your NCAA tournament run is over.' : 'Your conference tournament is over.');
+  overlay.innerHTML = '<div class="tres-in">'
+    + '<div class="tres-k">' + roundName.replace('NCAA Tournament \u2014 ', 'NCAA tournament, ') + ' · Final</div>'
+    + '<div class="tres-v ' + (won ? 'w' : 'l') + '">' + (won ? 'Win' : 'Loss') + '</div>'
+    + '<div class="tres-rows">'
+    + '<div class="tres-row' + (won ? ' w' : '') + '"><span>' + me.name + '</span><b>' + uScore + '</b></div>'
+    + '<div class="tres-row' + (won ? '' : ' w') + '"><span>' + opp.name + '</span><b>' + oScore + '</b></div>'
     + '</div>'
-    + (won ? '<div style="font-size:12px;color:var(--txt2);">Advancing to the next round</div>' :
-             '<div style="font-size:12px;color:var(--txt2);">Your tournament run is over</div>')
-    + '<div class="btn btn-red" style="padding:12px 32px;font-size:13px;" onclick="closeTournamentResult(this)">CONTINUE</div>';
+    + '<div class="tres-s">' + nextLine + '</div>'
+    + '<button class="btn-big" style="width:auto;padding:0 32px;" onclick="closeTournamentResult(this)">Continue</button>'
+    + '</div>';
   panel.style.position = 'relative';
   panel.appendChild(overlay);
 }
@@ -882,7 +866,7 @@ export function showTournamentResult() {
 export function closeTournamentResult(btn) {
   var panel = ge('gmod').querySelector('.gpanel');
   if (panel) {
-    var ov = panel.querySelector('div[style*="position:absolute"]');
+    var ov = panel.querySelector('.tres') || panel.querySelector('div[style*="position:absolute"]');
     if (ov) panel.removeChild(ov);
   }
   ge('gmod').classList.remove('open');

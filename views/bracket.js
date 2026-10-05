@@ -13,14 +13,16 @@ export function renderBracket() {
   var el = ge('bracket-content');
   if (!el) return;
   var hub = bracketHubHTML();
-  el.innerHTML = hub || '<div class="empty-state">Complete the regular season to unlock the bracket.</div>';
+  el.innerHTML = hub || '<div class="empty-state">The bracket opens after the regular season.</div>';
+  bindBracket(el, renderBracket);
+  scrollBracketToRound(el);
 }
 
 // Tournament hub HTML for embedding (home page auto-swaps to this in
 // tournament phases). Returns '' when no tournament is active.
 export function bracketHubHTML() {
   if (G.phase === 'conf_tourn' && G.confTourneys) return renderConfHub();
-  if ((G.phase === 'ncaa' || (G.bracket && G.bracket.length === 1)) && G.bracket && G.bracket.length) return renderNCAA_Hub();
+  if (G.bracket && G.bracket.length && (G.phase === 'ncaa' || G.phase === 'offseason')) return renderNCAA_Hub();
   return '';
 }
 
@@ -159,142 +161,254 @@ function renderScoutingCard(confMatch) {
 //  NCAA TOURNAMENT HUB
 // ═══════════════════════════════════════════════════════════
 
-function renderNCAA_Hub() {
-  var active = G.bracket.filter(function(b) { return b.active; });
-  var rn = { 64: 'Round of 64', 32: 'Round of 32', 16: 'Sweet 16', 8: 'Elite Eight', 4: 'Final Four', 2: 'Championship', 1: 'Champion' };
-  var currentRound = rn[active.length] || 'NCAA Tournament';
+var REGIONS = ['East', 'West', 'South', 'Midwest'];
+var ROUND_NAMES = ['First round', 'Second round', 'Sweet 16', 'Elite Eight', 'Final Four', 'Championship'];
+var _brView = null; // region index 0-3, or 'ff'; null = pick automatically
 
-  // Champion screen
-  if (active.length === 1) {
-    var ch = active[0].team, isu = ch.id === G.tid;
-    var h = '<div class="br-champ">'
-      + '<div class="br-champ-kicker">' + G.yr + ' National Champion</div>'
-      + '<div class="br-champ-team' + (isu ? ' is-user' : '') + '">' + ch.name + '</div>'
-      + '<div style="margin-top:14px;"><button class="btn-big" data-action="end-season">View Season Recap</button></div></div>';
-    h += renderCinderellaTracker();
-    h += renderResultsFeed();
-    h += renderFullBracket();
-    return h;
-  }
-
-  var h2 = '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:12px;">'
-    + '<div><div class="sec-head" style="margin:0;">NCAA tournament</div><div class="sec-sub" style="margin:2px 0 0;">March Madness ' + G.yr + '</div></div>'
-    + '<span class="tag">' + currentRound + '</span></div></div>';
-
-  h2 += renderCinderellaTracker();
-
-  var um = getUserNCAAmatchup();
-  if (um) {
-    var uIsB1 = um.b1.team.id === G.tid;
-    var ue = uIsB1 ? um.b1 : um.b2, oe = uIsB1 ? um.b2 : um.b1;
-    var opp = oe.team;
-    var wp = winProb(getTOvr(ue.team), getTOvr(opp), 0, 0);
-    var col = wp >= 55 ? 'var(--grn2)' : wp >= 40 ? 'var(--gld2)' : 'var(--red)';
-    var stars = opp.rost.filter(function(p) { return p.mins > 0; }).sort(function(a, b) { return b.ovr - a.ovr; }).slice(0, 3);
-    h2 += '<div class="panel"><div class="panel-h"><span>Scouting report</span><small>' + currentRound + '</small></div>'
-      + '<div class="panel-b">'
-      + '<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:6px;">'
-      + '<div style="flex:1;min-width:0;"><div class="sc-lab">#' + ue.seed + ' seed</div>'
-      + '<div class="matchup-opp" style="font-size:16px;">' + ue.team.name + '</div>'
-      + '<div style="font-size:11px;color:var(--txt3);">' + ue.team.wins + '-' + ue.team.loss + ' · OVR ' + getTOvr(ue.team) + '</div></div>'
-      + '<div style="font-size:11px;font-weight:600;color:var(--txt3);">vs</div>'
-      + '<div style="flex:1;min-width:0;text-align:right;"><div class="sc-lab">#' + oe.seed + ' seed</div>'
-      + '<div class="matchup-opp" style="font-size:16px;">' + opp.name + '</div>'
-      + '<div style="font-size:11px;color:var(--txt3);">' + opp.wins + '-' + opp.loss + ' · OVR ' + getTOvr(opp) + '</div></div></div>'
-      + '<div class="prob-row"><span>Win probability</span><span style="color:' + col + ';">' + wp + '%</span></div>'
-      + '<div class="prob-bar" style="margin-bottom:8px;"><div class="prob-fill" style="width:' + wp + '%;background:' + col + ';"></div></div>';
-    if (stars.length) {
-      h2 += '<div class="card-title" style="margin-top:10px;">Players to watch</div>';
-      stars.forEach(function(p) {
-        var gp = p.s.gp || 1;
-        h2 += '<div class="leader-row"><div class="leader-name">' + p.name
-          + '<small>' + p.pos + ' · ' + p.cls + ' · OVR ' + p.ovr + '</small></div>'
-          + '<div class="leader-val">' + (p.s.pts / gp).toFixed(1) + ' ppg</div></div>';
-      });
+// ── Bracket model ─────────────────────────────────────────
+// G.bracket holds 64 entries in winner-advancement order (16 per region).
+// Each entry's b.sc is its score in every round it played (0 = first round),
+// so any round's matchups can be rebuilt from the first-round order.
+function playedRound(b, k) { return !!(b && b.sc && b.sc.length > k); }
+function wonRound(b, k) {
+  if (!playedRound(b, k)) return false;
+  return b.sc.length > k + 1 || b.active;
+}
+// Matches for one region: rounds[k] = [{ a, b }] (a/b null until known)
+function regionRounds(r) {
+  var ent = G.bracket.slice(r * 16, r * 16 + 16);
+  var rounds = [[]];
+  for (var i = 0; i < 16; i += 2) rounds[0].push({ a: ent[i], b: ent[i + 1] });
+  for (var k = 1; k < 4; k++) {
+    rounds[k] = [];
+    for (var m = 0; m < rounds[k - 1].length; m += 2) {
+      rounds[k].push({ a: matchWinner(rounds[k - 1][m], k - 1), b: matchWinner(rounds[k - 1][m + 1], k - 1) });
     }
-    h2 += '<div class="big-btn-row"><button class="btn-big" data-action="play" data-mode="quick">Quick sim</button>'
-      + '<button class="btn-big secondary" data-action="play" data-mode="live">Live sim</button></div></div></div>';
-  } else if (active.length > 1) {
-    h2 += '<div class="panel"><div class="panel-b">'
-      + '<div style="font-size:14px;font-weight:600;margin-bottom:4px;">Your run is over.</div>'
-      + '<div class="sec-sub">Watch the rest of the tournament unfold.</div>'
-      + '<button class="btn-big" data-action="play" data-mode="quick">Sim next round</button></div></div>';
   }
+  return rounds;
+}
+function matchWinner(mt, k) {
+  if (!mt) return null;
+  if (mt.a && wonRound(mt.a, k)) return mt.a;
+  if (mt.b && wonRound(mt.b, k)) return mt.b;
+  return null;
+}
+function finalFour() {
+  var champs = [0, 1, 2, 3].map(function(r) { var rr = regionRounds(r); return matchWinner(rr[3][0], 3); });
+  var semis = [{ a: champs[0], b: champs[1] }, { a: champs[2], b: champs[3] }];
+  var title = { a: matchWinner(semis[0], 4), b: matchWinner(semis[1], 4) };
+  return { semis: semis, title: title, champ: matchWinner(title, 5) };
+}
+export function _bracketModel() { return { regionRounds: regionRounds, finalFour: finalFour, wonRound: wonRound }; }
+function hasHistory() { return G.bracket.some(function(b) { return b.sc && b.sc.length; }); }
 
-  h2 += renderResultsFeed();
-  h2 += renderFullBracket();
-  return h2;
+// Current round index from how many teams are still alive
+function curRound() {
+  var n = G.bracket.filter(function(b) { return b.active; }).length;
+  return { 64: 0, 32: 1, 16: 2, 8: 3, 4: 4, 2: 5, 1: 6 }[n] !== undefined ? { 64: 0, 32: 1, 16: 2, 8: 3, 4: 4, 2: 5, 1: 6 }[n] : 0;
 }
 
-function renderResultsFeed() {
-  var results = [];
-  for (var i = 0; i < G.bracket.length - 1; i += 2) {
-    var b1 = G.bracket[i], b2 = G.bracket[i + 1];
-    if (b1.score === null || b1.score === undefined || b2.score === null || b2.score === undefined) continue;
-    var winner = b1.won ? b1 : b2, loser = b1.won ? b2 : b1;
-    results.push({ winner: winner, loser: loser, isUpset: winner.seed > loser.seed + 4 });
-  }
-  if (!results.length) return '';
-  results.sort(function(a, b) { return (b.isUpset ? 1 : 0) - (a.isUpset ? 1 : 0); });
+// ── One matchup box ───────────────────────────────────────
+function slotRow(b, k, mt) {
+  if (!b) return '<div class="bx-team tbd"><span class="bx-seed"></span><span class="bx-name">&nbsp;</span><span class="bx-sc"></span></div>';
+  var played = playedRound(b, k);
+  var other = mt.a === b ? mt.b : mt.a;
+  var won = played && wonRound(b, k);
+  var lost = played && !won && other && playedRound(other, k);
+  var cls = (b.team.id === G.tid ? ' me' : '') + (won ? ' w' : '') + (lost ? ' l' : '');
+  return '<div class="bx-team' + cls + '"><span class="bx-seed">' + b.seed + '</span>'
+    + '<span class="bx-name">' + b.team.name + '</span>'
+    + '<span class="bx-sc">' + (played ? b.sc[k] : '') + '</span></div>';
+}
+function matchBox(mt, k) {
+  var mine = (mt.a && mt.a.team.id === G.tid) || (mt.b && mt.b.team.id === G.tid);
+  return '<div class="bx-m"><div class="bx' + (mine ? ' mine' : '') + '">' + slotRow(mt.a, k, mt) + slotRow(mt.b, k, mt) + '</div></div>';
+}
 
-  var h = '<div class="panel"><div class="panel-h"><span>Latest results</span></div><div class="panel-b">';
-  results.slice(0, 8).forEach(function(r) {
-    var isU = r.winner.team.id === G.tid || r.loser.team.id === G.tid;
-    h += '<div class="br-result' + (isU ? ' hl-row' : '') + '">'
-      + '<span><span class="br-seed">#' + r.winner.seed + '</span> <b>' + r.winner.team.name + '</b>'
-      + ' <span class="br-score">' + r.winner.score + '</span>'
-      + (r.isUpset ? ' <span class="tag t-rival">Upset</span>' : '') + '</span>'
-      + '<span style="color:var(--txt3);"><span class="br-seed">#' + r.loser.seed + '</span> ' + r.loser.team.name
-      + ' <span class="br-score">' + r.loser.score + '</span></span></div>';
-  });
+// Region tree: four columns, connector lines drawn by CSS
+function regionTree(r) {
+  var rounds = regionRounds(r), cr = curRound();
+  var h = '<div class="bx-scroll" data-bx-scroll="' + Math.min(cr, 3) + '"><div class="bx-tree">';
+  for (var k = 0; k < 4; k++) {
+    h += '<div class="bx-col' + (k === cr ? ' cur' : '') + '"><div class="bx-rh">' + ROUND_NAMES[k] + '</div><div class="bx-body">';
+    if (k < 3) {
+      for (var m = 0; m < rounds[k].length; m += 2) {
+        h += '<div class="bx-pair">' + matchBox(rounds[k][m], k) + matchBox(rounds[k][m + 1], k) + '</div>';
+      }
+    } else {
+      h += '<div class="bx-single">' + matchBox(rounds[3][0], 3) + '</div>';
+    }
+    h += '</div></div>';
+  }
+  var champ = matchWinner(rounds[3][0], 3);
+  h += '<div class="bx-col bx-win"><div class="bx-rh">Region champion</div><div class="bx-body"><div class="bx-single"><div class="bx-m">'
+    + (champ ? '<div class="bx-champ' + (champ.team.id === G.tid ? ' me' : '') + '"><span class="bx-seed">' + champ.seed + '</span>' + champ.team.name + '</div>' : '<div class="bx-champ tbd">To be decided</div>')
+    + '</div></div></div></div>';
   return h + '</div></div>';
 }
 
-function renderCinderellaTracker() {
-  if (!G.cinderellas || !G.cinderellas.length) return '';
-  var active = G.bracket.filter(function(b) { return b.active; });
-  var alive = G.cinderellas.filter(function(c) {
-    return active.some(function(b) { return b.team.id === c.tid; });
-  });
-  if (!alive.length) return '';
-  var h = '<div class="panel"><div class="panel-h"><span>Cinderella watch</span></div>'
-    + '<div class="panel-b"><div style="display:flex;flex-wrap:wrap;gap:6px;">';
-  alive.forEach(function(c) {
-    var isU = c.tid === G.tid;
-    h += '<span class="tag' + (isU ? ' t-home' : '') + '">#' + c.seed + ' ' + c.name + '</span>';
-  });
-  return h + '</div></div></div>';
+function finalFourTree() {
+  var ff = finalFour(), cr = curRound();
+  var h = '<div class="bx-scroll" data-bx-scroll="0"><div class="bx-tree ff">';
+  h += '<div class="bx-col' + (cr === 4 ? ' cur' : '') + '"><div class="bx-rh">Final Four</div><div class="bx-body"><div class="bx-pair">'
+    + matchBox(ff.semis[0], 4) + matchBox(ff.semis[1], 4) + '</div></div></div>';
+  h += '<div class="bx-col' + (cr === 5 ? ' cur' : '') + '"><div class="bx-rh">Championship</div><div class="bx-body"><div class="bx-single">' + matchBox(ff.title, 5) + '</div></div></div>';
+  h += '<div class="bx-col bx-win"><div class="bx-rh">National champion</div><div class="bx-body"><div class="bx-single"><div class="bx-m">'
+    + (ff.champ ? '<div class="bx-champ' + (ff.champ.team.id === G.tid ? ' me' : '') + '"><span class="bx-seed">' + ff.champ.seed + '</span>' + ff.champ.team.name + '</div>' : '<div class="bx-champ tbd">To be decided</div>')
+    + '</div></div></div></div>';
+  h += '</div></div>';
+  h += '<div class="bx-note">' + REGIONS[0] + ' plays ' + REGIONS[1] + ', ' + REGIONS[2] + ' plays ' + REGIONS[3] + '.</div>';
+  return h;
 }
 
-function renderFullBracket() {
-  var regions = ['East', 'West', 'South', 'Midwest'];
-  var h = '<div class="panel"><div class="panel-h"><span>Full bracket</span></div>'
-    + '<div class="panel-b"><div class="grid-2">';
-  for (var r = 0; r < 4; r++) {
-    var regionTeams = G.bracket.slice(r * 16, r * 16 + 16);
-    if (!regionTeams.length) continue;
-    var alive = regionTeams.filter(function(b) { return b.active; });
-    h += '<div class="br-region">'
-      + '<div class="br-region-head">'
-      + '<span class="br-region-name">' + regions[r] + '</span>'
-      + '<span class="br-region-meta">' + (alive.length === 1 ? alive[0].team.name + ' advances' : alive.length + ' alive') + '</span></div>';
-    for (var i = 0; i < regionTeams.length - 1; i += 2) {
-      var b1 = regionTeams[i], b2 = regionTeams[i + 1];
-      if (!b1 || !b2) continue;
-      var played = b1.score !== null && b1.score !== undefined;
-      h += '<div class="br-match">';
-      [b1, b2].forEach(function(b) {
-        var isu = b.team.id === G.tid;
-        var cls = isu ? ' is-user' : played ? (b.won ? ' winner' : ' loser') : '';
-        h += '<div class="br-team' + cls + '">'
-          + '<span class="br-seed">' + b.seed + '</span>'
-          + '<span class="br-tname">' + b.team.name + '</span>'
-          + (played ? '<span class="br-score">' + b.score + '</span>' : (!b.active ? '<span class="out">Out</span>' : ''))
-          + '</div>';
-      });
-      h += '</div>';
-    }
-    h += '</div>';
+function defaultView() {
+  var alive = G.bracket.filter(function(b) { return b.active; }).length;
+  if (alive <= 4) return 'ff';
+  var me = G.bracket.find(function(b) { return b.team && b.team.id === G.tid; });
+  return me ? me.region : 0;
+}
+
+function bracketPanel() {
+  if (!hasHistory() && G.bracket.some(function(b) { return !b.active; })) {
+    // Older save from before round-by-round results were kept
+    return '';
   }
-  return h + '</div></div></div>';
+  var v = _brView === null ? defaultView() : _brView;
+  var me = G.bracket.find(function(b) { return b.team && b.team.id === G.tid; });
+  var h = '<div class="panel"><div class="panel-h"><span>Bracket</span><small>' + (me ? 'You: #' + me.seed + ' seed, ' + REGIONS[me.region] : 'You did not make the field') + '</small></div>'
+    + '<div class="panel-b"><div class="fbar" style="margin-bottom:10px;">';
+  REGIONS.forEach(function(name, r) {
+    var alive = G.bracket.slice(r * 16, r * 16 + 16).filter(function(b) { return b.active; }).length;
+    h += '<button class="fchip' + (v === r ? ' on' : '') + '" data-brview="' + r + '">' + name + '</button>';
+  });
+  h += '<button class="fchip' + (v === 'ff' ? ' on' : '') + '" data-brview="ff">Final Four</button></div>';
+  h += v === 'ff' ? finalFourTree() : regionTree(v);
+  return h + '</div></div>';
+}
+
+// ── Your status card ──────────────────────────────────────
+function userCard(cr) {
+  var me = G.bracket.find(function(b) { return b.team && b.team.id === G.tid; });
+  var um = getUserNCAAmatchup();
+  var alive = G.bracket.filter(function(b) { return b.active; }).length;
+  if (um && alive > 1) {
+    var uIsB1 = um.b1.team.id === G.tid;
+    var ue = uIsB1 ? um.b1 : um.b2, oe = uIsB1 ? um.b2 : um.b1, opp = oe.team;
+    var wp = winProb(getTOvr(ue.team), getTOvr(opp), 0, 0);
+    var col = wp >= 55 ? 'var(--grn2)' : wp >= 40 ? 'var(--gld2)' : 'var(--red)';
+    var stars = opp.rost.filter(function(p) { return p.mins > 0; }).sort(function(a, b) { return b.ovr - a.ovr; }).slice(0, 3);
+    var h = '<div class="panel"><div class="panel-h"><span>' + ROUND_NAMES[cr] + '</span><small>' + REGIONS[ue.region] + (cr >= 4 ? '' : ' region') + ', neutral site</small></div><div class="panel-b">'
+      + '<div class="mu">'
+      + '<div class="mu-t"><span class="mu-seed">' + ue.seed + '</span><div><div class="mu-n me">' + ue.team.name + '</div><div class="mu-m">' + ue.team.wins + '-' + ue.team.loss + ' · OVR ' + getTOvr(ue.team) + '</div></div></div>'
+      + '<div class="mu-vs">vs</div>'
+      + '<div class="mu-t r"><div><div class="mu-n">' + opp.name + '</div><div class="mu-m">' + opp.wins + '-' + opp.loss + ' · OVR ' + getTOvr(opp) + '</div></div><span class="mu-seed">' + oe.seed + '</span></div>'
+      + '</div>'
+      + '<div class="prob-row"><span>Win probability</span><span style="color:' + col + ';font-weight:600;">' + wp + '%</span></div>'
+      + '<div class="prob-bar" style="margin-bottom:10px;"><div class="prob-fill" style="width:' + wp + '%;background:' + col + ';"></div></div>';
+    if (stars.length) {
+      h += '<div class="mu-watch"><span>Watch for</span> ' + stars.map(function(p) {
+        var gp = p.s.gp || 1;
+        return '<b>' + p.name + '</b> ' + p.pos + ', ' + (p.s.pts / gp).toFixed(1) + ' ppg';
+      }).join(' · ') + '</div>';
+    }
+    h += '<div class="big-btn-row"><button class="btn-big" data-action="play" data-mode="quick">Sim game</button>'
+      + '<button class="btn-big secondary" data-action="play" data-mode="live">Watch game</button></div></div></div>';
+    return h;
+  }
+  if (alive <= 1) return '';
+  var line;
+  if (!me) line = G.teams[G.tid].name + ' did not make the field this year.';
+  else {
+    var k = (me.sc || []).length - 1;
+    var rr = k >= 0 && k < 4 ? regionRounds(me.region)[k] : null, opp2 = null;
+    if (rr) rr.forEach(function(mt) { if (mt.a === me) opp2 = mt.b; else if (mt.b === me) opp2 = mt.a; });
+    if (k >= 4) { var ff = finalFour(); var m2 = k === 4 ? (ff.semis[0].a === me || ff.semis[0].b === me ? ff.semis[0] : ff.semis[1]) : ff.title; opp2 = m2.a === me ? m2.b : m2.a; }
+    line = 'Your run ended in the ' + (k >= 0 ? ROUND_NAMES[k].toLowerCase() : 'first round')
+      + (opp2 && opp2.sc ? ', ' + me.sc[k] + '-' + opp2.sc[k] + ' to #' + opp2.seed + ' ' + opp2.team.name : '') + '.';
+  }
+  return '<div class="panel"><div class="panel-b" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">'
+    + '<div style="font-size:13.5px;">' + line + '</div>'
+    + '<button class="btn-big" style="flex:0 0 auto;width:auto;padding-left:20px;padding-right:20px;" data-action="play" data-mode="quick">Sim the ' + (cr < 2 ? ROUND_NAMES[cr].toLowerCase() : ROUND_NAMES[cr]) + '</button></div></div>';
+}
+
+function champCard() {
+  var ff = finalFour();
+  var c = ff.champ || (G.bracket.filter(function(b) { return b.active; })[0]);
+  if (!c) return '';
+  var isu = c.team.id === G.tid;
+  var t = ff.title, ru = t && (t.a === c ? t.b : t.a);
+  var score = ru && c.sc && ru.sc ? c.sc[5] + '-' + ru.sc[5] + ' over #' + ru.seed + ' ' + ru.team.name : '';
+  var h = '<div class="panel"><div class="panel-b champ-card">'
+    + '<div class="champ-k">' + G.yr + ' national champion</div>'
+    + '<div class="champ-n' + (isu ? ' me' : '') + '"><span class="mu-seed">' + c.seed + '</span>' + c.team.name + '</div>'
+    + '<div class="champ-s">' + REGIONS[c.region] + ' region · ' + c.team.wins + '-' + c.team.loss + (score ? ' · ' + score : '') + '</div>';
+  if (G.phase === 'ncaa') h += '<div style="margin-top:12px;"><button class="btn-big" data-action="end-season">Season recap</button></div>';
+  return h + '</div></div>';
+}
+
+// ── Upsets and Cinderellas (one compact panel) ────────────
+function upsetsPanel() {
+  var ups = [];
+  var cr = curRound();
+  function scan(mt, k) {
+    if (!mt || !mt.a || !mt.b || !playedRound(mt.a, k) || !playedRound(mt.b, k)) return;
+    var w = wonRound(mt.a, k) ? mt.a : mt.b, l = w === mt.a ? mt.b : mt.a;
+    if (w.seed - l.seed >= 4) ups.push({ k: k, w: w, l: l });
+  }
+  for (var r = 0; r < 4; r++) regionRounds(r).forEach(function(round, k) { round.forEach(function(mt) { scan(mt, k); }); });
+  var ff = finalFour(); ff.semis.forEach(function(mt) { scan(mt, 4); }); scan(ff.title, 5);
+  // Cinderellas: double-digit seeds still alive once the first round is done
+  var cind = cr >= 1 ? G.bracket.filter(function(b) { return b.active && b.seed >= 10; }) : [];
+  if (!ups.length && !cind.length) return '';
+  ups.sort(function(a, b) { return b.k - a.k || (b.w.seed - b.l.seed) - (a.w.seed - a.l.seed); });
+  var h = '<div class="panel"><div class="panel-h"><span>Upsets</span><small>' + ups.length + ' so far</small></div><div class="panel-b flush"><div class="tbl-wrap"><table class="ups"><tbody>';
+  ups.slice(0, 8).forEach(function(u) {
+    var mine = u.w.team.id === G.tid || u.l.team.id === G.tid;
+    h += '<tr' + (mine ? ' class="hl"' : '') + '>'
+      + '<td><b>' + u.w.seed + ' ' + u.w.team.name + '</b> def. ' + u.l.seed + ' ' + u.l.team.name
+      + '<div class="ups-r">' + ROUND_NAMES[u.k] + '</div></td>'
+      + '<td class="num" style="white-space:nowrap;">' + u.w.sc[u.k] + '-' + u.l.sc[u.k] + '</td></tr>';
+  });
+  if (!ups.length) h = '<div class="panel"><div class="panel-h"><span>Upsets</span><small>None yet</small></div><div class="panel-b flush">';
+  else h += '</tbody></table></div>';
+  if (cind.length && cr < 6) {
+    h += '<div style="padding:8px 12px;font-size:12.5px;color:var(--txt2);border-top:1px solid var(--bdr);">Still alive at 10 or worse: '
+      + cind.map(function(b) { return '<b>' + b.seed + ' ' + b.team.name + '</b>'; }).join(', ') + '</div>';
+  }
+  return h + '</div></div>';
+}
+
+function renderNCAA_Hub() {
+  var cr = curRound();
+  var h = '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:12px;">'
+    + '<div><div class="sec-head" style="margin:0;">NCAA tournament</div><div class="sec-sub" style="margin:2px 0 0;">' + G.yr + ' · 64 teams, four regions</div></div>'
+    + '<span class="tag">' + (cr >= 6 ? 'Complete' : ROUND_NAMES[cr]) + '</span></div>';
+  h += cr >= 6 ? champCard() : userCard(cr);
+  h += bracketPanel();
+  h += upsetsPanel();
+  return h;
+}
+
+// Region chips + auto-scroll to the current round (phones)
+export function bindBracket(el, rerender) {
+  if (!el || el._bxBound) return;
+  el._bxBound = true;
+  el.addEventListener('click', function(e) {
+    var c = e.target.closest && e.target.closest('[data-brview]');
+    if (!c) return;
+    var v = c.getAttribute('data-brview');
+    _brView = v === 'ff' ? 'ff' : parseInt(v, 10);
+    rerender();
+  });
+}
+export function scrollBracketToRound(el) {
+  var sc = el && el.querySelector('[data-bx-scroll]');
+  if (!sc) return;
+  var k = parseInt(sc.getAttribute('data-bx-scroll'), 10) || 0;
+  var cols = sc.querySelectorAll('.bx-col');
+  if (!cols[k] || sc.scrollWidth <= sc.clientWidth) return;
+  var x = cols[k].getBoundingClientRect().left - cols[0].getBoundingClientRect().left;
+  sc.style.scrollBehavior = 'auto';
+  sc.scrollLeft = Math.max(0, x);
+  sc.style.scrollBehavior = '';
 }
