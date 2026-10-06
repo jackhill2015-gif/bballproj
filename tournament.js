@@ -435,8 +435,7 @@ export function showBracketReveal(userSeed) {
   if (userSeed > 0) {
     var uc = ge('br-user-card'); if (uc) uc.style.display = 'block';
     txt('br-user-team', G.teams[G.tid].name);
-    var seedDesc = userSeed === 1 ? 'a top seed' : userSeed <= 4 ? 'a top-four seed' : userSeed <= 8 ? 'a middle seed' : 'a double-digit seed';
-    txt('br-user-seed', userSeed + ' seed, ' + seedDesc);
+    txt('br-user-seed', userSeed + ' seed');
     // Find the user's entry, then its real first-round opponent: the team
     // holding the paired seed in the same region — the exact game the sim
     // will play (see NCAA BRACKET MODEL above).
