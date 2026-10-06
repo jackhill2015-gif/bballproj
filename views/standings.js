@@ -112,7 +112,7 @@ function confHTML(natSorted) {
   var confPct = function(t) { var g = t.cWins + t.cLoss; return g > 0 ? t.cWins / g : 0; };
   var teams = confs[_conf].slice().sort(function(a, b) { return confPct(b) - confPct(a) || b.cWins - a.cWins || b.pts - a.pts; });
   var lead = teams.length ? teams[0] : null;
-  h += '<div class="tbl-wrap"><table class="tbl stbl"><thead><tr><th>#</th><th>Team</th><th class="num">Conf</th><th class="num">GB</th><th class="num">Overall</th><th class="num">Natl</th></tr></thead><tbody>';
+  h += '<div class="tbl-wrap"><table class="tbl stbl"><thead><tr><th>#</th><th>Team</th><th class="num">Conf</th><th class="num" title="Games behind">GB</th><th class="num">Overall</th><th class="num" title="National rank">Natl</th></tr></thead><tbody>';
   teams.forEach(function(t, i) {
     var isU = t.id === G.tid;
     var gb = lead ? ((lead.cWins - t.cWins) + (t.cLoss - lead.cLoss)) / 2 : 0;

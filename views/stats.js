@@ -96,7 +96,7 @@ export function renderStats() {
     var race = poyRace(10);
     h += '<div class="sec-block"><div class="card-title">Player of the year race</div>'
       + '<div style="font-size:12.5px;color:var(--txt2);margin-bottom:6px;">Production weighted by team success. Three games minimum.</div>'
-      + '<div class="tbl-wrap"><table><thead><tr><th style="width:36px;">RK</th><th>Player</th><th>Team</th><th style="text-align:right;">PPG</th></tr></thead><tbody>';
+      + '<div class="tbl-wrap"><table><thead><tr><th style="width:36px;" title="Rank">RK</th><th>Player</th><th>Team</th><th style="text-align:right;">PPG</th></tr></thead><tbody>';
     race.forEach(function(r, i) {
       h += '<tr' + (r.tid === G.tid ? ' class="hl"' : '') + '><td style="color:var(--txt3);">' + (i + 1) + '</td>' + nameCell(r)
         + '<td style="color:var(--txt3);font-size:12px;">' + r.team + '</td><td style="text-align:right;font-weight:700;">' + r.ppg.toFixed(1) + '</td></tr>';
@@ -107,7 +107,7 @@ export function renderStats() {
     var entry = cats.filter(function(c) { return c.cat.id === _statCat; })[0] || cats[0];
     h += '<div class="sec-block"><div class="card-title">' + entry.cat.label + '</div>'
       + '<div class="tbl-wrap"><table><thead><tr>'
-      + '<th style="width:36px;">RK</th><th>Player</th><th>Team</th><th style="text-align:right;">' + entry.cat.id.toUpperCase() + '</th>'
+      + '<th style="width:36px;" title="Rank">RK</th><th>Player</th><th>Team</th><th style="text-align:right;">' + entry.cat.id.toUpperCase() + '</th>'
       + '</tr></thead><tbody>';
     entry.rows.forEach(function(r, i) {
       h += '<tr' + (r.tid === G.tid ? ' class="hl"' : '') + '>'

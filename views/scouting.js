@@ -217,7 +217,7 @@ export function scoutingHTML(p) {
   h += '</div>';
 
   h += '<div class="scout-col"><div class="card-title">Fit with ' + (t ? t.name : 'your team') + ' next season</div><ul class="scout-fit">'
-    + '<li><b>' + f.roleTxt + '</b> (would rank #' + f.rank + ' on your roster by overall). ' + f.posTxt + '</li>'
+    + '<li><b>' + f.roleTxt + '</b> (would rank #' + f.rank + ' on your roster by overall rating). ' + f.posTxt + '</li>'
     + (f.needTxt ? '<li' + (f.fillsNeed ? ' class="good"' : '') + '>' + f.needTxt + '</li>' : '')
     + (f.schemeTxt ? '<li' + (f.schemeFit > 0 ? ' class="good"' : f.schemeFit < 0 ? ' class="bad"' : '') + '>' + f.schemeTxt + '</li>' : '')
     + (f.defTxt ? '<li>' + f.defTxt + '</li>' : '')

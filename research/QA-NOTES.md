@@ -86,3 +86,64 @@ None. Every issue found was in Muse's lane and is fixed above. The sim engine,
 tournament, portal, battle, dashboard, recap, and recruiting files were exercised
 hard (full season + offseason + live modal) with zero errors — nothing to hand
 over.
+
+---
+
+# QA notes — Job 6 copy/consistency pass (Oct 2026)
+
+**Tester:** Muse (agent) · **Branch:** main · **Scope:** Program, Player retention,
+NCAA bracket, Selection Sunday reveal, scouting reports, Rankings tabs, Stats
+chips. String-only changes; help.js untouched.
+
+## Method
+
+- Live headless-Chromium screenshots at 1280px and 390px of every audited
+  screen, driven through the real game (setup → season → conf tourney →
+  Selection Sunday → NCAA → offseason retention). No sideways page scrolling at
+  either width (scrollWidth == clientWidth on all touched views).
+- Automated scan of all views + index.html for ALL-CAPS words and emoji;
+  grep for sim/watch label variants across the codebase.
+
+## Copy fixes made (commit: see below)
+
+- **Bracket hub, "Your next game" scouting card** — the only place in the
+  product still using the old labels: `Quick sim` / `Live sim` → `Sim game` /
+  `Watch game` (`views/bracket.js` renderScoutingCard). Verified in DOM.
+- **Conf bracket round labels** — `R1`/`QF`/`SF`/`Final` now carry
+  `title="First round"` / `"Quarterfinal"` / `"Semifinal"` (compact labels kept;
+  9px column headers can't fit full words).
+- **Rankings → Conference standings** — `GB` / `Natl` headers now have
+  `title="Games behind"` / `title="National rank"`.
+- **Stats → Player of the year race / league leaders** — `RK` headers now have
+  `title="Rank"`. Chips already spelled out (Points, Rebounds, Assists,
+  Field goal %, Steals, Blocks); `PPG`/`RPG`/`APG` column headers left as-is
+  (standard, explained by the active chip).
+- **Scouting report** — "would rank #N on your roster by overall" →
+  "by overall rating" (`views/scouting.js`).
+- **test-harness/feature-tourney-home.mjs** — one assertion checked for the
+  old `Quick sim` copy; updated to the canonical `Sim game`/`Watch game`.
+
+## Judgment calls (left unchanged)
+
+- `PPG`/`RPG`/`APG`, `OVR`/`POT`, `SPG`/`BPG`, `NCAA`, `NIL` kept — standard
+  sports abbreviations, explained by context.
+- `Chg` / `Rtg` in the national top-25 kept — the subhead already explains
+  them ("Power rating adjusted for schedule strength. Arrows show movement
+  since last week.").
+- "Elite shooting" style strength tags (`views/scouting.js`) kept — "elite" is
+  an adjective there, not hype.
+- "Begin offseason" (recap advance button) vs "Open offseason" (dashboard
+  season-complete panel): two different verbs for similar actions, left alone —
+  the canonical-label list for this job only covered the sim/watch pair. Flag
+  for a future decision.
+- Title attributes are hover-only and don't help on touch — noted in
+  research/FOR-CLAUDE.md as a possible follow-up to spell `GB`/`Natl`/`RK` out
+  if column widths allow.
+
+## Verification
+
+- `node test-harness/run-all.mjs`: 24/24 pass (see job report for any flakes).
+- Screenshots (all 1280 + 390): Program, Stats (with live data after 8 games),
+  Rankings national + conference tabs, Scouting report (module-rendered into a
+  scratch view), Conf-tourney hub (Sim game/Watch game labels in DOM), Selection
+  Sunday reveal (button state), post-reveal field, NCAA bracket, Retention.

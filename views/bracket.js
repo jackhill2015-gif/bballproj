@@ -81,6 +81,7 @@ function matchupMini(t1, t2, s1, s2, winner, seeds) {
 function renderConfBracketCard(conf, ct, expanded) {
   if (!ct || !ct.rounds) return '';
   var rnames = { 1: 'R1', 2: 'QF', 3: 'SF', 4: 'Final' };
+  var rnamesFull = { 1: 'First round', 2: 'Quarterfinal', 3: 'Semifinal', 4: 'Final' };
   var h = '<div class="panel"><div class="panel-h"><span>' + conf + '</span>'
     + (ct.done && ct.champ
       ? '<small>Champion: ' + ct.champ.name + '</small>'
@@ -91,7 +92,7 @@ function renderConfBracketCard(conf, ct, expanded) {
     h += '<div style="display:flex;overflow-x:auto;">';
     ct.rounds.forEach(function(round, ri) {
       h += '<div class="br-round-col">'
-        + '<div class="br-round-name">' + (rnames[ri + 1] || 'R' + (ri + 1)) + '</div>';
+        + '<div class="br-round-name" title="' + (rnamesFull[ri + 1] || 'Round ' + (ri + 1)) + '">' + (rnames[ri + 1] || 'R' + (ri + 1)) + '</div>';
       round.forEach(function(m) { h += matchupMini(m.t1, m.t2, m.s1, m.s2, m.winner, ct.seeds); });
       h += '</div>';
     });
@@ -154,8 +155,8 @@ function renderScoutingCard(confMatch) {
     + '<span>OVR ' + getTOvr(opp) + ' · ' + opp.wins + '-' + opp.loss + '</span></div>'
     + '<div class="prob-row"><span>Win probability</span><span style="color:' + col + ';">' + wp + '%</span></div>'
     + '<div class="prob-bar"><div class="prob-fill" style="width:' + wp + '%;background:' + col + ';"></div></div>'
-    + '<div class="big-btn-row"><button class="btn-big" data-action="play" data-mode="quick">Quick sim</button>'
-    + '<button class="btn-big secondary" data-action="play" data-mode="live">Live sim</button></div></div></div>';
+    + '<div class="big-btn-row"><button class="btn-big" data-action="play" data-mode="quick">Sim game</button>'
+    + '<button class="btn-big secondary" data-action="play" data-mode="live">Watch game</button></div></div></div>';
 }
 
 // ═══════════════════════════════════════════════════════════

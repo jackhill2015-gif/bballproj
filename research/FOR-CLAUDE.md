@@ -62,3 +62,23 @@ a second full `run-all.mjs` run (24/24). So this looks like pre-existing
 randomness/timing flakiness in the portal battle sim, not a regression from
 the strip. Worth knowing if you see it flake again: re-run standalone before
 investigating.
+
+## Job 6 copy pass leftovers (Muse, Oct 2026 — out of scope, not fixed)
+
+1. **Roster view hamburger glyph** — `views/roster.js` renders
+   "Drag ☰ to reorder; sliders set minutes." The ☰ is a UI glyph rather than an
+   emoji, but if the calm-system rule is "no glyphs as icons", consider an SVG
+   or the word "drag the handle". Out of my audit scope (screens were Program /
+   retention / bracket / reveal / scouting / rankings / stats), so I left it.
+2. **Schedule view "BYE" chip** — `views/schedule.js` labels bye weeks `BYE`
+   (all caps, intentional sports term). Left as-is; if sentence case is the
+   house rule even for sports shorthand, it's `Bye`.
+3. **Abbreviation follow-up (Muse's call, your files)** — I added `title=`
+   tooltips for `GB`/`Natl` (views/standings.js), `RK` (views/stats.js), and
+   `R1`/`QF`/`SF` (views/bracket.js conf card). Titles don't help on touch.
+   If column widths allow, spelling these out would be better. Also an open
+   question: "Begin offseason" (recap advance button) vs "Open offseason"
+   (dashboard season-complete panel) — two verbs for similar actions.
+4. **Selection Sunday reveal copy** (tournament.js `showBracketReveal`) —
+   audited as part of Job 6; already sentence case, no emoji, no hype. No
+   changes made. Mentioning it so nobody re-audits it.
