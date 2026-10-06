@@ -94,6 +94,12 @@ export function renderHelp() {
     + 'production and your program\'s size, and happier players ask for less. All requests together never cost more than three quarters of what your program earned that season. You can switch a decision '
     + 'until you open the portal; switching a keep to let go refunds it.');
 
+  h += sec('Who signed where',
+    'After every round of the transfer portal and recruiting, a Round results panel lists who signed with you, '
+    + 'who chose another school (and which one), and which of your own players left or came back. Your incoming '
+    + 'class panel keeps a running list of transfers in, recruits signed, and open roster spots. On signing day you '
+    + 'see the whole class before the season starts, and Home recaps your offseason moves for the first few weeks.');
+
   h += sec('Scouting reports',
     'Every recruit and transfer shows his player type (for example Floor general, Sharpshooter, Rim protector) '
     + 'and where he would land on your roster next season: would start, rotation minutes, or bench. Open a player for '

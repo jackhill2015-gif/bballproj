@@ -575,10 +575,12 @@ export function doPlay(mode) {
       if (window.finishRetention) window.finishRetention();
     } else if (G.offseasonStep === 'portal') {
       if (window.advancePortalStage) window.advancePortalStage();
+    } else if (G.offseasonStep === 'signed') {
+      doOffseason();
     } else if (G.recruitPhase < 3) {
       if (window.advanceRecruitPhase) window.advanceRecruitPhase();
     } else {
-      doOffseason();
+      if (window.finishSigningDay) window.finishSigningDay(); else doOffseason();
     }
   }
 }

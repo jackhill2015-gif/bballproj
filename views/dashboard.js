@@ -16,6 +16,7 @@ import { FACILITIES, FACILITY_MAX, myFacilities, upgradeCost } from '../faciliti
 import { STREAMS, BUCKETS, ledger, totals, committed } from '../finance.js';
 import { G } from '../state.js';
 import { bracketHubHTML, bindBracket, scrollBracketToRound } from './bracket.js';
+import { offseasonMovesHTML } from './signings.js';
 import {
   userRank, rankDelta, currentStreak, coachXpToNext,
   NIL_SHOP, shopBoughtThisWeek, teamLogo, teamColor, notifState
@@ -395,7 +396,7 @@ export function renderDashboard() {
   h += renderSchoolCard();
   h += renderLastFinal();
   h += '<div class="grid-2">';
-  h += '<div>' + renderGameCard() + renderGoals() + '</div>';
+  h += '<div>' + renderGameCard() + offseasonMovesHTML() + renderGoals() + '</div>';
   h += '<div>' + renderMiniStandings() + renderNotifications() + '</div>';
   h += '</div>';
 

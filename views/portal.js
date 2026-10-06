@@ -16,6 +16,7 @@ import { portalEntryChance, moralePortalReason, MORALE_DEFAULT } from '../morale
 import { teamLogo } from '../ui.js';
 import * as Battle from './battle.js';
 import { scoutLine, scoutingHTML, fitReport } from './scouting.js';
+import { beginReport, noteSigning, reportHTML, classPanelHTML } from './signings.js';
 import { getUiPrefs, setUiPrefs } from './ui-prefs.js';
 
 // Clickable player name (opens the profile; convention in views/player.js)
@@ -377,6 +378,8 @@ function removeEntrant(e) {
 // Release an unclaimed entrant: drop them from the pool AND clear the
 // _portalPid flag off their roster player, so no flags leak onto rosters.
 function releaseUnclaimed(e) {
+  if (e.fromTid === G.tid) noteSigning('portal', e, 'returns');
+  else if (e._mine && !e._full) noteSigning('portal', e, 'stayed', e.fromName);
   var ot = G.teams[e.fromTid];
   if (ot && ot.rost) {
     for (var i = 0; i < ot.rost.length; i++) {
@@ -390,6 +393,7 @@ function awardPortalToUser(e, early) {
   var t = G.teams[G.tid];
   if (!t || t.rost.length >= 15) {
     // Roster filled mid-battle — refund the escrowed offer instead.
+    if (!e._full) { e._full = true; noteSigning('portal', e, 'full'); }
     var _off = e.offer || 0; G.pts += _off; noteSpend('portal', -_off); e.offer = 0; return false;
   }
   e.pickedBy = G.tid;
@@ -399,6 +403,7 @@ function awardPortalToUser(e, early) {
   t.rost.push(np);
   e.offer = 0;
   G.portalUserSigns = (G.portalUserSigns || 0) + 1;
+  noteSigning('portal', e, 'you', null, early);
   removeEntrant(e);
   addLog('ev', G.gi, '<b>' + np.name + '</b> (' + np.pos + ', ' + np.ovr + ' OVR) transfers in from ' + e.fromName + (early ? ' <b>(early)</b>' : '') + '.');
   toast(np.name + ' commits from the portal' + (early ? ' early!' : '!'), 'var(--grn)');
@@ -408,6 +413,8 @@ function awardPortalToUser(e, early) {
 function awardPortalToTeam(e, tid) {
   var wt = G.teams[tid];
   if (!wt) return false;
+  if (e.fromTid === G.tid) noteSigning('portal', e, 'left', wt.name);
+  else if (!e._full && (e._mine || (e.offer || 0) > 0)) noteSigning('portal', e, 'other', wt.name);
   // Lost him to another school: any NIL you had offered comes back in full
   if ((e.offer || 0) > 0) {
     var _back = e.offer; e.offer = 0;
@@ -542,6 +549,7 @@ export function advancePortalStage() {
   });
   _portalTouchedUser = false;
   G.portalStage = stage + 1;
+  beginReport('portal', 'Transfer portal, ' + Battle.ACQ_STAGES[stage].name.toLowerCase());
   if (G.portalStage === 2) maybeLatePortalEntries();
   var res = portalEarlyRound(Battle.ACQ_STAGES[stage].decideFrac);
   var parts = [];
@@ -557,6 +565,7 @@ window.advancePortalStage = advancePortalStage;
 // ── Signing Day: every remaining entrant decides ──
 export function finalizePortal() {
   _portalTouchedUser = false;
+  beginReport('portal', 'Transfer portal, decision day');
   var list = portalBoard().filter(function(e) { return e.pickedBy === -1; });
   list.sort(function(a, b) { return b.ovr - a.ovr; });
   var won = 0, lost = 0;
@@ -565,6 +574,7 @@ export function finalizePortal() {
       var w = drawPortalWinner(e, true);
       if (w && w.key === 'user') { if (awardPortalToUser(e, false)) won++; }
       else {
+        e._mine = true; // you pursued him (for the round report)
         var off = e.offer || 0; e.offer = 0;
         G.pts += off; // refund on loss — matches recruiting point refunds
         noteSpend('portal', -off);
@@ -724,8 +734,17 @@ function detailRow(e) {
   return h + '</div>';
 }
 
+// Compact dropdown filter (data-pselect, handled by the offseason change handler)
+function fsel(key, label, opts, cur) {
+  var h = '<label class="fsel"><span>' + label + '</span><select data-pselect="' + key + '">';
+  opts.forEach(function(o) { h += '<option value="' + o[0] + '"' + (o[0] === cur ? ' selected' : '') + '>' + o[1] + '</option>'; });
+  return h + '</select></label>';
+}
+
 export function setPortalFilter(key, val) {
-  if (key === 'sort') {
+  if (key === 'show') { _pf.mine = val === 'mine'; _pf.fit = val === 'mine' ? 'all' : val; }
+  else if (key === 'sortsel') { _pf.sort = val; _pf.dir = -1; }
+  else if (key === 'sort') {
     if (_pf.sort === val) _pf.dir = -_pf.dir; else { _pf.sort = val; _pf.dir = val === 'name' || val === 'pos' ? 1 : -1; }
   } else if (key === 'mine') _pf[key] = !_pf[key];
   else _pf[key] = val;
@@ -821,19 +840,18 @@ export function renderPortal() {
       + mine.map(function(e) { return '<b>' + e.name + '</b> (' + e.pos + ', ' + e.ovr + ')'; }).join(', ') + '.</div>';
   }
 
-  // Filters
-  h += '<div class="fbar"><span class="flbl">Position</span>';
+  // What happened last round, and who is coming next season
+  h += reportHTML();
+  h += classPanelHTML();
+
+  // Filters: position buttons + two dropdowns
+  _pf.tier = 'all'; // overall bands retired; sort by overall instead
+  h += '<div class="fbar">';
   ['All', 'PG', 'SG', 'SF', 'PF', 'C'].forEach(function(pz) { h += chip('pos', pz, pz, _pf.pos === pz); });
-  h += '</div><div class="fbar"><span class="flbl">Overall</span>';
-  TIERS.forEach(function(t) { h += chip('tier', t.id, t.label, _pf.tier === t.id); });
-  h += chip('mine', '1', 'My offers only', _pf.mine);
-  h += '</div><div class="fbar"><span class="flbl">Fit</span>';
-  [['all', 'All'], ['start', 'Would start'], ['rot', 'Starter or rotation'], ['need', 'Fills a need']].forEach(function(f) { h += chip('fit', f[0], f[1], _pf.fit === f[0]); });
-  h += '</div><div class="fbar fbar-sort"><span class="flbl">Sort</span>';
-  [['ovr', 'Overall'], ['pot', 'Potential'], ['odds', 'Odds'], ['ask', 'Ask']].forEach(function(s) {
-    h += chip('sort', s[0], s[1] + (_pf.sort === s[0] ? (_pf.dir < 0 ? ' ▾' : ' ▴') : ''), _pf.sort === s[0]);
-  });
-  h += '</div>';
+  h += '</div><div class="fsel-row">'
+    + fsel('show', 'Show', [['all', 'Everyone'], ['start', 'Would start'], ['rot', 'Starter or rotation'], ['need', 'Fills a need'], ['mine', 'My offers']], _pf.mine ? 'mine' : _pf.fit)
+    + fsel('sortsel', 'Sort', [['ovr', 'Overall'], ['pot', 'Potential'], ['odds', 'Your odds'], ['ask', 'Ask']], _pf.sort)
+    + '</div>';
 
   var rows = avail.filter(function(e) {
     if (_pf.pos !== 'All' && e.pos !== _pf.pos) return false;
@@ -853,7 +871,7 @@ export function renderPortal() {
     return b.e.ovr - a.e.ovr;
   });
 
-  h += '<div class="sec-sub" style="margin:6px 0;">' + rows.length + ' of ' + avail.length + ' players shown. Ask is the typical NIL offer for that player. Select a player for details.</div>';
+  h += '<div class="sec-sub" style="margin:6px 0;">' + rows.length + ' of ' + avail.length + ' players. Tap a player for his scouting report.</div>';
   h += '<div class="tbl-wrap"><table class="ptbl"><thead><tr>'
     + th('pos', 'Pos') + th('name', 'Player') + th('ovr', 'Ovr', 'num') + th('pot', 'Pot', 'num')
     + th('ask', 'Ask', 'num') + th('offer', 'Your offer') + th('odds', 'Odds', 'num')

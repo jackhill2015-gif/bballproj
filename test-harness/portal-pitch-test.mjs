@@ -159,7 +159,8 @@ P.advancePortalStage(); // → Vibe Check (stage 1): 25% sunk
 const beforePivot = G.pts;
 P.pivotOffer(pe.pid);
 const refunded = G.pts - beforePivot;
-check(refunded === 75, 'pivot after Open stage refunds 75%', 'refunded=' + refunded);
+if (pe.pickedBy === G.tid) console.log('  (skip: he committed to you early, nothing to refund)');
+else check(refunded === 75, 'pivot after Open stage refunds 75%', 'refunded=' + refunded);
 check((pe.offer || 0) === 0, 'offer zeroed after pivot');
 
 // ── (d) early signings: sometimes, not always ──

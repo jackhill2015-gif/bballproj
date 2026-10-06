@@ -1325,3 +1325,23 @@ table.ups td { vertical-align: middle; }
 @media (max-width: 480px) {
   #advance-btn { min-height: 36px; }
 }
+
+/* ═══ Compact filter dropdowns (portal, recruiting) ═══ */
+.fsel-row { display: flex; flex-wrap: wrap; gap: 8px 12px; margin: 6px 0 8px; }
+.fsel { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--txt3); }
+.fsel select { border: 1px solid var(--bdr2); background: var(--s1); color: var(--txt); border-radius: var(--radius); padding: 5px 8px; min-height: 36px; font-size: 13px; }
+
+/* ═══ Signings: round results, incoming class, signing day ═══ */
+.sg-panel .panel-b { padding-top: 6px; }
+.sg-group { margin: 6px 0 10px; }
+.sg-group:last-child { margin-bottom: 2px; }
+.sg-gh { font-size: 12px; font-weight: 600; color: var(--txt2); margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+.sg-gh span { font-weight: 400; color: var(--txt3); }
+.sg-group.good .sg-gh { color: var(--grn2); }
+.sg-group.bad .sg-gh { color: var(--red); }
+.sg-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 5px 0; border-top: 1px solid var(--bdr); font-size: 13px; }
+.sg-row:first-of-type { border-top: none; }
+.sg-meta { color: var(--txt3); font-weight: 400; font-size: 12px; }
+.sg-to { color: var(--txt2); font-size: 12.5px; white-space: nowrap; }
+.sg-none { font-size: 13px; color: var(--txt3); padding: 2px 0; }
+.sg-warn { font-size: 12.5px; color: var(--red); background: var(--red-soft); border-radius: var(--radius); padding: 7px 9px; margin: 4px 0 8px; }

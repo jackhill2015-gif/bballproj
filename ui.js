@@ -524,7 +524,8 @@ export function updateAdvanceBtn() {
     else if (G.offseasonStep === 'skillpoints') txtLbl = 'Finish';
     else if (G.offseasonStep === 'carousel') txtLbl = 'Continue';
     else if (G.offseasonStep === 'fired') txtLbl = 'Continue';
-    else if (G.recruitPhase >= 3) txtLbl = 'Start season';
+    else if (G.offseasonStep === 'signed') txtLbl = 'Start season';
+    else if (G.recruitPhase >= 3) txtLbl = 'Signing day';
     else txtLbl = 'Continue';
   }
   if (label) label.textContent = txtLbl;
@@ -563,7 +564,8 @@ export function buildAdvanceMenu() {
     else if (G.offseasonStep === 'skillpoints') { stepLbl = 'Finish skill points'; stepSub = 'Lock in coach upgrades'; }
     else if (G.offseasonStep === 'carousel') { stepLbl = 'Continue'; stepSub = 'Stay or take a new job'; }
     else if (G.offseasonStep === 'fired') { stepLbl = 'Continue'; stepSub = 'Find your next job'; }
-    else if (G.recruitPhase >= 3) { stepLbl = 'Finalize class & start season'; stepSub = 'Resolve recruits, advance the year'; }
+    else if (G.offseasonStep === 'signed') { stepLbl = 'Start the season'; stepSub = 'Your new roster takes the floor'; }
+    else if (G.recruitPhase >= 3) { stepLbl = 'Go to signing day'; stepSub = 'Every recruit decides'; }
     else { stepLbl = 'Advance recruiting'; stepSub = 'Resolve this signing period'; }
     h += playOpt(stepLbl, stepSub, 'advance');
   }

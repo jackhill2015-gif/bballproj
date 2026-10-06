@@ -24,6 +24,7 @@ import { buildRetentionAsks, renderRetention, decideRetention, applyRetention, r
 import { teamLogo } from '../ui.js';
 import * as Battle from './battle.js';
 import { scoutLine, scoutingHTML, fitReport } from './scouting.js';
+import { beginReport, noteSigning, reportHTML, classPanelHTML, signingDayHTML } from './signings.js';
 import { getUiPrefs, setUiPrefs } from './ui-prefs.js';
 
 var _ext = { toast: null, addLog: null, updateAll: null };
@@ -58,7 +59,7 @@ var _detailId = -1; // recruit ID shown in detail, -1 = none
 var PHASES = {
   1: { name: 'Initial offers', tag: 'Round 1 of 3', desc: 'Assign recruiting points. Commit heavily to a few prospects or spread points across many.', btnLabel: 'Close initial offers', final: false, decideFrac: 0.30, cpuAgg: 0.8 },
   2: { name: 'Follow-up', tag: 'Round 2 of 3', desc: 'Odds have moved. Add points, hold, or drop a prospect (dropping refunds 75%).', btnLabel: 'Close follow-ups', final: false, decideFrac: 0.60, cpuAgg: 1.1 },
-  3: { name: 'Signing day', tag: 'Round 3 of 3', desc: 'Last chance to adjust. Prospects sign when you finalize.', btnLabel: 'Finalize class and start season', final: true, decideFrac: 1.0, cpuAgg: 1.4 }
+  3: { name: 'Signing day', tag: 'Round 3 of 3', desc: 'Last chance to adjust. Every prospect decides when you finalize, and you will see the results before the season starts.', btnLabel: 'Finalize the class', final: true, decideFrac: 1.0, cpuAgg: 1.4 }
 };
 
 // ═══════════════════════════════════════════════════════════
@@ -213,7 +214,14 @@ window.closeDetail = closeDetail;
 export function setRecruitTab(tab) { _tab = tab; _detailId = -1; renderOffseason(); }
 window.setRecruitTab = setRecruitTab;
 
-export function setRecruitFilter(key, val) { _filter[key] = val; setUiPrefs('recruiting', _filter); renderOffseason(); }
+export function setRecruitFilter(key, val) {
+  if (key === 'show') {
+    _filter.near = val === 'near'; _filter.targets = val === 'targets';
+    _filter.fit = (val === 'near' || val === 'targets') ? 'all' : val;
+  } else if (key === 'sortsel') { _filter.sort = val; _filter.dir = val === 'rank' ? 1 : -1; }
+  else _filter[key] = val;
+  setUiPrefs('recruiting', _filter); renderOffseason();
+}
 window.setRecruitFilter = setRecruitFilter;
 
 
@@ -335,6 +343,7 @@ export function advanceRecruitPhase() {
   G.recruits.forEach(function(r) {
     if (r.status === 'open') r._prevPct = userPctOf(r);
   });
+  beginReport('recruit', 'Recruiting, ' + phase.name.toLowerCase());
   var res = Battle.runEarlyRound({
     targets: G.recruits,
     isOpen: function(r) { return r.status === 'open'; },
@@ -358,6 +367,7 @@ export function advanceRecruitPhase() {
       return (schools[0].bid - schools[1].bid) / tot * 100;
     },
     userSign: function(r) {
+      noteSigning('recruit', r, 'you', null, true);
       r.signed = G.tid; r.status = 'committed';
       refundRecruitPoints(r);
       addLog('ev', G.gi, r.name + ' (' + r.stars + '★) commits early.');
@@ -365,6 +375,7 @@ export function advanceRecruitPhase() {
     cpuSign: function(r) {
       var win = cpuWeightedSign(r);
       if (!win) { r.status = 'gone'; r.signed = -1; return; }
+      if ((r.points || 0) > 0 || G.recruitTargets.indexOf(r.id) >= 0) noteSigning('recruit', r, 'other', win.name, true);
       r.signed = win.tid; r.status = 'gone'; r.goneTo = win.name;
       refundRecruitPoints(r);
       addLog('ev', G.gi, r.name + ' (' + r.stars + '★) signed early with <b>' + win.name + '</b>.');
@@ -386,14 +397,17 @@ export function advanceRecruitPhase() {
 window.advanceRecruitPhase = advanceRecruitPhase;
 
 export function resolveRecruitingClass() {
+  if (G.offseasonStep === 'signed' || !G.recruits.some(function(r) { return r.status === 'open'; })) return; // already resolved on signing day
   if (G.recruitPhase < 3) { while (G.recruitPhase < 3 && G.recruitPhase > 0) advanceRecruitPhase(); }
+  beginReport('recruit', 'Signing day');
   G.recruits.forEach(function(r) {
     if (r.status !== 'open') return;
+    var pursued = (r.points || 0) > 0 || G.recruitTargets.indexOf(r.id) >= 0;
     var ub = calcUserBid(r); var schools = calcSchoolChances(r);
     var best = schools.filter(function(s) { return !s.isUser; }).sort(function(a, b) { return b.bid - a.bid; })[0];
     var bb = best ? best.bid : 0;
-    if (r.points >= 5 && ub > bb * 0.7) { r.signed = G.tid; r.status = 'committed'; addLog('ev', G.gi, r.name + ' (' + r.stars + '\u2605) commits (late).'); }
-    else if (best) { r.signed = best.tid; r.status = 'gone'; r.goneTo = best.name; }
+    if (r.points >= 5 && ub > bb * 0.7) { r.signed = G.tid; r.status = 'committed'; noteSigning('recruit', r, 'you'); addLog('ev', G.gi, r.name + ' (' + r.stars + '\u2605) signs with you.'); }
+    else if (best) { r.signed = best.tid; r.status = 'gone'; r.goneTo = best.name; if (pursued) noteSigning('recruit', r, 'other', best.name); }
     else { r.status = 'gone'; r.signed = -1; }
     r.points = 0;
   });
@@ -419,9 +433,10 @@ export function offseasonStrip() {
     { id: 'turnover', label: 'Departures' },
     { id: 'retention', label: 'Retention' },
     { id: 'portal', label: 'Portal' },
-    { id: 'recruiting', label: 'Recruiting' }
+    { id: 'recruiting', label: 'Recruiting' },
+    { id: 'signed', label: 'Signing day' }
   ];
-  var order = { recap: 0, skillpoints: 1, carousel: 2, turnover: 3, retention: 4, portal: 5, recruiting: 6 };
+  var order = { recap: 0, skillpoints: 1, carousel: 2, turnover: 3, retention: 4, portal: 5, recruiting: 6, signed: 7 };
   var cur = G.offseasonStep;
   var curIdx = order.hasOwnProperty(cur) ? order[cur] : 0;
   if (cur === 'fired') curIdx = 2; // fired interstitial leads into the carousel
@@ -482,6 +497,8 @@ export function renderOffseason() {
 
   if (G.offseasonStep === 'portal') { el.innerHTML = offseasonStrip() + renderPortal(); bindOffseason(el); return; }
 
+  if (G.offseasonStep === 'signed') { el.innerHTML = offseasonStrip() + signingDayHTML(); bindOffseason(el); return; }
+
   if (G.offseasonStep === 'turnover' || !G.offseasonStep) { el.innerHTML = offseasonStrip() + renderTurnover(); bindOffseason(el); return; }
 
   initRecruitingIfNeeded();
@@ -506,11 +523,14 @@ export function renderOffseason() {
     + '<div class="stat-cell hot"><div class="sv">' + commits.length + '</div><div class="sl">Commits</div></div>'
     + '</div>';
 
+  // What happened last round (portal decision day, or the last recruiting phase)
+  h += reportHTML();
+
   // ── Tabs (Strategy-screen rhythm) ──
   var tabs = [
     { id: 'board', label: 'Board (' + open.length + ')' },
     { id: 'targets', label: 'Targets (' + G.recruitTargets.length + ')' },
-    { id: 'commits', label: 'Commits (' + commits.length + ')' },
+    { id: 'commits', label: 'Your class (' + commits.length + ')' },
     { id: 'roster', label: 'Roster' }
   ];
   h += '<div class="strat-tabs" role="tablist" aria-label="Recruiting sections">';
@@ -522,7 +542,7 @@ export function renderOffseason() {
   // ── Tab content ──
   if (_tab === 'board') h += renderBoard(open, left);
   else if (_tab === 'targets') h += renderTargets(left);
-  else if (_tab === 'commits') h += renderCommits(commits);
+  else if (_tab === 'commits') h += classPanelHTML();
   else if (_tab === 'roster') h += renderRosterNeeds();
 
   // ── Advance button ──
@@ -544,9 +564,19 @@ function phaseDots() {
 
 // Final phase button resolves through window.doOffseason (main.js),
 // matching the old inline onclick="doOffseason()" behavior.
+// Signing day: resolve the class and show the results before the season starts
+export function finishSigningDay() {
+  resolveRecruitingClass();
+  G.offseasonStep = 'signed';
+  saveState(); updateAll(); renderOffseason();
+}
+window.finishSigningDay = finishSigningDay;
+
 function phaseAdvance() {
-  if ((PHASES[G.recruitPhase] || {}).final) {
+  if (G.offseasonStep === 'signed') {
     if (typeof window !== 'undefined' && window.doOffseason) window.doOffseason();
+  } else if ((PHASES[G.recruitPhase] || {}).final) {
+    finishSigningDay();
   } else {
     advanceRecruitPhase();
   }
@@ -575,6 +605,7 @@ function bindOffseason(el) {
     if ((m = q('[data-rtab]'))) { setRecruitTab(m.getAttribute('data-rtab')); return; }
     if (q('[data-phase-advance]')) { phaseAdvance(); return; }
     if (q('[data-proceed-portal]')) { proceedToRecruiting(); return; }
+    if (q('[data-start-season]')) { if (window.doOffseason) window.doOffseason(); return; }
     if ((m = q('[data-ret]'))) {
       var _rr = decideRetention(parseInt(m.getAttribute('data-ri'), 10), m.getAttribute('data-ret'));
       if (_rr.msg) toast(_rr.msg);
@@ -609,6 +640,8 @@ function bindOffseason(el) {
     if ((m = q('[data-rid]'))) { showDetail(parseInt(m.getAttribute('data-rid'), 10)); return; }
   };
   el.onchange = function(e) {
+    var ps = e.target.closest ? e.target.closest('[data-pselect]') : null;
+    if (ps) { setPortalFilter(ps.getAttribute('data-pselect'), ps.value); return; }
     var m = e.target.closest ? e.target.closest('[data-rfilter]') : null;
     if (m) {
       var key = m.getAttribute('data-rfilter');
@@ -1172,6 +1205,12 @@ window.stayAtSchool = stayAtSchool;
 //  BOARD TAB
 // ═══════════════════════════════════════════════════════════
 
+function rSel(key, label, opts, cur) {
+  var h = '<label class="fsel"><span>' + label + '</span><select data-rfilter="' + key + '">';
+  opts.forEach(function(o) { h += '<option value="' + o[0] + '"' + (String(o[0]) === String(cur) ? ' selected' : '') + '>' + o[1] + '</option>'; });
+  return h + '</select></label>';
+}
+
 function rChip(key, val, label, on) {
   return '<button class="fchip' + (on ? ' on' : '') + '" data-rfchip="' + key + '" data-rval="' + val + '">' + label + '</button>';
 }
@@ -1197,16 +1236,15 @@ function renderBoard(open, left) {
   if (!_filter.dir) _filter.dir = 1;
   var h = '';
 
-  // Filters: chips, one row each (same pattern as the transfer portal)
-  h += '<div class="fbar"><span class="flbl">Position</span>';
+  // Filters: position buttons + three dropdowns (same pattern as the portal)
+  h += '<div class="fbar">';
   ['All', 'PG', 'SG', 'SF', 'PF', 'C'].forEach(function(pz) { h += rChip('pos', pz, pz, _filter.pos === pz); });
-  h += '</div><div class="fbar"><span class="flbl">Stars</span>';
-  [{ v: 0, l: 'All' }, { v: 5, l: '5★' }, { v: 4, l: '4★+' }, { v: 3, l: '3★+' }, { v: 2, l: '2★+' }].forEach(function(o) {
-    h += rChip('stars', o.v, o.l, _filter.stars === o.v);
-  });
-  h += '</div><div class="fbar"><span class="flbl">Show</span>'
-    + rChip('near', '1', 'Home state and region', !!_filter.near)
-    + rChip('targets', '1', 'My targets only', !!_filter.targets) + '</div>';
+  var showCur = _filter.targets ? 'targets' : _filter.near ? 'near' : (_filter.fit || 'all');
+  h += '</div><div class="fsel-row">'
+    + rSel('show', 'Show', [['all', 'Everyone'], ['start', 'Would start'], ['rot', 'Starter or rotation'], ['need', 'Fills a need'], ['near', 'Home state and region'], ['targets', 'My targets']], showCur)
+    + rSel('stars', 'Stars', [[0, 'Any'], [5, '5★'], [4, '4★ and up'], [3, '3★ and up'], [2, '2★ and up']], _filter.stars)
+    + rSel('sortsel', 'Sort', [['rank', 'National rank'], ['ovr', 'Overall'], ['pot', 'Potential'], ['stars', 'Stars']], _filter.sort)
+    + '</div>';
   h += '<div class="fbar"><span class="flbl">Fit</span>';
   [['all', 'All'], ['start', 'Would start'], ['rot', 'Starter or rotation'], ['need', 'Fills a need']].forEach(function(f) {
     h += rChip('fit', f[0], f[1], (_filter.fit || 'all') === f[0]);
