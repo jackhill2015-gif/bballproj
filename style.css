@@ -1316,3 +1316,12 @@ table.ups td { vertical-align: middle; }
   /* Dropdowns: gameplan (roster), conference picker (standings). */
   select.sel { min-height: 36px; padding-top: 8px; padding-bottom: 8px; }
 }
+
+/* Muse: playthrough QA fixes */
+/* Phone-only (<=480px): the top-bar advance button ("Sim game", "Play round",
+   "Continue", ...) is the most-tapped control in the app. Job 5 brought the
+   content tap targets to 36px but the top bar stayed at 32px; bring it to the
+   same floor. The 48px top bar (6px vertical padding) fits 36px exactly. */
+@media (max-width: 480px) {
+  #advance-btn { min-height: 36px; }
+}
