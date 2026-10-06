@@ -15,6 +15,7 @@ import { ge, clamp } from '../utils.js';
 import { G, saveState } from '../state.js';
 import { moodTag, moodColors, MORALE_DEFAULT } from '../morale.js';
 import { gameplanPanelHTML, handleGameplanClick, handleGameplanChange } from './strategy.js';
+import { playerType } from './scouting.js';
 
 var _dragIdx = -1;
 
@@ -66,8 +67,8 @@ function depthRow(p, i) {
   var tier = tierOf(i);
   var gp = p.s ? (p.s.gp || 0) : 0;
   var line = gp > 0
-    ? (p.s.pts / gp).toFixed(1) + ' pts · ' + (p.s.reb / gp).toFixed(1) + ' reb · ' + (p.s.ast / gp).toFixed(1) + ' ast'
-    : 'No games yet';
+    ? (p.s.pts / gp).toFixed(1) + ' pts · ' + (p.s.reb / gp).toFixed(1) + ' reb · ' + (p.s.ast / gp).toFixed(1) + ' ast · ' + playerType(p)
+    : 'No games yet · ' + playerType(p);
   var _injLine = injuryOf(p);
   if (_injLine) line = _injLine.type.charAt(0).toUpperCase() + _injLine.type.slice(1) + ', back in ' + _injLine.weeksLeft + ' wk. ' + line;
   var pot = p.pot || p.ovr;

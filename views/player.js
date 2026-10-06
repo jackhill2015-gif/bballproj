@@ -20,6 +20,7 @@
 
 import { G } from '../state.js';
 import { openSheet } from './sheet.js';
+import { playerType, strengthsAndWeaknesses } from './scouting.js';
 
 var RATING_LABELS = [
   ['sht', 'Shooting'],
@@ -68,15 +69,23 @@ function profileHTML(t, p) {
     + '<div class="pf-sub">' + sub + '</div>'
     + '<div class="pf-ovr"><b>' + p.ovr + '</b> OVR <span class="dim">· ' + (p.pot || p.ovr) + ' POT</span></div></div>';
 
-  // Ratings
-  h += '<div class="panel"><div class="panel-h"><span>Ratings</span></div><div class="panel-b flush">'
-    + '<div class="tbl-wrap"><table><tbody>';
+  // Player type + strengths/weaknesses (views/scouting.js, read-only)
+  var sw = strengthsAndWeaknesses(p);
+  var swTags = sw.strengths.map(function(s) { return '<span class="sc-tag up">' + s.charAt(0).toUpperCase() + s.slice(1) + '</span>'; }).join('')
+    + sw.weaknesses.map(function(s) { return '<span class="sc-tag dn">Weak ' + s + '</span>'; }).join('');
+  h += '<div class="scout-type">' + playerType(p) + '</div>'
+    + '<div class="scout-tags">' + (swTags || '<span class="sc-tag">No standout skills or holes</span>') + '</div>';
+
+  // Ratings (bar rows — same .sc-bar markup as views/scouting.js scoutingHTML)
+  var bars = '';
   RATING_LABELS.forEach(function(r) {
-    var v = p[r[0]];
-    h += '<tr><td class="tname">' + r[1] + '</td>'
-      + '<td class="num" style="font-size:14px;font-weight:800;">' + (typeof v === 'number' ? v : '—') + '</td></tr>';
+    var v = typeof p[r[0]] === 'number' ? p[r[0]] : 0;
+    var w = Math.max(4, Math.min(100, (v - 35) / 64 * 100));
+    var col = v >= 85 ? 'var(--grn2)' : v >= 70 ? 'var(--blu)' : v >= 58 ? 'var(--txt3)' : 'var(--red)';
+    bars += '<div class="sc-bar"><span class="sc-bl">' + r[1] + '</span>'
+      + '<span class="sc-track"><span style="width:' + w + '%;background:' + col + ';"></span></span><b>' + v + '</b></div>';
   });
-  h += '</tbody></table></div></div></div>';
+  h += '<div class="panel"><div class="panel-h"><span>Ratings</span></div><div class="panel-b">' + bars + '</div></div>';
 
   // Current season per-game
   var s = p.s || {};
