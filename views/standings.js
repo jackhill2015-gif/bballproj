@@ -6,6 +6,7 @@
 
 import { ge } from '../utils.js';
 import { G } from '../state.js';
+import { getUiPrefs, setUiPrefs } from './ui-prefs.js';
 
 function fmtRating(t) {
   var r = typeof t.rating === 'number' ? t.rating : 0;
@@ -19,7 +20,10 @@ function moveCell(t, rank) {
   return '<span style="color:var(--txt3);">–</span>';
 }
 
-var _tab = 'nat', _conf = null;
+// Tab + conference persist across visits via ui-prefs (localStorage only).
+// A stored conference that no longer exists falls back to yours in confHTML.
+var _prefs = getUiPrefs('rankings');
+var _tab = _prefs.tab, _conf = _prefs.conf;
 
 export function renderStandings() {
   var el = ge('standings-content'); if (!el) return;
@@ -76,10 +80,10 @@ export function renderStandings() {
 function bindStandings(el) {
   el.onclick = function(e) {
     var b = e.target.closest && e.target.closest('[data-stab]');
-    if (b) { _tab = b.getAttribute('data-stab'); renderStandings(); }
+    if (b) { _tab = b.getAttribute('data-stab'); setUiPrefs('rankings', { tab: _tab, conf: _conf }); renderStandings(); }
   };
   el.onchange = function(e) {
-    if (e.target && e.target.id === 'conf-pick') { _conf = e.target.value; renderStandings(); }
+    if (e.target && e.target.id === 'conf-pick') { _conf = e.target.value; setUiPrefs('rankings', { tab: _tab, conf: _conf }); renderStandings(); }
   };
 }
 

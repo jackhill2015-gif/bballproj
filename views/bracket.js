@@ -8,6 +8,7 @@
 import { ge, clamp, getTOvr, fmtScore, winProb } from '../utils.js';
 import { G } from '../state.js';
 import { allConfDone, getUserNCAAmatchup, getUserConfMatchup, getConfRoundName } from '../tournament.js';
+import { getUiPrefs, setUiPrefs } from './ui-prefs.js';
 
 export function renderBracket() {
   var el = ge('bracket-content');
@@ -163,7 +164,7 @@ function renderScoutingCard(confMatch) {
 
 var REGIONS = ['East', 'West', 'South', 'Midwest'];
 var ROUND_NAMES = ['First round', 'Second round', 'Sweet 16', 'Elite Eight', 'Final Four', 'Championship'];
-var _brView = null; // region index 0-3, or 'ff'; null = pick automatically
+var _brView = getUiPrefs('bracket').region; // region index 0-3, or 'ff'; null = pick automatically
 
 // ── Bracket model ─────────────────────────────────────────
 // G.bracket holds 64 entries in winner-advancement order (16 per region).
@@ -398,6 +399,7 @@ export function bindBracket(el, rerender) {
     if (!c) return;
     var v = c.getAttribute('data-brview');
     _brView = v === 'ff' ? 'ff' : parseInt(v, 10);
+    setUiPrefs('bracket', { region: _brView });
     rerender();
   });
 }

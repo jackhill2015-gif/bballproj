@@ -52,6 +52,7 @@ var APP_FILES = [
   "views/stats.js",
   "views/strategy.js",
   "views/trophies.js",
+  "views/ui-prefs.js",
 ];
 
 self.addEventListener('install', function(e) {

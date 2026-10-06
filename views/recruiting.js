@@ -24,6 +24,7 @@ import { buildRetentionAsks, renderRetention, decideRetention, applyRetention, r
 import { teamLogo } from '../ui.js';
 import * as Battle from './battle.js';
 import { scoutLine, scoutingHTML, fitReport } from './scouting.js';
+import { getUiPrefs, setUiPrefs } from './ui-prefs.js';
 
 var _ext = { toast: null, addLog: null, updateAll: null };
 export function registerRecruitingCallbacks(cb) {
@@ -41,7 +42,8 @@ registerPortalCallbacks({
 
 // ── Current recruiting tab ──
 var _tab = 'board';
-var _filter = { pos: 'All', stars: 0, sort: 'rank', dir: 1, near: false, targets: false, fit: 'all' };
+// Filters + sort persist across visits via ui-prefs (localStorage only).
+var _filter = Object.assign({ pos: 'All', stars: 0, sort: 'rank', dir: 1, near: false, targets: false, fit: 'all' }, getUiPrefs('recruiting'));
 var _detailId = -1; // recruit ID shown in detail, -1 = none
 
 // ═══════════════════════════════════════════════════════════
@@ -211,7 +213,7 @@ window.closeDetail = closeDetail;
 export function setRecruitTab(tab) { _tab = tab; _detailId = -1; renderOffseason(); }
 window.setRecruitTab = setRecruitTab;
 
-export function setRecruitFilter(key, val) { _filter[key] = val; renderOffseason(); }
+export function setRecruitFilter(key, val) { _filter[key] = val; setUiPrefs('recruiting', _filter); renderOffseason(); }
 window.setRecruitFilter = setRecruitFilter;
 
 
@@ -594,6 +596,7 @@ function bindOffseason(el) {
         else { _filter.sort = fv; _filter.dir = (fv === 'rank' || fv === 'name' || fv === 'pos') ? 1 : -1; }
       } else if (fk === 'near' || fk === 'targets') _filter[fk] = !_filter[fk];
       else _filter[fk] = fk === 'stars' ? parseInt(fv, 10) : fv;
+      setUiPrefs('recruiting', _filter);
       renderOffseason(); return;
     }
     // Board row → detail (checked last; steppers/target buttons win)

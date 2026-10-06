@@ -7,9 +7,11 @@
 import { ge } from '../utils.js';
 import { G } from '../state.js';
 import { poyRace } from './dashboard.js';
+import { getUiPrefs, setUiPrefs } from './ui-prefs.js';
 
-// One leaderboard at a time, picked from a row of category chips
-var _statCat = 'poy';
+// One leaderboard at a time, picked from a row of category chips.
+// Category persists across visits via ui-prefs (localStorage only).
+var _statCat = getUiPrefs('stats').category;
 
 var _cache = { key: '', cats: null };
 
@@ -120,6 +122,7 @@ export function renderStats() {
     var c = e.target.closest && e.target.closest('[data-statcat]');
     if (!c) return;
     _statCat = c.getAttribute('data-statcat');
+    setUiPrefs('stats', { category: _statCat });
     renderStats();
   };
 }

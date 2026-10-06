@@ -16,6 +16,7 @@ import { portalEntryChance, moralePortalReason, MORALE_DEFAULT } from '../morale
 import { teamLogo } from '../ui.js';
 import * as Battle from './battle.js';
 import { scoutLine, scoutingHTML, fitReport } from './scouting.js';
+import { getUiPrefs, setUiPrefs } from './ui-prefs.js';
 
 // Clickable player name (opens the profile; convention in views/player.js)
 function pLink(name, tid) {
@@ -663,8 +664,9 @@ function chanceColor(pct) {
   return pct >= 60 ? 'var(--grn2)' : pct >= 30 ? 'var(--gld2)' : 'var(--red)';
 }
 
-// ── Board view state (filters + sort). Not saved: it's a view preference.
-var _pf = { pos: 'All', tier: 'all', mine: false, fit: 'all', sort: 'ovr', dir: -1 };
+// ── Board view state (filters + sort). Persisted across visits via ui-prefs
+// (localStorage only; never in the game save). Module vars below are defaults.
+var _pf = Object.assign({ pos: 'All', tier: 'all', mine: false, fit: 'all', sort: 'ovr', dir: -1 }, getUiPrefs('portal'));
 var TIERS = [
   { id: 'all', label: 'All', test: function() { return true; } },
   { id: 'a', label: '85+', test: function(e) { return e.ovr >= 85; } },
@@ -727,6 +729,7 @@ export function setPortalFilter(key, val) {
     if (_pf.sort === val) _pf.dir = -_pf.dir; else { _pf.sort = val; _pf.dir = val === 'name' || val === 'pos' ? 1 : -1; }
   } else if (key === 'mine') _pf[key] = !_pf[key];
   else _pf[key] = val;
+  setUiPrefs('portal', _pf);
   rerender();
 }
 
