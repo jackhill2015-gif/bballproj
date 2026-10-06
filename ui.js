@@ -44,45 +44,79 @@ export function registerUICallbacks(callbacks) {
 
 // ═══════════════════════════════════════════════════════════
 //  TOAST QUEUE — stacked, capped, no overlap
+//
+//  Policy: max 3 visible on desktop, max 2 on phones (≤480px).
+//  Overflow beyond the cap WAITS in the queue rather than replacing
+//  the oldest — that way nothing is lost when a burst of toasts fires.
+//  Auto-dismiss after 2.5s, tap a toast to dismiss it immediately,
+//  and a repeat of an already-visible (or queued) toast refreshes its
+//  timer instead of stacking a duplicate.
 // ═══════════════════════════════════════════════════════════
 
-var _toastQ = [];
-var _toastShowing = 0;
-var MAX_TOASTS = 3;
+var _toastQ = [];      // waiting: [{ key, msg, col }]
+var _toastLive = [];   // visible: queue item + { el, timer }
+var TOAST_MS = 2500;
+
+function _toastMax() {
+  return (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(max-width: 480px)').matches) ? 2 : 3;
+}
+function _toastKey(msg, col) { return col + '|' + msg; }
+
+function _dismissToast(item) {
+  var idx = _toastLive.indexOf(item);
+  if (idx === -1) return;
+  _toastLive.splice(idx, 1);
+  if (item.timer) clearTimeout(item.timer);
+  var d = item.el;
+  if (d) {
+    d.classList.remove('show');
+    setTimeout(function() { if (d.parentNode) d.parentNode.removeChild(d); }, 220);
+  }
+  _pumpToasts();
+}
 
 export function toast(msg, col) {
   msg = calm(msg);
   // Sentence case: "INDIANA ADVANCES!" reads as shouting in a quiet UI
   if (msg && msg === msg.toUpperCase() && /[A-Z]{4}/.test(msg)) msg = msg.charAt(0) + msg.slice(1).toLowerCase();
-  _toastQ.push({ msg: msg, col: col || 'var(--blu)' });
+  col = col || 'var(--blu)';
+  var key = _toastKey(msg, col);
+  // Dedupe: same kind already visible or queued → restart its timer, merge into one
+  var dupe = null, i;
+  for (i = 0; i < _toastLive.length; i++) if (_toastLive[i].key === key) dupe = _toastLive[i];
+  if (!dupe) for (i = 0; i < _toastQ.length; i++) if (_toastQ[i].key === key) dupe = _toastQ[i];
+  if (dupe) {
+    if (dupe.timer) {
+      clearTimeout(dupe.timer);
+      dupe.timer = setTimeout(function() { _dismissToast(dupe); }, TOAST_MS);
+    }
+    return;
+  }
+  _toastQ.push({ key: key, msg: msg, col: col });
   if (_toastQ.length > 6) _toastQ.shift(); // drop oldest if spammed
-  pumpToasts();
+  _pumpToasts();
 }
 
-function pumpToasts() {
+function _pumpToasts() {
   var stack = ge('toast-stack');
   if (!stack) return;
-  while (_toastShowing < MAX_TOASTS && _toastQ.length) {
+  while (_toastLive.length < _toastMax() && _toastQ.length) {
     (function(item) {
-      _toastShowing++;
       var d = document.createElement('div');
       d.className = 'toast';
       d.style.borderLeftColor = item.col;
       d.textContent = item.msg;
+      d.setAttribute('role', 'status');
+      d.addEventListener('click', function() { _dismissToast(item); });
       stack.appendChild(d);
+      item.el = d;
+      item.timer = setTimeout(function() { _dismissToast(item); }, TOAST_MS);
+      _toastLive.push(item);
       if (typeof requestAnimationFrame === 'function') {
         requestAnimationFrame(function() { d.classList.add('show'); });
       } else {
         d.classList.add('show');
       }
-      setTimeout(function() {
-        d.classList.remove('show');
-        setTimeout(function() {
-          if (d.parentNode) d.parentNode.removeChild(d);
-          _toastShowing--;
-          pumpToasts();
-        }, 250);
-      }, 2800);
     })(_toastQ.shift());
   }
 }

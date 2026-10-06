@@ -1270,3 +1270,12 @@ table.ups td { vertical-align: middle; }
 .os-step.current { font-weight: 700; color: var(--txt); }
 .os-step.upcoming { color: var(--txt3); opacity: 0.55; }
 .os-sep { color: var(--bdr2); }
+
+/* Muse: phone toasts */
+/* The stack is pointer-events:none so toasts never block content —
+   re-enable taps on the toast itself so tapping dismisses it. */
+#toast-stack .toast { pointer-events: auto; cursor: pointer; }
+@media (max-width: 480px) {
+  /* Sit above the bottom nav (54px bar + safe area), never covering it. */
+  #toast-stack { top: auto; bottom: calc(70px + env(safe-area-inset-bottom)); }
+}
