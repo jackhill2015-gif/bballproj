@@ -1279,3 +1279,40 @@ table.ups td { vertical-align: middle; }
   /* Sit above the bottom nav (54px bar + safe area), never covering it. */
   #toast-stack { top: auto; bottom: calc(70px + env(safe-area-inset-bottom)); }
 }
+
+/* Muse: tap targets */
+/* Phone-only (<=480px): grow tap targets to at least 36px with padding.
+   No font-size, layout, or ordering changes; desktop is untouched. */
+@media (max-width: 480px) {
+  /* Filter chips: portal, recruiting, stats, bracket region chips.
+     Horizontal padding too, so one-letter chips (PG, C) reach 36px wide. */
+  .fchip { min-height: 36px; padding: 9px 13px; }
+
+  /* Offer steppers (portal rows, battle rows) and recruiting point
+     steppers: release the fixed 26/28/32px box, size with padding. */
+  .ptbl .stepper,
+  .bt-offer .stepper,
+  .stepper {
+    width: auto; height: auto;
+    min-width: 36px; min-height: 36px;
+    padding: 9px 11px;
+  }
+
+  /* Buttons inside rows: Target, Withdraw. */
+  .btn-quiet[data-add-target],
+  .btn-quiet[data-ppivot] { min-height: 36px; padding-top: 9px; padding-bottom: 9px; }
+  /* Drop carries an inline min-height/padding; override it on phones only. */
+  [data-rem-target] { min-height: 36px !important; padding: 9px 8px !important; }
+
+  /* Retention Keep / Let go. */
+  .ret-btn { min-height: 36px; padding-top: 9px; padding-bottom: 9px; }
+
+  /* Close buttons: sheet, setup swap modal, row detail panels. */
+  .sheet-head [data-action="sheet-close"],
+  #swap-close,
+  [data-close-detail],
+  tr.detail-row [data-pdetail] { min-height: 36px; padding-top: 9px; padding-bottom: 9px; }
+
+  /* Dropdowns: gameplan (roster), conference picker (standings). */
+  select.sel { min-height: 36px; padding-top: 8px; padding-bottom: 8px; }
+}

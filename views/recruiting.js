@@ -561,6 +561,12 @@ function bindOffseason(el) {
   el.onclick = function(e) {
     var q = function(sel) { return e.target.closest ? e.target.closest(sel) : null; };
     var m;
+    // Tap-target rule (Job 5): buttons inside a row (steppers, Target,
+    // Withdraw, Drop, Close, chips) are ALL matched before the row
+    // selectors below, and each branch returns early. That ordering is
+    // the stopPropagation equivalent — a button tap can never fall
+    // through to the row's open/close-detail handler. Keep it that way:
+    // any new in-row button selector goes above [data-pdetail]/[data-rid].
     if ((m = q('[data-pt-dec]'))) { adjustPoints(parseInt(m.getAttribute('data-pt-dec'), 10), -5); return; }
     if ((m = q('[data-pt-inc]'))) { adjustPoints(parseInt(m.getAttribute('data-pt-inc'), 10), 5); return; }
     if ((m = q('[data-add-target]'))) { addTarget(parseInt(m.getAttribute('data-add-target'), 10)); return; }
