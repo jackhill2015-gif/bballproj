@@ -791,7 +791,7 @@ function renderTurnover() {
 
   h += '</div>'; // close grid-2
 
-  h += '<div class="big-btn-row"><button class="btn-big btn-full" data-proceed-portal>Open transfer portal</button></div>';
+  h += '<div class="big-btn-row"><button class="btn-big btn-full" data-proceed-portal>Continue</button></div>';
   return h;
 }
 

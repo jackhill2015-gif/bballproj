@@ -218,7 +218,7 @@ function renderGameCard() {
     return panel('Regular season complete', '<button class="btn-big" data-action="play" data-mode="quick">Start conference tournament</button>');
   }
   return panel('Offseason', '<div style="color:var(--txt2);margin-bottom:8px;">Recruit, develop and set the roster for next season.</div>'
-    + '<button class="btn-big" data-action="nav" data-view="offseason">Open offseason</button>');
+    + '<button class="btn-big" data-action="nav" data-view="offseason">Begin offseason</button>');
 }
 
 // ═══════════════════════════════════════════════════════════

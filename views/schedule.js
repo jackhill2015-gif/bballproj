@@ -60,7 +60,7 @@ export function renderScheduleView() {
 function gameRow(game, week, natSorted, team, rivals) {
   if (!game || game.opp === undefined || game.opp === null) {
     return '<div class="sched-row" style="opacity:.5;"><div class="sched-wk">WK ' + (week + 1) + '</div>'
-      + '<div class="sched-opp"><small>BYE</small></div></div>';
+      + '<div class="sched-opp"><small>Bye</small></div></div>';
   }
   var opp = G.teams[game.opp];
   if (!opp) return '';

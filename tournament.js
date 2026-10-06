@@ -115,8 +115,8 @@ function buildNextConfRound(conf) {
     if (ct.champ) {
       if (ct.champ.id === G.tid) {
         G.confTitles++; G.prestige = Math.min(5, G.prestige + 1);
-        addLog('ev', G.gi, '<b>' + conf + ' CONFERENCE CHAMPIONS!</b>');
-        toast('CONFERENCE CHAMPIONS!', 'var(--gld)');
+        addLog('ev', G.gi, '<b>' + conf + ' tournament champions.</b>');
+        toast(conf + ' tournament champions', 'var(--gld)');
       } else {
         addLog('ev', G.gi, conf + ' won by <b>' + ct.champ.name + '</b>');
       }
@@ -628,10 +628,10 @@ function checkNCAAdone() {
       if (G.cinderellaRun) {
         t.schoolPrestige = Math.min(100, t.schoolPrestige + 8);
         G.coach.rec = Math.min(99, G.coach.rec + 5);
-        addLog('ev', G.gi, '\ud83d\udc60\ud83c\udfc6 <b>CINDERELLA CHAMPIONS!</b> The greatest underdog story in tournament history!');
+        addLog('ev', G.gi, '<b>National champions as a double-digit seed.</b>');
       }
-      addLog('ev', G.gi, '<b>NATIONAL CHAMPIONS! \ud83c\udfc6</b> +12 prestige!');
-      toast('NATIONAL CHAMPIONS!!!', 'var(--gld)');
+      addLog('ev', G.gi, '<b>National champions.</b> School prestige +12.');
+      toast('National champions', 'var(--gld)');
     } else {
       addLog('ev', G.gi, ch.name + ' wins the National Championship.');
       if (!G.leagueChamps) G.leagueChamps = [];
@@ -732,7 +732,7 @@ export function resolveTournamentGame() {
     // Morale: tournament games swing moods too
     recordGameMorale(userWon ? userTeam : oppTeam, userWon ? oppTeam : userTeam);
     if (userWon) {
-      toast(userTeam.name + ' ADVANCES! ' + fmtScore(uScore, oScore, '-'), 'var(--grn)');
+      toast(userTeam.name + ' advances, ' + fmtScore(uScore, oScore, '-'), 'var(--grn)');
       addLog('w', G.gi, '<b>W</b> vs <b>' + oppName + '</b> ' + fmtScore(uScore, oScore) + ' (Conf Tourney)');
     } else {
       toast('Eliminated by ' + oppName + ', ' + fmtScore(uScore, oScore, '-'), 'var(--red)');
@@ -785,12 +785,12 @@ export function resolveTournamentGame() {
       var roundMsg = '';
       var prestigeGain = 0;
 
-      if (remaining <= 1) { roundMsg = 'CHAMPIONSHIP BOUND!'; prestigeGain = 8; }
-      else if (remaining <= 2) { roundMsg = 'FINAL FOUR!'; prestigeGain = 5; }
-      else if (remaining <= 4) { roundMsg = 'ELITE EIGHT!'; prestigeGain = 3; }
-      else if (remaining <= 8) { roundMsg = 'SWEET 16!'; prestigeGain = 2; }
-      else if (remaining <= 16) { roundMsg = 'Moving on!'; prestigeGain = 1; }
-      else { roundMsg = 'ADVANCING!'; prestigeGain = 1; }
+      if (remaining <= 1) { roundMsg = 'On to the title game.'; prestigeGain = 8; }
+      else if (remaining <= 2) { roundMsg = 'On to the Final Four.'; prestigeGain = 5; }
+      else if (remaining <= 4) { roundMsg = 'On to the Elite Eight.'; prestigeGain = 3; }
+      else if (remaining <= 8) { roundMsg = 'On to the Sweet 16.'; prestigeGain = 2; }
+      else if (remaining <= 16) { roundMsg = 'On to the second round.'; prestigeGain = 1; }
+      else { roundMsg = 'On to the next round.'; prestigeGain = 1; }
 
       // Cinderella bonus: 11+ seed reaching Sweet 16+
       if (userSeed >= 11 && remaining <= 8) {

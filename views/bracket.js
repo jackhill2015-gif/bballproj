@@ -41,6 +41,15 @@ function renderConfHub() {
 
   var confMatch = getUserConfMatchup();
   if (confMatch) h += renderScoutingCard(confMatch);
+  else if (!allConfDone()) {
+    // Your run is over (or you have a bye): a way forward without the top-bar menu
+    h += '<div class="panel"><div class="panel-b" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">'
+      + '<div style="font-size:13.5px;">Your conference tournament is over. Selection Sunday is next.</div>'
+      + '<div style="display:flex;gap:8px;flex-wrap:wrap;">'
+      + '<button class="btn-big secondary" style="width:auto;padding:0 16px;" data-action="play" data-mode="quick">Sim next round</button>'
+      + '<button class="btn-big" style="width:auto;padding:0 16px;" data-action="play" data-mode="sim-conf">Sim to Selection Sunday</button>'
+      + '</div></div></div>';
+  }
 
   var others = Object.keys(G.confTourneys).filter(function(c) { return c !== myConf; });
   if (others.length) {

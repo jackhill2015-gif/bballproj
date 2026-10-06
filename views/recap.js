@@ -171,10 +171,10 @@ export function renderSeasonRecap() {
   h += '</tbody></table></div></div>';
 
   if (awards.poy) h += awardCard('Player of the year', awards.poy.name,
-    awards.poy.team + ' · ' + awards.poy.pos + ' · ' + awards.poy.ppg + ' PPG / ' + awards.poy.rpg + ' RPG / ' + awards.poy.apg + ' APG',
+    awards.poy.team + ' · ' + awards.poy.pos + ' · ' + awards.poy.ppg.toFixed(1) + ' PPG / ' + awards.poy.rpg.toFixed(1) + ' RPG / ' + awards.poy.apg.toFixed(1) + ' APG',
     awards.poy.tid === G.tid, awards.poy.tid);
   if (awards.foy) h += awardCard('Freshman of the year', awards.foy.name,
-    awards.foy.team + ' · ' + awards.foy.ppg + ' PPG', awards.foy.tid === G.tid, awards.foy.tid);
+    awards.foy.team + ' · ' + awards.foy.ppg.toFixed(1) + ' PPG', awards.foy.tid === G.tid, awards.foy.tid);
   if (awards.coy) {
     var cn = awards.coy.coach ? awards.coy.coach.firstName + ' ' + awards.coy.coach.lastName : 'Staff';
     h += awardCard('Coach of the year', cn, awards.coy.name + ' (' + awards.coy.wins + '-' + awards.coy.loss + ')',
@@ -207,15 +207,15 @@ export function renderSeasonRecap() {
       h += '<tr' + (p.tid === G.tid ? ' class="hl"' : '') + '>'
         + '<td>' + pLink(p.name, p.tid) + ' <span style="font-size:11px;color:var(--txt3);">' + p.pos + '</span></td>'
         + '<td style="font-size:12px;color:var(--txt2);">' + p.team + '</td>'
-        + '<td style="font-family:var(--mono);text-align:right;">' + p.ppg + '</td>'
-        + '<td style="font-family:var(--mono);text-align:right;">' + p.rpg + '</td>'
+        + '<td style="font-family:var(--mono);text-align:right;">' + p.ppg.toFixed(1) + '</td>'
+        + '<td style="font-family:var(--mono);text-align:right;">' + p.rpg.toFixed(1) + '</td>'
         + '<td style="font-family:var(--mono);text-align:right;">' + p.apg + '</td></tr>';
     });
     h += '</tbody></table></div></div>';
   }
 
   if (awards.userAllConf.length) {
-    h += '<div class="panel"><div class="panel-h"><span>All-' + awards.userConf + ' team</span></div>'
+    h += '<div class="panel"><div class="panel-h"><span>All-conference team</span><small>' + awards.userConf + '</small></div>'
       + '<div class="panel-b flush"><table>'
       + '<thead><tr><th>Player</th><th>Team</th><th style="text-align:right;">PPG</th></tr></thead><tbody>';
     awards.userAllConf.forEach(function(p) {
