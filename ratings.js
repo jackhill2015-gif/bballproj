@@ -51,8 +51,31 @@ function collectGames() {
       });
     });
   });
+  // NCAA tournament (neutral site): teams that played round k pair up in
+  // bracket order; b.sc holds each team's score by round
+  var br = G.bracket || [];
+  for (var k = 0; k < 6; k++) {
+    var played = br.filter(function(b) { return b && b.team && b.sc && b.sc.length > k; });
+    for (var i = 0; i + 1 < played.length; i += 2) {
+      var x = played[i], y = played[i + 1];
+      var ix = typeof x.team === 'number' ? x.team : x.team.id, iy = typeof y.team === 'number' ? y.team : y.team.id;
+      if (G.teams[ix] && G.teams[iy]) addGame(games, ix, iy, x.sc[k] - y.sc[k], 0);
+    }
+  }
   return games;
 }
+
+// NCAA tournament wins this season (final rankings reward a deep run)
+function ncaaWins() {
+  var w = {};
+  (G.bracket || []).forEach(function(b) {
+    if (!b || !b.team || !b.sc || !b.sc.length) return;
+    var id = typeof b.team === 'number' ? b.team : b.team.id;
+    w[id] = b.active ? b.sc.length : b.sc.length - 1;
+  });
+  return w;
+}
+var NCAA_WIN_CREDIT = 1.5; // ranking points per NCAA tournament win
 
 export function recomputeRatings() {
   var n = G.teams.length;
@@ -76,11 +99,12 @@ export function recomputeRatings() {
     r = next;
   }
 
+  var nw = ncaaWins();
   G.teams.forEach(function(t, i) {
     var gp = (t.wins || 0) + (t.loss || 0);
     var winPct = gp ? t.wins / gp : 0.5;
     t.rating = Math.round(r[i] * 10) / 10;           // pure efficiency margin
-    t.pts = toPts(r[i] + (winPct - 0.5) * WIN_WEIGHT); // ranking score
+    t.pts = toPts(r[i] + (winPct - 0.5) * WIN_WEIGHT + (nw[t.id] || 0) * NCAA_WIN_CREDIT); // ranking score
   });
 }
 

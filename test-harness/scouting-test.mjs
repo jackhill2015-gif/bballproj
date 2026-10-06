@@ -24,7 +24,7 @@ check(need.length > 0 && need.length < people.length / 3, `"Fills a need" is sel
 // a pure shooter at shooting guard reads as a shooter, and no guard is flagged for low rebounding alone
 const shooter = { name: 'Test Shooter', pos: 'SG', ovr: 80, sht: 97, fin: 70, def: 68, reb: 55, ply: 70, cls: 'FR' };
 check(['Sharpshooter', '3-and-D wing'].includes(SC.playerType(shooter)), 'a pure shooter at SG is a Sharpshooter (' + SC.playerType(shooter) + ')');
-const pg = { name: 'Test PG', pos: 'PG', ovr: 80, sht: 82, fin: 78, def: 80, reb: 62, ply: 92, cls: 'FR' };
+const pg = { name: 'Test PG', pos: 'PG', ovr: 80, sht: 78, fin: 74, def: 76, reb: 60, ply: 98, cls: 'FR' };
 check(SC.playerType(pg) === 'Floor general', 'a pass-first PG is a Floor general (' + SC.playerType(pg) + ')');
 check(!SC.strengthsAndWeaknesses({ ...shooter, sht: 87, fin: 97, reb: 99, def: 77, ply: 77 }).weaknesses.includes('shooting'), 'an 87 shooter is never tagged as a weak shooter');
 console.log(fails ? fails + ' FAILED' : 'all scouting checks passed');

@@ -147,8 +147,13 @@ export function getTeamStyle(conf, ovr) {
 export function awardScore(p, t) {
   var gp = p.s.gp || 0;
   if (!gp) return 0;
-  return (p.s.pts + p.s.reb * 0.45 + p.s.ast * 0.7) / gp
-    + (t.wins / Math.max(1, t.wins + t.loss)) * 4;
+  // Production, scaled by the strength of his team (power rating), plus
+  // team success and talent — so a 20 ppg scorer on a top-10 team beats
+  // a 22 ppg scorer on a 12-20 team in a weak league
+  var prod = (p.s.pts + p.s.reb * 0.45 + p.s.ast * 0.7) / gp;
+  var level = Math.max(0.7, Math.min(1.25, 1 + (t.rating || 0) * 0.015));
+  var winPct = t.wins / Math.max(1, t.wins + t.loss);
+  return prod * level + winPct * 8 + ((p.ovr || 70) - 75) * 0.15;
 }
 
 // A real five: two guards, two forwards, one center, best available by

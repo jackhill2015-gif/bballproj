@@ -359,8 +359,9 @@ export function buildNCAA() {
   allTeams.forEach(function(entry) {
     if (field.length >= 64) return;
     if (inField[entry.team.id]) return;
-    // At-large minimum: must have a winning record
-    if (entry.team.wins <= entry.team.loss) return;
+    // At-large minimum: a .550 record (no 16-15 at-large bids)
+    var gpA = entry.team.wins + entry.team.loss;
+    if (!gpA || entry.team.wins / gpA < 0.55) return;
     field.push(entry.team);
     inField[entry.team.id] = true;
   });
@@ -580,6 +581,7 @@ export function simNCAAround() {
     var res = simGame(b1.team, b2.team, true);
     scoreNCAAgame(b1, b2, res.homeScore, res.awayScore);
   }
+  recomputeRatings(); // rankings keep moving through March
   checkNCAAdone();
   saveState(); updateAll();
   if (SetupState.ACTIVE_VIEW === 'bracket' && _ext.renderBracket) _ext.renderBracket();
@@ -763,6 +765,7 @@ export function resolveTournamentGame() {
     // leaving one team with no game at all (T1).
     simNCAArimExceptUser();
     scoreNCAAgame(b1, b2, LS.hs, LS.as);
+    recomputeRatings(); // rankings keep moving through March
     var userWon2 = (b1.team.id === G.tid) ? (LS.hs > LS.as) : (LS.as > LS.hs);
     var oppName2 = (b1.team.id === G.tid ? b2 : b1).team.name;
     var oppTeam2 = (b1.team.id === G.tid ? b2 : b1).team;
@@ -806,7 +809,7 @@ export function resolveTournamentGame() {
       var t = G.teams[G.tid];
       t.schoolPrestige = Math.min(100, (t.schoolPrestige || 50) + prestigeGain);
 
-      toast(userTeam.name + ' ADVANCES! ' + roundMsg, 'var(--grn)');
+      toast(userTeam.name + ' advances. ' + roundMsg, 'var(--grn)');
       addLog('w', G.gi, '<b>W</b> vs <b>' + oppName2 + '</b> ' + fmtScore(uScore, oScore) + ' (NCAA \u2014 ' + roundMsg + ')');
     } else {
       // Elimination — record how far we got (post-round team counts)

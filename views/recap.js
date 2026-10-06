@@ -8,7 +8,7 @@
 import { STREAMS, BUCKETS, ledger, totals } from '../finance.js';
 import { G } from '../state.js';
 import { SKILL_POINT_TABLE } from '../constants.js';
-import { awardScore, pickPositionalTeam } from '../utils.js';
+import { awardScore, pickPositionalTeam, getTOvr, oldOvr } from '../utils.js';
 
 // Clickable player name (opens the profile; convention in views/player.js)
 function pLink(name, tid) {
@@ -57,11 +57,19 @@ function calcAwards() {
     confTeams[conf] = pickPositionalTeam(confs[conf]);
   });
 
-  var coachCandidates = G.teams.map(function(t) {
+  // Coach of the year: most wins above what the roster's talent predicted,
+  // with extra credit for NCAA tournament wins
+  var talent = G.teams.map(function(t) { return oldOvr(getTOvr(t)); });
+  var meanTal = talent.reduce(function(a, b) { return a + b; }, 0) / Math.max(1, talent.length);
+  var tWins = {};
+  (G.bracket || []).forEach(function(b) {
+    if (b && b.team && b.sc && b.sc.length) tWins[b.team.id] = b.active ? b.sc.length : b.sc.length - 1;
+  });
+  var coachCandidates = G.teams.map(function(t, i) {
     var totalGames = t.wins + t.loss;
-    var expectedWinPct = (t.baseOvr - 50) / 50;
+    var expectedWinPct = Math.max(0.1, Math.min(0.9, 0.5 + (talent[i] - meanTal) * 0.025));
     var actualWinPct = totalGames > 0 ? t.wins / totalGames : 0;
-    return { team: t, overperform: actualWinPct - expectedWinPct };
+    return { team: t, overperform: actualWinPct - expectedWinPct + (tWins[t.id] || 0) * 0.04 };
   });
   coachCandidates.sort(function(a, b) { return b.overperform - a.overperform; });
   var coy = coachCandidates[0] ? coachCandidates[0].team : null;
@@ -127,7 +135,9 @@ export function renderSeasonRecap() {
   var rank = sorted.findIndex(function(x) { return x.id === G.tid; }) + 1;
 
   var lastHistory = G.history && G.history.length ? G.history[G.history.length - 1] : null;
-  var tf = lastHistory ? lastHistory.tourneyFinish : 'N/A';
+  var tf = lastHistory ? lastHistory.tourneyFinish : '';
+  tf = { CHAMP: 'National champion', 'Championship Game': 'Runner-up', 'Did Not Qualify': 'No NCAA bid',
+    'Round of 64': 'First round', 'Round of 32': 'Second round' }[tf] || tf || '—';
 
   function awardCard(kicker, name, sub, yours, tid) {
     return '<div class="panel"><div class="panel-h"><span>' + kicker + '</span></div>'
@@ -180,8 +190,8 @@ export function renderSeasonRecap() {
     + '<div class="sub">' + t.conf + ' · season ' + year + '</div></div>'
     + '<div class="kv">'
     + '<div><b>' + t.wins + '-' + t.loss + '</b><span>Record</span></div>'
-    + '<div><b style="font-family:var(--mono);">#' + rank + '</b><span>NET</span></div>'
-    + '<div><b>' + tf + '</b><span>Tourney finish</span></div>'
+    + '<div><b style="font-family:var(--mono);">#' + rank + '</b><span>Final rank</span></div>'
+    + '<div><b>' + tf + '</b><span>NCAA tournament</span></div>'
     + '<div><b>' + (t.schoolPrestige || '—') + '</b><span>Prestige</span></div>'
     + '</div></div>'
     + '<div style="font-size:12px;color:var(--txt2);">Conference: ' + t.cWins + '-' + t.cLoss + ' (' + t.conf + ')</div>'
