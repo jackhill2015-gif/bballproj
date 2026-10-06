@@ -51,3 +51,14 @@ standout threshold (`z[s[0]] < 4` → all-around) apparently isn't met. Likely
 the PG positional norms in a fresh dynasty sit high enough that ply 92 isn't
 4+ points above the mean-removed relative profile. Worth a look when you're
 next in scouting.js — my job was not allowed to touch that file.
+
+## portal-pitch-test flaked once under run-all (Muse QOL job 2, Oct 2026)
+
+While running `node test-harness/run-all.mjs` after adding the offseason
+progress strip (views/recruiting.js, display-only), portal-pitch-test.mjs
+failed once with exit 1. It passes standalone with the same changes applied
+(both before and after), passed on clean main via `git stash`, and passed in
+a second full `run-all.mjs` run (24/24). So this looks like pre-existing
+randomness/timing flakiness in the portal battle sim, not a regression from
+the strip. Worth knowing if you see it flake again: re-run standalone before
+investigating.

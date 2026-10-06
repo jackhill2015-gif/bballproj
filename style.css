@@ -1253,3 +1253,20 @@ table.ups td { vertical-align: middle; }
 .scout-depth span { color: var(--txt3); }
 .scout-stats { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 10px; font-size: 12.5px; color: var(--txt3); }
 .scout-stats b { color: var(--txt); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* Muse: offseason progress strip */
+.os-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  font-size: 11.5px;
+  line-height: 1.6;
+  margin: 0 0 12px;
+  max-width: 100%;
+}
+.os-step { white-space: nowrap; }
+.os-step.done { color: var(--txt3); }
+.os-step.current { font-weight: 700; color: var(--txt); }
+.os-step.upcoming { color: var(--txt3); opacity: 0.55; }
+.os-sep { color: var(--bdr2); }

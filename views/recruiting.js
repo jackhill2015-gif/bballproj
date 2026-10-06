@@ -403,6 +403,60 @@ export function resolveRecruitingClass() {
 window.resolveRecruitingClass = resolveRecruitingClass;
 
 // ═══════════════════════════════════════════════════════════
+//  OFFSEASON PROGRESS STRIP (display-only)
+// ═══════════════════════════════════════════════════════════
+// Thin one-row summary of the offseason step order. Rendered at the top of
+// every offseason screen by renderOffseason(). Reads G.offseasonStep — it
+// never changes how the step is set.
+
+export function offseasonStrip() {
+  var steps = [
+    { id: 'recap', label: 'Recap' },
+    { id: 'skillpoints', label: 'Skill points' },
+    { id: 'carousel', label: 'Carousel' },
+    { id: 'turnover', label: 'Departures' },
+    { id: 'retention', label: 'Retention' },
+    { id: 'portal', label: 'Portal' },
+    { id: 'recruiting', label: 'Recruiting' }
+  ];
+  var order = { recap: 0, skillpoints: 1, carousel: 2, turnover: 3, retention: 4, portal: 5, recruiting: 6 };
+  var cur = G.offseasonStep;
+  var curIdx = order.hasOwnProperty(cur) ? order[cur] : 0;
+  if (cur === 'fired') curIdx = 2; // fired interstitial leads into the carousel
+
+  // A fired coach never sees recap or skill points in this run.
+  var firedRun = (cur === 'fired') || (typeof isFiredCoach === 'function' && isFiredCoach());
+
+  // Retention only applies when the router actually visits it: the router
+  // skips it when buildRetentionAsks() comes back empty. Before that decision
+  // is made the step stays visible as upcoming; afterwards we read the
+  // stored asks (never re-run buildRetentionAsks here — it mutates state).
+  var r = G.retention;
+  var retentionHappened = !!(r && r.yr === G.yr && r.asks && r.asks.length);
+  function showRetention() {
+    if (cur === 'retention') return true;
+    if (curIdx >= 5) return retentionHappened;
+    return true; // decision not made yet
+  }
+
+  var h = '<div class="os-strip" aria-label="Offseason progress">';
+  var first = true;
+  steps.forEach(function(s) {
+    if (s.id === 'recap' && firedRun) return;
+    if (s.id === 'skillpoints' && firedRun) return;
+    if (s.id === 'retention' && !showRetention()) return;
+    var idx = order[s.id];
+    var cls = idx < curIdx ? 'os-step done' : idx === curIdx ? 'os-step current' : 'os-step upcoming';
+    var label = idx < curIdx ? '✓ ' + s.label : s.label;
+    if (!first) h += '<span class="os-sep" aria-hidden="true">›</span>';
+    h += '<span class="' + cls + '">' + label + '</span>';
+    first = false;
+  });
+  h += '</div>';
+  return h;
+}
+
+// ═══════════════════════════════════════════════════════════
 //  MAIN RENDER
 // ═══════════════════════════════════════════════════════════
 
@@ -410,23 +464,23 @@ export function renderOffseason() {
   var el = ge('offseason-content'); if (!el) return;
 
   // Route to correct screen
-  if (G.offseasonStep === 'fired') { el.innerHTML = renderFired(); bindOffseason(el); return; }
+  if (G.offseasonStep === 'fired') { el.innerHTML = offseasonStrip() + renderFired(); bindOffseason(el); return; }
 
   if (G.offseasonStep === 'recap') {
-    if (window._renderSeasonRecap) el.innerHTML = window._renderSeasonRecap();
+    if (window._renderSeasonRecap) el.innerHTML = offseasonStrip() + window._renderSeasonRecap();
     else el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--txt3);">Season recap loading...</div>';
     return;
   }
 
-  if (G.offseasonStep === 'skillpoints') { el.innerHTML = renderSkillPoints(); bindOffseason(el); return; }
+  if (G.offseasonStep === 'skillpoints') { el.innerHTML = offseasonStrip() + renderSkillPoints(); bindOffseason(el); return; }
 
-  if (G.offseasonStep === 'carousel') { el.innerHTML = renderCarousel(); bindOffseason(el); return; }
+  if (G.offseasonStep === 'carousel') { el.innerHTML = offseasonStrip() + renderCarousel(); bindOffseason(el); return; }
 
-  if (G.offseasonStep === 'retention') { el.innerHTML = renderRetention(); bindOffseason(el); return; }
+  if (G.offseasonStep === 'retention') { el.innerHTML = offseasonStrip() + renderRetention(); bindOffseason(el); return; }
 
-  if (G.offseasonStep === 'portal') { el.innerHTML = renderPortal(); bindOffseason(el); return; }
+  if (G.offseasonStep === 'portal') { el.innerHTML = offseasonStrip() + renderPortal(); bindOffseason(el); return; }
 
-  if (G.offseasonStep === 'turnover' || !G.offseasonStep) { el.innerHTML = renderTurnover(); bindOffseason(el); return; }
+  if (G.offseasonStep === 'turnover' || !G.offseasonStep) { el.innerHTML = offseasonStrip() + renderTurnover(); bindOffseason(el); return; }
 
   initRecruitingIfNeeded();
   var phase = PHASES[G.recruitPhase] || PHASES[1];
@@ -472,7 +526,7 @@ export function renderOffseason() {
   // ── Advance button ──
   h += '<button class="btn-big btn-full" style="margin-top:16px;" data-phase-advance>' + phase.btnLabel + '</button>';
 
-  el.innerHTML = h;
+  el.innerHTML = offseasonStrip() + h;
   bindOffseason(el);
 }
 
