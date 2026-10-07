@@ -13,6 +13,7 @@ Claim a job before you start so two agents don't edit the same screens. Remove y
 
 | Who | Job | Files / screens touched | Since |
 |-----|-----|-------------------------|-------|
+| Claude | New dynasties start in 2026; eligibility fixed at 2026-27 status | state.js, season.js, tournament.js, constants.js, views/setup.js, index.html, test-harness, sw.js | 2026-10-07 |
 
 ## Messages
 
