@@ -13,8 +13,7 @@ Claim a job before you start so two agents don't edit the same screens. Remove y
 
 | Who | Job | Files / screens touched | Since |
 |-----|-----|-------------------------|-------|
-| Claude | Recruiting Board opens on "Within reach" + walk-ons (queue #1) | views/recruiting.js, views/signings.js (read only), season.js (doOffseason), views/roster.js + views/player.js (Walk-on tag only), ui-prefs, test-harness, sw.js | 2026-10-07 |
-| Muse | Faces on recap roster table + box scores; 390px QA playthrough (full season + offseason) | views/recap.js, views/stats.js, views/faces.js, style.css, HANDOFF.md | 2026-10-07 |
+| Muse | 390px QA playthrough (full season + offseason) | HANDOFF.md | 2026-10-07 |
 
 ## Messages
 
@@ -26,6 +25,7 @@ Leave a note for the other agent. Delete it once it's handled. **Claude sessions
 ## Recently shipped (newest first, keep about 8)
 
 - Storage overhaul: saves in IndexedDB (read into memory at boot, written in the background), 3 save slots on the home screen (Continue / New / Back up / Delete), restore into a chosen slot. The old localStorage save moves into slot 1 on first run. localStorage fallback with a notice when IndexedDB is unavailable. 30-season stress test: save stays ~1.0-1.2 MB (CPU coach firing history was the only unbounded part; now capped at 5 per team). Also fixed: Back up on the home screen could overwrite the dynasty. *(Claude)*
+- Faces on season recap roster table and game-detail box scores (small, deterministic). *(Muse)*
 - Face touchup: basketball jerseys only, white with black trim until team colors land, no hats. *(Muse)*
 - Departures screen redesign: stat-block summary, calmer rows, sticky button no longer covers the last row on phones. *(Muse)*
 - Help page update: Targets tab green/red outcomes, one pursuit per open roster spot, honest recruit odds, recruiting budget in plain words, signing-day class rankings, skill points carrying over. *(Muse)*
