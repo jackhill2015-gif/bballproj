@@ -885,13 +885,14 @@ function portalPage(st) {
   } else if (st.tab === 'schools') {
     var total = ch.bid; ch.suitors.forEach(function(x) { total += x.bid; });
     var rowsS = ch.suitors.map(function(x) { return { name: x.name, pct: Math.round(x.bid / Math.max(1, total) * 100), me: false }; });
-    rowsS.push({ name: G.teams[G.tid].name + (e.offer ? '' : ' (no offer yet)'), pct: ch.pct, me: true });
+    rowsS.push({ name: G.teams[G.tid].name, pct: ch.pct, me: true });
     rowsS.sort(function(a, b) { return b.pct - a.pct; });
     rowsS.forEach(function(x) {
       h += '<div class="school-row"><div class="school-name" style="' + (x.me ? 'color:var(--blu);font-weight:600;' : '') + '">' + x.name + '</div>'
         + '<div class="school-bar"><div class="school-fill" style="width:' + x.pct + '%;background:' + (x.me ? 'var(--blu)' : 'var(--bdr2)') + ';"></div></div>'
         + '<div class="school-pct">' + x.pct + '%</div></div>';
     });
+    if (!e.offer) h += '<div class="pp-note" style="margin-top:8px;">Your odds without an offer. Make one on the Overview tab.</div>';
   } else {
     h += offerControl(e, stage);
     h += '<div class="pp-sec"><div class="scout-type">' + playerType(e) + '</div>'

@@ -99,12 +99,12 @@ S.genRecruits();
 
 console.log('── R9/R1: turnover → portal step ──');
 S.beginOffseason();
-check(G.offseasonStep === 'skillpoints', 'beginOffseason routes to skillpoints');
+check(G.offseasonStep === 'carousel', 'beginOffseason routes to the carousel (skill points live on the recap)');
 // skillpoints → carousel (finishSkillPoints)
 R.finishSkillPoints();
 check(G.offseasonStep === 'carousel', 'finishSkillPoints routes to carousel');
 R.stayAtSchool();
-check(G.offseasonStep === 'turnover', 'stayAtSchool routes to turnover');
+check(G.offseasonStep === 'retention', 'stayAtSchool routes to departures');
 // turnover → portal via proceedToRecruiting
 const userRosterBefore = G.teams[G.tid].rost.length;
 R.proceedToRecruiting();
@@ -286,7 +286,7 @@ R.renderOffseason();
 check(_els['offseason-content'].innerHTML.indexOf('Stay at') < 0, 'R4: stay card hidden for fired coach');
 G.coach.history.push({ yr: G.yr, school: 'New School', action: 'Left for New School' });
 R.stayAtSchool();
-check(G.offseasonStep === 'turnover', 'non-fired coach can still stay');
+check(G.offseasonStep === 'retention', 'non-fired coach can still stay');
 
 console.log('── R3: job market is fixed; rejections are marked, not reshuffled ──');
 G.coach.history.push({ yr: G.yr, school: 'New School', action: 'Stayed' });

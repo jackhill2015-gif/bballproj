@@ -17,7 +17,7 @@ S.buildUniverse();
 const tid = G.teams.findIndex(t => (t.schoolPrestige || 50) >= 45 && (t.schoolPrestige || 50) < 60);
 newDynasty(tid);
 toTurnover();
-check(G.offseasonStep === 'turnover', 'reached turnover');
+check(G.offseasonStep === 'retention', 'staying goes straight to departures');
 R.proceedToRecruiting();
 check(G.offseasonStep === 'retention', 'proceedToRecruiting stops at retention');
 const asks = G.retention.asks;

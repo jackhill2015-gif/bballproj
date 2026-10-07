@@ -249,6 +249,9 @@ export function renderSeasonRecap() {
 
   h += '</div></div>';
 
+  // Skill points are spent right here (no separate screen)
+  if (typeof window !== 'undefined' && window._skillPanelHTML) h += window._skillPanelHTML();
+
   h += '<div class="big-btn-row" style="text-align:center;">'
     + '<button class="btn-big" data-action="begin-offseason">Begin offseason</button></div>';
 

@@ -215,3 +215,37 @@ if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator && typeof l
     navigator.serviceWorker.register('sw.js').catch(function(e) { console.warn('Offline support unavailable', e); });
   });
 }
+
+// ── Press and hold any +/− stepper to keep counting ──
+// Works for portal offers, recruiting points and skill points. The screen
+// re-renders after each step, so each repeat looks the button up again by
+// its data attribute rather than holding on to the old element.
+(function holdToRepeat() {
+  var KEYS = ['data-poff-inc', 'data-poff-dec', 'data-pt-inc', 'data-pt-dec', 'data-skill-inc', 'data-skill-dec'];
+  var timer = null, sel = null, count = 0;
+  function stop() { if (timer) clearTimeout(timer); timer = null; sel = null; }
+  function tick() {
+    if (!sel) return;
+    var btn = document.querySelector(sel);
+    if (!btn || btn.classList.contains('off') || btn.disabled) { stop(); return; }
+    btn.click();
+    count++;
+    timer = setTimeout(tick, count < 6 ? 140 : count < 20 ? 80 : 45); // speeds up the longer you hold
+  }
+  document.addEventListener('pointerdown', function(e) {
+    var b = e.target.closest && e.target.closest('button');
+    if (!b) return;
+    for (var i = 0; i < KEYS.length; i++) {
+      if (b.hasAttribute(KEYS[i])) {
+        var inSheet = !!b.closest('#sheet');
+        sel = (inSheet ? '#sheet ' : '#app ') + 'button[' + KEYS[i] + '="' + b.getAttribute(KEYS[i]) + '"]';
+        count = 0;
+        timer = setTimeout(tick, 380); // a normal tap still counts once
+        return;
+      }
+    }
+  });
+  ['pointerup', 'pointercancel'].forEach(function(ev) { window.addEventListener(ev, stop, true); });
+  window.addEventListener('blur', function(e) { if (e.target === window) stop(); }); // app switched away, not a re-render
+  document.addEventListener('contextmenu', function(e) { if (sel) e.preventDefault(); });
+})();

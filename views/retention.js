@@ -125,44 +125,54 @@ export function applyRetention() {
 }
 
 export function renderRetention() {
-  var r = G.retention || { asks: [] };
+  var r = (G.retention && G.retention.yr === G.yr) ? G.retention : { asks: [] };
   var pending = retentionPending();
   var total = r.asks.reduce(function(s, a) { return s + a.ask; }, 0);
   var kept = r.asks.filter(function(a) { return a.decision === 'keep'; }).reduce(function(s, a) { return s + a.ask; }, 0);
   var t = G.teams[G.tid];
+  var dep = G.departingPlayers || [];
+  var returning = (t.rost || []).length;
+  var pc = { PG: 0, SG: 0, SF: 0, PF: 0, C: 0 };
+  (t.rost || []).forEach(function(p) { if (pc.hasOwnProperty(p.pos)) pc[p.pos]++; });
+  var needs = Object.keys(pc).filter(function(k) { return pc[k] < 2; });
 
-  var h = '<div class="sec-head">Player retention</div>'
-    + '<div class="sec-sub" style="margin-bottom:12px;">Before the transfer portal opens, your top players want NIL deals to stay. '
-    + 'Pay to keep them, or let them enter the portal. A player you let go stays if no school signs him.</div>';
+  var h = '<div class="acq-head"><div class="acq-title">Departures</div>'
+    + '<div class="acq-line"><span>Who is leaving, and who wants an NIL deal to stay</span></div></div>';
+  h += '<div class="dep-sum"><span><b>' + dep.length + '</b> leaving</span><span><b>' + returning + '</b> returning</span>'
+    + '<span><b>' + Math.max(0, 15 - returning) + '</b> open spots</span>'
+    + (needs.length ? '<span>Thin at <b>' + needs.join(', ') + '</b></span>' : '') + '</div>';
 
-  h += '<div class="stat-strip" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px;">'
-    + '<div class="stat-cell"><div class="sv">' + (G.pts || 0) + '</div><div class="sl">NIL available</div></div>'
-    + '<div class="stat-cell"><div class="sv">' + total + '</div><div class="sl">Total asks</div></div>'
-    + '<div class="stat-cell"><div class="sv">' + kept + '</div><div class="sl">Committed</div></div></div>';
-
-  h += '<div class="panel"><div class="panel-h"><span>NIL requests</span><small>' + (pending ? pending + ' to decide' : 'All decided') + '</small></div>'
-    + '<div class="panel-b flush"><div class="tbl-wrap"><table class="ret"><thead><tr>'
-    + '<th>Player</th><th class="num">OVR</th><th class="num">POT</th><th class="num hide-sm">PPG</th><th class="num">Ask</th><th>Decision</th>'
-    + '</tr></thead><tbody>';
-  r.asks.forEach(function(a, i) {
-    var cant = a.decision !== 'keep' && (G.pts || 0) < a.ask;
-    h += '<tr' + (a.decision === 'keep' ? ' class="hl"' : '') + '>'
-      + '<td>' + pLink(a.name, G.tid) + ' <span style="color:var(--txt3);">' + a.pos + ' · ' + a.cls + '</span>'
-      + '<div style="font-size:12px;color:var(--txt2);">' + a.why + '</div></td>'
-      + '<td class="num"><b>' + a.ovr + '</b></td><td class="num">' + a.pot + '</td>'
-      + '<td class="num hide-sm">' + (a.ppg === null ? '—' : a.ppg.toFixed(1)) + '</td>'
-      + '<td class="num">' + a.ask + '</td>'
-      + '<td><div class="ret-btns">'
-      + '<button class="ret-btn' + (a.decision === 'keep' ? ' on' : '') + '" data-ret="keep" data-ri="' + i + '"' + (cant ? ' disabled title="Not enough NIL"' : '') + '>Keep</button>'
-      + '<button class="ret-btn' + (a.decision === 'go' ? ' on go' : '') + '" data-ret="go" data-ri="' + i + '">Let go</button>'
-      + '</div></td></tr>';
+  // Leaving
+  h += '<div class="card-title" style="margin-top:12px;">Leaving</div><div class="acq-list">';
+  if (!dep.length) h += '<div class="sg-none" style="padding:8px 0;">Nobody is leaving this year.</div>';
+  dep.forEach(function(d) {
+    h += '<div class="acq-row" style="cursor:default;"><div class="acq-main"><div class="acq-name">' + d.name + ' <span class="acq-cls">' + d.pos + ' · ' + d.cls + '</span></div>'
+      + '<div class="acq-sub">' + d.ppg + ' ppg · ' + d.rpg + ' rpg · ' + (d.apg || '0.0') + ' apg</div></div>'
+      + '<div class="acq-right"><div class="acq-big">' + d.ovr + '</div><div class="acq-small">' + (d.reason === 'Graduated' ? 'Graduated' : 'Declared for the draft') + '</div></div></div>';
   });
-  h += '</tbody></table></div></div></div>';
+  h += '</div>';
 
-  h += '<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;">'
-    + '<button class="btn btn-big" data-ret-done="1"' + (pending ? ' disabled' : '') + '>'
-    + (pending ? 'Decide on every request' : 'Open the transfer portal') + '</button></div>';
-  h += '<div style="font-size:12px;color:var(--txt3);margin-top:8px;">Asks scale with rating and production. Happier players ask for less. '
-    + t.name + ' keeps its NIL for the portal and facilities if you let players go.</div>';
+  // NIL requests
+  h += '<div class="card-title" style="margin-top:16px;">NIL requests</div>';
+  if (!r.asks.length) {
+    h += '<div class="sg-none" style="padding:4px 0 8px;">No one asked for an NIL deal this year.</div>';
+  } else {
+    h += '<div class="sec-sub" style="margin:0 0 6px;">Pay to keep a player, or let him enter the transfer portal (he stays if no school signs him). '
+      + '<b>' + (G.pts || 0) + '</b> NIL available · asks total ' + total + (kept ? ' · committed ' + kept : '') + '</div><div class="acq-list">';
+    r.asks.forEach(function(a, i) {
+      var cant = a.decision !== 'keep' && (G.pts || 0) < a.ask;
+      h += '<div class="ret-row' + (a.decision === 'keep' ? ' kept' : a.decision === 'go' ? ' gone' : '') + '">'
+        + '<div class="acq-main"><div class="acq-name">' + pLink(a.name, G.tid) + ' <span class="acq-cls">' + a.pos + ' · ' + a.cls + ' · ' + a.ovr + '</span></div>'
+        + '<div class="acq-sub">' + a.why + (a.ppg !== null ? ' · ' + a.ppg.toFixed(1) + ' ppg' : '') + '</div></div>'
+        + '<div class="ret-side"><div class="ret-ask">' + a.ask + ' <span>NIL</span></div><div class="ret-btns">'
+        + '<button class="ret-btn' + (a.decision === 'keep' ? ' on' : '') + '" data-ret="keep" data-ri="' + i + '"' + (cant ? ' disabled title="Not enough NIL"' : '') + '>Keep</button>'
+        + '<button class="ret-btn' + (a.decision === 'go' ? ' on go' : '') + '" data-ret="go" data-ri="' + i + '">Let go</button>'
+        + '</div></div></div>';
+    });
+    h += '</div>';
+  }
+
+  h += '<div class="acq-sticky"><button class="btn-big btn-full" data-ret-done="1"' + (pending ? ' disabled' : '') + '>'
+    + (pending ? 'Decide on ' + pending + ' more request' + (pending > 1 ? 's' : '') : 'Open the transfer portal') + '</button></div>';
   return h;
 }

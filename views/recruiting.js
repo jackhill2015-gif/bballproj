@@ -226,6 +226,7 @@ window.setRecruitFilter = setRecruitFilter;
 
 
 export function proceedToRecruiting() {
+  if (G.offseasonStep !== 'turnover' && G.offseasonStep !== 'carousel') return; // already done this offseason
   // Remove departing players from roster
   var t = G.teams[G.tid];
   var dominated = G.departingPlayers.map(function(d) { return d.name; });
@@ -238,13 +239,11 @@ export function proceedToRecruiting() {
     addLog('ev', G.gi, 'Donor collective check: <b>+' + bonus + ' NIL</b> for retention, the transfer portal and facilities.');
     toast('Donor check: +' + bonus + ' NIL', 'var(--grn)');
   }
-  // Player retention: top returners ask for NIL before the portal opens
-  if (buildRetentionAsks().length) {
-    G.offseasonStep = 'retention';
-    saveState(); updateAll(); renderOffseason();
-    return;
-  }
-  openPortal();
+  // Departures + player retention share one screen (always shown, so you
+  // see who left even when nobody asks for NIL)
+  buildRetentionAsks();
+  G.offseasonStep = 'retention';
+  saveState(); updateAll(); renderOffseason();
 }
 window.proceedToRecruiting = proceedToRecruiting;
 
@@ -428,10 +427,9 @@ window.resolveRecruitingClass = resolveRecruitingClass;
 export function offseasonStrip() {
   var steps = [
     { id: 'recap', label: 'Recap' },
-    { id: 'skillpoints', label: 'Skill points' },
+
     { id: 'carousel', label: 'Carousel' },
-    { id: 'turnover', label: 'Departures' },
-    { id: 'retention', label: 'Retention' },
+    { id: 'retention', label: 'Departures' },
     { id: 'portal', label: 'Portal' },
     { id: 'recruiting', label: 'Recruiting' },
     { id: 'signed', label: 'Signing day' }
@@ -450,11 +448,7 @@ export function offseasonStrip() {
   // stored asks (never re-run buildRetentionAsks here — it mutates state).
   var r = G.retention;
   var retentionHappened = !!(r && r.yr === G.yr && r.asks && r.asks.length);
-  function showRetention() {
-    if (cur === 'retention') return true;
-    if (curIdx >= 5) return retentionHappened;
-    return true; // decision not made yet
-  }
+  function showRetention() { return true; } // departures + retention always has its own screen now
 
   var h = '<div class="os-strip" aria-label="Offseason progress">';
   var first = true;
@@ -484,7 +478,7 @@ export function renderOffseason() {
   if (G.offseasonStep === 'fired') { el.innerHTML = offseasonStrip() + renderFired(); bindOffseason(el); return; }
 
   if (G.offseasonStep === 'recap') {
-    if (window._renderSeasonRecap) el.innerHTML = offseasonStrip() + window._renderSeasonRecap();
+    if (window._renderSeasonRecap) { el.innerHTML = offseasonStrip() + window._renderSeasonRecap(); bindOffseason(el); }
     else el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--txt3);">Season recap loading...</div>';
     return;
   }
@@ -875,21 +869,20 @@ window.proceedFromFired = proceedFromFired;
 
 var _skillInitial = null;
 
-function renderSkillPoints() {
+// Skill point panel, shown on the season recap (and on the legacy
+// skill points screen for old saves parked there)
+function skillPanelHTML() {
   var pts = G.skillPointsToSpend || 0;
   var c = G.coach;
   // Snapshot initial values on first render. R7: persisted on G.coach (which
   // saveState serializes whole) so it survives reload; re-derived as a
   // no-deallocate floor if an old save lacks it.
+  if (!_skillInitial || !(G.coach && G.coach.skillInitial)) _skillInitial = null; // new season: fresh floor
   if (!_skillInitial) {
     _skillInitial = (G.coach && G.coach.skillInitial) || { off: c.off, def: c.def, dev: c.dev, rec: c.rec };
     if (G.coach) G.coach.skillInitial = _skillInitial;
   }
-  var h = '<div style="max-width:600px;margin:0 auto;">'
-    + '<div style="margin-bottom:12px;"><div class="sec-head">Skill points</div>'
-    + '<div class="sec-sub">You earned <b>' + G.skillPointsEarned + '</b> skill point' + (G.skillPointsEarned !== 1 ? 's' : '') + ' this season.</div></div>';
-
-  h += '<div class="panel"><div class="panel-h"><span>Coaching ratings</span>'
+  var h = '<div class="panel" id="skill-panel"><div class="panel-h"><span>Spend your skill points</span>'
     + '<small><span style="font-weight:600;color:' + (pts > 0 ? 'var(--grn2)' : 'var(--txt3)') + ';">' + pts + '</span> point' + (pts !== 1 ? 's' : '') + ' remaining</small></div>'
     + '<div class="panel-b flush"><table>'
     + '<thead><tr><th>Skill</th><th class="num">Rating</th></tr></thead><tbody>';
@@ -917,9 +910,13 @@ function renderSkillPoints() {
   });
 
   h += '</tbody></table></div></div>';
-
-  h += '<div class="big-btn-row"><button class="btn-big btn-full" data-finish-skills>Continue</button></div></div>';
   return h;
+}
+window._skillPanelHTML = skillPanelHTML;
+
+function renderSkillPoints() {
+  return '<div style="max-width:600px;margin:0 auto;">' + skillPanelHTML()
+    + '<div class="big-btn-row"><button class="btn-big btn-full" data-finish-skills>Continue</button></div></div>';
 }
 
 export function allocateSkillPoint(key) {
@@ -1148,7 +1145,7 @@ export function applyForJob(jobId) {
       toast('Welcome to ' + newTeam.name, 'var(--grn)');
       G.offseasonStep = 'turnover';
       _rejectedJobs = [];
-      saveState(); updateAll(); renderOffseason();
+      proceedToRecruiting(); // straight to departures
     });
   } else {
     // Rejected: the job stays on the list, marked as not selected
@@ -1195,7 +1192,7 @@ export function stayAtSchool() {
   addLog('ev', G.gi, 'Coach ' + G.coach.lastName + ' returns to <b>' + G.teams[G.tid].name + '</b>.');
   G.offseasonStep = 'turnover';
   _rejectedJobs = [];
-  saveState(); updateAll(); renderOffseason();
+  proceedToRecruiting(); // straight to departures
 }
 window.stayAtSchool = stayAtSchool;
 

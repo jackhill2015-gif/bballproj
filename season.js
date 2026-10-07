@@ -897,7 +897,9 @@ export function beginOffseason() {
     }
   });
 
-  G.offseasonStep = 'skillpoints';
+  // Skill points were spent on the recap screen: go straight to the carousel
+  if (G.coach) delete G.coach.skillInitial;
+  G.offseasonStep = 'carousel';
   G.recruitPhase = 0;
   G.recruitTargets = [];
   G.portalEntrants = []; G.portalStage = 0; G.portalCpuTakes = {}; G.portalUserSigns = 0;
