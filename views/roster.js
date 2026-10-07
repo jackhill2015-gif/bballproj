@@ -119,7 +119,10 @@ export function renderRoster() {
   h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bdr);margin-bottom:4px;">'
     + '<div style="font-size:12.5px;color:var(--txt2);">Minutes <b style="font-size:14px;font-weight:600;color:' + totalCol + ';" data-min-total>' + total + '/200</b>'
     + (nOut ? ' <span style="color:var(--txt3);">(' + nOut + ' out)</span>' : '') + '</div>'
-    + '<button class="btn-quiet" data-roster-auto>Auto set</button></div>';
+    + '<div style="display:flex;align-items:center;gap:10px;">'
+    + '<label class="auto-tog"><input type="checkbox" data-auto-lineup' + (G.autoLineup ? ' checked' : '') + '> Auto-manage</label>'
+    + (G.autoLineup ? '' : '<button class="btn-quiet" data-roster-auto>Auto set</button>') + '</div></div>'
+    + (G.autoLineup ? '<div class="sec-sub" style="margin:2px 0 6px;">Auto-manage is on: your best healthy players start and minutes reset each week, after injuries and returns. Turn it off to set the lineup yourself.</div>' : '');
 
   t.rost.forEach(function(p, i) {
     if (i === 0) h += '<div class="tier-label">Starters</div>';
@@ -154,6 +157,12 @@ function bindRoster(el) {
   };
   // Full redistribution + re-render only when the drag ends.
   el.onchange = function(e) {
+    if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-auto-lineup')) {
+      G.autoLineup = !!e.target.checked;
+      if (G.autoLineup && window._applyAutoLineup) window._applyAutoLineup();
+      saveState(); renderRoster();
+      return;
+    }
     if (handleGameplanChange(e.target)) { renderRoster(); return; }
     var s = e.target.closest ? e.target.closest('[data-mins]') : null;
     if (s) rosterSliderCommit(s);

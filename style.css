@@ -1429,3 +1429,5 @@ table.ups td { vertical-align: middle; }
 .tname-link { color: var(--blu); cursor: pointer; font-weight: 600; }
 .tname-link:hover { text-decoration: underline; }
 .sched-row[data-action="game"] { cursor: pointer; }
+.auto-tog { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--txt2); cursor: pointer; min-height: 36px; }
+.auto-tog input { width: 18px; height: 18px; accent-color: var(--blu); }

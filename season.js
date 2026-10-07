@@ -10,7 +10,7 @@ import { practiceBonus, trainingChance, facilitiesFor } from './facilities.js';
 import { payGate, payTvShare, ledger as financeLedger } from './finance.js';
 import { ALL_TEAMS, POS, CLS, RECRUIT_STATE_POOL, COACH_FN, COACH_LN, calcSchoolPrestige, SKILL_POINT_TABLE, calcExpectations } from './constants.js';
 import {
-  ri, clamp, getTOvr, fixMins, freshS, getTeamStyle, getOvr, ge, txt, fmtScore,
+  ri, clamp, getTOvr, fixMins, freshS, autoLineup, getTeamStyle, getOvr, ge, txt, fmtScore,
   awardScore, pickPositionalTeam
 } from './utils.js';
 import { G, LS, SetupState, saveState } from './state.js';
@@ -211,6 +211,22 @@ export function buildSchedules() {
 }
 
 // ── Assign user's OOC picks into the master schedule as matched pairs ──
+// Balanced non-conference slate: 3 tough, 4 even, 3 easier (by team overall)
+export function pickBalancedOOC() {
+  var me = G.teams[G.tid], myOvr = getTOvr(me);
+  var pool = G.teams.filter(function(t) { return t.conf !== me.conf && t.id !== G.tid; });
+  var shuf = function(a) { return a.sort(function() { return 0.5 - Math.random(); }); };
+  var tough = shuf(pool.filter(function(t) { return Math.abs(getTOvr(t) - myOvr) <= 6 && getTOvr(t) >= myOvr; })).slice(0, 3);
+  var mid = shuf(pool.filter(function(t) { return getTOvr(t) >= myOvr - 11 && getTOvr(t) < myOvr + 4; })).slice(0, 4);
+  var easy = shuf(pool.filter(function(t) { return getTOvr(t) < myOvr - 8; })).slice(0, 3);
+  var seen = {}, picks = [];
+  tough.concat(mid).concat(easy).forEach(function(t) { if (!seen[t.id] && picks.length < 10) { seen[t.id] = true; picks.push(t.id); } });
+  shuf(pool.slice()).forEach(function(t) { if (!seen[t.id] && picks.length < 10) { seen[t.id] = true; picks.push(t.id); } });
+  return picks;
+}
+
+if (typeof window !== 'undefined') window._pickBalancedOOC = pickBalancedOOC;
+
 export function setupUserOOC() {
   var tid = G.tid;
   var picks = SetupState.NC_PICKS || [];
@@ -457,6 +473,15 @@ export function recordResult() {
 //  ADVANCE WEEK
 // ═══════════════════════════════════════════════════════════
 
+// Auto-manage lineup (roster screen toggle, G.autoLineup)
+if (typeof window !== 'undefined') window._applyAutoLineup = function() { applyAutoLineup(); };
+export function applyAutoLineup() {
+  if (!G.autoLineup || !G.teams[G.tid]) return;
+  var out = {};
+  (G.injuries || []).forEach(function(inj) { if (inj.weeksLeft > 0) out[inj.playerName] = true; });
+  autoLineup(G.teams[G.tid], out);
+}
+
 export function advanceWeek() {
   G.gi++;
   G.wk = G.gi;
@@ -477,6 +502,7 @@ export function advanceWeek() {
   if (G.phase === 'reg' && G.gi < 30) {
     rollEvents(G.gi);
   }
+  applyAutoLineup(); // injuries and returns are handled for you when it's on
 
   if (G.gi >= 30 && G.phase === 'reg') {
     G.phase = 'conf_tourn';
@@ -561,6 +587,7 @@ export function doPlay(mode) {
   } else if (G.phase === 'conf_tourn' || G.phase === 'ncaa') {
     if (_ext.playTournamentGame) _ext.playTournamentGame(mode === 'live');
   } else if (G.phase === 'offseason') {
+    if (window._moveOnWarning && window._moveOnWarning()) return; // heads-up first (second tap continues)
     if (G.offseasonStep === 'fired') {
       if (window.proceedFromFired) window.proceedFromFired();
     } else if (G.offseasonStep === 'recap') {
@@ -576,6 +603,8 @@ export function doPlay(mode) {
     } else if (G.offseasonStep === 'portal') {
       if (window.advancePortalStage) window.advancePortalStage();
     } else if (G.offseasonStep === 'signed') {
+      if (window.toSchedule) window.toSchedule(); else doOffseason();
+    } else if (G.offseasonStep === 'schedule') {
       doOffseason();
     } else if (G.recruitPhase < 3) {
       if (window.advanceRecruitPhase) window.advanceRecruitPhase();
@@ -1056,9 +1085,13 @@ export function doOffseason() {
   buildSchedules();
   // Auto-generate user's OOC opponents for new season
   var myOvr = getTOvr(G.teams[G.tid]);
-  var oocPool = G.teams.filter(function(x) { return x.id !== G.tid && x.conf !== G.teams[G.tid].conf; });
-  oocPool.sort(function() { return 0.5 - Math.random(); });
-  SetupState.NC_PICKS = oocPool.slice(0, 10).map(function(x) { return x.id; });
+  // Your non-conference slate: the one you set in the offseason (schedule
+  // step), else a balanced auto-pick
+  var _ncOk = Array.isArray(G.ncPicks) && G.ncPicks.length === 10 && G.ncPicks.every(function(id) {
+    return G.teams[id] && id !== G.tid && G.teams[id].conf !== G.teams[G.tid].conf;
+  });
+  SetupState.NC_PICKS = _ncOk ? G.ncPicks.slice() : pickBalancedOOC();
+  G.ncPicks = null;
   setupUserOOC();
 
   genRecruits();
@@ -1070,6 +1103,7 @@ export function doOffseason() {
   G.expectations = calcExpectations(_myO, confAvgOvr, G.teams.filter(function(x) { return getTOvr(x) > _myO; }).length + 1);
   G.seasonAchievements = { confTitleThisYear: false, madeNCAA: false, sweet16: false, finalFour: false, champGame: false, natChamp: false };
 
+  applyAutoLineup(); // new roster, fresh lineup when auto-manage is on
   addLog('ev', 0, 'Season ' + G.yr + ' begins. Expectations: ' + G.expectations.low + '-' + G.expectations.high + ' wins' + (G.expectations.ncaa ? ' and an NCAA tournament bid.' : '.'));
   toast('Season ' + G.yr + ' has started');
   saveState(); updateAll(); navTo('dashboard');

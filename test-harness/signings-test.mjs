@@ -38,10 +38,19 @@ check(JSON.stringify(recIn) === JSON.stringify(recLog), `every signed recruit is
 const recOther = G.signings.log.filter(x => x.kind === 'recruit' && x.outcome === 'other');
 check(recIn.length + recOther.length === 12, `all 12 targeted recruits have an outcome (${recIn.length} signed, ${recOther.length} elsewhere)`);
 const html = SG.signingDayHTML();
-check(recIn.every(n => html.includes(n)) && html.includes('data-start-season'), 'signing day screen lists the class and a start-season button');
+check(recIn.every(n => html.includes(n)) && html.includes('data-to-schedule'), 'signing day screen lists the class and leads to the schedule');
 ST.saveStateNow(); const before = JSON.stringify(G.signings); ST.loadState();
 check(JSON.stringify(G.signings) === before, 'signing log survives a save and reload');
+// non-conference schedule step: 10 picks, swap one, and they become next season's games
+R.toSchedule();
+check(G.offseasonStep === 'schedule' && G.ncPicks.length === 10, 'schedule step offers 10 non-conference opponents');
+check(G.ncPicks.every(id => G.teams[id].conf !== G.teams[G.tid].conf && id !== G.tid), 'all picks are outside your conference');
+const swapIn = G.teams.find(t => t.conf !== G.teams[G.tid].conf && t.id !== G.tid && !G.ncPicks.includes(t.id));
+G.ncPicks[3] = swapIn.id;
+const chosen = G.ncPicks.slice().sort((a, b) => a - b);
 const yr = G.yr; S.doOffseason();
+const ooc = G.teams[G.tid].sched.filter(g => g && !g.conf).map(g => g.opp).sort((a, b) => a - b);
+check(JSON.stringify(ooc) === JSON.stringify(chosen), 'next season\'s non-conference games are exactly your picks (incl. the swap)');
 check(G.yr === yr + 1 && G.phase === 'reg', 'season starts after signing day');
 const made = recIn.filter(n => G.teams[G.tid].rost.some(p => p.name === n));
 check(made.length === recIn.length || G.teams[G.tid].rost.length === 15, `signed recruits join the new roster (${made.length} of ${recIn.length}; cut only when the roster is full)`);

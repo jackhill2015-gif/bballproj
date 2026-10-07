@@ -110,7 +110,7 @@ export function signingDayHTML() {
   h += '<div class="panel sg-panel"><div class="panel-h"><span>Recruiting results</span><small>All three phases</small></div><div class="panel-b">'
     + (recruitLog.length ? groupsHTML(recruitLog) : '<div class="sg-none">You did not pursue any recruits this year.</div>') + '</div></div>';
   h += classPanelHTML();
-  h += '<button class="btn-big btn-full" style="margin-top:12px;" data-start-season>Start the ' + (G.yr + 1) + ' season</button>';
+  h += '<button class="btn-big btn-full" style="margin-top:12px;" data-to-schedule>Next: non-conference schedule</button>';
   return h;
 }
 

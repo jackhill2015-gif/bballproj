@@ -107,6 +107,27 @@ export function fixMins(rost) {
   if (rost[4]) rost[4].mins = Math.max(1, rost[4].mins + diff);
 }
 
+// Auto-manage lineup: best healthy players start (32 min), next four rotate
+// (12 min), injured/suspended and redshirting players sit. 200 minutes total.
+export function autoLineup(t, injuredNames) {
+  var out = injuredNames || {};
+  var avail = function(p) { return !p.rs && !out[p.name]; };
+  t.rost.sort(function(a, b) { return ((avail(b) ? 1 : 0) - (avail(a) ? 1 : 0)) || (b.ovr - a.ovr); });
+  var n = 0;
+  t.rost.forEach(function(p) {
+    if (!avail(p)) { p.mins = 0; return; }
+    p.mins = n < 5 ? 32 : n < 9 ? 12 : 0; n++;
+  });
+  var total = t.rost.reduce(function(a, b) { return a + b.mins; }, 0);
+  var i = 0;
+  while (total !== 200 && n > 0 && i < 400) { // spread any remainder over the starters
+    var p = t.rost[i % Math.min(5, n)];
+    var step = total < 200 ? 1 : -1;
+    if (p.mins + step >= 0 && p.mins + step <= 40) { p.mins += step; total += step; }
+    i++;
+  }
+}
+
 export function freshS() {
   // M9: 3PT/FT/TO splits + offensive rebounds wired through both sim paths so
   // the engine can be calibrated against real D1 bands (3P%, 3PA rate, FT%,

@@ -84,8 +84,20 @@ export function renderHelp() {
     + 'when it matters.');
 
   h += sec('The offseason, in order',
-    'Season recap, then skill points, then the coaching carousel, then departures, then player '
-    + 'retention, then the transfer portal, then recruiting. Each step advances with the top-bar button.');
+    'Season recap (spend your skill points right there), the coaching carousel, departures (who is leaving, '
+    + 'and NIL requests from players who want to stay), the transfer portal, recruiting, signing day, and your '
+    + 'non-conference schedule for next season. Each step advances with the button at the bottom or the top-bar '
+    + 'button. Before a step where it matters, you get a heads-up (unspent skill points, open roster spots with '
+    + 'no offers out, unspent recruiting points, a position with nobody next season); tap again to continue anyway.');
+
+  h += sec('Non-conference schedule',
+    'Every offseason, after signing day, you set next season\'s 10 non-conference games. The game suggests a '
+    + 'balanced slate (a few tough, mostly even, a few easier); tap any game to swap the opponent, or auto-pick again.');
+
+  h += sec('Auto-manage lineup',
+    'On the roster screen, turn on Auto-manage and your best healthy players start, the next four rotate, and '
+    + 'injured or redshirting players sit. Minutes reset every week, after injuries and returns, and when a new '
+    + 'season starts. Turn it off to set the depth chart and minutes yourself.');
 
   h += sec('Player retention',
     'Before the portal opens, your two or three best returning players ask for an NIL deal to stay '

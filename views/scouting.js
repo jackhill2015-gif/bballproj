@@ -234,6 +234,7 @@ export function fitListHTML(p) {
 }
 // Your roster next season (returners + signed recruits), best first
 export function nextSeasonRoster() { return nextSeason(); }
+if (typeof window !== 'undefined') window._nextRoster = nextSeason;
 
 export function scoutingHTML(p) {
   var t = G.teams[G.tid];

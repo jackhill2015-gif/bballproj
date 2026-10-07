@@ -14,7 +14,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { payDonors } from '../finance.js';
-import { ge, clamp, ri } from '../utils.js';
+import { ge, clamp, ri, getTOvr } from '../utils.js';
 import { hasRestlessStarAt } from '../morale.js';
 import { TEAM_STATES, STATE_TO_REGION, STATE_NAMES, SCHOOL_RECRUIT_GATES, COACH_FN, COACH_LN, RECRUIT_STATE_POOL } from '../constants.js';
 import { G, LS, SetupState, saveState, calcRecruitingBudget } from '../state.js';
@@ -26,6 +26,7 @@ import * as Battle from './battle.js';
 import { scoutLine, scoutingHTML, fitReport, playerType, typeTagsHTML, ratingBarsHTML, fitListHTML } from './scouting.js';
 import { beginReport, noteSigning, reportHTML, classPanelHTML, signingDayHTML } from './signings.js';
 import * as Acq from './acq.js';
+import { closeSheet } from './sheet.js';
 import { getUiPrefs, setUiPrefs } from './ui-prefs.js';
 
 var _ext = { toast: null, addLog: null, updateAll: null };
@@ -432,9 +433,10 @@ export function offseasonStrip() {
     { id: 'retention', label: 'Departures' },
     { id: 'portal', label: 'Portal' },
     { id: 'recruiting', label: 'Recruiting' },
-    { id: 'signed', label: 'Signing day' }
+    { id: 'signed', label: 'Signing day' },
+    { id: 'schedule', label: 'Schedule' }
   ];
-  var order = { recap: 0, skillpoints: 1, carousel: 2, turnover: 3, retention: 4, portal: 5, recruiting: 6, signed: 7 };
+  var order = { recap: 0, skillpoints: 1, carousel: 2, turnover: 3, retention: 4, portal: 5, recruiting: 6, signed: 7, schedule: 8 };
   var cur = G.offseasonStep;
   var curIdx = order.hasOwnProperty(cur) ? order[cur] : 0;
   if (cur === 'fired') curIdx = 2; // fired interstitial leads into the carousel
@@ -493,6 +495,8 @@ export function renderOffseason() {
 
   if (G.offseasonStep === 'signed') { el.innerHTML = offseasonStrip() + signingDayHTML(); bindOffseason(el); return; }
 
+  if (G.offseasonStep === 'schedule') { el.innerHTML = offseasonStrip() + renderNCSchedule(); bindOffseason(el); Acq.refreshSheet(); return; }
+
   if (G.offseasonStep === 'turnover' || !G.offseasonStep) { el.innerHTML = offseasonStrip() + renderTurnover(); bindOffseason(el); return; }
 
   initRecruitingIfNeeded();
@@ -546,6 +550,123 @@ function phaseDots() {
 
 // Final phase button resolves through window.doOffseason (main.js),
 // matching the old inline onclick="doOffseason()" behavior.
+// ═══════════════════════════════════════════════════════════
+//  NON-CONFERENCE SCHEDULE — every offseason, after signing day.
+//  G.ncPicks (10 team ids) is used by doOffseason when it builds
+//  next season's schedule; tap a game to swap the opponent.
+// ═══════════════════════════════════════════════════════════
+var _ncSlot = 0, _ncBand = 'all';
+
+export function toSchedule() {
+  var ok = Array.isArray(G.ncPicks) && G.ncPicks.length === 10;
+  if (!ok && window._pickBalancedOOC) G.ncPicks = window._pickBalancedOOC();
+  G.offseasonStep = 'schedule';
+  saveState(); updateAll(); renderOffseason();
+}
+window.toSchedule = toSchedule;
+
+function ncEdge(opp) {
+  var d = getTOvr(opp) - getTOvr(G.teams[G.tid]);
+  return d >= 4 ? { l: 'Tough', c: 'var(--red)' } : d >= -4 ? { l: 'Even', c: 'var(--gld2)' } : { l: 'Easier', c: 'var(--grn2)' };
+}
+
+function renderNCSchedule() {
+  var t = G.teams[G.tid];
+  var picks = G.ncPicks || [];
+  var counts = { Tough: 0, Even: 0, Easier: 0 };
+  picks.forEach(function(id) { if (G.teams[id]) counts[ncEdge(G.teams[id]).l]++; });
+  var h = Acq.header('Non-conference schedule', 'Season ' + (G.yr + 1) + ' · 10 games before ' + t.conf + ' play',
+    [{ v: counts.Tough, l: 'tough' }, { v: counts.Even, l: 'even' }, { v: counts.Easier, l: 'easier' }]);
+  h += '<div class="acq-tool"><span class="sec-sub" style="margin:0;">Tap a game to swap the opponent. Overall ratings are this season\'s.</span>'
+    + '<button class="acq-filter-btn" style="margin-left:auto;" data-nc-auto>Auto-pick again</button></div>';
+  h += '<div class="acq-list">';
+  picks.forEach(function(id, i) {
+    var o = G.teams[id]; if (!o) return;
+    var e = ncEdge(o);
+    h += Acq.row({ open: 'data-nc-swap="' + i + '"',
+      name: o.name, sub: (i % 2 === 0 ? 'Home' : 'Away') + ' · ' + o.conf + ' · ' + o.wins + '-' + o.loss + ' this season',
+      big: getTOvr(o), small: '<span style="color:' + e.c + ';">' + e.l + '</span>' });
+  });
+  h += '</div>';
+  h += Acq.sticky('data-start-season', 'Start the ' + (G.yr + 1) + ' season');
+  return h;
+}
+
+function ncSwapSheet() {
+  var me = G.teams[G.tid], cur = G.teams[(G.ncPicks || [])[_ncSlot]];
+  var pool = G.teams.filter(function(t) { return t.conf !== me.conf && t.id !== G.tid && (G.ncPicks || []).indexOf(t.id) < 0; })
+    .filter(function(t) { return _ncBand === 'all' || ncEdge(t).l === _ncBand; })
+    .sort(function(a, b) { return getTOvr(b) - getTOvr(a); });
+  var h = '<div class="pp-note" style="margin-bottom:8px;">Replacing ' + (cur ? '<b>' + cur.name + '</b>' : 'this game') + ' (' + (_ncSlot % 2 === 0 ? 'home' : 'away') + ').</div>'
+    + '<input class="setup-input" data-nc-search placeholder="Search schools or conferences" autocomplete="off" style="width:100%;margin-bottom:8px;">'
+    + '<div class="fbar">';
+  [['all', 'All'], ['Tough', 'Tough'], ['Even', 'Even'], ['Easier', 'Easier']].forEach(function(b) {
+    h += '<button class="fchip' + (_ncBand === b[0] ? ' on' : '') + '" data-nc-band="' + b[0] + '">' + b[1] + '</button>';
+  });
+  h += '</div><div class="acq-list">';
+  pool.forEach(function(o) {
+    var e = ncEdge(o);
+    h += '<div class="acq-row" data-nc-pick="' + o.id + '" data-nc-name="' + (o.name + ' ' + o.conf).toLowerCase().replace(/"/g, '') + '" role="button" tabindex="0">'
+      + '<div class="acq-main"><div class="acq-name">' + o.name + '</div><div class="acq-sub">' + o.conf + ' · ' + o.wins + '-' + o.loss + '</div></div>'
+      + '<div class="acq-right"><div class="acq-big">' + getTOvr(o) + '</div><div class="acq-small" style="color:' + e.c + ';">' + e.l + '</div></div></div>';
+  });
+  return { title: 'Swap opponent', html: h + '</div>' };
+}
+Acq.registerSheet('nc-swap', ncSwapSheet);
+
+function pickNC(id) {
+  if (!G.ncPicks) return;
+  G.ncPicks[_ncSlot] = id;
+  saveState();
+  closeSheet();
+  renderOffseason();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  HEADS-UP BEFORE MOVING ON — first tap warns, second tap goes ahead
+// ═══════════════════════════════════════════════════════════
+var _warnKey = '';
+function moveOnIssue() {
+  var step = G.offseasonStep, t = G.teams[G.tid];
+  if (G.phase !== 'offseason') return null;
+  var nextN = function() {
+    var inPortal = (G.portalEntrants || []).filter(function(e) { return e.fromTid === G.tid && e.pickedBy === -1; }).length;
+    var ret = (t.rost || []).filter(function(p) { return !(p.cls === 'SR' && !p.rs); }).length - inPortal;
+    return ret + (G.recruits || []).filter(function(r) { return r.signed === G.tid; }).length;
+  };
+  if (step === 'recap' && (G.skillPointsToSpend || 0) > 0) {
+    return 'You have ' + G.skillPointsToSpend + ' skill point' + (G.skillPointsToSpend > 1 ? 's' : '') + ' left to spend.';
+  }
+  if (step === 'portal' && (G.portalStage || 0) >= 2) { // decision day only
+    var offers = (G.portalEntrants || []).filter(function(e) { return e.fromTid !== G.tid && (e.offer || 0) > 0; }).length;
+    var open = 15 - nextN();
+    if (!offers && open >= 2 && (G.pts || 0) >= 100) return 'You have ' + open + ' open roster spots and no transfer offers out.';
+  }
+  if ((step === 'recruiting' || (!step && G.recruitPhase)) && (PHASES[G.recruitPhase] || {}).final) { // signing day only
+    var left = (G.recruitingBudget || 0) - (G.recruitingSpent || 0);
+    var open2 = 15 - nextN();
+    if (open2 >= 1 && left >= 20) return 'You have ' + left + ' recruiting points unspent and ' + open2 + ' open spot' + (open2 > 1 ? 's' : '') + '.';
+  }
+  if (step === 'schedule') {
+    var r = window._nextRoster ? window._nextRoster() : [];
+    var missing = ['PG', 'SG', 'SF', 'PF', 'C'].filter(function(pos) { return !r.some(function(x) { return x.pos === pos; }); });
+    if (missing.length) return 'Next season you have no ' + missing.join(' or ') + ' on the roster.';
+    if (r.length < 10) return 'Next season you only have ' + r.length + ' players. Walk-ons will fill the rest.';
+  }
+  return null;
+}
+// true = warned now (stop); false = fine to continue
+export function moveOnWarning() {
+  var msg = moveOnIssue();
+  if (!msg) { _warnKey = ''; return false; }
+  var key = (G.offseasonStep || '') + ':' + (G.portalStage || 0) + ':' + (G.recruitPhase || 0) + ':' + msg;
+  if (_warnKey === key) { _warnKey = ''; return false; }
+  _warnKey = key;
+  toast(msg + ' Tap again to continue anyway.', 'var(--gld)');
+  return true;
+}
+window._moveOnWarning = moveOnWarning;
+
 // Signing day: resolve the class and show the results before the season starts
 export function finishSigningDay() {
   resolveRecruitingClass();
@@ -555,7 +676,8 @@ export function finishSigningDay() {
 window.finishSigningDay = finishSigningDay;
 
 function phaseAdvance() {
-  if (G.offseasonStep === 'signed') {
+  if (G.offseasonStep === 'signed') { toSchedule(); return; }
+  if (G.offseasonStep === 'schedule') {
     if (typeof window !== 'undefined' && window.doOffseason) window.doOffseason();
   } else if ((PHASES[G.recruitPhase] || {}).final) {
     finishSigningDay();
@@ -593,9 +715,14 @@ function bindOffseason(el) {
     if ((m = q('[data-rem-target]'))) { removeTarget(parseInt(m.getAttribute('data-rem-target'), 10)); return; }
     if (q('[data-close-detail]')) { closeDetail(); return; }
     if ((m = q('[data-rtab]'))) { setRecruitTab(m.getAttribute('data-rtab')); return; }
-    if (q('[data-phase-advance]')) { phaseAdvance(); return; }
+    if (q('[data-phase-advance]')) { if (!moveOnWarning()) phaseAdvance(); return; }
     if (q('[data-proceed-portal]')) { proceedToRecruiting(); return; }
-    if (q('[data-start-season]')) { if (window.doOffseason) window.doOffseason(); return; }
+    if (q('[data-start-season]')) { if (!moveOnWarning() && window.doOffseason) window.doOffseason(); return; }
+    if (q('[data-to-schedule]')) { toSchedule(); return; }
+    if (q('[data-nc-auto]')) { G.ncPicks = window._pickBalancedOOC ? window._pickBalancedOOC() : G.ncPicks; saveState(); renderOffseason(); return; }
+    if ((m = q('[data-nc-band]'))) { _ncBand = m.getAttribute('data-nc-band'); Acq.refreshSheet(); return; }
+    if ((m = q('[data-nc-pick]'))) { pickNC(parseInt(m.getAttribute('data-nc-pick'), 10)); return; }
+    if ((m = q('[data-nc-swap]'))) { _ncSlot = parseInt(m.getAttribute('data-nc-swap'), 10); _ncBand = 'all'; Acq.openPage('nc-swap', _ncSlot); return; }
     if ((m = q('[data-ret]'))) {
       var _rr = decideRetention(parseInt(m.getAttribute('data-ri'), 10), m.getAttribute('data-ret'));
       if (_rr.msg) toast(_rr.msg);
@@ -614,7 +741,7 @@ function bindOffseason(el) {
     if ((m = q('[data-poff-inc]'))) { adjustOffer(parseInt(m.getAttribute('data-poff-inc'), 10), PORTAL_OFFER_STEP); return; }
     if ((m = q('[data-ppivot]'))) { pivotOffer(parseInt(m.getAttribute('data-ppivot'), 10)); return; }
     if ((m = q('[data-pfilter]'))) { setPortalFilter(m.getAttribute('data-pfilter'), m.getAttribute('data-pval')); return; }
-    if (q('[data-pstage]')) { advancePortalStage(); return; }
+    if (q('[data-pstage]')) { if (!moveOnWarning()) advancePortalStage(); return; }
     if ((m = q('[data-pdetail]'))) { togglePortalDetail(parseInt(m.getAttribute('data-pdetail'), 10)); return; }
     if ((m = q('[data-rfchip]'))) {
       var fk = m.getAttribute('data-rfchip'), fv = m.getAttribute('data-rval');
@@ -631,6 +758,12 @@ function bindOffseason(el) {
     if ((m = q('[data-acq-open-p]'))) { openPortalPage(parseInt(m.getAttribute('data-acq-open-p'), 10)); return; }
     if ((m = q('[data-acq-open-r]'))) { openRecruitPage(parseInt(m.getAttribute('data-acq-open-r'), 10)); return; }
     if ((m = q('[data-rid]'))) { openRecruitPage(parseInt(m.getAttribute('data-rid'), 10)); return; }
+  };
+  el.oninput = function(e) {
+    if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-nc-search')) {
+      var f = e.target.value.toLowerCase();
+      el.querySelectorAll('[data-nc-pick]').forEach(function(r) { r.style.display = !f || r.getAttribute('data-nc-name').indexOf(f) >= 0 ? '' : 'none'; });
+    }
   };
   el.onchange = function(e) {
     var ps = e.target.closest ? e.target.closest('[data-pselect]') : null;
