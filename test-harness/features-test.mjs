@@ -13,7 +13,8 @@ check(GO.ensureGoals() === gs, 'same goals on a second look');
 
 console.log('── redshirt ──');
 const t = G.teams[G.tid];
-const pick = t.rost.find(p => p.cls === 'SR') || t.rost[6];
+// the weakest senior: a top-60 talent can be drafted even after a redshirt year
+const pick = t.rost.filter(p => p.cls === 'SR').sort((a, b) => a.ovr - b.ovr)[0] || t.rost[6];
 const idx = t.rost.indexOf(pick), clsBefore = pick.cls, ovrBefore = pick.ovr;
 RO.toggleRedshirt(idx);
 check(pick.rs === true && pick.mins === 0, 'redshirted player sits (0 minutes)');
@@ -37,13 +38,16 @@ check(gs.settled && G.goalHistory.length === 1, 'goals settled at season end (' 
 check(Object.keys(G.achievements || {}).length > 0, 'achievements unlocked: ' + Object.keys(G.achievements).join(', '));
 S.beginOffseason();
 check(!G.departingPlayers.some(d => d.name === pick.name), 'redshirt is not listed as departing');
-const others = t.rost.filter(p => p !== pick && p.cls !== 'SR').map(p => ({ p, ovr: p.ovr }));
+// skill totals, not overall: a year's growth often rounds to +0 overall
+const skills = p => p.sht + p.fin + p.def + p.reb + p.ply;
+const others = t.rost.filter(p => p !== pick && p.cls !== 'SR').map(p => ({ p, sk: skills(p) }));
 S.doOffseason();
 check(G.teams[G.tid].rost.includes(pick), 'redshirt is still on the roster next season');
 check(pick.cls === clsBefore && pick.rsUsed && !pick.rs, 'class unchanged, redshirt used up (' + pick.cls + ')');
 check(pick.ovr >= ovrBefore, 'redshirt developed (' + ovrBefore + ' → ' + pick.ovr + ')');
-const avgGain = others.reduce((s, o) => s + (o.p.ovr - o.ovr), 0) / others.length;
-check(avgGain > 0, 'returners improved with practice facility level 5 (avg +' + avgGain.toFixed(1) + ')');
+const stayed = others.filter(o => G.teams[G.tid].rost.includes(o.p)); // drafted or portal players left
+const avgGain = stayed.reduce((s, o) => s + (skills(o.p) - o.sk), 0) / stayed.length;
+check(stayed.length && avgGain > 0, 'returners improved with practice facility level 5 (avg +' + avgGain.toFixed(1) + ' skill points)');
 check(GO.ensureGoals().yr === G.yr && !GO.ensureGoals().settled, 'new goals for the new season');
 
 console.log('── save/load keeps it all ──');
