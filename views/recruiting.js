@@ -116,13 +116,43 @@ function calcSchoolChances(r) {
     schools.push({ tid: rv.tid, name: rv.name, bid: bid, isUser: false, geo: geoL, rank: rk });
   });
 
-  // Convert to percentages
-  var total = schools.reduce(function(s, x) { return s + x.bid; }, 0);
-  if (total === 0) total = 1;
-  schools.forEach(function(s) { s.pct = Math.round((s.bid / total) * 100); });
+  // Percentages. Your number is your real chance to sign him on signing day
+  // (the same rule finalize uses), not a share of the bids, which looked
+  // far gloomier than the actual outcome. Rivals split the rest by bid.
+  var user = null, i;
+  for (i = 0; i < schools.length; i++) if (schools[i].isUser) user = schools[i];
+  var rivalsOnly = schools.filter(function(x) { return !x.isUser; });
+  var rtot = rivalsOnly.reduce(function(a, x) { return a + x.bid; }, 0) || 1;
+  var up = user ? signChanceFromBids(user.bid, finalBestRivalBid(r)) : 0;
+  if (user) user.pct = Math.round(up * 100);
+  rivalsOnly.forEach(function(x) { x.pct = Math.round((1 - up) * x.bid / rtot * 100); });
   schools.sort(function(a, b) { return b.pct - a.pct; });
   schools.forEach(function(s) { if (s.pct < 1 && s.bid > 0) s.pct = 1; });
   return schools;
+}
+
+// Best rival bid as it will stand on signing day (rivals bid harder each
+// round), so the odds you see are the odds you'll face at the end
+function finalBestRivalBid(r) {
+  var ranked = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; });
+  var agg = PHASES[3].cpuAgg, best = 0;
+  (r.rivals || []).forEach(function(rv) {
+    var team = G.teams[rv.tid]; if (!team) return;
+    var rk = ranked.findIndex(function(t) { return t.id === rv.tid; }) + 1;
+    var pw = rk <= 10 ? 1.8 : rk <= 25 ? 1.4 : rk <= 64 ? 1.0 : 0.65;
+    var sb = r.stars >= 5 ? 1.6 : r.stars >= 4 ? 1.3 : r.stars >= 3 ? 1.0 : 0.7;
+    var geo = getGeoBonus(getTeamState(team), r.homeState);
+    var seed = ((r.id * 7 + rv.tid * 13) % 100) / 100;
+    best = Math.max(best, (seed * 30 + 20) * pw * sb * agg * (1 + geo));
+  });
+  return best;
+}
+// Signing-day chance: even odds when your bid is 70% of the best rival's,
+// rising quickly above that (1.3x the mark ≈ 82%, 0.7x ≈ 18%)
+function signChanceFromBids(ub, best) {
+  if (!best) return ub > 0 ? 0.95 : 0;
+  var ratio = ub / (0.7 * best);
+  return Math.max(0.02, Math.min(0.97, 1 / (1 + Math.exp(-5 * (ratio - 1)))));
 }
 
 // Cache school chances per recruit per phase
@@ -432,8 +462,9 @@ export function resolveRecruitingClass() {
     var ub = calcUserBid(r); var schools = calcSchoolChances(r);
     var best = schools.filter(function(s) { return !s.isUser; }).sort(function(a, b) { return b.bid - a.bid; })[0];
     var bb = best ? best.bid : 0;
-    if (r.points >= 5 && ub > bb * 0.7 && openSpots() <= 0) { noteSigning('recruit', r, 'full'); if (best) { r.signed = best.tid; r.status = 'gone'; r.goneTo = best.name; } else { r.status = 'gone'; r.signed = -1; } }
-    else if (r.points >= 5 && ub > bb * 0.7) { r.signed = G.tid; r.status = 'committed'; noteSigning('recruit', r, 'you'); addLog('ev', G.gi, r.name + ' (' + r.stars + '\u2605) signs with you.'); }
+    var win = r.points >= 5 && Math.random() < signChanceFromBids(ub, bb);
+    if (win && openSpots() <= 0) { noteSigning('recruit', r, 'full'); if (best) { r.signed = best.tid; r.status = 'gone'; r.goneTo = best.name; } else { r.status = 'gone'; r.signed = -1; } }
+    else if (win) { r.signed = G.tid; r.status = 'committed'; noteSigning('recruit', r, 'you'); addLog('ev', G.gi, r.name + ' (' + r.stars + '\u2605) signs with you.'); }
     else if (best) { r.signed = best.tid; r.status = 'gone'; r.goneTo = best.name; if (pursued) noteSigning('recruit', r, 'other', best.name); }
     else { r.status = 'gone'; r.signed = -1; }
     r.points = 0;
@@ -767,6 +798,8 @@ function bindOffseason(el) {
     }
     if (q('[data-ret-done]')) { finishRetention(); return; }
     if ((m = q('[data-skill-dec]'))) { deallocateSkillPoint(m.getAttribute('data-skill-dec')); return; }
+    if ((m = q('[data-sgtab]'))) { if (window._setSigningTab) window._setSigningTab(m.getAttribute('data-sgtab')); renderOffseason(); return; }
+    if ((m = q('[data-sgkind]'))) { if (window._setSigningTab) window._setSigningTab(null, m.getAttribute('data-sgkind')); renderOffseason(); return; }
     if ((m = q('[data-rctab]'))) { if (window._setRecapTab) window._setRecapTab(m.getAttribute('data-rctab')); renderOffseason(); return; }
     if ((m = q('[data-skill-inc]'))) { allocateSkillPoint(m.getAttribute('data-skill-inc')); return; }
     if (q('[data-finish-skills]')) { finishSkillPoints(); return; }
@@ -1460,7 +1493,7 @@ function recruitPage(st) {
   } else if (st.tab === 'ratings') {
     h += typeTagsHTML(r) + ratingBarsHTML(r);
   } else if (st.tab === 'schools') {
-    h += '<div class="pp-note" style="margin-bottom:10px;">Each school\'s chance to sign him if he decided today. '
+    h += '<div class="pp-note" style="margin-bottom:10px;">Where he\'s headed on signing day as things stand. Your number is your real chance to sign him. '
       + (isTarget && r.points ? 'Add points to move up.' : 'Target him and add points to get in the race.') + '</div>';
     h += schoolRaceHTML(r, 0);
   } else {

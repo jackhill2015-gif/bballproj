@@ -65,12 +65,21 @@ export const SetupState = {
   ACTIVE_VIEW:'dashboard',G_AUTO:false
 };
 
+// Recruiting points: enough to fill your open spots with players at your
+// level. Each open spot (out of 15, counting next season's roster) is worth
+// about 24 points at a low-major up to 33 at a blueblood, plus a 40-point
+// base and the coach's recruiting skill. 3 spots at prestige 60 ≈ 123;
+// 7 ≈ 235. Tuned so spreading evenly over your open spots signs most of them
+// (test-harness: one recruit per spot at your level lands ~80-90%).
 export function calcRecruitingBudget() {
   var t=G.teams[G.tid];if(!t)return 50;
   var sp = t.schoolPrestige || 50;
-  var open=Math.max(0,13-t.rost.length);
+  var returning = t.rost.filter(function(p){ return !(p.cls==='SR' && !p.rs); }).length;
+  var signed = (G.recruits||[]).filter(function(r){ return r.signed===G.tid; }).length;
+  var open = Math.max(0, 15 - returning - signed);
+  var perSpot = 20 + sp * 0.13;
   var recBonus = Math.round(((G.coach ? G.coach.rec : 70) - 70) * 0.5);
-  return Math.min(225,Math.max(50,50+Math.round(sp/5)+(open*10)+recBonus));
+  return Math.min(450, Math.max(50, Math.round(40 + open * perSpot + recBonus)));
 }
 
 // ═══════════════════════════════════════════════════════════

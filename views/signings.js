@@ -151,11 +151,90 @@ export function classPanelHTML() {
   return h + '</div></div>';
 }
 
+// ── Class rankings: every school's recruiting and transfer class ──
+// Score works like the recruiting sites: each signee is worth points by
+// stars (recruits) or rating (transfers), best first, with each extra
+// signee counting a little less (x0.85), so depth helps but stars win.
+var STAR_PTS = { 5: 100, 4: 72, 3: 48, 2: 28, 1: 15 };
+var _sgTab = 'class', _sgKind = 'recruit';
+export function setSigningTab(tab, kind) { if (tab) _sgTab = tab; if (kind) _sgKind = kind; }
+if (typeof window !== 'undefined') window._setSigningTab = setSigningTab;
+
+function classTable(kind) {
+  var by = {};
+  var add = function(tid, v, p) { (by[tid] = by[tid] || { tid: tid, vals: [], players: [] }); by[tid].vals.push(v); by[tid].players.push(p); };
+  if (kind === 'recruit') {
+    (G.recruits || []).forEach(function(r) {
+      if (r.signed >= 0 && G.teams[r.signed]) add(r.signed, (STAR_PTS[r.stars] || 15) + r.ovr * 0.1, r);
+    });
+  } else {
+    G.teams.forEach(function(t) {
+      (t.rost || []).forEach(function(p) { if (p.portalYr === G.yr) add(t.id, Math.max(5, (p.ovr - 60) * 3), p); });
+    });
+  }
+  // CPU classes count only who will actually join (best by rating, up to
+  // their open spots and 8 per class: the same cap the new season applies)
+  if (kind === 'recruit') Object.keys(by).forEach(function(k) {
+    var c = by[k]; if (+k === G.tid) return;
+    var tm = G.teams[k];
+    var room = Math.max(0, 15 - (tm.rost || []).filter(function(p) { return !(p.cls === 'SR' && !p.rs); }).length);
+    var keep = c.players.map(function(p, i) { return { p: p, v: c.vals[i] }; }).sort(function(a, b) { return b.p.ovr - a.p.ovr; }).slice(0, Math.min(8, room));
+    c.players = keep.map(function(x) { return x.p; }); c.vals = keep.map(function(x) { return x.v; });
+    if (!c.players.length) delete by[k];
+  });
+  var rows = Object.keys(by).map(function(k) {
+    var c = by[k];
+    var vals = c.vals.slice().sort(function(a, b) { return b - a; });
+    var score = vals.reduce(function(a, v, i) { return a + v * Math.pow(0.85, i); }, 0);
+    var avg = Math.round(c.players.reduce(function(a, p) { return a + p.ovr; }, 0) / c.players.length);
+    return { tid: c.tid, n: c.players.length, score: Math.round(score), avg: avg, players: c.players };
+  });
+  rows.sort(function(a, b) { return b.score - a.score || b.avg - a.avg; });
+  return rows;
+}
+
+function starLine(players) {
+  var cnt = {};
+  players.forEach(function(p) { cnt[p.stars || 0] = (cnt[p.stars || 0] || 0) + 1; });
+  return [5, 4, 3, 2, 1].filter(function(k) { return cnt[k]; }).map(function(k) { return cnt[k] + '×' + k + '★'; }).join(' · ');
+}
+
+export function classRankingsHTML() {
+  var rows = classTable(_sgKind);
+  var meIdx = rows.findIndex(function(r) { return r.tid === G.tid; });
+  var other = classTable(_sgKind === 'recruit' ? 'portal' : 'recruit');
+  var meOther = other.findIndex(function(r) { return r.tid === G.tid; });
+  var label = _sgKind === 'recruit' ? 'recruiting class' : 'transfer class';
+  var h = '<div class="cr-sum">' + (meIdx >= 0 ? 'Your ' + label + ' ranks <b>#' + (meIdx + 1) + '</b> of ' + rows.length + '.' : 'You did not sign a ' + label + '.')
+    + (meOther >= 0 ? ' Your ' + (_sgKind === 'recruit' ? 'transfer' : 'recruiting') + ' class: #' + (meOther + 1) + '.' : '') + '</div>';
+  h += '<div class="fbar" style="margin-bottom:8px;"><button class="fchip' + (_sgKind === 'recruit' ? ' on' : '') + '" data-sgkind="recruit">Recruiting classes</button>'
+    + '<button class="fchip' + (_sgKind === 'portal' ? ' on' : '') + '" data-sgkind="portal">Transfer classes</button></div>';
+  var show = rows.slice(0, 25);
+  if (meIdx >= 25) show.push(null, rows[meIdx]);
+  h += '<div class="panel"><div class="panel-b flush"><table class="cr-tbl"><thead><tr><th class="num">#</th><th>School</th><th class="num">Signed</th><th class="num">Avg</th><th class="num">Score</th></tr></thead><tbody>';
+  show.forEach(function(r) {
+    if (!r) { h += '<tr><td colspan="5" class="cr-gap">…</td></tr>'; return; }
+    var t = G.teams[r.tid], rk = rows.indexOf(r) + 1;
+    h += '<tr' + (r.tid === G.tid ? ' class="hl"' : '') + '><td class="num">' + rk + '</td>'
+      + '<td><div class="cr-name">' + t.name + '</div><div class="cr-sub">' + (_sgKind === 'recruit' ? starLine(r.players) : r.players.slice().sort(function(a, b) { return b.ovr - a.ovr; }).slice(0, 3).map(function(p) { return p.pos + ' ' + p.ovr; }).join(' · ')) + '</div></td>'
+      + '<td class="num">' + r.n + '</td><td class="num">' + r.avg + '</td><td class="num"><b>' + r.score + '</b></td></tr>';
+  });
+  if (!rows.length) h += '<tr><td colspan="5" class="cr-gap">No signings yet.</td></tr>';
+  return h + '</tbody></table></div></div>';
+}
+
 // Signing day: the whole recruiting cycle's results in one place
 export function signingDayHTML() {
+  if (_sgTab === 'rank') {
+    return '<div class="sec-head">Signing day</div>'
+      + '<div class="fbar" style="margin:4px 0 10px;"><button class="fchip" data-sgtab="class">Your class</button><button class="fchip on" data-sgtab="rank">Class rankings</button></div>'
+      + classRankingsHTML()
+      + '<button class="btn-big btn-full" style="margin-top:12px;" data-to-schedule>Next: non-conference schedule</button>';
+  }
   var s = store();
   var recruitLog = s.log.filter(function(x) { return x.kind === 'recruit'; });
   var h = '<div class="sec-head">Signing day</div>'
+    + '<div class="fbar" style="margin:4px 0 10px;"><button class="fchip on" data-sgtab="class">Your class</button><button class="fchip" data-sgtab="rank">Class rankings</button></div>'
     + '<div class="sec-sub" style="margin-bottom:12px;">Every recruit has decided. Here is how your class came together.</div>';
   h += '<div class="panel sg-panel"><div class="panel-h"><span>Recruiting results</span><small>All three phases</small></div><div class="panel-b">'
     + (recruitLog.length ? groupsHTML(recruitLog) : '<div class="sg-none">You did not pursue any recruits this year.</div>') + '</div></div>';

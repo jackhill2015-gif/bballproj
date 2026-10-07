@@ -1021,7 +1021,8 @@ export function doOffseason() {
   var CLASS_SIZE_CAP = 8;
   commits.sort(function(a, b) { return b.ovr - a.ovr; });
   var _croom = Math.max(0, 15 - t.rost.length);
-  commits.slice(0, Math.min(CLASS_SIZE_CAP, _croom)).forEach(function(r) {
+  // Your class is already limited to one signee per open spot, so only room applies
+  commits.slice(0, _croom).forEach(function(r) {
     var np = JSON.parse(JSON.stringify(r));
     np.s = freshS(); np.cls = 'FR';
     t.rost.push(np);
