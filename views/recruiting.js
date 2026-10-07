@@ -24,7 +24,7 @@ import { buildRetentionAsks, renderRetention, decideRetention, applyRetention, r
 import { teamLogo } from '../ui.js';
 import * as Battle from './battle.js';
 import { scoutLine, scoutingHTML, fitReport, playerType, typeTagsHTML, ratingBarsHTML, fitListHTML } from './scouting.js';
-import { beginReport, noteSigning, reportHTML, classPanelHTML, signingDayHTML } from './signings.js';
+import { beginReport, noteSigning, signingDayHTML, openSpots, targetsHTML } from './signings.js';
 import * as Acq from './acq.js';
 import { closeSheet } from './sheet.js';
 import { getUiPrefs, setUiPrefs } from './ui-prefs.js';
@@ -150,9 +150,25 @@ function initRecruitingIfNeeded() {
 //  ACTIONS (logic unchanged; adjustPoints now updates in place)
 // ═══════════════════════════════════════════════════════════
 
+// Recruits you're pursuing right now (targeted or holding your points)
+function pursuing() {
+  return (G.recruits || []).filter(function(r) {
+    return r.status === 'open' && (G.recruitTargets.indexOf(r.id) >= 0 || (r.points || 0) > 0);
+  }).length;
+}
+function isPursuing(r) { return G.recruitTargets.indexOf(r.id) >= 0 || (r.points || 0) > 0; }
+// One pursuit per open roster spot, so nobody who signs is cut for room
+function canPursueAnother() { return pursuing() < openSpots(); }
+function pursuitBlockedMsg() {
+  var os = openSpots();
+  return os ? 'You have ' + os + ' open spot' + (os !== 1 ? 's' : '') + ' and someone in the running for each. Drop a target to go after him.'
+    : 'Your roster is full for next season.';
+}
+
 export function adjustPoints(rid, delta) {
   var r = G.recruits.find(function(x) { return x.id === rid; });
   if (!r || r.status !== 'open') return;
+  if (delta > 0 && !isPursuing(r) && !canPursueAnother()) { toast(pursuitBlockedMsg(), 'var(--gld)'); return; }
   var nv = (r.points || 0) + delta; if (nv < 0) return;
   var left = G.recruitingBudget - G.recruitingSpent;
   if (delta > 0 && left < delta) return;
@@ -168,6 +184,8 @@ export function adjustPoints(rid, delta) {
 window.adjustPoints = adjustPoints;
 
 export function addTarget(rid) {
+  var r0 = G.recruits.find(function(x) { return x.id === rid; });
+  if (G.recruitTargets.indexOf(rid) < 0 && !(r0 && (r0.points || 0) > 0) && !canPursueAnother()) { toast(pursuitBlockedMsg(), 'var(--gld)'); return; }
   if (G.recruitTargets.indexOf(rid) < 0) G.recruitTargets.push(rid);
   saveState();
   // On the board, just flip that row (no 400-row rebuild); elsewhere re-render
@@ -367,6 +385,13 @@ export function advanceRecruitPhase() {
       return (schools[0].bid - schools[1].bid) / tot * 100;
     },
     userSign: function(r) {
+      if (openSpots() <= 0) { // no room: he goes elsewhere, points come back
+        noteSigning('recruit', r, 'full');
+        var w0 = cpuWeightedSign(r);
+        r.signed = w0 ? w0.tid : -1; r.status = 'gone'; r.goneTo = w0 ? w0.name : '';
+        refundRecruitPoints(r);
+        return;
+      }
       noteSigning('recruit', r, 'you', null, true);
       r.signed = G.tid; r.status = 'committed';
       refundRecruitPoints(r);
@@ -392,6 +417,7 @@ export function advanceRecruitPhase() {
   if (res.cpuSigned.length) parts.push(res.cpuSigned.length + ' signed elsewhere');
   parts.push(G.recruits.filter(function(r) { return r.status === 'open'; }).length + ' still open');
   toast(Battle.ACQ_STAGES[G.recruitPhase - 1].name + ': ' + parts.join(' · '), res.userSigned.length ? 'var(--grn)' : 'var(--gld)');
+  if (G.signings && G.signings.report && G.signings.report.items.length) _tab = 'targets'; // results show in green / red
   saveState(); updateAll(); renderOffseason();
 }
 window.advanceRecruitPhase = advanceRecruitPhase;
@@ -406,7 +432,8 @@ export function resolveRecruitingClass() {
     var ub = calcUserBid(r); var schools = calcSchoolChances(r);
     var best = schools.filter(function(s) { return !s.isUser; }).sort(function(a, b) { return b.bid - a.bid; })[0];
     var bb = best ? best.bid : 0;
-    if (r.points >= 5 && ub > bb * 0.7) { r.signed = G.tid; r.status = 'committed'; noteSigning('recruit', r, 'you'); addLog('ev', G.gi, r.name + ' (' + r.stars + '\u2605) signs with you.'); }
+    if (r.points >= 5 && ub > bb * 0.7 && openSpots() <= 0) { noteSigning('recruit', r, 'full'); if (best) { r.signed = best.tid; r.status = 'gone'; r.goneTo = best.name; } else { r.status = 'gone'; r.signed = -1; } }
+    else if (r.points >= 5 && ub > bb * 0.7) { r.signed = G.tid; r.status = 'committed'; noteSigning('recruit', r, 'you'); addLog('ev', G.gi, r.name + ' (' + r.stars + '\u2605) signs with you.'); }
     else if (best) { r.signed = best.tid; r.status = 'gone'; r.goneTo = best.name; if (pursued) noteSigning('recruit', r, 'other', best.name); }
     else { r.status = 'gone'; r.signed = -1; }
     r.points = 0;
@@ -508,27 +535,18 @@ export function renderOffseason() {
 
   // Shared acquisition layout (views/acq.js): slim header, tabs, list, sticky button
   var sp0 = (G.teams[G.tid] && G.teams[G.tid].schoolPrestige) || 50;
+  var spots = openSpots();
   h += Acq.header('Recruiting', phase.tag + ' · ' + phase.name, [
-    { v: left, l: 'points', attr: 'data-budget-left' }, { v: sp0, l: 'prestige' }]);
+    { v: left, l: 'points', attr: 'data-budget-left' }, { v: sp0, l: 'prestige' }, { v: spots, l: 'open spot' + (spots !== 1 ? 's' : '') }]);
   var classN = G.recruits.filter(function(r) { return r.signed === G.tid; }).length;
+  if (_tab !== 'board' && _tab !== 'targets' && _tab !== 'roster') _tab = 'board';
   h += Acq.tabs([
     { id: 'board', label: 'Board', n: open.length },
-    { id: 'targets', label: 'Targets', n: G.recruitTargets.length },
-    { id: 'commits', label: 'Your class', n: classN },
+    { id: 'targets', label: 'Targets', n: pursuing() + classN },
     { id: 'roster', label: 'Roster' }], _tab);
 
-  var rep = G.signings && G.signings.yr === G.yr && G.signings.report;
-  if (rep && _tab !== 'commits') {
-    var nIn = rep.items.filter(function(x) { return x.outcome === 'you'; }).length;
-    var nOut = rep.items.length - nIn;
-    var ttl = rep.title.replace('Recruiting, ', '').replace('Transfer portal, ', 'Portal ');
-    h += Acq.banner('<b>' + ttl.charAt(0).toUpperCase() + ttl.slice(1) + ' results:</b> ' + nIn + ' signed with you'
-      + (nOut ? ', ' + nOut + ' other outcome' + (nOut > 1 ? 's' : '') : '') + '. <u>See results</u>', 'data-acqtab="commits"');
-  }
-
   if (_tab === 'board') h += renderBoard(open, left);
-  else if (_tab === 'targets') h += renderTargets(left);
-  else if (_tab === 'commits') h += reportHTML() + classPanelHTML();
+  else if (_tab === 'targets') h += targetsHTML('recruit', renderTargets(left), pursuing());
   else h += Acq.rosterTabHTML();
 
   h += Acq.sticky('data-phase-advance', phase.btnLabel);
@@ -1448,8 +1466,9 @@ function recruitPage(st) {
     h += '<div class="pp-offer"><div class="pp-offer-l"><span>Recruiting points</span>' + stepperRow(r, left, false) + '</div>'
       + '<div class="pp-offer-r"><span>' + left + ' points left</span>'
       + (isTarget ? '<button class="btn-quiet btn-sm" data-rem-target="' + r.id + '">Drop target</button>'
-        : '<button class="btn-big" style="width:auto;padding:0 16px;min-height:36px;" data-add-target="' + r.id + '">Add to targets</button>')
-      + '</div></div>';
+        : (canPursueAnother() || (r.points || 0) > 0 ? '<button class="btn-big" style="width:auto;padding:0 16px;min-height:36px;" data-add-target="' + r.id + '">Add to targets</button>' : ''))
+      + '</div></div>'
+      + (!isTarget && !(r.points || 0) && !canPursueAnother() ? '<div class="tg-note" style="margin:-4px 0 10px;">' + pursuitBlockedMsg() + '</div>' : '');
     h += '<div class="pp-sec"><div class="scout-type">' + playerType(r) + '</div></div>';
     h += '<div class="pp-sec"><div class="card-title">Fit with ' + G.teams[G.tid].name + ' next season</div>' + fitListHTML(r) + '</div>';
   }
@@ -1514,11 +1533,10 @@ function renderDetailPanel(r, left) {
 // ═══════════════════════════════════════════════════════════
 
 function renderTargets(left) {
-  if (!G.recruitTargets.length) {
-    return '<div class="empty-state">No targets yet. Browse the Board and add recruits you want to pursue.</div>';
-  }
   var h = '';
-  G.recruitTargets.forEach(function(rid) {
+  var ids = G.recruitTargets.slice();
+  G.recruits.forEach(function(r) { if (r.status === 'open' && (r.points || 0) > 0 && ids.indexOf(r.id) < 0) ids.push(r.id); });
+  ids.forEach(function(rid) {
     var r = G.recruits.find(function(x) { return x.id === rid; });
     if (!r || r.status !== 'open') return;
     var schools = getSchoolChances(r);

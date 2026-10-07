@@ -14,7 +14,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { G } from '../state.js';
-import { playerType } from './scouting.js';
+import { playerType, nextSeasonRoster } from './scouting.js';
 
 // A new log starts with each offseason; during the season the last
 // offseason's log stays readable (Home shows it in the first weeks)
@@ -56,6 +56,56 @@ function groupsHTML(items) {
     + group('Picked you, but your roster was full', by('full'), 'bad', function() { return 'Offer refunded'; })
     + group('Your players who transferred out', by('left'), 'bad', function(it) { return it.school; })
     + group('Your players who came back', by('returns'), 'good', null);
+}
+
+// ── Open roster spots for next season ─────────────────────
+// 15 minus returners (not graduating, not sitting in the portal), transfers
+// already in, and signed recruits. You can only pursue as many players as
+// you have open spots, so nobody who signs is ever cut for room.
+export function openSpots() {
+  try { return Math.max(0, 15 - nextSeasonRoster().length); } catch (e) { return 15; }
+}
+
+// ── Targets tab: everyone you pursued in one list ─────────
+// Signed (green), still deciding (the live rows with your offers), went
+// elsewhere (red). Replaces the separate offers / class / round results views.
+function tgRow(it, cls, right) {
+  return '<div class="tg-row ' + cls + '"><div class="acq-main"><div class="acq-name">' + it.name
+    + (it.kind === 'recruit' && it.stars ? ' <span class="stars">' + '★'.repeat(it.stars) + '</span>' : '') + '</div>'
+    + '<div class="acq-sub">' + it.pos + ', ' + it.ovr + (it.type ? ' · ' + it.type : '') + '</div></div>'
+    + '<div class="tg-r">' + right + '</div></div>';
+}
+function tgGroup(title, n, body) {
+  return '<div class="tg-h">' + title + ' <span>' + n + '</span></div>' + body;
+}
+export function targetsHTML(kind, pendingHTML, nPending) {
+  var log = store().log.filter(function(x) { return x.kind === kind; });
+  var signed = kind === 'recruit'
+    ? (G.recruits || []).filter(function(r) { return r.signed === G.tid; }).map(function(r) {
+        var l = log.find(function(x) { return x.name === r.name && x.outcome === 'you'; });
+        return { kind: 'recruit', name: r.name, pos: r.pos, ovr: r.ovr, stars: r.stars, type: playerType(r), early: l ? l.early : false };
+      })
+    : log.filter(function(x) { return x.outcome === 'you'; });
+  var lost = log.filter(function(x) { return x.outcome === 'other' || x.outcome === 'stayed' || x.outcome === 'full'; });
+  var left = kind === 'portal' ? log.filter(function(x) { return x.outcome === 'left'; }) : [];
+  var back = kind === 'portal' ? log.filter(function(x) { return x.outcome === 'returns'; }) : [];
+  var open = openSpots();
+  var h = '<div class="tg-sum"><b>' + open + '</b> open spot' + (open !== 1 ? 's' : '') + ' for next season · <b>' + nPending + '</b> still deciding'
+    + (open > 0 && nPending >= open ? '<div class="tg-note">Every open spot has someone in the running. Drop one to go after someone else.</div>' : '')
+    + (open === 0 ? '<div class="tg-note">Your roster is full for next season.</div>' : '')
+    + '</div>';
+  if (signed.length) h += tgGroup('Signed with you', signed.length, signed.map(function(it) { return tgRow(it, 'good', it.early ? 'Committed early' : 'Signed'); }).join(''));
+  h += tgGroup('Still deciding', nPending, nPending ? pendingHTML : '<div class="tg-none">' + (kind === 'portal' ? 'No offers out. Open a player on the Board to make one.' : 'Nobody targeted. Open a recruit on the Board to add him.') + '</div>');
+  if (lost.length) h += tgGroup('Went elsewhere', lost.length, lost.map(function(it) {
+    return tgRow(it, 'bad', it.outcome === 'full' ? 'Roster was full' : it.outcome === 'stayed' ? 'Stayed at ' + it.school : (it.school || 'Undecided'));
+  }).join(''));
+  if (kind === 'recruit') {
+    var tin = store().log.filter(function(x) { return x.kind === 'portal' && x.outcome === 'you'; });
+    if (tin.length) h += tgGroup('Transfers signed in the portal', tin.length, tin.map(function(it) { return tgRow(it, 'good', 'Transfer'); }).join(''));
+  }
+  if (left.length) h += tgGroup('Your players who left', left.length, left.map(function(it) { return tgRow(it, 'bad', it.school || ''); }).join(''));
+  if (back.length) h += tgGroup('Your players who came back', back.length, back.map(function(it) { return tgRow(it, 'good', 'Back'); }).join(''));
+  return h;
 }
 
 // Panel for the latest round (shown until the next round starts)

@@ -1463,3 +1463,18 @@ table.ups td { vertical-align: middle; }
 .mo-ov { position: fixed; inset: 0; z-index: 99998; background: rgba(31,38,48,.45); display: flex; align-items: center; justify-content: center; padding: 16px; }
 .mo-p { width: min(420px, 100%); margin: 0; }
 .mo-msg { font-size: 14px; line-height: 1.45; margin-bottom: 14px; }
+
+/* Targets tab: everyone you pursued (signed green, lost red) */
+.tg-sum { font-size: 13px; color: var(--txt2); padding: 8px 0 4px; }
+.tg-sum b { color: var(--txt); }
+.tg-note { font-size: 12.5px; color: var(--gld2); margin-top: 4px; }
+.tg-h { font-size: 12px; font-weight: 600; color: var(--txt2); margin: 14px 0 4px; display: flex; gap: 6px; align-items: baseline; }
+.tg-h span { color: var(--txt3); font-weight: 400; }
+.tg-row { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-bottom: 1px solid var(--bdr); border-left: 3px solid transparent; }
+.tg-row.good { background: var(--grn-soft); border-left-color: var(--grn); }
+.tg-row.bad { background: var(--red-soft); border-left-color: var(--red); }
+.tg-row.good .acq-name { color: var(--grn2); }
+.tg-row.bad .acq-name { color: var(--red); }
+.tg-r { flex: 0 0 auto; font-size: 12.5px; text-align: right; color: var(--txt2); max-width: 45%; }
+.tg-row.good .tg-r { color: var(--grn2); font-weight: 600; }
+.tg-none { font-size: 13px; color: var(--txt3); padding: 8px 0; }
