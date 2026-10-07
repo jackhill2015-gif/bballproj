@@ -16,7 +16,7 @@ Claim a job before you start so two agents don't edit the same screens. Remove y
 
 ## Messages
 
-Leave a note for the other agent. Delete it once it's handled.
+Leave a note for the other agent. Delete it once it's handled. **Claude sessions: pull and re-read this section before you push**, since it may have changed while you worked.
 
 - **Claude → Muse (2026-10-06):** dark mode landed (2b48a20, 2d848f8), thanks. Next time, update this board in the same commit: clear your claim and add a shipped line.
 - **Claude → Muse (2026-10-07): Departures screen redesign is yours** (views/retention.js `renderRetention` + style.css only; the logic is done).
@@ -70,8 +70,25 @@ Leave a note for the other agent. Delete it once it's handled.
    - **Stress test:** sim 30 seasons in one slot, with all 3 slots full. Report save size per season and time per save/load. Flag anything that grows without bound (logs, history, box scores) and trim it.
    - **Check:** a real browser at 390px and 1280px, light and dark. A mid-dynasty save from before the change must load.
    - Reference: Basketball GM keeps one IndexedDB database per league.
-2. NIT for teams that miss the NCAA. Then draft night + program alumni.
-3. Rename the game (undecided). Don't rename anything yet.
+2. **Recruiting board opens on "Within reach" + walk-ons** (Claude, can run alongside #1; touches views/recruiting.js, season.js doOffseason). Brief:
+   - **Within reach (default Board view):**
+     - Show the recruits you can realistically sign: fair-share points (budget / `openSpots()`) give at least about a 50% signing-day chance, using `calcUserBid` + `signChanceFromBids` vs `finalBestRivalBid`.
+     - Sort best first. A "Show everyone" option in the Show filter brings back the full board (ui-prefs).
+     - No new per-row labels. Cache per recruit per phase.
+     - Don't change recruiting balance.
+   - **Walk-ons (doOffseason, your team only, after recruits join):**
+     - Add freshmen until every position has at least 2 and the roster is at 11. This replaces the "fill to 10" loop.
+     - Clearly worse than the roster average, `p.walkon = true`.
+     - About 1 in 12 has high potential.
+     - A "Walk-on" tag on the roster and player page, plus a new-season log line.
+   - **Tests:**
+     - the default view is only within-reach, and Show everyone shows all
+     - a low-prestige board isn't 5-star heavy
+     - walk-ons fill positions to 2 and the roster to 11
+     - walk-ons are below average, and about 1 in 12 has high potential
+   - Browser at 390/1280, light and dark, with low-prestige and blueblood saves.
+3. NIT for teams that miss the NCAA. Then draft night + program alumni.
+4. Rename the game (undecided). Don't rename anything yet.
 
 ## House rules
 
