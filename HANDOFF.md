@@ -13,17 +13,20 @@ Claim a job before you start so two agents don't edit the same screens. Remove y
 
 | Who | Job | Files / screens touched | Since |
 |-----|-----|-------------------------|-------|
+| Claude | Recruiting Board opens on "Within reach" + walk-ons (queue #1) | views/recruiting.js, views/signings.js (read only), season.js (doOffseason), views/roster.js + views/player.js (Walk-on tag only), ui-prefs, test-harness, sw.js | 2026-10-07 |
+| Muse | Faces on recap roster table + box scores; 390px QA playthrough (full season + offseason) | views/recap.js, views/stats.js, views/faces.js, style.css, HANDOFF.md | 2026-10-07 |
 
 ## Messages
 
-Leave a note for the other agent. Delete it once it's handled.
+Leave a note for the other agent. Delete it once it's handled. **Claude sessions: pull and re-read this section before you push**, since it may have changed while you worked.
 
 - **Claude → Muse (2026-10-06):** dark mode landed (2b48a20, 2d848f8), thanks. Next time, update this board in the same commit: clear your claim and add a shipped line.
-- **Claude → Muse (2026-10-07):** heads-up, the home screen markup changed: `#home-slots` is rendered by `showHomeScreen()` in views/setup.js (the static save card in index.html is gone). New styles are at the end of style.css under "HOME: SAVE SLOTS". `CACHE` in sw.js is v25.
+- **Claude → Muse (2026-10-07):** heads-up, the home screen markup changed: `#home-slots` is rendered by `showHomeScreen()` in views/setup.js (the static save card in index.html is gone). New styles are at the end of style.css under "HOME: SAVE SLOTS". `CACHE` in sw.js is v27.
 
 ## Recently shipped (newest first, keep about 8)
 
 - Storage overhaul: saves in IndexedDB (read into memory at boot, written in the background), 3 save slots on the home screen (Continue / New / Back up / Delete), restore into a chosen slot. The old localStorage save moves into slot 1 on first run. localStorage fallback with a notice when IndexedDB is unavailable. 30-season stress test: save stays ~1.0-1.2 MB (CPU coach firing history was the only unbounded part; now capped at 5 per team). Also fixed: Back up on the home screen could overwrite the dynasty. *(Claude)*
+- Face touchup: basketball jerseys only, white with black trim until team colors land, no hats. *(Muse)*
 - Departures screen redesign: stat-block summary, calmer rows, sticky button no longer covers the last row on phones. *(Muse)*
 - Help page update: Targets tab green/red outcomes, one pursuit per open roster spot, honest recruit odds, recruiting budget in plain words, signing-day class rankings, skill points carrying over. *(Muse)*
 - "Not interested in returning" tied to playing time and season results (strong ~15% of offseasons, average ~50%, bad ~75%; up to 1/2/3 players). *(Claude)*
@@ -35,8 +38,25 @@ Leave a note for the other agent. Delete it once it's handled.
 
 ## Up next (Jack's queue)
 
-1. NIT for teams that miss the NCAA. Then draft night + program alumni.
-2. Rename the game (undecided). Don't rename anything yet.
+1. **Recruiting board opens on "Within reach" + walk-ons** (Claude, in progress; touches views/recruiting.js, season.js doOffseason). Brief:
+   - **Within reach (default Board view):**
+     - Show the recruits you can realistically sign: fair-share points (budget / `openSpots()`) give at least about a 50% signing-day chance, using `calcUserBid` + `signChanceFromBids` vs `finalBestRivalBid`.
+     - Sort best first. A "Show everyone" option in the Show filter brings back the full board (ui-prefs).
+     - No new per-row labels. Cache per recruit per phase.
+     - Don't change recruiting balance.
+   - **Walk-ons (doOffseason, your team only, after recruits join):**
+     - Add freshmen until every position has at least 2 and the roster is at 11. This replaces the "fill to 10" loop.
+     - Clearly worse than the roster average, `p.walkon = true`.
+     - About 1 in 12 has high potential.
+     - A "Walk-on" tag on the roster and player page, plus a new-season log line.
+   - **Tests:**
+     - the default view is only within-reach, and Show everyone shows all
+     - a low-prestige board isn't 5-star heavy
+     - walk-ons fill positions to 2 and the roster to 11
+     - walk-ons are below average, and about 1 in 12 has high potential
+   - Browser at 390/1280, light and dark, with low-prestige and blueblood saves.
+2. NIT for teams that miss the NCAA. Then draft night + program alumni.
+3. Rename the game (undecided). Don't rename anything yet.
 
 ## House rules
 
