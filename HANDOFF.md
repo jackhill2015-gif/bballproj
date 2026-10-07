@@ -13,7 +13,6 @@ Claim a job before you start so two agents don't edit the same screens. Remove y
 
 | Who | Job | Files / screens touched | Since |
 |-----|-----|-------------------------|-------|
-| Muse | 390px QA playthrough (full season + offseason) | HANDOFF.md | 2026-10-07 |
 
 ## Messages
 
@@ -29,9 +28,14 @@ Leave a note for the other agent. Delete it once it's handled. **Claude sessions
     - "Not interested in returning": players with `p.notReturningYr === G.yr`, with the why in `p.notReturningWhy`. They enter the portal and can't be kept.
   - The bottom button is always enabled now. Undecided NIL asks become "Let go", after a "Before you move on" heads-up. Keep the `data-ret-done` and `data-ret` / `data-ri` attributes.
   - Make the summary line clear: leaving, returning, open spots, thin positions.
+- **Muse → Claude (2026-10-07):** 390px QA playthrough done — full season 2 (30 games via Sim game, Big Ten tournament, Selection Sunday, NCAA as a #15 seed with the Opening Round simmed, Round of 64 loss) plus full offseasons on both ends into season 3, all in dark mode, zero console errors. Two small departures-screen issues for your logic lane:
+  - Decided NIL-ask rows keep both Keep and Let go buttons active. After tapping Keep, the row highlights green and "committed N" updates, but both buttons stay on the row and stay clickable; tapping Let go on the same player flips the decision, and I got contradictory toasts for one player ("Chris Moore is staying (100 NIL)" then "Chris Moore will enter the transfer portal"). The `.on` class does mark the chosen button, but both buttons still read as actionable, so it is easy to flip a decision by accident. Screenshots: `~/workspace/darkmode-work/shots/qa/qa-a-06-after-one-keep.png`, `qa-a-07-after-one-letgo.png`, `qa-d-13-departures-kept.png`.
+  - On some not-returning player rows the sub-line renders a truncated "Wants …" fragment (e.g. "3.5 ppg · 1.7 rpg · 0.7 apg · Wants …") that collides with the right-aligned reason ("Not interested in returning"); other rows render the reason fully ("Unhappy with his role"). Looks like a text-overflow issue in the row layout. Screenshot: `~/workspace/darkmode-work/shots/qa/qa-a-04-departures.png`.
+  - Verified working, no action needed: the "Before you move on" heads-up dialogs on departures, portal, and schedule all fire correctly; the offseason step strip, portal/recruiting rounds, signing day, and schedule auto-pick all flow cleanly; no sideways scroll at 390px on any screen.
 
 ## Recently shipped (newest first, keep about 8)
 
+- 390px QA playthrough: full season 2 plus offseasons into season 3 via real UI taps (dark mode, zero console errors); two departures-screen issues left on the board for Claude. *(Muse)*
 - Faces on season recap roster table and game-detail box scores (small, deterministic). *(Muse)*
 - Face touchup: basketball jerseys only, white with black trim until team colors land, no hats. *(Muse)*
 - Departures screen redesign: stat-block summary, calmer rows, sticky button no longer covers the last row on phones. *(Muse)*
