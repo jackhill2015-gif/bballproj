@@ -7,7 +7,7 @@
 
 import { ge, clamp, getTOvr, fmtScore, winProb } from '../utils.js';
 import { G } from '../state.js';
-import { allConfDone, getUserNCAAmatchup, getUserConfMatchup, getConfRoundName, confRoundLabel } from '../tournament.js';
+import { allConfDone, getUserNCAAmatchup, getUserConfMatchup, getConfRoundName, confRoundLabel, openingPending, getUserOpeningGame, bracketEntryAt } from '../tournament.js';
 import { getUiPrefs, setUiPrefs } from './ui-prefs.js';
 
 // Team name link (same shape as the player pLink convention).
@@ -186,7 +186,45 @@ function renderScoutingCard(confMatch) {
 
 var REGIONS = ['East', 'West', 'South', 'Midwest'];
 var ROUND_NAMES = ['First round', 'Second round', 'Sweet 16', 'Elite Eight', 'Final Four', 'Championship'];
-var _brView = getUiPrefs('bracket').region; // region index 0-3, or 'ff'; null = pick automatically
+var _brView = getUiPrefs('bracket').region; // region index 0-3, 'ff' or 'open'; null = pick automatically
+
+// ── 2027 Opening Round ────────────────────────────────────
+// Your bracket entry, ignoring slots still waiting on an Opening Round game
+function myEntry() {
+  return G.bracket.find(function(b) { return b.pending === undefined && b.team && b.team.id === G.tid; }) || null;
+}
+// Your Opening Round game, played or not
+function myOpening() {
+  if (!G.ncaaOpening) return null;
+  return G.ncaaOpening.games.find(function(g) { return g.t1.id === G.tid || g.t2.id === G.tid; }) || null;
+}
+function slotLabel(g) {
+  var e = bracketEntryAt(g.pos);
+  return e ? REGIONS[e.region] + ' ' + e.seed : '';
+}
+function openRow(t, g, sc) {
+  var played = !!g.winner;
+  var cls = (t.id === G.tid ? ' me' : '') + (played ? (g.winner === t ? ' w' : ' l') : '');
+  return '<div class="bx-team' + cls + '"><span class="bx-name">' + tLink(t.id, t.name) + '</span>'
+    + '<span class="bx-m2">' + t.wins + '-' + t.loss + '</span>'
+    + '<span class="bx-sc">' + (played ? sc : '') + '</span></div>';
+}
+function openingView() {
+  var O = G.ncaaOpening;
+  var h = '';
+  [['al', 'At-large', 'Winners become 11 and 12 seeds'], ['auto', 'Automatic bids', 'Winners become 15 and 16 seeds']].forEach(function(grp) {
+    var games = O.games.filter(function(g) { return g.kind === grp[0]; });
+    if (!games.length) return;
+    h += '<div class="op-h"><span>' + grp[1] + '</span><small>' + grp[2] + '</small></div><div class="op-grid">';
+    games.forEach(function(g) {
+      var mine = g.t1.id === G.tid || g.t2.id === G.tid;
+      h += '<div class="op-g"><div class="op-l">For ' + slotLabel(g) + '</div><div class="bx' + (mine ? ' mine' : '') + '">'
+        + openRow(g.t1, g, g.s1) + openRow(g.t2, g, g.s2) + '</div></div>';
+    });
+    h += '</div>';
+  });
+  return h;
+}
 
 // ── Bracket model ─────────────────────────────────────────
 // G.bracket holds 64 entries in winner-advancement order (16 per region).
@@ -234,17 +272,24 @@ function curRound() {
 // ── One matchup box ───────────────────────────────────────
 function slotRow(b, k, mt) {
   if (!b) return '<div class="bx-team tbd"><span class="bx-seed"></span><span class="bx-name">&nbsp;</span><span class="bx-sc"></span></div>';
+  if (b.pending !== undefined && G.ncaaOpening && G.ncaaOpening.games[b.pending]) {
+    var og = G.ncaaOpening.games[b.pending];
+    var mineO = og.t1.id === G.tid || og.t2.id === G.tid;
+    return '<div class="bx-team tbd' + (mineO ? ' me' : '') + '"><span class="bx-seed">' + b.seed + '</span>'
+      + '<span class="bx-name" title="' + og.t1.name + ' / ' + og.t2.name + '">Opening Round winner</span><span class="bx-sc"></span></div>';
+  }
   var played = playedRound(b, k);
   var other = mt.a === b ? mt.b : mt.a;
   var won = played && wonRound(b, k);
   var lost = played && !won && other && playedRound(other, k);
-  var cls = (b.team.id === G.tid ? ' me' : '') + (won ? ' w' : '') + (lost ? ' l' : '');
+  var cls = (b.team.id === G.tid && b.pending === undefined ? ' me' : '') + (won ? ' w' : '') + (lost ? ' l' : '');
   return '<div class="bx-team' + cls + '"><span class="bx-seed">' + b.seed + '</span>'
     + '<span class="bx-name">' + tLink(b.team.id, b.team.name) + '</span>'
     + '<span class="bx-sc">' + (played ? b.sc[k] : '') + '</span></div>';
 }
 function matchBox(mt, k) {
-  var mine = (mt.a && mt.a.team.id === G.tid) || (mt.b && mt.b.team.id === G.tid);
+  var isMe = function(e) { return e && e.pending === undefined && e.team.id === G.tid; };
+  var mine = isMe(mt.a) || isMe(mt.b);
   return '<div class="bx-m"><div class="bx' + (mine ? ' mine' : '') + '">' + slotRow(mt.a, k, mt) + slotRow(mt.b, k, mt) + '</div></div>';
 }
 
@@ -285,9 +330,10 @@ function finalFourTree() {
 }
 
 function defaultView() {
+  if (openingPending()) return 'open';
   var alive = G.bracket.filter(function(b) { return b.active; }).length;
   if (alive <= 4) return 'ff';
-  var me = G.bracket.find(function(b) { return b.team && b.team.id === G.tid; });
+  var me = myEntry();
   return me ? me.region : 0;
 }
 
@@ -297,50 +343,78 @@ function bracketPanel() {
     return '';
   }
   var v = _brView === null ? defaultView() : _brView;
-  var me = G.bracket.find(function(b) { return b.team && b.team.id === G.tid; });
-  var h = '<div class="panel"><div class="panel-h"><span>Bracket</span><small>' + (me ? 'You: #' + me.seed + ' seed, ' + REGIONS[me.region] : 'You did not make the field') + '</small></div>'
+  if (v === 'open' && !G.ncaaOpening) v = defaultView();
+  var me = myEntry(), mo = myOpening();
+  var you = me ? 'You: #' + me.seed + ' seed, ' + REGIONS[me.region]
+    : mo && !mo.winner ? 'You: Opening Round, for ' + slotLabel(mo)
+    : mo ? 'You lost in the Opening Round' : 'You did not make the field';
+  var h = '<div class="panel"><div class="panel-h"><span>Bracket</span><small>' + you + '</small></div>'
     + '<div class="panel-b"><div class="fbar" style="margin-bottom:10px;">';
+  if (G.ncaaOpening) h += '<button class="fchip' + (v === 'open' ? ' on' : '') + '" data-brview="open">Opening round</button>';
   REGIONS.forEach(function(name, r) {
     var alive = G.bracket.slice(r * 16, r * 16 + 16).filter(function(b) { return b.active; }).length;
     h += '<button class="fchip' + (v === r ? ' on' : '') + '" data-brview="' + r + '">' + name + '</button>';
   });
   h += '<button class="fchip' + (v === 'ff' ? ' on' : '') + '" data-brview="ff">Final Four</button></div>';
-  h += v === 'ff' ? finalFourTree() : regionTree(v);
+  h += v === 'open' ? openingView() : v === 'ff' ? finalFourTree() : regionTree(v);
   return h + '</div></div>';
 }
 
 // ── Your status card ──────────────────────────────────────
+function matchupHTML(title, sub, ut, useed, opp, oseed) {
+  var wp = winProb(getTOvr(ut), getTOvr(opp), 0, 0);
+  var col = wp >= 55 ? 'var(--grn2)' : wp >= 40 ? 'var(--gld2)' : 'var(--red)';
+  var stars = opp.rost.filter(function(p) { return p.mins > 0; }).sort(function(a, b) { return b.ovr - a.ovr; }).slice(0, 3);
+  var seedTag = function(sd) { return sd ? '<span class="mu-seed">' + sd + '</span>' : ''; };
+  var h = '<div class="panel"><div class="panel-h"><span>' + title + '</span><small>' + sub + '</small></div><div class="panel-b">'
+    + '<div class="mu">'
+    + '<div class="mu-t">' + seedTag(useed) + '<div><div class="mu-n me">' + ut.name + '</div><div class="mu-m">' + ut.wins + '-' + ut.loss + ' · OVR ' + getTOvr(ut) + '</div></div></div>'
+    + '<div class="mu-vs">vs</div>'
+    + '<div class="mu-t r"><div><div class="mu-n">' + opp.name + '</div><div class="mu-m">' + opp.wins + '-' + opp.loss + ' · OVR ' + getTOvr(opp) + '</div></div>' + seedTag(oseed) + '</div>'
+    + '</div>'
+    + '<div class="prob-row"><span>Win probability</span><span style="color:' + col + ';font-weight:600;">' + wp + '%</span></div>'
+    + '<div class="prob-bar" style="margin-bottom:10px;"><div class="prob-fill" style="width:' + wp + '%;background:' + col + ';"></div></div>';
+  if (stars.length) {
+    h += '<div class="mu-watch"><span>Watch for</span> ' + stars.map(function(p) {
+      var gp = p.s.gp || 1;
+      return '<b>' + p.name + '</b> ' + p.pos + ', ' + (p.s.pts / gp).toFixed(1) + ' ppg';
+    }).join(' · ') + '</div>';
+  }
+  return h + '<div class="big-btn-row"><button class="btn-big" data-action="play" data-mode="quick">Sim game</button>'
+    + '<button class="btn-big secondary" data-action="play" data-mode="live">Watch game</button></div></div></div>';
+}
+function simRowHTML(line, label) {
+  return '<div class="panel"><div class="panel-b" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">'
+    + '<div style="font-size:13.5px;">' + line + '</div>'
+    + '<button class="btn-big" style="flex:0 0 auto;width:auto;padding-left:20px;padding-right:20px;" data-action="play" data-mode="quick">' + label + '</button></div></div>';
+}
+function openingCard() {
+  var og = getUserOpeningGame();
+  if (og) {
+    var opp = og.t1.id === G.tid ? og.t2 : og.t1;
+    return matchupHTML('Opening round', 'Winner is the ' + slotLabel(og) + ' seed', G.teams[G.tid], 0, opp, 0);
+  }
+  var me = myEntry();
+  var line = me ? 'You are the #' + me.seed + ' seed in the ' + REGIONS[me.region] + '. Twelve Opening Round games fill the last spots in the 64.'
+    : G.teams[G.tid].name + ' did not make the field this year.';
+  return simRowHTML(line, 'Sim the opening round');
+}
 function userCard(cr) {
-  var me = G.bracket.find(function(b) { return b.team && b.team.id === G.tid; });
+  if (openingPending()) return openingCard();
+  var me = myEntry();
   var um = getUserNCAAmatchup();
   var alive = G.bracket.filter(function(b) { return b.active; }).length;
   if (um && alive > 1) {
     var uIsB1 = um.b1.team.id === G.tid;
     var ue = uIsB1 ? um.b1 : um.b2, oe = uIsB1 ? um.b2 : um.b1, opp = oe.team;
-    var wp = winProb(getTOvr(ue.team), getTOvr(opp), 0, 0);
-    var col = wp >= 55 ? 'var(--grn2)' : wp >= 40 ? 'var(--gld2)' : 'var(--red)';
-    var stars = opp.rost.filter(function(p) { return p.mins > 0; }).sort(function(a, b) { return b.ovr - a.ovr; }).slice(0, 3);
-    var h = '<div class="panel"><div class="panel-h"><span>' + ROUND_NAMES[cr] + '</span><small>' + REGIONS[ue.region] + (cr >= 4 ? '' : ' region') + ', neutral site</small></div><div class="panel-b">'
-      + '<div class="mu">'
-      + '<div class="mu-t"><span class="mu-seed">' + ue.seed + '</span><div><div class="mu-n me">' + ue.team.name + '</div><div class="mu-m">' + ue.team.wins + '-' + ue.team.loss + ' · OVR ' + getTOvr(ue.team) + '</div></div></div>'
-      + '<div class="mu-vs">vs</div>'
-      + '<div class="mu-t r"><div><div class="mu-n">' + opp.name + '</div><div class="mu-m">' + opp.wins + '-' + opp.loss + ' · OVR ' + getTOvr(opp) + '</div></div><span class="mu-seed">' + oe.seed + '</span></div>'
-      + '</div>'
-      + '<div class="prob-row"><span>Win probability</span><span style="color:' + col + ';font-weight:600;">' + wp + '%</span></div>'
-      + '<div class="prob-bar" style="margin-bottom:10px;"><div class="prob-fill" style="width:' + wp + '%;background:' + col + ';"></div></div>';
-    if (stars.length) {
-      h += '<div class="mu-watch"><span>Watch for</span> ' + stars.map(function(p) {
-        var gp = p.s.gp || 1;
-        return '<b>' + p.name + '</b> ' + p.pos + ', ' + (p.s.pts / gp).toFixed(1) + ' ppg';
-      }).join(' · ') + '</div>';
-    }
-    h += '<div class="big-btn-row"><button class="btn-big" data-action="play" data-mode="quick">Sim game</button>'
-      + '<button class="btn-big secondary" data-action="play" data-mode="live">Watch game</button></div></div></div>';
-    return h;
+    return matchupHTML(ROUND_NAMES[cr], REGIONS[ue.region] + (cr >= 4 ? '' : ' region') + ', neutral site', ue.team, ue.seed, opp, oe.seed);
   }
   if (alive <= 1) return '';
-  var line;
-  if (!me) line = G.teams[G.tid].name + ' did not make the field this year.';
+  var line, mo = myOpening();
+  if (!me && mo && mo.winner) {
+    var oo = mo.t1.id === G.tid ? mo.t2 : mo.t1, us = mo.t1.id === G.tid ? mo.s1 : mo.s2, os = mo.t1.id === G.tid ? mo.s2 : mo.s1;
+    line = 'Your run ended in the Opening Round, ' + us + '-' + os + ' to ' + oo.name + '.';
+  } else if (!me) line = G.teams[G.tid].name + ' did not make the field this year.';
   else {
     var k = (me.sc || []).length - 1;
     var rr = k >= 0 && k < 4 ? regionRounds(me.region)[k] : null, opp2 = null;
@@ -349,9 +423,7 @@ function userCard(cr) {
     line = 'Your run ended in the ' + (k >= 0 ? ROUND_NAMES[k].toLowerCase() : 'first round')
       + (opp2 && opp2.sc ? ', ' + me.sc[k] + '-' + opp2.sc[k] + ' to #' + opp2.seed + ' ' + opp2.team.name : '') + '.';
   }
-  return '<div class="panel"><div class="panel-b" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">'
-    + '<div style="font-size:13.5px;">' + line + '</div>'
-    + '<button class="btn-big" style="flex:0 0 auto;width:auto;padding-left:20px;padding-right:20px;" data-action="play" data-mode="quick">Sim the ' + (cr < 2 ? ROUND_NAMES[cr].toLowerCase() : ROUND_NAMES[cr]) + '</button></div></div>';
+  return simRowHTML(line, 'Sim the ' + (cr < 2 ? ROUND_NAMES[cr].toLowerCase() : ROUND_NAMES[cr]));
 }
 
 function champCard() {
@@ -404,8 +476,8 @@ function upsetsPanel() {
 function renderNCAA_Hub() {
   var cr = curRound();
   var h = '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:12px;">'
-    + '<div><div class="sec-head" style="margin:0;">NCAA tournament</div><div class="sec-sub" style="margin:2px 0 0;">' + G.yr + ' · 64 teams, four regions</div></div>'
-    + '<span class="tag">' + (cr >= 6 ? 'Complete' : ROUND_NAMES[cr]) + '</span></div>';
+    + '<div><div class="sec-head" style="margin:0;">NCAA tournament</div><div class="sec-sub" style="margin:2px 0 0;">' + G.yr + ' · ' + (G.ncaaOpening ? '76 teams, 12 Opening Round games, then 64' : '64 teams, four regions') + '</div></div>'
+    + '<span class="tag">' + (openingPending() ? 'Opening round' : cr >= 6 ? 'Complete' : ROUND_NAMES[cr]) + '</span></div>';
   h += cr >= 6 ? champCard() : userCard(cr);
   h += bracketPanel();
   h += upsetsPanel();
@@ -420,7 +492,7 @@ export function bindBracket(el, rerender) {
     var c = e.target.closest && e.target.closest('[data-brview]');
     if (!c) return;
     var v = c.getAttribute('data-brview');
-    _brView = v === 'ff' ? 'ff' : parseInt(v, 10);
+    _brView = v === 'ff' || v === 'open' ? v : parseInt(v, 10);
     setUiPrefs('bracket', { region: _brView });
     rerender();
   });

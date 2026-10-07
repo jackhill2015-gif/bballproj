@@ -15,7 +15,7 @@ export const G = {
   tid: 0, yr: 2025, wk: 0, gi: 0, pts: 120,
   momentum: { tid: -1, pts: 0 },
   phase: 'reg', difficulty: 'normal',
-  teams: [], recruits: [], bracket: [], confTourneys: {},
+  teams: [], recruits: [], bracket: [], confTourneys: {}, ncaaOpening: null,
   confTitles: 0, championships: 0, prestige: 3,
   logs: [], history: [], leagueChamps: [], simInterval: null,
   // Recruiting
@@ -270,9 +270,19 @@ function _slimBracket(bracket) {
     var t = b.team;
     return {
       team: (t === null || t === undefined) ? null : (typeof t === 'number' ? t : t.id),
-      seed: b.seed, region: b.region, active: !!b.active, score: b.score, won: !!b.won, sc: b.sc || []
+      seed: b.seed, region: b.region, active: !!b.active, score: b.score, won: !!b.won, sc: b.sc || [],
+      pending: b.pending
     };
   });
+}
+
+// 2027 Opening Round: games hold team objects, saved as IDs
+function _slimOpening(o) {
+  if (!o) return null;
+  var idOf = function(t) { return (t === null || t === undefined) ? null : (typeof t === 'number' ? t : t.id); };
+  return { done: !!o.done, games: (o.games || []).map(function(g) {
+    return { t1: idOf(g.t1), t2: idOf(g.t2), s1: g.s1, s2: g.s2, winner: idOf(g.winner), pos: g.pos, kind: g.kind };
+  }) };
 }
 
 function _slimConfTourneys(cts) {
@@ -388,6 +398,7 @@ function _writeSave() {
       recruits:_slimRecruits(G.recruits),
       bracket:_slimBracket(G.bracket),
       confTourneys:_slimConfTourneys(G.confTourneys),
+      ncaaOpening:_slimOpening(G.ncaaOpening),
       injuries:G.injuries||[],buffs:G.buffs||[],nextHomeBonus:G.nextHomeBonus||0,
       lastResult:G.lastResult||null,
       jobMarket:G.jobMarket||null,
@@ -422,8 +433,17 @@ function _teamRef(x) {
 
 function _fattenBracket(slim) {
   return (slim || []).map(function(b) {
-    return { team: _teamRef(b.team), seed: b.seed, region: b.region, active: !!b.active, score: b.score, won: !!b.won, sc: b.sc || [] };
+    var e = { team: _teamRef(b.team), seed: b.seed, region: b.region, active: !!b.active, score: b.score, won: !!b.won, sc: b.sc || [] };
+    if (b.pending !== undefined && b.pending !== null) e.pending = b.pending;
+    return e;
   });
+}
+
+function _fattenOpening(o) {
+  if (!o) return null;
+  return { done: !!o.done, games: (o.games || []).map(function(g) {
+    return { t1: _teamRef(g.t1), t2: _teamRef(g.t2), s1: g.s1, s2: g.s2, winner: g.winner === null || g.winner === undefined ? null : _teamRef(g.winner), pos: g.pos, kind: g.kind };
+  }) };
 }
 
 function _fattenConfTourneys(slim) {
@@ -543,6 +563,7 @@ export function loadState() {
     // S10: rehydrate slimmed tournament data (team IDs → team objects)
     G.bracket=_fattenBracket(s.bracket);
     G.confTourneys=_fattenConfTourneys(s.confTourneys);
+    G.ncaaOpening=_fattenOpening(s.ncaaOpening);
     // Converted saves are written back right away so a quick reload can't
     // read the old-scale numbers again
     if (_resave) _writeSave();

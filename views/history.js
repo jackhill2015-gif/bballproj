@@ -19,6 +19,7 @@ function finishBadge(tf) {
   if (tf === 'Sweet 16') return '<span class="tag">Sweet 16</span>';
   if (tf === 'Round of 32') return '<span style="font-size:11px;color:var(--txt3);">Round of 32</span>';
   if (tf === 'Round of 64') return '<span style="font-size:11px;color:var(--txt3);">Round of 64</span>';
+  if (tf === 'Opening round') return '<span style="font-size:11px;color:var(--txt3);">Opening round</span>';
   if (tf === 'Conf Tourney') return '<span class="tag t-cf">Conf Tourney</span>';
   return '';
 }

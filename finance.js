@@ -129,3 +129,7 @@ export function payTourneyWin(roundIdx) {
   var amt = TOURNEY_PAY[Math.max(0, Math.min(5, roundIdx))];
   return earn('tourney', amt, 'NCAA wins pay more each round');
 }
+// An Opening Round win (2027 format): a smaller check than the round of 64
+export function payOpeningWin() {
+  return earn('tourney', 10, 'NCAA wins pay more each round');
+}

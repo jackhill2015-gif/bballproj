@@ -10,6 +10,11 @@ for (const c of Object.values(G.confTourneys)) for (const rd of c.rounds) for (c
   if (!m.winner) continue; const lo = m.winner === m.t1 ? m.t2 : m.t1;
   extra[m.winner.id].w++; extra[lo.id].l++;
 }
+// NCAA Opening Round (2027 format) counts like any other game
+for (const g of (G.ncaaOpening ? G.ncaaOpening.games : [])) {
+  const lo = g.winner === g.t1 ? g.t2 : g.t1;
+  extra[g.winner.id].w++; extra[lo.id].l++;
+}
 // NCAA: count games from bracket progression (each eliminated team lost once; winners won rounds)
 const champ = G.bracket.find(b => b.active);
 let bad = 0;

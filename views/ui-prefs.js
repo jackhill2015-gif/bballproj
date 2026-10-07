@@ -55,7 +55,7 @@ function validateSection(name, raw) {
     o.tab = oneOf(raw.tab, ['nat', 'conf'], d.tab);
     o.conf = (typeof raw.conf === 'string' && raw.conf) ? raw.conf : null;
   } else if (name === 'bracket') {
-    o.region = (raw.region === null || raw.region === 'ff' ||
+    o.region = (raw.region === null || raw.region === 'ff' || raw.region === 'open' ||
       (typeof raw.region === 'number' && raw.region >= 0 && raw.region <= 3)) ? raw.region : d.region;
   }
   return o;

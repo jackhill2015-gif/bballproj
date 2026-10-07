@@ -1034,7 +1034,7 @@ export function finalizeModal() {
   renderGcastBox();
 
   if ((G.phase === 'conf_tourn' && LS.game && LS.game._type === 'conf') ||
-      (G.phase === 'ncaa' && LS.game && LS.game._type === 'ncaa')) {
+      (G.phase === 'ncaa' && LS.game && (LS.game._type === 'ncaa' || LS.game._type === 'opening'))) {
     if (_actions.showTournamentResult) _actions.showTournamentResult();
   } else {
     ge('gmod').classList.remove('open');

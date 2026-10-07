@@ -53,6 +53,11 @@ function collectGames() {
   });
   // NCAA tournament (neutral site): teams that played round k pair up in
   // bracket order; b.sc holds each team's score by round
+  // 2027 Opening Round games count too
+  ((G.ncaaOpening && G.ncaaOpening.games) || []).forEach(function(g) {
+    if (!g.winner || g.s1 === null || g.s1 === undefined) return;
+    if (G.teams[g.t1.id] && G.teams[g.t2.id]) addGame(games, g.t1.id, g.t2.id, g.s1 - g.s2, 0);
+  });
   var br = G.bracket || [];
   for (var k = 0; k < 6; k++) {
     var played = br.filter(function(b) { return b && b.team && b.sc && b.sc.length > k; });

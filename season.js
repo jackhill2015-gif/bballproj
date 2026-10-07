@@ -716,6 +716,10 @@ export function wireSeasonAchievements() {
   if (G.bracket && G.bracket.length) {
     inField = G.bracket.some(function(b) { return teamIdOf(b.team) === tid; });
   }
+  // Opening Round teams made the field too, win or lose
+  if (!inField && G.ncaaOpening && G.ncaaOpening.games) {
+    inField = G.ncaaOpening.games.some(function(g) { return teamIdOf(g.t1) === tid || teamIdOf(g.t2) === tid; });
+  }
   if (inField) sa.madeNCAA = true;
 
   if (userWonNatChamp()) {
@@ -1030,7 +1034,7 @@ export function doOffseason() {
   G.yr++; G.wk = 0; G.gi = 0; G.phase = 'reg';
   G.lastResult = null;
   G.teams.forEach(function(tm) { tm.lastRank = 0; });
-  G.bracket = []; G.confTourneys = {};
+  G.bracket = []; G.confTourneys = {}; G.ncaaOpening = null;
   // Records: fresh highlight reel for the new season
   clearSeasonBreaks();
 

@@ -1431,3 +1431,12 @@ table.ups td { vertical-align: middle; }
 .sched-row[data-action="game"] { cursor: pointer; }
 .auto-tog { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--txt2); cursor: pointer; min-height: 36px; }
 .auto-tog input { width: 18px; height: 18px; accent-color: var(--blu); }
+
+/* NCAA Opening Round (2027 format) */
+.op-h { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin: 4px 0 8px; font-size: 13px; font-weight: 600; }
+.op-h small { font-size: 12px; font-weight: 400; color: var(--txt3); }
+.op-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; margin-bottom: 14px; }
+.op-grid:last-child { margin-bottom: 0; }
+.op-l { font-size: 11.5px; color: var(--txt3); margin-bottom: 4px; }
+.bx-m2 { font-size: 11px; color: var(--txt3); font-variant-numeric: tabular-nums; }
+.bx-team.l .bx-m2 { color: var(--txt3); }

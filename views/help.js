@@ -98,6 +98,11 @@ export function renderHelp() {
     + 'court, and the Horizon opens on campus. The format for your league shows above its bracket. The champion gets '
     + 'the automatic NCAA bid.');
 
+  h += sec('NCAA tournament',
+    'The field is 76 teams (the 2027 format). Fifty-two are seeded straight into the bracket of 64. The 12 lowest-rated '
+    + 'at-large teams and the 12 lowest-rated conference champions play a 12-game Opening Round first: at-large winners '
+    + 'become 11 and 12 seeds, champion winners become 15 and 16 seeds. From there it is the usual six rounds.');
+
   h += sec('Non-conference schedule',
     'Every offseason, after signing day, you set next season\'s 10 non-conference games. The game suggests a '
     + 'balanced slate (a few tough, mostly even, a few easier); tap any game to swap the opponent, or auto-pick again.');

@@ -51,6 +51,7 @@ export function runConfTourneys() {
 export function runNCAA() {
   let guard = 0;
   while (G.bracket.filter(b => b.active).length > 1 && ++guard < 200) {
-    if (T.getUserNCAAmatchup()) T.playTournamentGame(false); else T.simNCAAround();
+    if (T.getUserOpeningGame && T.getUserOpeningGame()) T.playTournamentGame(false);
+    else if (T.getUserNCAAmatchup()) T.playTournamentGame(false); else T.simNCAAround();
   }
 }

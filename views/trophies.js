@@ -13,7 +13,7 @@ function panel(title, body, right) {
     + '<div class="panel-b flush">' + body + '</div></div>';
 }
 
-var FINISH_ORDER = { 'CHAMP': 7, 'Championship Game': 6, 'Final Four': 5, 'Elite Eight': 4, 'Sweet 16': 3, 'Round of 32': 2, 'Round of 64': 1 };
+var FINISH_ORDER = { 'CHAMP': 7, 'Championship Game': 6, 'Final Four': 5, 'Elite Eight': 4, 'Sweet 16': 3, 'Round of 32': 2, 'Round of 64': 1, 'Opening round': 1 };
 
 export function renderTrophies() {
   var el = ge('trophies-content');

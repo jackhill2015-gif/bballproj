@@ -39,7 +39,7 @@ function ncaaLevel() {
   if (sa.finalFour) return 4;
   if (sa.sweet16) return 3;
   var tf = sa.tourneyFinish;
-  if (tf && tf !== 'Round of 64' && tf !== 'Did Not Qualify') return 2;
+  if (tf && tf !== 'Round of 64' && tf !== 'Did Not Qualify' && tf !== 'Opening round') return 2;
   // still alive in the bracket and already through round one?
   if (G.phase === 'ncaa' && G.bracket && G.bracket.length) {
     var me = G.bracket.find(function(b) { return b.team && b.team.id === G.tid; });

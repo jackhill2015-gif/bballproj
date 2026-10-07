@@ -5,7 +5,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { formatFor, roundsIn } from './confformats.js';
-import { payTourneyWin } from './finance.js';
+import { payTourneyWin, payOpeningWin } from './finance.js';
 import { recomputeRatings, resumeScore } from './ratings.js';
 import { ge, txt, fmtScore } from './utils.js';
 import { G, LS, SetupState, saveState } from './state.js';
@@ -49,6 +49,7 @@ function navTo(v) { if (_ext.navTo) _ext.navTo(v); }
 
 export function getNCAAroundName() {
   if (!G.bracket) return 'NCAA Tournament';
+  if (openingPending()) return 'NCAA Tournament \u2014 Opening Round';
   var active = G.bracket.filter(function(b) { return b.active; }).length;
   var names = {
     64: 'Round of 64', 32: 'Round of 32', 16: 'Sweet 16',
@@ -233,6 +234,7 @@ export function getUserConfMatchup() {
 
 export function getUserNCAAmatchup() {
   if (!G.bracket || !G.bracket.length) return null;
+  if (openingPending()) return null; // the 64 starts after the Opening Round
   var active = G.bracket.filter(function(b) { return b.active; });
   for (var i = 0; i < active.length - 1; i += 2) {
     var b1 = active[i], b2 = active[i + 1];
@@ -367,6 +369,55 @@ function ncaaSeedEntry(region, seed) {
 //  NCAA BRACKET GENERATION & SELECTION SUNDAY
 // ═══════════════════════════════════════════════════════════
 
+// ═══ 2027 FORMAT: 76 TEAMS, 12-GAME OPENING ROUND ═══
+var FIELD_SIZE = 76;
+// Overall seed index (0-63) = (seed - 1) * 4 + region
+var OPEN_AL_POS = [40, 41, 42, 43, 44, 45];   // the four 11 seeds, 12 seeds in regions 0-1
+var OPEN_AUTO_POS = [58, 59, 60, 61, 62, 63]; // 15 seeds in regions 2-3, the four 16 seeds
+
+export function openingPending() { return !!(G.ncaaOpening && !G.ncaaOpening.done); }
+export function getUserOpeningGame() {
+  if (!G.ncaaOpening) return null;
+  for (var i = 0; i < G.ncaaOpening.games.length; i++) {
+    var g = G.ncaaOpening.games[i];
+    if (!g.winner && (g.t1.id === G.tid || g.t2.id === G.tid)) return g;
+  }
+  return null;
+}
+export function bracketEntryAt(pos) {
+  var region = pos % 4, seed = Math.floor(pos / 4) + 1;
+  for (var i = 0; i < (G.bracket || []).length; i++) if (G.bracket[i].region === region && G.bracket[i].seed === seed) return G.bracket[i];
+  return null;
+}
+function scoreOpening(g, s1, s2) {
+  g.s1 = s1; g.s2 = s2;
+  g.winner = s1 > s2 ? g.t1 : g.t2;
+  tallyPostseason(g.winner, g.winner === g.t1 ? g.t2 : g.t1);
+}
+// Opening Round winners take their bracket slots
+function finishOpening() {
+  if (!G.ncaaOpening || G.ncaaOpening.done) return;
+  if (G.ncaaOpening.games.some(function(g) { return !g.winner; })) return;
+  G.ncaaOpening.games.forEach(function(g) {
+    var e = bracketEntryAt(g.pos);
+    if (e) { e.team = g.winner; delete e.pending; }
+  });
+  G.ncaaOpening.done = true;
+  recomputeRatings();
+  addLog('ev', G.gi, 'NCAA Opening Round complete. The field of 64 is set.');
+}
+// Sim every Opening Round game (skipping yours when you are playing it)
+export function simOpeningRound(skipUser) {
+  if (!openingPending()) return;
+  G.ncaaOpening.games.forEach(function(g) {
+    if (g.winner) return;
+    if (skipUser && (g.t1.id === G.tid || g.t2.id === G.tid)) return;
+    var res = simGame(g.t1, g.t2, true);
+    scoreOpening(g, res.homeScore, res.awayScore);
+  });
+  finishOpening();
+}
+
 export function buildNCAA() {
   // Rankings fold in the conference tournaments before the committee meets.
   recomputeRatings();
@@ -395,7 +446,9 @@ export function buildNCAA() {
     };
   });
 
-  // Step 3: Sort by resume, pick auto-bids first, then fill to 64 with at-large
+  // Step 3: Sort by resume, pick auto-bids first, then fill to 76 with at-large
+  // (2027 format: 76 teams — 52 go straight into the bracket, the 12 lowest
+  // at-large teams and the 12 lowest automatic qualifiers play an Opening Round)
   allTeams.sort(function(a, b) { return b.resume - a.resume; });
   var field = [];
   var inField = {};
@@ -410,7 +463,7 @@ export function buildNCAA() {
 
   // Fill remaining spots with at-large (best resume first)
   allTeams.forEach(function(entry) {
-    if (field.length >= 64) return;
+    if (field.length >= FIELD_SIZE) return;
     if (inField[entry.team.id]) return;
     // At-large minimum: a .550 record (no 16-15 at-large bids)
     var gpA = entry.team.wins + entry.team.loss;
@@ -419,25 +472,45 @@ export function buildNCAA() {
     inField[entry.team.id] = true;
   });
 
-  // If still not 64 (unlikely but safety), fill with best remaining
+  // If still short (unlikely), fill with best remaining
   allTeams.forEach(function(entry) {
-    if (field.length >= 64) return;
+    if (field.length >= FIELD_SIZE) return;
     if (inField[entry.team.id]) return;
     field.push(entry.team);
     inField[entry.team.id] = true;
   });
 
-  // Step 4: Seed by resume → overall seeds 1..64, then deal them into
-  // 4 regions: overall seed i becomes region ((i-1)%4), region-seed
-  // floor((i-1)/4)+1. So the four #1 seeds are the top-4 overall teams,
-  // the four #2 seeds the next four, etc. (standard distribution —
-  // no more #1 playing #2 in round 1).
-  field.sort(function(a, b) {
-    var aResume = allTeams.find(function(e) { return e.team.id === a.id; });
-    var bResume = allTeams.find(function(e) { return e.team.id === b.id; });
-    return (bResume ? bResume.resume : 0) - (aResume ? aResume.resume : 0);
-  });
-  var overall = field.slice(0, 64);
+  // Step 4: Opening Round. The 12 lowest-rated at-large teams and the 12
+  // lowest-rated automatic qualifiers pair up (similar teams play each
+  // other); each game feeds one bracket slot: at-large games → the four
+  // 11 seeds and two 12 seeds, automatic-bid games → two 15 seeds and the
+  // four 16 seeds. Everyone else is seeded straight into the 64.
+  var resumeOf = {};
+  allTeams.forEach(function(e) { resumeOf[e.team.id] = e.resume; });
+  var byResume = function(a, b) { return (resumeOf[b.id] || 0) - (resumeOf[a.id] || 0); };
+  var autoSet = {}; autoBids.forEach(function(t) { autoSet[t.id] = true; });
+  var autosF = field.filter(function(t) { return autoSet[t.id]; }).sort(byResume);
+  var atlF = field.filter(function(t) { return !autoSet[t.id]; }).sort(byResume);
+  var openAL = atlF.length >= 12 ? atlF.slice(-12) : [];
+  var openAuto = autosF.length >= 12 ? autosF.slice(-12) : [];
+  var inOpen = {};
+  openAL.concat(openAuto).forEach(function(t) { inOpen[t.id] = true; });
+  var games = [];
+  function pairUp(list, slots, kind) {
+    for (var k = 0; k + 1 < list.length && k / 2 < slots.length; k += 2) {
+      games.push({ t1: list[k], t2: list[k + 1], s1: null, s2: null, winner: null, pos: slots[k / 2], kind: kind });
+    }
+  }
+  pairUp(openAL, OPEN_AL_POS, 'al');
+  pairUp(openAuto, OPEN_AUTO_POS, 'auto');
+  var slotGame = {};
+  games.forEach(function(g, gi) { slotGame[g.pos] = gi; });
+  var direct = field.filter(function(t) { return !inOpen[t.id]; }).sort(byResume);
+  var overall = new Array(64), di = 0;
+  for (var oi = 0; oi < 64; oi++) {
+    if (slotGame[oi] !== undefined) overall[oi] = games[slotGame[oi]].t1; // placeholder until the game is played
+    else overall[oi] = direct[di++];
+  }
   var byRegion = [[], [], [], []];
   overall.forEach(function(t, i) {
     byRegion[i % 4][Math.floor(i / 4)] = t; // index = region seed - 1
@@ -449,25 +522,41 @@ export function buildNCAA() {
   G.bracket = [];
   for (var r = 0; r < 4; r++) {
     NCAA_FIRST_ROUND.forEach(function(pair) {
-      pair.forEach(function(s) {
-        G.bracket.push({ team: byRegion[r][s - 1], seed: s, region: r, active: true, score: null, won: false });
+      pair.forEach(function(sd) {
+        var entry = { team: byRegion[r][sd - 1], seed: sd, region: r, active: true, score: null, won: false };
+        var pos = (sd - 1) * 4 + r;
+        if (slotGame[pos] !== undefined) entry.pending = slotGame[pos];
+        G.bracket.push(entry);
       });
     });
   }
+  G.ncaaOpening = games.length ? { done: false, games: games } : null;
   G.phase = 'ncaa';
 
   var userEntry = null;
+  var userOpen = getUserOpeningGame();
   for (var bi = 0; bi < G.bracket.length; bi++) {
-    if (G.bracket[bi].team.id === G.tid) { userEntry = G.bracket[bi]; break; }
+    if (G.bracket[bi].team.id === G.tid && G.bracket[bi].pending === undefined) { userEntry = G.bracket[bi]; break; }
   }
+  if (userOpen) userEntry = bracketEntryAt(userOpen.pos);
   var userSeed = userEntry ? userEntry.seed : 0;
-  if (userSeed > 0) {
+  if (userOpen) {
+    var _oo = userOpen.t1.id === G.tid ? userOpen.t2 : userOpen.t1;
+    addLog('ev', G.gi, '<b>NCAA tournament:</b> you are in the Opening Round against ' + _oo.name + '. The winner is the ' + NCAA_REGIONS[userEntry.region] + ' ' + userSeed + ' seed.');
+  } else if (userSeed > 0) {
     addLog('ev', G.gi, '<b>NCAA Tournament!</b> You are the #' + userSeed + ' seed.');
   } else {
     addLog('ev', G.gi, '<b>NIT bound.</b> Your program did not qualify for the NCAA Tournament.');
   }
   saveState(); updateAll();
   showBracketReveal(userSeed);
+}
+
+// Every team in the field: the 52 seeded straight in plus the 24 Opening Round teams
+function fieldTeams() {
+  var out = G.bracket.filter(function(b) { return b.pending === undefined; }).map(function(b) { return b.team; });
+  ((G.ncaaOpening && G.ncaaOpening.games) || []).forEach(function(g) { out.push(g.t1, g.t2); });
+  return out;
 }
 
 export function showBracketReveal(userSeed) {
@@ -483,19 +572,21 @@ export function showBracketReveal(userSeed) {
       if (cct && cct.champ) autoCount++;
     });
   }
-  var bidLine = autoCount + ' automatic bids, ' + (G.bracket.length - autoCount) + ' at-large bids';
+  var field = fieldTeams();
+  var bidLine = autoCount + ' automatic bids, ' + (field.length - autoCount) + ' at-large bids';
+  var userOpen = getUserOpeningGame();
 
   // User card
   if (userSeed > 0) {
     var uc = ge('br-user-card'); if (uc) uc.style.display = 'block';
     txt('br-user-team', G.teams[G.tid].name);
-    txt('br-user-seed', userSeed + ' seed');
+    txt('br-user-seed', userOpen ? 'Opening Round' : userSeed + ' seed');
     // Find the user's entry, then its real first-round opponent: the team
     // holding the paired seed in the same region — the exact game the sim
     // will play (see NCAA BRACKET MODEL above).
     var userEntry = null;
     for (var bi2 = 0; bi2 < G.bracket.length; bi2++) {
-      if (G.bracket[bi2].team.id === G.tid) { userEntry = G.bracket[bi2]; break; }
+      if (G.bracket[bi2].team.id === G.tid && G.bracket[bi2].pending === undefined) { userEntry = G.bracket[bi2]; break; }
     }
     var opp = null, userRegionName = '';
     if (userEntry) {
@@ -506,10 +597,13 @@ export function showBracketReveal(userSeed) {
         else if (pair[1] === userEntry.seed) opp = ncaaSeedEntry(userEntry.region, pair[0]);
       }
     }
-    txt('br-user-opp', opp ? userRegionName + ' region. First round vs ' + opp.seed + ' ' + opp.team.name + ' (' + opp.team.wins + '-' + opp.team.loss + ').' : '');
+    if (userOpen) {
+      var oSlot = bracketEntryAt(userOpen.pos), oOpp = userOpen.t1.id === G.tid ? userOpen.t2 : userOpen.t1;
+      txt('br-user-opp', 'Opening Round vs ' + oOpp.name + ' (' + oOpp.wins + '-' + oOpp.loss + '). The winner is the ' + NCAA_REGIONS[oSlot.region] + ' ' + oSlot.seed + ' seed.');
+    } else txt('br-user-opp', opp ? userRegionName + ' region. First round vs ' + opp.seed + ' ' + opp.team.name + ' (' + opp.team.wins + '-' + opp.team.loss + ').' : '');
     txt('br-seed-line', bidLine.charAt(0).toUpperCase() + bidLine.slice(1) + ' confirmed.');
   } else {
-    txt('br-seed-line', 'The field of 64 is set (' + bidLine + '). Your program did not qualify.');
+    txt('br-seed-line', 'The field of ' + field.length + ' is set (' + bidLine + '). Your program did not qualify.');
     var uc2 = ge('br-user-card'); if (uc2) uc2.style.display = 'none';
   }
 
@@ -519,7 +613,7 @@ export function showBracketReveal(userSeed) {
     var allSorted = G.teams.slice().sort(function(a, b) { return resumeScore(b) - resumeScore(a); });
     var firstOut = [];
     for (var bi = 0; bi < allSorted.length; bi++) {
-      var inBracket = G.bracket.some(function(br) { return br.team.id === allSorted[bi].id; });
+      var inBracket = field.some(function(ft) { return ft.id === allSorted[bi].id; });
       if (!inBracket && firstOut.length < 4 && allSorted[bi].wins > allSorted[bi].loss) firstOut.push(allSorted[bi]);
     }
 
@@ -532,12 +626,9 @@ export function showBracketReveal(userSeed) {
         if (ct && ct.champ) autoBidIds[ct.champ.id] = true;
       });
     }
-    var atLarge = G.bracket.filter(function(b) { return !autoBidIds[b.team.id]; });
-    atLarge.sort(function(a, b) {
-      var aResume = resumeScore(a.team); var bResume = resumeScore(b.team);
-      return aResume - bResume;
-    });
-    var lastIn = atLarge.slice(0, 4).map(function(b) { return b.team; });
+    var atLarge = field.filter(function(ft) { return !autoBidIds[ft.id]; });
+    atLarge.sort(function(a, b) { return resumeScore(a) - resumeScore(b); });
+    var lastIn = atLarge.slice(0, 4);
 
     function bubbleList(title, list, note) {
       var h = '<div class="panel"><div class="panel-h"><span>' + title + '</span><small>' + note + '</small></div><div class="panel-b flush"><table><tbody>';
@@ -547,6 +638,14 @@ export function showBracketReveal(userSeed) {
       return h + '</tbody></table></div></div>';
     }
     var bh = '<div class="grid-2">' + bubbleList('Last four in', lastIn, 'At-large') + bubbleList('First four out', firstOut, 'Missed the field') + '</div>';
+    if (G.ncaaOpening) {
+      bh += '<div class="panel"><div class="panel-h"><span>Opening Round</span><small>12 games for the last 12 spots</small></div><div class="panel-b flush"><table><tbody>';
+      G.ncaaOpening.games.forEach(function(g) {
+        var sl = bracketEntryAt(g.pos), mine = g.t1.id === G.tid || g.t2.id === G.tid;
+        bh += '<tr' + (mine ? ' class="hl"' : '') + '><td>' + g.t1.name + ' vs ' + g.t2.name + '</td><td class="dim" style="white-space:nowrap;">For ' + NCAA_REGIONS[sl.region] + ' ' + sl.seed + '</td></tr>';
+      });
+      bh += '</tbody></table></div></div>';
+    }
     bubble.innerHTML = bh;
     bubble.style.display = 'block';
   }
@@ -565,16 +664,23 @@ export function showBracketReveal(userSeed) {
 function buildRevealRegionCard(step) {
   var col = document.createElement('div');
   col.className = 'panel brv-fade';
-  var hasUser = G.bracket.some(function(b) { return b.region === step && b.team.id === G.tid; });
+  var userOpenR = getUserOpeningGame();
+  var hasUser = G.bracket.some(function(b) { return b.region === step && b.team.id === G.tid && b.pending === undefined; })
+    || (userOpenR && userOpenR.pos % 4 === step);
   var h = '<div class="panel-h"><span>' + NCAA_REGIONS[step] + ' region</span><small>' + (hasUser ? 'Your region' : 'First round') + '</small></div><div class="panel-b"><div class="brv-games">';
   NCAA_FIRST_ROUND.forEach(function(pair) {
     var b1 = ncaaSeedEntry(step, pair[0]), b2 = ncaaSeedEntry(step, pair[1]);
     if (!b1 || !b2) return;
-    var mine = b1.team.id === G.tid || b2.team.id === G.tid;
+    var isMe = function(b) {
+      if (b.pending !== undefined && G.ncaaOpening) { var og = G.ncaaOpening.games[b.pending]; return og.t1.id === G.tid || og.t2.id === G.tid; }
+      return b.team.id === G.tid;
+    };
+    var mine = isMe(b1) || isMe(b2);
     h += '<div class="bx' + (mine ? ' mine' : '') + '">';
     [b1, b2].forEach(function(b) {
-      h += '<div class="bx-team' + (b.team.id === G.tid ? ' me' : '') + '"><span class="bx-seed">' + b.seed + '</span>'
-        + '<span class="bx-name">' + b.team.name + '</span><span class="bx-sc">' + b.team.wins + '-' + b.team.loss + '</span></div>';
+      var og = b.pending !== undefined && G.ncaaOpening ? G.ncaaOpening.games[b.pending] : null;
+      h += '<div class="bx-team' + (isMe(b) ? ' me' : '') + (og ? ' tbd' : '') + '"><span class="bx-seed">' + b.seed + '</span>'
+        + '<span class="bx-name">' + (og ? 'Opening Round winner' : b.team.name) + '</span><span class="bx-sc">' + (og ? '' : b.team.wins + '-' + b.team.loss) + '</span></div>';
     });
     h += '</div>';
   });
@@ -627,6 +733,12 @@ function scoreNCAAgame(b1, b2, s1, s2) {
 }
 
 export function simNCAAround() {
+  if (openingPending()) {
+    simOpeningRound(false);
+    saveState(); updateAll();
+    if (SetupState.ACTIVE_VIEW === 'bracket' && _ext.renderBracket) _ext.renderBracket();
+    return;
+  }
   var active = G.bracket.filter(function(b) { return b.active; });
   if (active.length <= 1) return;
   for (var i = 0; i < active.length - 1; i += 2) {
@@ -731,6 +843,23 @@ export function playTournamentGame(watch) {
     } else {
       advanceConfTourney();
     }
+  } else if (G.phase === 'ncaa' && openingPending()) {
+    var og = getUserOpeningGame();
+    if (!og) { simNCAAround(); return; }
+    LS.tH = og.t1; LS.tA = og.t2;
+    LS.game = { home: true, conf: false, played: false, uScore: 0, oScore: 0, _og: og, _type: 'opening' };
+    LS.userTeam = G.teams[G.tid];
+    LS.clock = 1200; LS.half = 1; LS.hs = 0; LS.as = 0;
+    LS.h1 = null; LS.a1 = null; LS.poss = 'A';
+    if (watch) {
+      LS._recPre = { h: snapRoster(og.t1), a: snapRoster(og.t2), hid: og.t1.id, aid: og.t2.id };
+      if (_ext.openModal) _ext.openModal(og.t1, og.t2, true, getNCAAroundName());
+    } else {
+      var reso = simGame(og.t1, og.t2, true);
+      LS.hs = reso.homeScore; LS.as = reso.awayScore;
+      LS._recLines = userLinesFromRes(reso);
+      resolveTournamentGame();
+    }
   } else if (G.phase === 'ncaa') {
     var um2 = getUserNCAAmatchup();
     if (um2) {
@@ -810,6 +939,25 @@ export function resolveTournamentGame() {
     });
     // Check if everything is done
     if (allConfDone() && !G.bracket.length) buildNCAA();
+  } else if (game._type === 'opening') {
+    var og2 = game._og;
+    scoreOpening(og2, LS.hs, LS.as);
+    var wonO = og2.winner.id === G.tid;
+    var oppO = og2.t1.id === G.tid ? og2.t2 : og2.t1;
+    G.lastResult = { yr: G.yr, oppId: oppO.id, home: null, u: uScore, o: oScore, won: wonO, wk: G.gi, label: 'NCAA Opening Round' };
+    recordGameMorale(wonO ? userTeam : oppO, wonO ? oppO : userTeam);
+    if (wonO) {
+      payOpeningWin();
+      var slot = bracketEntryAt(og2.pos);
+      toast(userTeam.name + ' wins, ' + fmtScore(uScore, oScore, '-') + '. Into the field as the ' + (slot ? NCAA_REGIONS[slot.region] + ' ' + slot.seed : '') + ' seed.', 'var(--grn)');
+      addLog('w', G.gi, '<b>W</b> vs <b>' + oppO.name + '</b> ' + fmtScore(uScore, oScore) + ' (NCAA Opening Round)');
+    } else {
+      G.seasonAchievements = G.seasonAchievements || {};
+      G.seasonAchievements.tourneyFinish = 'Opening round';
+      toast('Season over. Lost in the Opening Round, ' + fmtScore(uScore, oScore, '-'), 'var(--red)');
+      addLog('l', G.gi, '<b>L</b> vs <b>' + oppO.name + '</b> ' + fmtScore(uScore, oScore) + ' (NCAA Opening Round)');
+    }
+    simOpeningRound(true);
   } else if (game._type === 'ncaa') {
     var b1 = game._b1, b2 = game._b2;
     // Sim the rest of the round FIRST, while the user's pair is still
@@ -902,7 +1050,7 @@ export function showTournamentResult() {
   overlay.style.cssText = 'position:absolute;inset:0;z-index:10;';
   var me = G.teams[G.tid];
   var nextLine = won
-    ? (G.phase === 'ncaa' ? 'On to the next round.' : 'On to the next round of the conference tournament.')
+    ? (LS.game._type === 'opening' ? 'Into the field of 64.' : G.phase === 'ncaa' ? 'On to the next round.' : 'On to the next round of the conference tournament.')
     : (G.phase === 'ncaa' ? 'Your NCAA tournament run is over.' : 'Your conference tournament is over.');
   overlay.innerHTML = '<div class="tres-in">'
     + '<div class="tres-k">' + roundName.replace('NCAA Tournament \u2014 ', 'NCAA tournament, ') + ' · Final</div>'
