@@ -404,10 +404,9 @@ var MOVES_2026 = {
 var RENAMES_2026 = { 'WAC': 'UAC', 'MAAC': 'Metro' };
 // St Francis PA leaves D1; West Florida (new to D1, ASUN) takes over its slot
 var SLOTS_2026 = { 'St Francis PA': { n: 'West Florida', c: 'ASUN', o: 52 } };
-// Reclassifying schools can't take an NCAA bid until this season (2026 =
-// the 2026-27 season). Le Moyne is eligible in 2026-27. Later years assume
-// the 3-year transition that made Le Moyne eligible.
-export var ELIGIBLE_FROM_2026 = { 'Mercyhurst': 2027, 'West Georgia': 2027, 'New Haven': 2028, 'West Florida': 2029 };
+// Schools still reclassifying in 2026-27 can't take an NCAA bid (Le Moyne is
+// eligible). The game uses 2026-27 status throughout: no reclassification yet.
+export var INELIGIBLE_2026 = ['Mercyhurst', 'West Georgia', 'New Haven', 'West Florida'];
 
 export function teamsFor(align) {
   return ALL_TEAMS.map(function(td) {
@@ -418,7 +417,7 @@ export function teamsFor(align) {
         if (RENAMES_2026[t.c]) t.c = RENAMES_2026[t.c];
         if (MOVES_2026[t.n]) t.c = MOVES_2026[t.n];
       }
-      if (ELIGIBLE_FROM_2026[t.n]) t.e = ELIGIBLE_FROM_2026[t.n];
+      if (INELIGIBLE_2026.indexOf(t.n) >= 0) t.x = 1;
     }
     return t;
   });

@@ -62,7 +62,7 @@ function navTo(v) { if (_ext.navTo) _ext.navTo(v); }
 export function buildUniverse(align) {
   G.teams = [];
   G.align = align || CURRENT_ALIGN;
-  G.alignYr0 = G.yr; // first season played on this alignment (eligibility clock)
+  G.alignYr0 = G.yr; // first season of a new dynasty (home card season number)
   teamsFor(G.align).forEach(function(td, i) {
     var rost = [];
     for (var j = 0; j < 13; j++) {
@@ -86,7 +86,7 @@ export function buildUniverse(align) {
     };
 
     G.teams.push({
-      id: i, name: td.n, conf: td.c, baseOvr: td.o, rost: rost, eligibleFrom: td.e || 0,
+      id: i, name: td.n, conf: td.c, baseOvr: td.o, rost: rost, ineligible: !!td.x,
       wins: 0, loss: 0, cWins: 0, cLoss: 0,
       pts: td.o * 10 + ri(-30, 30),
       sched: [], streak: 0,

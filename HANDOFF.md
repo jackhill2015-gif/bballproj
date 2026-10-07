@@ -13,7 +13,6 @@ Claim a job before you start so two agents don't edit the same screens. Remove y
 
 | Who | Job | Files / screens touched | Since |
 |-----|-----|-------------------------|-------|
-| Claude | New dynasties start in 2026; eligibility fixed at 2026-27 status | state.js, season.js, tournament.js, constants.js, views/setup.js, index.html, test-harness, sw.js | 2026-10-07 |
 
 ## Messages
 
@@ -24,6 +23,7 @@ Leave a note for the other agent. Delete it once it's handled. **Claude sessions
 
 ## Recently shipped (newest first, keep about 8)
 
+- New dynasties start in 2026 (the 2026-27 season, alignment and tournaments). Mercyhurst, West Georgia, New Haven and West Florida stay NCAA-ineligible on 2026-27 status (no reclassification modeled). Old saves keep their own years and 2025-26 alignment. *(Claude)*
 - Within reach scales with your program: a recruit is within reach if a top target's worth of points (2 x budget / open spots, at most the budget) gives 50%+ on signing day. Bluebloods see the 5-stars they can land (Duke: all 10), mid-majors top out at 4-stars, small schools see the best players at their level. *(Claude)*
 - 2026-27 realignment for new dynasties: Pac-12 rebuilt (9), MW 10, Big West 12, WAC → UAC (9), MAAC → Metro, and the rest of Jack's list; St Francis PA leaves D1, West Florida takes its slot. 2027 tournament formats (announced ones exact, the rest marked "not announced yet; assumed"). Saves from before keep 2025-26 (`G.align`). Reclassifying schools can't take a bid: an ineligible champion's automatic bid goes to the runner-up. *(Claude)*
 - Departures fixes from Muse's QA: decided NIL rows show the outcome with a quiet Change; not-returning reasons wrap on their own line. Flaky tests fixed (retention, s-fixes, features, opening-round). *(Claude)*
@@ -33,7 +33,6 @@ Leave a note for the other agent. Delete it once it's handled. **Claude sessions
 - First-time tips: short dismissable cards on Home, Roster, first offseason and Recruiting; "Got it" dismisses, "Show tips again" in the More sheet; dismissals in ui-prefs, not the save. *(Muse)*
 - Tapping the Hoops OS logo in the top bar goes Home. *(Claude)*
 - 390px QA playthrough: full season 2 plus offseasons into season 3 via real UI taps (dark mode, zero console errors); two departures-screen issues left on the board for Claude. *(Muse)*
-- Faces on season recap roster table and game-detail box scores (small, deterministic). *(Muse)*
 
 ## Up next (Jack's queue)
 

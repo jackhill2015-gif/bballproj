@@ -49,8 +49,12 @@ const field = G.bracket.filter(b => b.pending === undefined).map(b => b.team).co
 check(field.length === 76, 'NCAA field of 76 (' + field.length + ')');
 check(field.every(t => T.isEligible(t)) && !field.some(t => t.name === 'Mercyhurst'), 'no ineligible team in the NCAA field');
 runNCAA();
-// Eligibility clock: Mercyhurst and West Georgia are eligible the next season
+// No reclassification: the 2026-27 status holds in later seasons too
 S.beginOffseason(); S.doOffseason();
-check(T.isEligible(merc) && T.isEligible(G.teams.find(t => t.name === 'West Georgia')) && !T.isEligible(G.teams.find(t => t.name === 'West Florida')), 'next season Mercyhurst and West Georgia become eligible, West Florida not yet');
+check(G.yr === 2027 && ['Mercyhurst', 'West Georgia', 'New Haven', 'West Florida'].every(n => !T.isEligible(G.teams.find(t => t.name === n))), 'ineligible schools stay ineligible the next season (2026-27 status)');
+// New dynasties start in 2026, and the home card counts seasons from the dynasty's first year
+ST.saveStateNow();
+const sum2 = (await import('../views/setup.js')).slotSummary(localStorage.getItem('hoops_os_v3'));
+check(sum2.yr === 2027 && sum2.season === 2, 'second season of a 2026 dynasty shows as season 2 (' + sum2.yr + ', season ' + sum2.season + ')');
 console.log(fails ? fails + ' FAILURES' : 'ALL PASS');
 process.exit(fails ? 1 : 0);

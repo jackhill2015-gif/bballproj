@@ -78,13 +78,10 @@ export function getConfRoundName(ct, conf) {
 //  CONFERENCE TOURNAMENTS
 // ═══════════════════════════════════════════════════════════
 
-// NCAA eligibility: reclassifying schools (constants.js ELIGIBLE_FROM_2026)
-// can't take a bid until their first eligible season. Seasons count from
-// the first one played on the alignment (2026-27).
+// NCAA eligibility: schools still reclassifying in 2026-27 (constants.js
+// INELIGIBLE_2026) can't take a bid. The game stays on 2026-27 status.
 export function isEligible(t) {
-  if (!t || !t.eligibleFrom) return true;
-  var season = 2026 + (G.yr - (G.alignYr0 || G.yr));
-  return season >= t.eligibleFrom;
+  return !(t && t.ineligible);
 }
 // The conference's automatic bid: the champion, or, when he isn't eligible,
 // the runner-up (the NEC plays an "AQ game"; this stands in for it), else

@@ -18,7 +18,7 @@ export var COACH_HISTORY_KEEP = 5;
 
 // ── Main Game State ──
 export const G = {
-  tid: 0, yr: 2025, wk: 0, gi: 0, pts: 120,
+  tid: 0, yr: 2026, wk: 0, gi: 0, pts: 120, // new dynasties start in 2026-27
   momentum: { tid: -1, pts: 0 },
   phase: 'reg', difficulty: 'normal',
   teams: [], recruits: [], bracket: [], confTourneys: {}, ncaaOpening: null,
@@ -383,7 +383,7 @@ function _writeSave() {
     var lean = {
       _saveVersion: SAVE_VERSION,
       _savedAt: Date.now(), // storage.js keeps the newer copy if two exist
-      align:G.align||2025,alignYr0:G.alignYr0||null,
+      align:G.align||2025,alignYr0:G.alignYr0||null, // alignYr0: first season of the dynasty
       tid:G.tid,yr:G.yr,gi:G.gi,wk:G.wk,pts:G.pts,
       phase:G.phase,difficulty:G.difficulty,
       confTitles:G.confTitles,championships:G.championships,prestige:G.prestige,
@@ -554,7 +554,7 @@ export function loadState() {
     var _tbl = teamsFor(G.align);
     G.teams.forEach(function(t, i) {
       var td = _tbl[i]; if (!td) return;
-      t.name = td.n; t.conf = td.c; t.baseOvr = td.o; t.eligibleFrom = td.e || 0;
+      t.name = td.n; t.conf = td.c; t.baseOvr = td.o; t.ineligible = !!td.x;
     });
 
     // Teams

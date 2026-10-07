@@ -74,8 +74,8 @@ export function slotSummary(raw) {
       conf: t.conf || td.c || '',
       coach: saved.coach ? (saved.coach.firstName + ' ' + saved.coach.lastName).trim() : 'Coach',
       phase: PHASE_NAMES[saved.phase] || 'Preseason',
-      yr: saved.yr || 2025,
-      season: saved.yr ? saved.yr - 2024 : 1,
+      yr: saved.yr || 2026,
+      season: saved.yr ? saved.yr - (saved.alignYr0 || 2025) + 1 : 1, // saves from before started in 2025
       record: fR(t.wins || 0, t.loss || 0),
       titles: (saved.championships || 0) + (saved.confTitles || 0)
     };
