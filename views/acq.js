@@ -133,7 +133,7 @@ export function pageTop(name, line, ovr, pot, extra, p) {
       || (G.portalEntrants || []).find(function(e) { return e.name === name; })
       || null);
   }
-  var face = p ? playerFaceSmallHTML(p) : '';
+  var face = p ? playerFaceSmallHTML(p, (p.fromTid != null && G.teams[p.fromTid] ? G.teams[p.fromTid].name : undefined)) : '';
   return '<div class="pp-top"><div class="pp-id">' + face + '<div><div class="pp-name">' + name + '</div><div class="pp-line">' + line + '</div></div></div>'
     + '<div class="pp-nums"><div><b>' + ovr + '</b><span>Overall</span></div><div><b>' + pot + '</b><span>Potential</span></div></div></div>'
     + (extra || '');

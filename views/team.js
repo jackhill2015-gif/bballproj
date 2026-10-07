@@ -141,7 +141,7 @@ function leaderRows(t) {
   if (!ls.length) return '<div class="empty-state">No stats yet.</div>';
   var h = '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Player</th><th class="num">PPG</th></tr></thead><tbody>';
   ls.forEach(function(r) {
-    h += '<tr><td>' + playerFaceSmallHTML(r.p) + playerLink(t.id, r.pi, r.p.name) + '</td>'
+    h += '<tr><td>' + playerFaceSmallHTML(r.p, t.name) + playerLink(t.id, r.pi, r.p.name) + '</td>'
       + '<td class="num">' + r.ppg.toFixed(1) + '</td></tr>';
   });
   return h + '</tbody></table></div>';
@@ -172,7 +172,7 @@ export function openGameDetail(week) {
     var faceFor = function(team, name) {
       var found = null;
       (team.rost || []).forEach(function(pl) { if (pl.name === name) found = pl; });
-      return playerFaceSmallHTML(found || { name: name, cls: 'HS' });
+      return playerFaceSmallHTML(found || { name: name, cls: 'HS' }, team.name);
     };
     var boxTbl = function(team, rows) {
       var t = '<div class="sec-head" style="margin-top:10px;">' + team.name + '</div><div class="tbl-wrap"><table><thead><tr>'

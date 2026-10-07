@@ -4,6 +4,15 @@
 // stored in the save; faces are generated on demand and memoized in memory.
 import { generate } from '../vendor/facesjs/generate.js';
 import { display } from '../vendor/facesjs/display.js';
+import { TEAM_COLORS } from '../teamcolors.js';
+
+// Jersey colors: ESPN team colors by school name (teamcolors.js). Default is
+// the neutral white with black trim used before team colors landed.
+var DEFAULT_COLORS = ['#ffffff', '#000000'];
+function colorsFor(school) {
+  var c = school && TEAM_COLORS[school];
+  return c || DEFAULT_COLORS;
+}
 
 // FNV-1a string hash -> unsigned 32-bit int.
 function hashSeed(str) {
@@ -46,11 +55,13 @@ function getStage() {
 var cache = new Map();
 
 // Full portrait SVG string (400x600: head, shoulders, jersey).
+// school (optional): ALL_TEAMS name for the jersey colors. The cache key
+// includes it, so a player who changes teams gets the new jersey.
 // Returns '' outside a real DOM (e.g. the node test harness) — faces are a
 // browser-only enhancement and must never break headless rendering.
-function facePortrait(p) {
+function facePortrait(p, school) {
   if (!canRender()) return '';
-  var key = 'full|' + p.name + '|' + (p.cls || 'HS');
+  var key = 'full|' + p.name + '|' + (p.cls || 'HS') + '|' + (school || '');
   var hit = cache.get(key);
   if (hit) return hit;
   var realRandom = Math.random;
@@ -58,11 +69,12 @@ function facePortrait(p) {
   var face;
   try {
     face = generate(undefined, { gender: 'male' });
-    // Hoops OS look: basketball jerseys only, white with black trim, no hats.
+    // Hoops OS look: basketball jerseys only, no hats.
     // (Still inside the seeded override, so the pick is deterministic.)
     var BB_JERSEYS = ['jersey', 'jersey2', 'jersey3', 'jersey4', 'jersey5'];
     if (face.jersey) face.jersey.id = BB_JERSEYS[Math.floor(Math.random() * BB_JERSEYS.length)];
-    face.teamColors = ['#ffffff', '#000000', '#000000'];
+    var tc = colorsFor(school);
+    face.teamColors = [tc[0], tc[1], tc[1]];
     var acc = face.accessories && face.accessories.id;
     if (acc === 'hat' || acc === 'hat2' || acc === 'hat3' || acc === 'santa-hat') {
       face.accessories.id = 'none';
@@ -82,27 +94,27 @@ function facePortrait(p) {
 
 // Cropped head SVG string, roughly square — for small circular avatars.
 // The portrait viewBox is 0 0 400 600; the head sits around x 40-360, y 90-420.
-function faceAvatar(p) {
-  var key = 'crop|' + p.name + '|' + (p.cls || 'HS');
+function faceAvatar(p, school) {
+  var key = 'crop|' + p.name + '|' + (p.cls || 'HS') + '|' + (school || '');
   var hit = cache.get(key);
   if (hit) return hit;
-  var svg = facePortrait(p).replace('viewBox="0 0 400 600"', 'viewBox="40 90 320 330"');
+  var svg = facePortrait(p, school).replace('viewBox="0 0 400 600"', 'viewBox="40 90 320 330"');
   cache.set(key, svg);
   return svg;
 }
 
 // Large face for player pages. Returns an HTML string.
-export function playerFaceHTML(p) {
+export function playerFaceHTML(p, school) {
   if (!p || !p.name) return '';
-  var svg = facePortrait(p);
+  var svg = facePortrait(p, school);
   if (!svg) return '';
   return '<div class="pf-face" aria-hidden="true">' + svg + '</div>';
 }
 
 // Small circular face for roster rows and portal/recruit pages.
-export function playerFaceSmallHTML(p) {
+export function playerFaceSmallHTML(p, school) {
   if (!p || !p.name) return '';
-  var svg = faceAvatar(p);
+  var svg = faceAvatar(p, school);
   if (!svg) return '';
   return '<span class="pface" aria-hidden="true">' + svg + '</span>';
 }

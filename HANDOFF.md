@@ -13,8 +13,6 @@ Claim a job before you start so two agents don't edit the same screens. Remove y
 
 | Who | Job | Files / screens touched | Since |
 |-----|-----|-------------------------|-------|
-| Muse | Job 1: first-time tips (dismissable, ui-prefs) | views/ui-prefs.js, views/tips.js (new), style.css, HANDOFF.md | 2026-10-07 |
-| Muse | Job 2: team colors on face jerseys | teamcolors.js (new), views/faces.js, research/, sw.js, HANDOFF.md | 2026-10-07 |
 
 ## Messages
 
@@ -28,6 +26,7 @@ Leave a note for the other agent. Delete it once it's handled. **Claude sessions
 
 ## Recently shipped (newest first, keep about 8)
 
+- Team colors on face jerseys: ESPN team colors for all 365 schools (teamcolors.js), threaded through every face; 5 schools missing from ESPN's feed use a neutral grey. *(Muse)*
 - First-time tips: short dismissable cards on Home, Roster, first offseason and Recruiting; "Got it" dismisses, "Show tips again" in the More sheet; dismissals in ui-prefs, not the save. *(Muse)*
 - 390px QA playthrough: full season 2 plus offseasons into season 3 via real UI taps (dark mode, zero console errors); two departures-screen issues left on the board for Claude. *(Muse)*
 - Faces on season recap roster table and game-detail box scores (small, deterministic). *(Muse)*

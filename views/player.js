@@ -66,7 +66,7 @@ function profileHTML(t, p) {
   var cls = p.cls + (p.rsUsed ? ' (RS)' : '');
   var sub = p.pos + ' · ' + cls + ' · ' + t.name
     + (p.rs ? ' · <span class="tag t-home">Redshirting</span>' : '');
-  var h = '<div class="pf-top pf-with-face">' + playerFaceHTML(p)
+  var h = '<div class="pf-top pf-with-face">' + playerFaceHTML(p, t.name)
     + '<div><div class="pf-name">' + p.name + '</div>'
     + '<div class="pf-sub">' + sub + '</div>'
     + '<div class="pf-ovr"><b>' + p.ovr + '</b> OVR <span class="dim">· ' + (p.pot || p.ovr) + ' POT</span></div></div></div>';
