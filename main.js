@@ -221,6 +221,7 @@ if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator && typeof l
 // re-renders after each step, so each repeat looks the button up again by
 // its data attribute rather than holding on to the old element.
 (function holdToRepeat() {
+  if (typeof window === 'undefined' || typeof window.addEventListener !== 'function' || typeof document === 'undefined' || typeof document.addEventListener !== 'function') return;
   var KEYS = ['data-poff-inc', 'data-poff-dec', 'data-pt-inc', 'data-pt-dec', 'data-skill-inc', 'data-skill-dec'];
   var timer = null, sel = null, count = 0;
   function stop() { if (timer) clearTimeout(timer); timer = null; sel = null; }
