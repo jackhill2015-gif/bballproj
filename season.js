@@ -606,7 +606,7 @@ export function doPlay(mode) {
   } else if (G.phase === 'conf_tourn' || G.phase === 'ncaa') {
     if (_ext.playTournamentGame) _ext.playTournamentGame(mode === 'live');
   } else if (G.phase === 'offseason') {
-    if (window._moveOnWarning && window._moveOnWarning()) return; // heads-up first (second tap continues)
+    if (window._moveOnWarning && window._moveOnWarning(function() { doPlay(mode); })) return; // heads-up first
     if (G.offseasonStep === 'fired') {
       if (window.proceedFromFired) window.proceedFromFired();
     } else if (G.offseasonStep === 'recap') {
@@ -825,7 +825,8 @@ export function endSeason() {
   if (sa.champGame) earned++;
   if (sa.natChamp) earned++;
   G.skillPointsEarned = earned;
-  G.skillPointsToSpend = earned;
+  // Unspent points carry over, so moving on never costs you anything
+  G.skillPointsToSpend = (G.skillPointsToSpend || 0) + earned;
 
   // Update coach career stats
   G.coach.careerWins += t.wins;

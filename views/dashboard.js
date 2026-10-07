@@ -223,8 +223,15 @@ function renderGameCard() {
   if (G.phase === 'reg') {
     return panel('Regular season complete', '<button class="btn-big" data-action="play" data-mode="quick">Start conference tournament</button>');
   }
+  // Home's button says where it goes: the recap (skill points, then
+  // "Begin offseason") or the current offseason step. It used to read
+  // "Begin offseason" too, so the first tap looked like it did nothing.
+  var NEXT = { recap: 'Season recap and skill points', skillpoints: 'Spend skill points', carousel: 'Coaching carousel',
+    fired: 'Find your next job', turnover: 'Departures', retention: 'Departures', portal: 'Transfer portal',
+    recruiting: 'Recruiting', signed: 'Signing day', schedule: 'Non-conference schedule' };
+  var nxt = NEXT[G.offseasonStep] || 'Recruiting';
   return panel('Offseason', '<div style="color:var(--txt2);margin-bottom:8px;">Recruit, develop and set the roster for next season.</div>'
-    + '<button class="btn-big" data-action="nav" data-view="offseason">Begin offseason</button>');
+    + '<button class="btn-big" data-action="nav" data-view="offseason">' + (G.offseasonStep === 'recap' ? nxt : 'Continue: ' + nxt.charAt(0).toLowerCase() + nxt.slice(1)) + '</button>');
 }
 
 // ═══════════════════════════════════════════════════════════

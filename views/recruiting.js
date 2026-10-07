@@ -634,9 +634,6 @@ function moveOnIssue() {
     var ret = (t.rost || []).filter(function(p) { return !(p.cls === 'SR' && !p.rs); }).length - inPortal;
     return ret + (G.recruits || []).filter(function(r) { return r.signed === G.tid; }).length;
   };
-  if (step === 'recap' && (G.skillPointsToSpend || 0) > 0) {
-    return 'You have ' + G.skillPointsToSpend + ' skill point' + (G.skillPointsToSpend > 1 ? 's' : '') + ' left to spend.';
-  }
   if (step === 'portal' && (G.portalStage || 0) >= 2) { // decision day only
     var offers = (G.portalEntrants || []).filter(function(e) { return e.fromTid !== G.tid && (e.offer || 0) > 0; }).length;
     var open = 15 - nextN();
@@ -655,14 +652,35 @@ function moveOnIssue() {
   }
   return null;
 }
-// true = warned now (stop); false = fine to continue
-export function moveOnWarning() {
+// true = warned now (stop); false = fine to continue.
+// The heads-up is a small dialog (a toast was easy to miss, so the first tap
+// looked like it did nothing). "Continue anyway" runs onContinue.
+export function moveOnWarning(onContinue) {
   var msg = moveOnIssue();
   if (!msg) { _warnKey = ''; return false; }
   var key = (G.offseasonStep || '') + ':' + (G.portalStage || 0) + ':' + (G.recruitPhase || 0) + ':' + msg;
   if (_warnKey === key) { _warnKey = ''; return false; }
   _warnKey = key;
-  toast(msg + ' Tap again to continue anyway.', 'var(--gld)');
+  if (typeof document === 'undefined' || !document.body || !document.createElement) {
+    toast(msg + ' Tap again to continue anyway.', 'var(--gld)');
+    return true;
+  }
+  var old = document.getElementById('mo-ov'); if (old) old.parentNode.removeChild(old);
+  var ov = document.createElement('div');
+  ov.id = 'mo-ov'; ov.className = 'mo-ov';
+  ov.innerHTML = '<div class="panel mo-p" role="alertdialog" aria-label="Before you move on"><div class="panel-h"><span>Before you move on</span></div>'
+    + '<div class="panel-b"><div class="mo-msg"></div><div class="big-btn-row" style="margin:0;">'
+    + '<button class="btn-big secondary" data-mo="back">Go back</button>'
+    + '<button class="btn-big" data-mo="go">Continue anyway</button></div></div></div>';
+  ov.querySelector('.mo-msg').textContent = msg;
+  document.body.appendChild(ov);
+  var close = function() { if (ov.parentNode) ov.parentNode.removeChild(ov); };
+  ov.addEventListener('click', function(e) {
+    var b = e.target.closest && e.target.closest('[data-mo]');
+    if (e.target === ov || (b && b.getAttribute('data-mo') === 'back')) { _warnKey = ''; close(); return; }
+    if (b && b.getAttribute('data-mo') === 'go') { close(); if (onContinue) onContinue(); _warnKey = ''; }
+  });
+  var go = ov.querySelector('[data-mo="go"]'); if (go && go.focus) go.focus();
   return true;
 }
 window._moveOnWarning = moveOnWarning;
@@ -715,9 +733,9 @@ function bindOffseason(el) {
     if ((m = q('[data-rem-target]'))) { removeTarget(parseInt(m.getAttribute('data-rem-target'), 10)); return; }
     if (q('[data-close-detail]')) { closeDetail(); return; }
     if ((m = q('[data-rtab]'))) { setRecruitTab(m.getAttribute('data-rtab')); return; }
-    if (q('[data-phase-advance]')) { if (!moveOnWarning()) phaseAdvance(); return; }
+    if (q('[data-phase-advance]')) { if (!moveOnWarning(phaseAdvance)) phaseAdvance(); return; }
     if (q('[data-proceed-portal]')) { proceedToRecruiting(); return; }
-    if (q('[data-start-season]')) { if (!moveOnWarning() && window.doOffseason) window.doOffseason(); return; }
+    if (q('[data-start-season]')) { if (!moveOnWarning(function() { if (window.doOffseason) window.doOffseason(); }) && window.doOffseason) window.doOffseason(); return; }
     if (q('[data-to-schedule]')) { toSchedule(); return; }
     if (q('[data-nc-auto]')) { G.ncPicks = window._pickBalancedOOC ? window._pickBalancedOOC() : G.ncPicks; saveState(); renderOffseason(); return; }
     if ((m = q('[data-nc-band]'))) { _ncBand = m.getAttribute('data-nc-band'); Acq.refreshSheet(); return; }
@@ -741,7 +759,7 @@ function bindOffseason(el) {
     if ((m = q('[data-poff-inc]'))) { adjustOffer(parseInt(m.getAttribute('data-poff-inc'), 10), PORTAL_OFFER_STEP); return; }
     if ((m = q('[data-ppivot]'))) { pivotOffer(parseInt(m.getAttribute('data-ppivot'), 10)); return; }
     if ((m = q('[data-pfilter]'))) { setPortalFilter(m.getAttribute('data-pfilter'), m.getAttribute('data-pval')); return; }
-    if (q('[data-pstage]')) { if (!moveOnWarning()) advancePortalStage(); return; }
+    if (q('[data-pstage]')) { if (!moveOnWarning(advancePortalStage)) advancePortalStage(); return; }
     if ((m = q('[data-pdetail]'))) { togglePortalDetail(parseInt(m.getAttribute('data-pdetail'), 10)); return; }
     if ((m = q('[data-rfchip]'))) {
       var fk = m.getAttribute('data-rfchip'), fv = m.getAttribute('data-rval');
@@ -1016,7 +1034,7 @@ function skillPanelHTML() {
     if (G.coach) G.coach.skillInitial = _skillInitial;
   }
   var h = '<div class="panel" id="skill-panel"><div class="panel-h"><span>Spend your skill points</span>'
-    + '<small><span style="font-weight:600;color:' + (pts > 0 ? 'var(--grn2)' : 'var(--txt3)') + ';">' + pts + '</span> point' + (pts !== 1 ? 's' : '') + ' remaining</small></div>'
+    + '<small><span style="font-weight:600;color:' + (pts > 0 ? 'var(--grn2)' : 'var(--txt3)') + ';">' + pts + '</span> point' + (pts !== 1 ? 's' : '') + ' remaining' + (pts > 0 ? ' · unspent points carry over' : '') + '</small></div>'
     + '<div class="panel-b flush"><table>'
     + '<thead><tr><th>Skill</th><th class="num">Rating</th></tr></thead><tbody>';
 

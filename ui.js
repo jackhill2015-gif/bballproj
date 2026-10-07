@@ -667,7 +667,6 @@ function handleAction(el) {
       if (window.endSeason) window.endSeason();
       break;
     case 'begin-offseason':
-      if (window._moveOnWarning && window._moveOnWarning()) break; // unspent skill points heads-up
       if (window.beginOffseason) window.beginOffseason();
       break;
   }
