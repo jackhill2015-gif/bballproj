@@ -56,11 +56,20 @@ export function getNCAAroundName() {
   return 'NCAA Tournament \u2014 ' + (names[active] || '');
 }
 
+// Round names count back from the final (an 18-team bracket has five
+// rounds: first round, second round, quarterfinals, semifinals, final)
+export function confRoundLabel(ct, ri, short) {
+  var n = (ct && ct.seeds) ? ct.seeds.length : 8;
+  var total = Math.max(1, Math.ceil(Math.log2(Math.max(2, n))));
+  var fromEnd = total - 1 - ri;
+  if (fromEnd === 0) return short ? 'Final' : 'Championship';
+  if (fromEnd === 1) return short ? 'SF' : 'Semifinals';
+  if (fromEnd === 2) return short ? 'QF' : 'Quarterfinals';
+  return short ? 'R' + (ri + 1) : (ri === 0 ? 'First round' : ri === 1 ? 'Second round' : 'Round ' + (ri + 1));
+}
 export function getConfRoundName(ct, conf) {
-  if (!ct || !ct.rounds) return (conf || '') + ' Tournament';
-  var r = ct.rounds.length;
-  var names = { 1: 'First Round', 2: 'Quarterfinals', 3: 'Semifinals', 4: 'Championship' };
-  return (conf || '') + ' Tournament \u2014 ' + (names[r] || 'Round ' + r);
+  if (!ct || !ct.rounds) return (conf || '') + ' tournament';
+  return (conf || '') + ' tournament, ' + confRoundLabel(ct, ct.rounds.length - 1, false).toLowerCase();
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -128,25 +137,26 @@ function buildNextConfRound(conf) {
   ct.seeds.forEach(function(t, i) { rank[t.id] = i; });
   function seedRank(t) { return rank[t.id] === undefined ? 1e9 : rank[t.id]; }
   var ranked = survivors.slice().sort(function(a, b) { return seedRank(a) - seedRank(b); });
-  // Byes: while the survivor count is odd, the best remaining seed
-  // advances automatically instead of dropping the last team.
-  while (survivors.length % 2 === 1) {
-    var byeTeam = ranked.shift();
-    var bi = survivors.findIndex(function(t) { return t.id === byeTeam.id; });
-    if (bi >= 0) survivors.splice(bi, 1);
-    ct.carry.push(byeTeam);
-  }
   var round = [];
-  if (ct.rounds.length === 0) {
-    // Opening round: proper seeding — 1vN, 2v(N-1), … (never #1 vs #2)
-    var n = ranked.length;
-    for (var i = 0; i < n / 2; i++) {
-      round.push({ t1: ranked[i], t2: ranked[n - 1 - i], s1: null, s2: null, winner: null });
+  var n = ranked.length;
+  var isPow2 = (n & (n - 1)) === 0;
+  if (ct.rounds.length === 0 && !isPow2) {
+    // Opening round with byes (how real conference tournaments work):
+    // with N teams and P the largest power of two below N, the bottom
+    // 2*(N-P) seeds play N-P games and everyone else waits one round.
+    // 18 teams → seeds 15-18 play two games; seeds 1-14 get a bye.
+    var P = 1; while (P * 2 <= n) P *= 2;
+    var games = n - P;
+    var playIn = ranked.slice(n - 2 * games);
+    ct.carry = ranked.slice(0, n - 2 * games);
+    for (var k = 0; k < games; k++) {
+      round.push({ t1: playIn[k], t2: playIn[playIn.length - 1 - k], s1: null, s2: null, winner: null });
     }
   } else {
-    // Later rounds: fixed bracket — winners meet in game order
-    for (var j = 0; j < survivors.length - 1; j += 2) {
-      round.push({ t1: survivors[j], t2: survivors[j + 1], s1: null, s2: null, winner: null });
+    // Every other round: best remaining seed plays the worst (1 v 16, 2 v 15 …)
+    if (n % 2 === 1) { ct.carry.push(ranked.shift()); n--; } // safety net, never hit with the format above
+    for (var i = 0; i < n / 2; i++) {
+      round.push({ t1: ranked[i], t2: ranked[n - 1 - i], s1: null, s2: null, winner: null });
     }
   }
   ct.rounds.push(round);

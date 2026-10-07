@@ -7,7 +7,7 @@
 
 import { ge, clamp, getTOvr, fmtScore, winProb } from '../utils.js';
 import { G } from '../state.js';
-import { allConfDone, getUserNCAAmatchup, getUserConfMatchup, getConfRoundName } from '../tournament.js';
+import { allConfDone, getUserNCAAmatchup, getUserConfMatchup, getConfRoundName, confRoundLabel } from '../tournament.js';
 import { getUiPrefs, setUiPrefs } from './ui-prefs.js';
 
 // Team name link (same shape as the player pLink convention).
@@ -48,8 +48,14 @@ function renderConfHub() {
   if (confMatch) h += renderScoutingCard(confMatch);
   else if (!allConfDone()) {
     // Your run is over (or you have a bye): a way forward without the top-bar menu
+    // Still alive (a bye this round) or knocked out?
+    var _lost = ct && ct.rounds.some(function(rd) { return rd.some(function(m) { return m.winner && (m.t1.id === G.tid || m.t2.id === G.tid) && m.winner.id !== G.tid; }); });
+    var _inField = ct && ct.seeds.some(function(t) { return t.id === G.tid; });
+    var _msg = !_inField ? 'You did not qualify for the ' + myConf + ' tournament.'
+      : _lost ? 'Your conference tournament is over. Selection Sunday is next.'
+      : 'You have a bye this round. Sim it to see who you play next.';
     h += '<div class="panel"><div class="panel-b" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">'
-      + '<div style="font-size:13.5px;">Your conference tournament is over. Selection Sunday is next.</div>'
+      + '<div style="font-size:13.5px;">' + _msg + '</div>'
       + '<div style="display:flex;gap:8px;flex-wrap:wrap;">'
       + '<button class="btn-big secondary" style="width:auto;padding:0 16px;" data-action="play" data-mode="quick">Sim next round</button>'
       + '<button class="btn-big" style="width:auto;padding:0 16px;" data-action="play" data-mode="sim-conf">Sim to Selection Sunday</button>'
@@ -106,7 +112,7 @@ function renderConfBracketCard(conf, ct, expanded) {
     h += '<div style="display:flex;overflow-x:auto;">';
     ct.rounds.forEach(function(round, ri) {
       h += '<div class="br-round-col">'
-        + '<div class="br-round-name" title="' + (rnamesFull[ri + 1] || 'Round ' + (ri + 1)) + '">' + (rnames[ri + 1] || 'R' + (ri + 1)) + '</div>';
+        + '<div class="br-round-name" title="' + confRoundLabel(ct, ri, false) + '">' + confRoundLabel(ct, ri, true) + '</div>';
       round.forEach(function(m) { h += matchupMini(m.t1, m.t2, m.s1, m.s2, m.winner, ct.seeds); });
       h += '</div>';
     });
