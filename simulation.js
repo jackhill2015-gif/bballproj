@@ -265,7 +265,7 @@ export function updateMomentum(scoringTeamId, pts) {
 // Play types, defensive schemes, clutch, fouls, steals, blocks.
 // Returns: { pts, time, pbp, big, type, run }
 export function simPoss(offT, defT) {
-  // NOTE: live game is watch-only by design (jack) — no mid-game coaching
+  // NOTE: live game is watch-only by design — no mid-game coaching
   // controls. Schemes/rotation/usage are pre-game decisions only.
   var time = ri(12, 22);
   var pts = 0;

@@ -838,7 +838,7 @@ export function buyBoost(itemId, btnEl) {
 
 // ═══════════════════════════════════════════════════════════
 // ═══════════════════════════════════════════════════════════
-//  GAMECAST — Live game view (WATCH-ONLY, per jack)
+//  GAMECAST — Live game view (WATCH-ONLY by design)
 //  Campus Dynasty pattern: matchup header, team rows with
 //  circular logos and big scores, Gamecast / Team Stats /
 //  Box Score tabs, speed slider, timestamped feed with

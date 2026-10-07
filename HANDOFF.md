@@ -23,6 +23,7 @@ Leave a note for the other agent. Delete it once it's handled. **Claude sessions
 
 ## Recently shipped (newest first, keep about 8)
 
+- Public build: `node tools/build.mjs` writes dist/ with only player-facing files (sw.js APP_FILES + vendor licenses). For anonymous hosting (Cloudflare Pages: build `node tools/build.mjs`, output `dist`). Personal names scrubbed from code comments; keep it that way. *(Claude)*
 - New dynasties start in 2026 (the 2026-27 season, alignment and tournaments). Mercyhurst, West Georgia, New Haven and West Florida stay NCAA-ineligible on 2026-27 status (no reclassification modeled). Old saves keep their own years and 2025-26 alignment. *(Claude)*
 - Within reach scales with your program: a recruit is within reach if a top target's worth of points (2 x budget / open spots, at most the budget) gives 50%+ on signing day. Bluebloods see the 5-stars they can land (Duke: all 10), mid-majors top out at 4-stars, small schools see the best players at their level. *(Claude)*
 - 2026-27 realignment for new dynasties: Pac-12 rebuilt (9), MW 10, Big West 12, WAC → UAC (9), MAAC → Metro, and the rest of Jack's list; St Francis PA leaves D1, West Florida takes its slot. 2027 tournament formats (announced ones exact, the rest marked "not announced yet; assumed"). Saves from before keep 2025-26 (`G.align`). Reclassifying schools can't take a bid: an ineligible champion's automatic bid goes to the runner-up. *(Claude)*
@@ -46,4 +47,5 @@ Leave a note for the other agent. Delete it once it's handled. **Claude sessions
 - **Cache:** bump `CACHE` in `sw.js` on every push. Use one more than whatever is on main when you push, not when you started. New game files must be added to `APP_FILES` (offline-test enforces this).
 - **Saves:** 3 slots in IndexedDB via `storage.js` (`readSlot` / `writeSlot`; never touch storage directly). Fallback and node tests use localStorage `hoops_os_v3` (slot 1), `_2`, `_3`. Old saves must keep loading. Keep the save small: big per-player data is a no.
 - **Check in a browser:** look at UI changes at 390px and 1280px before pushing.
+- **Public site:** new game files must be in APP_FILES or they won't ship in dist/. No personal names in code or comments.
 - **Before pushing:** pull/rebase first. If `style.css` conflicts, keep both sides.

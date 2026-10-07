@@ -51,7 +51,7 @@ export function trendHTML(pct, prevPct) {
 // ── Early-signing odds ──
 // Battles are multi-way races, so absolute % rarely cracks 50. What matters
 // is the LEAD: a target running away from the field can sign early.
-// jack's rule: "recruits should be able to sign after any stage but not
+// Design rule: "recruits should be able to sign after any stage but not
 // every time" — a real chance on a clear lead, never a guarantee.
 export function earlySignChance(lead) {
   if (lead >= 15) return 0.35;

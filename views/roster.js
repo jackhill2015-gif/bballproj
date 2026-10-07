@@ -75,7 +75,7 @@ function depthRow(p, i) {
   var pot = p.pot || p.ovr;
   var potCol = pot > p.ovr + 6 ? 'var(--grn2)' : pot > p.ovr + 2 ? 'var(--gld2)' : 'var(--txt3)';
   var benched = p.mins === 0;
-  // Mood tag — roster page only, per jack (no dashboard meter)
+  // Mood tag — roster page only (no dashboard meter)
   var _mor = (typeof p.morale === 'number') ? p.morale : MORALE_DEFAULT;
   var _mc = moodColors(_mor);
   // Only call out moods that need attention (Restless, Checked Out)

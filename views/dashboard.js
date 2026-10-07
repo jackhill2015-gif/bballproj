@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════
 //  HOOPS OS — views/dashboard.js
 //  Dashboard-as-digest in the Campus Dynasty rhythm (from
-//  jack's screenshots): school identity card, collapsible
+//  design screenshots): school identity card, collapsible
 //  Notifications row, Season Expectations card, game card
 //  with two big blue buttons (Play Game / Sim Game), then
 //  briefing, NIL shop, coach XP, award races, standings.
