@@ -101,8 +101,13 @@ export function getTOvr(t) {
 }
 
 // ── Roster Helpers ───────────────────────────────────────
+// Default rotation: best players play. Sorts by rating first (redshirts
+// last) — new transfers and freshmen are added to the end of the roster, and
+// handing out minutes in list order used to bench them, which also sank the
+// team's preseason ranking.
 export function fixMins(rost) {
-  rost.forEach(function(p, i) { p.mins = i < 5 ? 30 : i < 9 ? 12 : 0; });
+  rost.sort(function(a, b) { return ((a.rs ? 1 : 0) - (b.rs ? 1 : 0)) || (b.ovr - a.ovr); });
+  rost.forEach(function(p, i) { p.mins = p.rs ? 0 : i < 5 ? 30 : i < 9 ? 12 : 0; });
   var diff = 200 - rost.reduce(function(a, b) { return a + b.mins; }, 0);
   if (rost[4]) rost[4].mins = Math.max(1, rost[4].mins + diff);
 }

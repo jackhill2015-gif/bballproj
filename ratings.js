@@ -82,10 +82,21 @@ function ncaaWins() {
 }
 var NCAA_WIN_CREDIT = 1.5; // ranking points per NCAA tournament win
 
+function rosterTalent(t) {
+  var top = t.rost.filter(function(p) { return !p.rs; }).map(function(p) { return p.ovr; }).sort(function(a, b) { return b - a; }).slice(0, 9);
+  if (!top.length) return getTOvr(t);
+  var w = 0, sum = 0;
+  top.forEach(function(o, i) { var k = i < 5 ? 30 : 12; sum += o * k; w += k; });
+  return sum / w;
+}
+
 export function recomputeRatings() {
   var n = G.teams.length;
   if (!n) return;
-  var ovr = G.teams.map(function(t) { return t.rost && t.rost.length ? oldOvr(getTOvr(t)) : (t.baseOvr || 70); });
+  // Preseason prior = roster talent (best nine by rating, starter-weighted),
+  // not the current minutes, so a team's ranking reflects who it signed
+  // even before the depth chart is set
+  var ovr = G.teams.map(function(t) { return t.rost && t.rost.length ? oldOvr(rosterTalent(t)) : (t.baseOvr || 70); });
   var meanOvr = ovr.reduce(function(a, b) { return a + b; }, 0) / n;
   var prior = ovr.map(function(o) { return (o - meanOvr) * PTS_PER_OVR; });
   var games = collectGames();

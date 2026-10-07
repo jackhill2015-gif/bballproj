@@ -257,7 +257,10 @@ some.forEach(e => P.adjustOffer(e.pid, 40));
 runFullBattle();
 let badRoster = 0, dupPortal = 0;
 G.teams.forEach(tm => {
-  if (tm.rost.length > 15) badRoster++;
+  // Your roster counts next season's players: graduating seniors still sit on
+  // it during the portal but don't take a spot (signings.openSpots)
+  const n = tm.id === G.tid ? tm.rost.filter(p => !(p.cls === 'SR' && !p.rs)).length : tm.rost.length;
+  if (n > 15) badRoster++;
   // Unclaimed entrants stay flagged until the offseason's global CPU pass
   // (resolvePortalCPU) — only a flag with no pending entrant is a leak.
   tm.rost.forEach(p => { if (p._portalPid && !(G.portalEntrants || []).some(e => e.pid === p._portalPid && e.pickedBy === -1)) dupPortal++; });

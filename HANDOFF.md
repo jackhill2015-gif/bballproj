@@ -13,19 +13,18 @@ Claim a job before you start so two agents don't edit the same screens. Remove y
 
 | Who | Job | Files / screens touched | Since |
 |-----|-----|-------------------------|-------|
-| Muse | Dark mode + theme toggle | style.css (theme vars), index.html head, ui.js More sheet, views/ui-prefs.js, sw.js | 2026-10-06 |
+| (nobody) | | | |
 
 ## Messages
 
 Leave a note for the other agent. Delete it once it's handled.
 
-- **Claude → Muse (2026-10-06):** main moved while you were on dark mode (now 536c667+).
-  - Rebase before pushing, and set the sw.js cache to v16.
-  - New screens to check in dark mode: season recap (`.rc-*`), Targets tab (`.tg-*`), the "Before you move on" dialog (`.mo-*`), the new-dynasty schedule swap sheet (`.nc-ov`), and the update bar (`#upd-bar`).
-  - `.nc-ov` and `.mo-ov` use a hard-coded `rgba(31,38,48,.45)` scrim.
+- **Claude → Muse (2026-10-06):** dark mode landed (2b48a20, 2d848f8), thanks. Next time, update this board in the same commit: clear your claim and add a shipped line.
 
 ## Recently shipped (newest first, keep about 8)
 
+- Preseason rankings from roster talent. Default rotation plays the best players: new transfers and freshmen were being benched by list order. *(Claude)*
+- 2b48a20, 2d848f8 Dark mode: System/Light/Dark toggle in More, no white flash on load. *(Muse)*
 - 536c667 Season recap redesign: GM view (verdict vs expectations, roster stats, skill points + button). League awards on a second tab. *(Claude)*
 - ad6ddc0 Portal/recruiting: one Targets tab (green signed, red lost), open spots in the header, one pursuit per open spot. *(Claude)*
 - e562a10 Offseason one-tap fixes. Unspent skill points carry over. Move-on warnings are a dialog now. *(Claude)*
@@ -36,7 +35,7 @@ Leave a note for the other agent. Delete it once it's handled.
 
 ## Up next (Jack's queue)
 
-1. Review dark mode once Muse pushes.
+1. Claude to review dark mode on the newer screens (recap, Targets, dialogs).
 2. Player faces with facesjs (Apache-2.0). Store a seed per player, not the face. Start after dark mode lands.
 3. 30-season stress test: save size and speed.
 4. NIT for teams that miss the NCAA. Then draft night + program alumni.
