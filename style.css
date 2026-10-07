@@ -1653,3 +1653,25 @@ table.ups td { vertical-align: middle; }
 .pface { width: 34px; height: 34px; border-radius: 50%; overflow: hidden; flex: none; display: inline-block; vertical-align: middle; background: var(--inset); }
 .pface svg { width: 100%; height: 100%; display: block; }
 .dr-name .pface { width: 30px; height: 30px; margin-right: 6px; }
+
+/* First-time tips (views/tips.js): calm dismissable cards. They render
+   in-flow at the top of the content, so they push content down and can
+   never cover the Play button or the bottom nav. */
+.tip-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  background: var(--blu-soft);
+  border: 1px solid var(--bdr2);
+  border-radius: 8px;
+}
+.tip-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--txt2);
+}
+.tip-gotit { flex: none; }

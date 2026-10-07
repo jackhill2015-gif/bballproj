@@ -16,6 +16,7 @@ import { openTeamFromEl, openGameDetailFromEl } from './views/team.js';
 import { closeSheet } from './views/sheet.js';
 import { openDevReport } from './views/devreport.js';
 import { getUiPrefs, setUiPrefs } from './views/ui-prefs.js';
+import { injectTips, dismissTip, resetTips } from './views/tips.js';
 
 // ── Late-Binding Registry ────────────────────────────────
 var _views = {
@@ -382,6 +383,7 @@ export function refreshView() {
   else if (v === 'trophies') loadTrophiesView();
   else if (v === 'program' && _views.renderProgram) _views.renderProgram();
   else if (v === 'help') loadHelpView();
+  injectTips(v); // first-time tips (views/tips.js); no-op when all dismissed
 }
 
 var _trophiesMod = null;
@@ -719,6 +721,16 @@ function handleAction(el) {
       break;
     case 'begin-offseason':
       if (window.beginOffseason) window.beginOffseason();
+      break;
+    case 'tip-dismiss':
+      dismissTip(el.getAttribute('data-tip'));
+      refreshView();
+      break;
+    case 'tips-reset':
+      resetTips();
+      closeMoreSheet();
+      toast('Tips will show again.');
+      refreshView();
       break;
   }
 }

@@ -28,6 +28,7 @@ Leave a note for the other agent. Delete it once it's handled. **Claude sessions
 
 ## Recently shipped (newest first, keep about 8)
 
+- First-time tips: short dismissable cards on Home, Roster, first offseason and Recruiting; "Got it" dismisses, "Show tips again" in the More sheet; dismissals in ui-prefs, not the save. *(Muse)*
 - 390px QA playthrough: full season 2 plus offseasons into season 3 via real UI taps (dark mode, zero console errors); two departures-screen issues left on the board for Claude. *(Muse)*
 - Faces on season recap roster table and game-detail box scores (small, deterministic). *(Muse)*
 - Face touchup: basketball jerseys only, white with black trim until team colors land, no hats. *(Muse)*
