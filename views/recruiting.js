@@ -18,7 +18,7 @@ import { ge, clamp, ri, getTOvr } from '../utils.js';
 import { hasRestlessStarAt } from '../morale.js';
 import { TEAM_STATES, STATE_TO_REGION, STATE_NAMES, SCHOOL_RECRUIT_GATES, COACH_FN, COACH_LN, RECRUIT_STATE_POOL } from '../constants.js';
 import { G, LS, SetupState, saveState, calcRecruitingBudget } from '../state.js';
-import { renderPortal, genPortalEntrants, registerPortalCallbacks, adjustOffer, pivotOffer, advancePortalStage, advanceFromPortal, setPortalFilter, togglePortalDetail, PORTAL_OFFER_STEP, setPortalTab, entryOdds, openPortalPage, openPortalFilter, clearPortalFilter } from './portal.js';
+import { renderPortal, genPortalEntrants, registerPortalCallbacks, adjustOffer, pivotOffer, advancePortalStage, advanceFromPortal, setPortalFilter, togglePortalDetail, PORTAL_OFFER_STEP, setPortalTab, openPortalPage, openPortalFilter, clearPortalFilter } from './portal.js';
 import { genPlayer } from '../simulation.js';
 import { buildRetentionAsks, renderRetention, decideRetention, applyRetention, retentionPending, rollNotReturning } from './retention.js';
 import { teamLogo } from '../ui.js';
@@ -290,7 +290,7 @@ export function proceedToRecruiting() {
   }
   // Departures + player retention share one screen (always shown, so you
   // see who left even when nobody asks for NIL)
-  rollNotReturning(entryOdds);
+  rollNotReturning();
   buildRetentionAsks();
   G.offseasonStep = 'retention';
   saveState(); updateAll(); renderOffseason();

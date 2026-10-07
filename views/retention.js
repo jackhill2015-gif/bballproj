@@ -60,26 +60,57 @@ function seasonLine(p) {
   return { ppg: Math.round(s.pts / gp * 10) / 10, rpg: Math.round(s.reb / gp * 10) / 10, apg: Math.round(s.ast / gp * 10) / 10 };
 }
 
-// Players who won't negotiate: the portal decides them here (not by surprise
-// later), at most one a year and in roughly a third of offseasons. Mostly
-// bench players chasing minutes; unhappy players are likelier.
-var LEAVE_DAMPEN = 0.2;
-export function rollNotReturning(entryOddsFn) {
+// Players who won't negotiate ("not interested in returning"), decided on
+// the Departures screen so nothing surprises you later.
+//  - Playing time sets each player's odds: starters almost never leave,
+//    rotation players rarely, bench players who are good enough to play but
+//    don't (within 2 of your 5th-best) are the likeliest. Morale scales it.
+//  - Team performance scales the whole roster: a winning season and an NCAA
+//    bid keep players home; a losing or disappointing one shakes them loose.
+//  - How many can leave: 1 after a strong season, up to 2 after an average
+//    one, up to 3 after a bad one.
+export function seasonPull() {
+  var t = G.teams[G.tid] || {};
+  var gp = (t.wins || 0) + (t.loss || 0);
+  var wp = gp ? t.wins / gp : 0.5;
+  var sa = G.seasonAchievements || {};
+  var f = 1.6 - Math.max(0, Math.min(1, (wp - 0.3) / 0.5)) * 1.1;   // .300 → 1.6, .550 → 1.05, .800 → 0.5
+  if (sa.madeNCAA) f *= 0.85;
+  if (sa.sweet16) f *= 0.85;
+  if (G.coach && G.coach.hotSeat) f *= 1.15;                        // a disappointing season
+  return Math.max(0.4, Math.min(1.8, f));
+}
+function leaveOdds(p, t, fifthBest, pull) {
+  if (p.cls === 'SR' || p.rs) return null;
+  var mins = p.mins || 0, m = (typeof p.morale === 'number') ? p.morale : MORALE_DEFAULT;
+  var deserves = p.ovr >= fifthBest - 2;
+  var base, why;
+  if (mins >= 25) { base = 0.008; why = 'Wants a fresh start'; }
+  else if (mins >= 15) { base = 0.04; why = deserves ? 'Wants a bigger role' : 'Wants more minutes'; }
+  else if (mins >= 5) { base = deserves ? 0.14 : 0.03; why = deserves ? 'Wants a bigger role' : 'Wants more minutes'; }
+  else { base = deserves ? 0.17 : 0.035; why = deserves ? 'Stuck on the bench' : 'Wants more minutes'; }
+  if (pull >= 1.3 && mins >= 15) why = 'Tired of losing';
+  if (m < 35) why = 'Unhappy with his role';
+  var chance = base * pull * (1.6 - m / 100);                      // morale 20 → x1.4, 50 → x1.1, 80 → x0.8
+  return { chance: Math.min(0.6, chance), why: why };
+}
+export function rollNotReturning() {
   var t = G.teams[G.tid];
-  if (!entryOddsFn || !t) return [];
+  if (!t) return [];
   var byOvr = t.rost.slice().sort(function(a, b) { return b.ovr - a.ovr; });
-  var ctx = { fifthBest: byOvr[4] ? byOvr[4].ovr : 0, weak: (t.schoolPrestige || 50) < 45, coachChange: false };
-  var out = [];
-  byOvr.slice().sort(function() { return Math.random() - 0.5; }).some(function(p) {
-    if (p.cls === 'SR' || p.rs) return false;
-    var o = entryOddsFn(p, t, Object.assign({ depth: byOvr.indexOf(p) + 1 }, ctx));
-    if (o && Math.random() < o.chance * LEAVE_DAMPEN) {
-      p.notReturningYr = G.yr; p.notReturningWhy = o.reason;
-      out.push(p); return true;
-    }
-    return false;
+  var fifthBest = byOvr[4] ? byOvr[4].ovr : 0;
+  var pull = seasonPull();
+  var cap = pull <= 0.8 ? 1 : pull <= 1.25 ? 2 : 3;
+  var hits = [];
+  t.rost.forEach(function(p) {
+    var o = leaveOdds(p, t, fifthBest, pull);
+    if (o && Math.random() < o.chance) hits.push({ p: p, why: o.why, c: o.chance });
   });
-  return out;
+  hits.sort(function(a, b) { return b.c - a.c; });
+  return hits.slice(0, cap).map(function(h) {
+    h.p.notReturningYr = G.yr; h.p.notReturningWhy = h.why;
+    return h.p;
+  });
 }
 
 // Build this offseason's asks from the user's returning players.
