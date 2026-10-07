@@ -318,8 +318,10 @@ console.log('\n── conf tourneys + NCAA: achievements + history ──');
 
     // S8: achievement flags
     const sa = G.seasonAchievements;
-    const inField = G.bracket.some(b => b.team.id === G.tid);
-    check(sa.madeNCAA === inField, `madeNCAA=${sa.madeNCAA} matches bracket membership (${inField})`);
+    // Opening Round teams made the field too, win or lose (76-team format)
+    const inField = G.bracket.some(b => b.team.id === G.tid) ||
+      ((G.ncaaOpening && G.ncaaOpening.games) || []).some(g => (g.t1 && g.t1.id === G.tid) || (g.t2 && g.t2.id === G.tid));
+    check(sa.madeNCAA === inField, `madeNCAA=${sa.madeNCAA} matches field membership (${inField})`);
     const userChamp = champ.length === 1 && champ[0].team.id === G.tid;
     if (userChamp) {
       check(sa.natChamp && sa.champGame && sa.finalFour && sa.sweet16, 'user champ: all tourney flags set');
@@ -358,6 +360,7 @@ console.log('\n── S8 unit: achievement flag wiring ──');
 
   function freshSA() {
     G.seasonAchievements = { confTitleThisYear: false, madeNCAA: false, sweet16: false, finalFour: false, champGame: false, natChamp: false };
+    G.ncaaOpening = null; // the season run above may have left you in an Opening Round game
   }
 
   // 1. conf title

@@ -6,6 +6,7 @@
 
 // ── Core ─────────────────────────────────────────────────
 import { G, SetupState, flushPendingSave } from './state.js';
+import { initStorage, onStorageError } from './storage.js';
 import {
   buildUniverse, buildSchedules, genRecruits,
   launchSim, doPlay, advanceWeek, autoSimNext, updateAutoBtn,
@@ -207,7 +208,10 @@ window._renderSeasonRecap = renderSeasonRecap;
 buildUniverse();
 initOutsideClickHandlers();
 initTheme();
-showHomeScreen();
+// Saves are read from IndexedDB into memory before the home screen shows
+// (moves an older localStorage save into slot 1 the first time)
+onStorageError(function() { toast('Couldn\u2019t save to this device. Back up your dynasty to be safe.'); });
+initStorage().then(showHomeScreen, showHomeScreen);
 if (typeof window !== 'undefined') window._gameStarted = true; // update guard in index.html
 
 // Offline support: register the service worker (installed home-screen app

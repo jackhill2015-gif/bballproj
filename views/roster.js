@@ -91,6 +91,7 @@ function depthRow(p, i) {
     + '<span class="pos-chip">' + p.pos + '</span>'
     + '<div class="dr-name">' + playerFaceSmallHTML(p, G.teams[G.tid].name) + '<span class="pname" data-action="player" data-player="' + G.tid + ':' + i + '" role="button" tabindex="0">' + p.name + '</span> <span class="cls-txt">' + (p.rsUsed ? 'RS ' : '') + p.cls + '</span>' + moodPill
     + (p.rs ? '<span class="rs-tag">Redshirt</span>' : '')
+    + (p.walkon ? '<span class="rs-tag wo-tag">Walk-on</span>' : '')
     + '<div class="dr-sub">' + line + '</div></div>'
     + '<div class="dr-ovr"><b>' + p.ovr + '</b><small style="color:' + potCol + ';">Pot ' + pot + '</small></div>'
     + '</div>'

@@ -85,6 +85,31 @@ export function genPlayer(base, pos, cls) {
   return p;
 }
 
+// ── Walk-ons ─────────────────────────────────────────────
+// A walk-on freshman rated about `target` overall (well below the roster).
+// About 1 in 12 is a gem: high potential, and he really grows into it
+// (see calcGrowth). The rest top out a few points above where they start.
+export var WALKON_GEM_RATE = 1 / 12;
+export function genWalkon(target, pos) {
+  var p = genPlayer(Math.max(45, Math.round(oldOvr(target)) - 6), pos, 'FR');
+  // Shift every skill until the overall lands on the target
+  for (var k = 0; k < 6 && p.ovr !== target; k++) {
+    var step = Math.max(-12, Math.min(12, Math.round((oldOvr(target) - oldOvr(p.ovr)))));
+    if (!step) break;
+    ['sht', 'fin', 'def', 'reb', 'ply'].forEach(function(a) { p[a] = clamp(p[a] + step, 38, 99); });
+    p.ovr = getOvr(p);
+  }
+  p.walkon = true;
+  if (Math.random() < WALKON_GEM_RATE) {
+    p.devCurve = 'early';
+    p.pot = Math.min(99, Math.max(p.ovr + 12, target + ri(14, 20)));
+  } else {
+    p.devCurve = 'normal';
+    p.pot = p.ovr + ri(1, 4);
+  }
+  return p;
+}
+
 export function calcGrowth(p, coachDev) {
   var devBonus = Math.round((coachDev - 70) / 15);
   var baseTotal = (p.cls === 'FR') ? ri(4, 9) : (p.cls === 'SO') ? ri(3, 6) : (p.cls === 'JR') ? ri(2, 4) : ri(1, 3);
@@ -100,6 +125,12 @@ export function calcGrowth(p, coachDev) {
     var attr = attrs[ri(0, 4)];
     var add = ri(1, Math.min(3, remaining + 1));
     changes[attr] += add; remaining -= add;
+  }
+  // Gem walk-ons (high potential) grow fast until they reach it: from well
+  // below the roster to a rotation player in 2-3 years
+  if (p.walkon && (p.pot || 0) - (p.ovr || 0) >= 5) {
+    var extra = ri(12, 18);
+    while (extra > 0) { var ea = attrs[ri(0, 4)]; changes[ea] += 1; extra--; }
   }
   if (p.pos === 'PG' || p.pos === 'SG') changes.ply = clamp(changes.ply + ri(0, 1), 0, 5);
   if (p.pos === 'PF' || p.pos === 'C') changes.reb = clamp(changes.reb + ri(0, 1), 0, 5);

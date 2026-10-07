@@ -8,13 +8,13 @@ import { recomputeRatings, snapshotRanks } from './ratings.js';
 import { ensureGoals, noteUserResult, settleGoals, checkAchievements } from './goals.js';
 import { practiceBonus, trainingChance, facilitiesFor } from './facilities.js';
 import { payGate, payTvShare, ledger as financeLedger } from './finance.js';
-import { ALL_TEAMS, POS, CLS, RECRUIT_STATE_POOL, COACH_FN, COACH_LN, calcSchoolPrestige, SKILL_POINT_TABLE, calcExpectations } from './constants.js';
+import { ALL_TEAMS, teamsFor, CURRENT_ALIGN, POS, CLS, RECRUIT_STATE_POOL, COACH_FN, COACH_LN, calcSchoolPrestige, SKILL_POINT_TABLE, calcExpectations } from './constants.js';
 import {
   ri, clamp, getTOvr, fixMins, freshS, autoLineup, getTeamStyle, getOvr, ge, txt, fmtScore,
   awardScore, pickPositionalTeam
 } from './utils.js';
 import { G, LS, SetupState, saveState } from './state.js';
-import { genPlayer, simGame, calcGrowth } from './simulation.js';
+import { genPlayer, genWalkon, simGame, calcGrowth } from './simulation.js';
 import { recordGameMorale } from './morale.js';
 import { rollEvents } from './events.js';
 import {
@@ -56,9 +56,14 @@ function navTo(v) { if (_ext.navTo) _ext.navTo(v); }
 //  UNIVERSE BUILDING
 // ═══════════════════════════════════════════════════════════
 
-export function buildUniverse() {
+// align: which season's conference alignment to build (constants.js
+// teamsFor). New dynasties use the current one; loadState re-labels teams
+// for a save made on an older alignment.
+export function buildUniverse(align) {
   G.teams = [];
-  ALL_TEAMS.forEach(function(td, i) {
+  G.align = align || CURRENT_ALIGN;
+  G.alignYr0 = G.yr; // first season played on this alignment (eligibility clock)
+  teamsFor(G.align).forEach(function(td, i) {
     var rost = [];
     for (var j = 0; j < 13; j++) {
       rost.push(genPlayer(td.o, POS[j % 5], CLS[ri(0, 3)]));
@@ -81,7 +86,7 @@ export function buildUniverse() {
     };
 
     G.teams.push({
-      id: i, name: td.n, conf: td.c, baseOvr: td.o, rost: rost,
+      id: i, name: td.n, conf: td.c, baseOvr: td.o, rost: rost, eligibleFrom: td.e || 0,
       wins: 0, loss: 0, cWins: 0, cLoss: 0,
       pts: td.o * 10 + ri(-30, 30),
       sched: [], streak: 0,
@@ -983,6 +988,28 @@ export function beginOffseason() {
 //  OFFSEASON
 // ═══════════════════════════════════════════════════════════
 
+// Walk-on freshmen until every position has WALKON_MIN_POS players and the
+// roster has WALKON_MIN_ROSTER (never past the 15-man limit). They come in
+// well below the roster's average. Returns the players added.
+export var WALKON_MIN_POS = 2, WALKON_MIN_ROSTER = 11;
+export function addWalkons(t) {
+  var added = [];
+  var count = function(pos) { return t.rost.filter(function(p) { return p.pos === pos; }).length; };
+  var avg = t.rost.length ? t.rost.reduce(function(a, p) { return a + (p.ovr || 0); }, 0) / t.rost.length : 62;
+  while (t.rost.length < 15) {
+    var thin = POS.filter(function(pos) { return count(pos) < WALKON_MIN_POS; });
+    if (!thin.length && t.rost.length >= WALKON_MIN_ROSTER) break;
+    var pool = thin.length ? thin : POS;
+    var fewest = Math.min.apply(null, pool.map(count));
+    pool = pool.filter(function(pos) { return count(pos) === fewest; });
+    var np = genWalkon(Math.max(40, Math.round(avg) - ri(9, 13)), pool[ri(0, pool.length - 1)]);
+    np.s = freshS();
+    t.rost.push(np);
+    added.push(np);
+  }
+  return added;
+}
+
 export function doOffseason() {
   var t = G.teams[G.tid];
 
@@ -1048,12 +1075,12 @@ export function doOffseason() {
     t.rost.push(np);
   });
 
-  // Fill roster to minimum
-  while (t.rost.length < 10) {
-    var np = genPlayer(ri(62, 74), POS[ri(0, 4)], 'FR');
-    np.s = freshS();
-    t.rost.push(np);
-  }
+  // Walk-ons fill out the roster: 2 at every position, 11 in all
+  var _wo = addWalkons(t);
+  if (_wo.length) addLog('ev', G.gi, _wo.length + ' walk-on' + (_wo.length !== 1 ? 's' : '') + ' joined to fill out the roster (' + POS.map(function(pos) {
+    var n = _wo.filter(function(p) { return p.pos === pos; }).length;
+    return n > 1 ? n + ' ' + pos : n ? pos : '';
+  }).filter(Boolean).join(', ') + ').');
   fixMins(t.rost);
 
   // Advance year

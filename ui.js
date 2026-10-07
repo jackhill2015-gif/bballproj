@@ -637,6 +637,12 @@ export function togglePlayMenu() {
 //  EVENT DELEGATION — one document-level click handler
 // ═══════════════════════════════════════════════════════════
 
+// Home-screen save slot buttons carry data-slot (1-3); null elsewhere
+function slotOf(el) {
+  var n = parseInt(el.getAttribute('data-slot'), 10);
+  return n > 0 ? n : null;
+}
+
 function handleAction(el) {
   var a = el.getAttribute('data-action');
   if (!a) return;
@@ -696,16 +702,16 @@ function handleAction(el) {
       })();
       break;
     case 'new-dynasty-start':
-      if (window.startNewDynasty) window.startNewDynasty();
+      if (window.startNewDynasty) window.startNewDynasty(slotOf(el));
       break;
     case 'load-play':
-      if (window.loadAndPlay) window.loadAndPlay();
+      if (window.loadAndPlay) window.loadAndPlay(slotOf(el));
       break;
     case 'delete-save':
-      if (window.deleteFromHome) window.deleteFromHome();
+      if (window.deleteFromHome) window.deleteFromHome(slotOf(el));
       break;
     case 'backup':
-      backupDynasty(toast);
+      backupDynasty(toast, slotOf(el));
       break;
     case 'restore':
       restoreDynasty(toast);

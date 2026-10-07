@@ -50,6 +50,27 @@ export var CONF_FORMATS = {
   'Pac-12':   { size: 2, enter: [[1, 2]], note: 'Two members this season: one game for the automatic bid.' }
 };
 
+// 2026-27 alignment (2027 tournaments). Matched by conference and size, so
+// saves on the 2025-26 alignment keep the formats above. "Not announced"
+// formats use last season's format if it still fits, else the standard one.
+export var CONF_FORMATS_2026 = {
+  'Pac-12':   { size: 9, enter: [[8, 9], [5, 7], [3, 4], [1, 2]], note: 'All 9 teams. 8 v 9 first and the winner plays the 5 seed, 6 v 7 in round two, seeds 3-4 enter in the quarterfinals and 1-2 in the semifinals. MGM Grand, Las Vegas.' },
+  'MW':       { size: 10, enter: [[7, 10], [1, 6]], note: 'All 10 teams. 7 v 10 and 8 v 9 first, seeds 1-6 enter in the quarterfinals. Las Vegas.' },
+  'MAC':      { size: 12, q: 8, enter: [[5, 8], [3, 4], [1, 2]], note: 'Top 8 qualify. Seeds 3-4 enter in the quarterfinals, 1-2 in the semifinals. Cleveland.' },
+  'NEC':      { size: 9, q: 8, enter: [[1, 8]], campus: 'all', note: 'Top 8 qualify, reseeded each round, every game at the higher seed. If a team that isn\u2019t NCAA-eligible wins, the runner-up takes the automatic bid.' },
+  'OVC':      { size: 9, enter: [[8, 9], [1, 7]], note: 'All 9 teams (expected). Evansville.' },
+  'Summit':   { size: 8, enter: [[1, 8]], note: 'All 8 teams. Sioux Falls.' },
+  'ASUN':     { size: 8, enter: [[1, 8]], note: 'All 8 teams. Jacksonville.' },
+  'Metro':    { size: 13, q: 10, enter: [[7, 10], [1, 6]], note: 'Top 10 qualify. Seeds 1-6 get a bye. Atlantic City. (The MAAC, renamed.)' },
+  // Not announced yet
+  'UAC':      { size: 9, enter: [[8, 9], [1, 7]], note: 'All 9 teams. Format not announced yet; assumed.' },
+  'Big West': { size: 12, q: 8, enter: [[5, 8], [3, 4], [1, 2]], note: 'Top 8 qualify, stepladder (last season\u2019s format; 2027 not announced yet). Henderson, Nev.' },
+  'Big Sky':  { size: 11, enter: [[6, 11], [1, 5]], note: 'All 11 teams. Format not announced yet; assumed. Boise.' },
+  'Horizon':  { size: 12, enter: [[5, 12], [1, 4]], campus: 1, note: 'All 12 teams. Opening round at the higher seed, then Indianapolis. Format not announced yet; assumed.' },
+  'SoCon':    { size: 11, enter: [[6, 11], [1, 5]], note: 'All 11 teams. Format not announced yet; assumed. Asheville.' },
+  'CUSA':     { size: 10, enter: [[7, 10], [1, 6]], note: 'All 10 teams, seeds 1-6 get a bye (last season\u2019s bracket; 2027 not announced yet). Huntsville.' }
+};
+
 // Standard format for any size: bottom seeds play an opening round,
 // the rest get a bye into a 2^n bracket
 export function standardFormat(n) {
@@ -61,8 +82,8 @@ export function standardFormat(n) {
 
 // The format a conference uses this season, checked so every round pairs up
 export function formatFor(conf, n) {
-  var f = CONF_FORMATS[conf];
-  if (f && f.size === n && validFormat(f.q || n, f.enter)) return { q: f.q || n, enter: f.enter, campus: f.campus || null, note: f.note || '' };
+  var f = [CONF_FORMATS[conf], CONF_FORMATS_2026[conf]].filter(function(x) { return x && x.size === n; })[0];
+  if (f && validFormat(f.q || n, f.enter)) return { q: f.q || n, enter: f.enter, campus: f.campus || null, note: f.note || '' };
   var s = standardFormat(n);
   return { q: s.q, enter: s.enter, campus: null, note: 'All ' + n + ' teams.' };
 }

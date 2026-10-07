@@ -78,6 +78,41 @@ export function getConfRoundName(ct, conf) {
 //  CONFERENCE TOURNAMENTS
 // ═══════════════════════════════════════════════════════════
 
+// NCAA eligibility: reclassifying schools (constants.js ELIGIBLE_FROM_2026)
+// can't take a bid until their first eligible season. Seasons count from
+// the first one played on the alignment (2026-27).
+export function isEligible(t) {
+  if (!t || !t.eligibleFrom) return true;
+  var season = 2026 + (G.yr - (G.alignYr0 || G.yr));
+  return season >= t.eligibleFrom;
+}
+// The conference's automatic bid: the champion, or, when he isn't eligible,
+// the runner-up (the NEC plays an "AQ game"; this stands in for it), else
+// the best eligible seed
+export function autoBid(ct) {
+  if (!ct) return null;
+  return ct.bid !== undefined ? ct.bid : ct.champ;
+}
+function crownChampion(conf, ct, champ) {
+  ct.done = true;
+  ct.champ = champ;
+  ct.bid = champ;
+  if (!champ) return;
+  if (champ.id === G.tid) {
+    G.confTitles++; G.prestige = Math.min(5, G.prestige + 1);
+    addLog('ev', G.gi, '<b>' + conf + ' tournament champions.</b>');
+    toast(conf + ' tournament champions', 'var(--gld)');
+  } else {
+    addLog('ev', G.gi, conf + ' won by <b>' + champ.name + '</b>');
+  }
+  if (isEligible(champ)) return;
+  var fin = ct.rounds.length ? ct.rounds[ct.rounds.length - 1] : [];
+  var m = fin.filter(function(x) { return x.winner && x.winner.id === champ.id; })[0];
+  var runnerUp = m ? (m.t1 && m.t1.id === champ.id ? m.t2 : m.t1) : null;
+  ct.bid = (runnerUp && isEligible(runnerUp)) ? runnerUp : ((ct.seeds || []).filter(function(t) { return t && isEligible(t); })[0] || null);
+  addLog('ev', G.gi, champ.name + ' is not eligible for the NCAA tournament yet' + (ct.bid ? '. <b>' + ct.bid.name + '</b> takes the ' + conf + '’s automatic bid.' : '.'));
+}
+
 // Real-format round builder: last round's winners + the seeds entering
 // this round, paired best seed vs worst. Campus games: higher seed hosts.
 function buildFormatRound(conf, ct) {
@@ -86,17 +121,7 @@ function buildFormatRound(conf, ct) {
   var ent = fmt.enter[r];
   if (ent) for (var s = ent[0]; s <= ent[1]; s++) if (ct.seeds[s - 1]) field.push(ct.seeds[s - 1]);
   if (field.length <= 1 && !fmt.enter[r + 1]) {
-    ct.done = true;
-    ct.champ = field[0] || null;
-    if (ct.champ) {
-      if (ct.champ.id === G.tid) {
-        G.confTitles++; G.prestige = Math.min(5, G.prestige + 1);
-        addLog('ev', G.gi, '<b>' + conf + ' tournament champions.</b>');
-        toast(conf + ' tournament champions', 'var(--gld)');
-      } else {
-        addLog('ev', G.gi, conf + ' won by <b>' + ct.champ.name + '</b>');
-      }
-    }
+    crownChampion(conf, ct, field[0] || null);
     return;
   }
   var rank = {};
@@ -163,17 +188,7 @@ function buildNextConfRound(conf) {
     ct.carry = [];
   }
   if (survivors.length <= 1) {
-    ct.done = true;
-    ct.champ = survivors[0] || null;
-    if (ct.champ) {
-      if (ct.champ.id === G.tid) {
-        G.confTitles++; G.prestige = Math.min(5, G.prestige + 1);
-        addLog('ev', G.gi, '<b>' + conf + ' tournament champions.</b>');
-        toast(conf + ' tournament champions', 'var(--gld)');
-      } else {
-        addLog('ev', G.gi, conf + ' won by <b>' + ct.champ.name + '</b>');
-      }
-    }
+    crownChampion(conf, ct, survivors[0] || null);
     return;
   }
   // Rank survivors by original tournament seed (ct.seeds is best-first)
@@ -427,8 +442,8 @@ export function buildNCAA() {
   if (G.confTourneys) {
     Object.keys(G.confTourneys).forEach(function(conf) {
       var ct = G.confTourneys[conf];
-      if (ct && ct.done && ct.champ) {
-        autoBids.push(ct.champ);
+      if (ct && ct.done && autoBid(ct)) {
+        autoBids.push(autoBid(ct));
       }
     });
   }
@@ -465,6 +480,7 @@ export function buildNCAA() {
   allTeams.forEach(function(entry) {
     if (field.length >= FIELD_SIZE) return;
     if (inField[entry.team.id]) return;
+    if (!isEligible(entry.team)) return;
     // At-large minimum: a .550 record (no 16-15 at-large bids)
     var gpA = entry.team.wins + entry.team.loss;
     if (!gpA || entry.team.wins / gpA < 0.55) return;
@@ -476,6 +492,7 @@ export function buildNCAA() {
   allTeams.forEach(function(entry) {
     if (field.length >= FIELD_SIZE) return;
     if (inField[entry.team.id]) return;
+    if (!isEligible(entry.team)) return;
     field.push(entry.team);
     inField[entry.team.id] = true;
   });
@@ -569,7 +586,7 @@ export function showBracketReveal(userSeed) {
   if (G.confTourneys) {
     Object.keys(G.confTourneys).forEach(function(c) {
       var cct = G.confTourneys[c];
-      if (cct && cct.champ) autoCount++;
+      if (cct && autoBid(cct)) autoCount++;
     });
   }
   var field = fieldTeams();
@@ -624,7 +641,7 @@ export function showBracketReveal(userSeed) {
     if (G.confTourneys) {
       Object.keys(G.confTourneys).forEach(function(c) {
         var ct = G.confTourneys[c];
-        if (ct && ct.champ) autoBidIds[ct.champ.id] = true;
+        if (ct && autoBid(ct)) autoBidIds[autoBid(ct).id] = true;
       });
     }
     var atLarge = field.filter(function(ft) { return !autoBidIds[ft.id]; });

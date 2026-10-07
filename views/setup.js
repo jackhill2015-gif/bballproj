@@ -8,9 +8,10 @@
 //  preserved with identical names/signatures.
 // ═══════════════════════════════════════════════════════════
 
-import { DIFF_DESC, calcSchoolPrestige, calcExpectations, ALL_TEAMS } from '../constants.js';
+import { DIFF_DESC, calcSchoolPrestige, calcExpectations, ALL_TEAMS, teamsFor } from '../constants.js';
 import { ri, ge, txt, getTier, getTOvr, fR } from '../utils.js';
 import { G, SetupState, loadState, deleteSave, saveState } from '../state.js';
+import { SLOTS, readSlot, removeSlot, activeSlot, setActiveSlot, storageMode, flushWrites } from '../storage.js';
 import { buildSchedules, genRecruits, buildUniverse, setupUserOOC, pickBalancedOOC } from '../season.js';
 import * as Acq from './acq.js';
 import { teamLogo } from '../ui.js';
@@ -50,38 +51,82 @@ function stepHeader(title, sub) {
 //  HOME SCREEN
 // ═══════════════════════════════════════════════════════════
 
+var PHASE_NAMES = { reg: 'Regular season', conf_tourn: 'Conf tournament', ncaa: 'NCAA tournament', offseason: 'Offseason' };
+
+function esc(v) {
+  return String(v === null || v === undefined ? '' : v).replace(/[&<>"]/g, function(c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+  });
+}
+
+// Home-card summary of a saved dynasty (team, season, record, coach), or
+// null for an empty or unreadable slot
+export function slotSummary(raw) {
+  if (!raw) return null;
+  try {
+    var saved = typeof raw === 'string' ? JSON.parse(raw) : raw;
+    var t = saved && saved.teams && saved.teams[saved.tid];
+    if (!t) return null;
+    // Saves store team results only; name/conference come from the team table
+    var td = teamsFor(saved.align || 2025)[saved.tid] || {}; // the save's own conference alignment
+    return {
+      team: t.name || td.n || '---',
+      conf: t.conf || td.c || '',
+      coach: saved.coach ? (saved.coach.firstName + ' ' + saved.coach.lastName).trim() : 'Coach',
+      phase: PHASE_NAMES[saved.phase] || 'Preseason',
+      yr: saved.yr || 2025,
+      season: saved.yr ? saved.yr - 2024 : 1,
+      record: fR(t.wins || 0, t.loss || 0),
+      titles: (saved.championships || 0) + (saved.confTitles || 0)
+    };
+  } catch (e) { return null; }
+}
+
+function slotCard(n, sum) {
+  var h = '<div class="home-save home-slot">'
+    + '<div class="home-save-title">Slot ' + n + '</div>';
+  if (!sum) {
+    return h + '<div class="home-new home-slot-new" data-action="new-dynasty-start" data-slot="' + n + '" role="button" tabindex="0" aria-label="Start a new dynasty in slot ' + n + '">'
+      + '<div class="home-new-icon">+</div>'
+      + '<div><div class="home-new-label">New dynasty</div><div class="home-new-sub">Empty slot</div></div>'
+      + '</div></div>';
+  }
+  return h + '<div class="home-dynasty-row">'
+    + '<div class="home-dynasty-info">'
+    + '<div class="home-dynasty-team">' + esc(sum.team) + '</div>'
+    + '<div class="home-dynasty-meta">' + esc(sum.coach) + ' · ' + esc(sum.conf) + ' · ' + esc(sum.phase) + '</div>'
+    + '<div class="home-dynasty-stats">'
+    + '<div class="home-dynasty-stat"><div class="home-dynasty-stat-v">' + esc(sum.record) + '</div><div class="home-dynasty-stat-l">Record</div></div>'
+    + '<div class="home-dynasty-stat"><div class="home-dynasty-stat-v">' + esc(sum.yr) + '</div><div class="home-dynasty-stat-l">Year</div></div>'
+    + '<div class="home-dynasty-stat"><div class="home-dynasty-stat-v">' + esc(sum.season) + '</div><div class="home-dynasty-stat-l">Season</div></div>'
+    + '<div class="home-dynasty-stat"><div class="home-dynasty-stat-v">' + esc(sum.titles) + '</div><div class="home-dynasty-stat-l">Titles</div></div>'
+    + '</div></div>'
+    + '<div class="home-play-btn" data-action="load-play" data-slot="' + n + '" role="button" tabindex="0" aria-label="Continue ' + esc(sum.team) + '">Continue</div>'
+    + '</div>'
+    + '<div class="home-delete">'
+    + '<button class="btn-quiet" data-action="backup" data-slot="' + n + '">Back up</button>'
+    + '<button class="home-delete-btn" data-action="delete-save" data-slot="' + n + '">Delete</button>'
+    + '</div></div>';
+}
+
 export function showHomeScreen() {
   // Reveal first: if a storage read throws below (blocked storage in some
   // browsers/WebViews), the home screen must still appear — never white-screen.
   var hs = ge('home-screen'); if (hs) hs.style.display = 'flex';
   ge('setup').style.display = 'none';
-  var raw = null;
-  try { raw = localStorage.getItem('hoops_os_v3'); } catch (e) { raw = null; }
-  if (raw) {
-    try {
-      var saved = JSON.parse(raw);
-      var t = saved.teams && saved.teams[saved.tid];
-      if (t) {
-        // Saves store team results only; name/conference come from the team table
-        var td = ALL_TEAMS[saved.tid] || {};
-        t = Object.assign({ name: td.n, conf: td.c }, t);
-        var coachName = saved.coach ? saved.coach.firstName + ' ' + saved.coach.lastName : 'Coach';
-        txt('home-team-name', t.name || '---');
-        var phases = { reg: 'Regular season', conf_tourn: 'Conf tournament', ncaa: 'NCAA tournament', offseason: 'Offseason' };
-        var phaseStr = phases[saved.phase] || 'Preseason';
-        var seasonNum = saved.yr ? saved.yr - 2024 : 1;
-        txt('home-dynasty-meta', coachName + ' \u00b7 ' + (t.conf || '') + ' \u00b7 ' + phaseStr);
-        txt('home-record', fR(t.wins, t.loss));
-        txt('home-year', saved.yr || 2025);
-        txt('home-seasons', seasonNum);
-        txt('home-titles', (saved.championships || 0) + (saved.confTitles || 0));
-        var slot = ge('home-save-slot'); if (slot) slot.style.display = 'block';
-      }
-    } catch (e) { console.error('Home screen load error', e); }
-  }
+  var html = '';
+  SLOTS.forEach(function(n) {
+    var sum = null;
+    try { sum = slotSummary(readSlot(n)); } catch (e) { console.error('Home screen load error', e); }
+    html += slotCard(n, sum);
+  });
+  var el = ge('home-slots'); if (el) el.innerHTML = html;
+  var note = ge('home-storage-note');
+  if (note) note.hidden = storageMode().reason !== 'unavailable';
 }
 
-export function loadAndPlay() {
+export function loadAndPlay(slot) {
+  if (slot) setActiveSlot(slot);
   var hs = ge('home-screen'); if (hs) hs.style.display = 'none';
   buildUniverse();
   var loaded = loadState();
@@ -103,23 +148,27 @@ export function loadAndPlay() {
   }
 }
 
-export function startNewDynasty() {
+export function startNewDynasty(slot) {
+  if (slot) setActiveSlot(slot);
   var hs = ge('home-screen'); if (hs) hs.style.display = 'none';
   ge('setup').style.display = 'flex';
   showStep('coach-name');
 }
 
-export function deleteFromHome() {
-  if (confirm('Delete your dynasty? This cannot be undone.')) {
-    deleteSave();
-    var slot = ge('home-save-slot'); if (slot) slot.style.display = 'none';
-    txt('home-team-name', '---');
+export function deleteFromHome(slot) {
+  slot = slot || activeSlot();
+  var sum = slotSummary(readSlot(slot));
+  if (!sum) return;
+  if (confirm('Delete the ' + sum.team + ' dynasty in slot ' + slot + '? This cannot be undone.')) {
+    removeSlot(slot);
+    showHomeScreen();
   }
 }
 
 export function newDynasty() {
   if (confirm('Delete your entire dynasty? This cannot be undone.')) {
-    deleteSave(); location.reload();
+    deleteSave();
+    flushWrites().then(function() { location.reload(); });
   }
 }
 

@@ -132,7 +132,7 @@ export function buildRetentionAsks() {
   });
   // Keeping everyone should be possible but expensive: the combined asks
   // never exceed 75% of what the program brought in this season
-  var cap = Math.round(totals().income * 0.75);
+  var cap = Math.floor(totals().income * 0.75); // at most 75%: round down
   var sum = asks.reduce(function(s, a) { return s + a.ask; }, 0);
   if (cap > 0 && sum > cap) {
     var f = cap / sum;
@@ -159,6 +159,13 @@ function findPlayer(name) {
 export function decideRetention(i, choice) {
   var r = G.retention; if (!r) return { ok: false };
   var a = r.asks[i]; if (!a || a.decision === choice) return { ok: false };
+  // Change: back to undecided (a kept deal is refunded)
+  if (choice === 'undo') {
+    if (!a.decision) return { ok: false };
+    if (a.decision === 'keep') { G.pts = (G.pts || 0) + a.ask; noteSpend('retention', -a.ask); }
+    a.decision = null;
+    return { ok: true };
+  }
   if (choice === 'keep') {
     if ((G.pts || 0) < a.ask) return { ok: false, msg: 'Not enough NIL (' + a.ask + ' needed).' };
     G.pts -= a.ask; noteSpend('retention', a.ask);
@@ -214,7 +221,8 @@ export function renderRetention() {
   notBack.forEach(function(p) {
     var sl = seasonLine(p);
     h += '<div class="acq-row dep-row"><div class="acq-main"><div class="acq-name">' + pLink(p.name, G.tid) + ' <span class="acq-cls">' + p.pos + ' · ' + p.cls + '</span></div>'
-      + '<div class="acq-sub">' + (sl ? sl.ppg.toFixed(1) + ' ppg · ' + sl.rpg.toFixed(1) + ' rpg · ' + sl.apg.toFixed(1) + ' apg · ' : '') + (p.notReturningWhy || 'Wants a fresh start').toLowerCase().replace(/^./, function(c) { return c.toUpperCase(); }) + '</div></div>'
+      + (sl ? '<div class="acq-sub">' + sl.ppg.toFixed(1) + ' ppg · ' + sl.rpg.toFixed(1) + ' rpg · ' + sl.apg.toFixed(1) + ' apg</div>' : '')
+      + '<div class="acq-sub dep-why">' + (p.notReturningWhy || 'Wants a fresh start').toLowerCase().replace(/^./, function(c) { return c.toUpperCase(); }) + '</div></div>'
       + '<div class="acq-right"><div class="acq-big">' + p.ovr + '</div><div class="acq-small">Not interested in returning</div></div></div>';
   });
   h += '</div>';
@@ -232,8 +240,11 @@ export function renderRetention() {
         + '<div class="acq-main"><div class="acq-name">' + pLink(a.name, G.tid) + ' <span class="acq-cls">' + a.pos + ' · ' + a.cls + ' · ' + a.ovr + '</span></div>'
         + '<div class="acq-sub">' + a.why + (a.ppg !== null ? ' · ' + a.ppg.toFixed(1) + ' ppg' : '') + (a.rpg !== null && a.rpg !== undefined ? ' · ' + a.rpg.toFixed(1) + ' rpg · ' + a.apg.toFixed(1) + ' apg' : '') + '</div></div>'
         + '<div class="ret-side"><div class="ret-ask">' + a.ask + ' <span>NIL</span></div><div class="ret-btns">'
-        + '<button class="ret-btn' + (a.decision === 'keep' ? ' on' : '') + '" data-ret="keep" data-ri="' + i + '"' + (cant ? ' disabled title="Not enough NIL"' : '') + '>Keep</button>'
-        + '<button class="ret-btn' + (a.decision === 'go' ? ' on go' : '') + '" data-ret="go" data-ri="' + i + '">Let go</button>'
+        // Decided: say what happens, with a quiet Change (no live Keep / Let go to flip by accident)
+        + (a.decision === 'keep' ? '<span class="ret-done">Staying</span><button class="btn-quiet btn-sm ret-change" data-ret="undo" data-ri="' + i + '">Change</button>'
+          : a.decision === 'go' ? '<span class="ret-done go">Entering the portal</span><button class="btn-quiet btn-sm ret-change" data-ret="undo" data-ri="' + i + '">Change</button>'
+          : '<button class="ret-btn" data-ret="keep" data-ri="' + i + '"' + (cant ? ' disabled title="Not enough NIL"' : '') + '>Keep</button>'
+            + '<button class="ret-btn" data-ret="go" data-ri="' + i + '">Let go</button>')
         + '</div></div></div>';
     });
     h += '</div>';
