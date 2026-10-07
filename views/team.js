@@ -20,6 +20,7 @@ import { G } from '../state.js';
 import { fmtScore } from '../utils.js';
 import { openSheet } from './sheet.js';
 import { playerType } from './scouting.js';
+import { playerFaceSmallHTML } from './faces.js';
 
 function esc(s) {
   return String(s).replace(/"/g, '&quot;');
@@ -140,7 +141,7 @@ function leaderRows(t) {
   if (!ls.length) return '<div class="empty-state">No stats yet.</div>';
   var h = '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Player</th><th class="num">PPG</th></tr></thead><tbody>';
   ls.forEach(function(r) {
-    h += '<tr><td>' + playerLink(t.id, r.pi, r.p.name) + '</td>'
+    h += '<tr><td>' + playerFaceSmallHTML(r.p) + playerLink(t.id, r.pi, r.p.name) + '</td>'
       + '<td class="num">' + r.ppg.toFixed(1) + '</td></tr>';
   });
   return h + '</tbody></table></div>';
@@ -167,11 +168,17 @@ export function openGameDetail(week) {
 
   if (g.box) {
     // Box score saved with the game (season.js recordResult): [name, pos, pts, reb, ast, stl, blk]
+    // Look up class year from the roster so the face seed matches the player's other faces.
+    var faceFor = function(team, name) {
+      var found = null;
+      (team.rost || []).forEach(function(pl) { if (pl.name === name) found = pl; });
+      return playerFaceSmallHTML(found || { name: name, cls: 'HS' });
+    };
     var boxTbl = function(team, rows) {
       var t = '<div class="sec-head" style="margin-top:10px;">' + team.name + '</div><div class="tbl-wrap"><table><thead><tr>'
         + '<th>Player</th><th class="num">PTS</th><th class="num">REB</th><th class="num">AST</th><th class="num">STL</th><th class="num">BLK</th></tr></thead><tbody>';
       rows.forEach(function(r) {
-        t += '<tr><td>' + esc(r[0]) + ' <span style="color:var(--txt3);font-size:11px;">' + r[1] + '</span></td>'
+        t += '<tr><td>' + faceFor(team, r[0]) + esc(r[0]) + ' <span style="color:var(--txt3);font-size:11px;">' + r[1] + '</span></td>'
           + '<td class="num"><b>' + r[2] + '</b></td><td class="num">' + r[3] + '</td><td class="num">' + r[4] + '</td><td class="num">' + r[5] + '</td><td class="num">' + r[6] + '</td></tr>';
       });
       return t + '</tbody></table></div>';

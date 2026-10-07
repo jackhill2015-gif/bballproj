@@ -9,6 +9,7 @@ import { STREAMS, BUCKETS, ledger, totals } from '../finance.js';
 import { G } from '../state.js';
 import { SKILL_POINT_TABLE } from '../constants.js';
 import { awardScore, pickPositionalTeam, getTOvr, oldOvr } from '../utils.js';
+import { playerFaceSmallHTML } from './faces.js';
 
 // Clickable player name (opens the profile; convention in views/player.js)
 function pLink(name, tid) {
@@ -178,7 +179,7 @@ function rosterHTML(t) {
     var per = function(k) { return gp ? (s[k] / gp).toFixed(1) : '–'; };
     var ppg = gp ? s.pts / gp : 0;
     var leaving = p.cls === 'SR' && !p.rs ? 'Graduating' : (ppg >= 16 && p.cls !== 'FR' ? 'Draft' : '');
-    h += '<tr><td><div class="rc-pn">' + pLink(p.name, G.tid) + ' <span class="rc-pm">' + p.pos + ' · ' + p.cls + '</span>'
+    h += '<tr><td><div class="rc-pn">' + playerFaceSmallHTML(p) + pLink(p.name, G.tid) + ' <span class="rc-pm">' + p.pos + ' · ' + p.cls + '</span>'
       + (leaving ? ' <span class="rc-leave">' + leaving + '</span>' : '') + '</div></td>'
       + '<td class="num">' + p.ovr + '</td><td class="num rc-x">' + (p.mins || 0) + '</td>'
       + '<td class="num">' + per('pts') + '</td><td class="num">' + per('reb') + '</td><td class="num">' + per('ast') + '</td>'

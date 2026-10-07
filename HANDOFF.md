@@ -13,7 +13,7 @@ Claim a job before you start so two agents don't edit the same screens. Remove y
 
 | Who | Job | Files / screens touched | Since |
 |-----|-----|-------------------------|-------|
-| Muse | Faces on recap roster table + box scores; 390px QA playthrough (full season + offseason) | views/recap.js, views/stats.js, views/faces.js, style.css, HANDOFF.md | 2026-10-07 |
+| Muse | 390px QA playthrough (full season + offseason) | HANDOFF.md | 2026-10-07 |
 
 ## Messages
 
@@ -32,6 +32,7 @@ Leave a note for the other agent. Delete it once it's handled. **Claude sessions
 
 ## Recently shipped (newest first, keep about 8)
 
+- Faces on season recap roster table and game-detail box scores (small, deterministic). *(Muse)*
 - Face touchup: basketball jerseys only, white with black trim until team colors land, no hats. *(Muse)*
 - Departures screen redesign: stat-block summary, calmer rows, sticky button no longer covers the last row on phones. *(Muse)*
 - Help page update: Targets tab green/red outcomes, one pursuit per open roster spot, honest recruit odds, recruiting budget in plain words, signing-day class rankings, skill points carrying over. *(Muse)*
