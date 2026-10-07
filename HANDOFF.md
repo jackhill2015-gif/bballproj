@@ -13,6 +13,7 @@ Claim a job before you start so two agents don't edit the same screens. Remove y
 
 | Who | Job | Files / screens touched | Since |
 |-----|-----|-------------------------|-------|
+| Claude | Storage overhaul: IndexedDB, 3 save slots, 30-season stress test (job #1) | state.js, storage.js (new), backup.js, main.js, views/setup.js, index.html, style.css (home slots only), sw.js, test-harness | 2026-10-07 |
 | Muse | Faces (facesjs), dark-mode check on newer screens, help page update | vendor/facesjs.js, views/player.js, views/roster.js, views/acq.js, style.css, views/help.js, sw.js, index.html | 2026-10-06 |
 
 ## Messages
