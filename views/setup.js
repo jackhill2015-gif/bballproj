@@ -11,7 +11,8 @@
 import { DIFF_DESC, calcSchoolPrestige, calcExpectations, ALL_TEAMS } from '../constants.js';
 import { ri, ge, txt, getTier, getTOvr, fR } from '../utils.js';
 import { G, SetupState, loadState, deleteSave, saveState } from '../state.js';
-import { buildSchedules, genRecruits, buildUniverse, setupUserOOC } from '../season.js';
+import { buildSchedules, genRecruits, buildUniverse, setupUserOOC, pickBalancedOOC } from '../season.js';
+import * as Acq from './acq.js';
 import { teamLogo } from '../ui.js';
 
 var _ext = { addLog: null, updateAll: null };
@@ -152,6 +153,7 @@ function bindSetup(el) {
     if ((m = q('[data-job]'))) { selectJob(parseInt(m.getAttribute('data-job'), 10)); return; }
     if (q('[data-setup="back-jobs"]')) { goBackToJobs(); return; }
     if (q('[data-setup="start-dynasty"]')) { startDynasty(); return; }
+    if (q('[data-setup="nc-auto"]')) { autoGenNC(); showStep('nc-schedule'); return; }
     if ((m = q('[data-swapnc]'))) { swapNC(parseInt(m.getAttribute('data-swapnc'), 10)); return; }
   };
   el.onkeydown = function(e) {
@@ -295,44 +297,37 @@ window.selectJob = selectJob;
 //  STEP 4: NC Schedule
 // ═══════════════════════════════════════════════════════════
 
-// (overall gaps sized for the v11 overall scale)
+// Same balanced slate and look as the yearly schedule picker
+// (a few tough, mostly even, a few easier)
 function autoGenNC() {
-  var myOvr = getTOvr(G.teams[G.tid]);
-  var pool = G.teams.filter(function(t) { return t.conf !== G.teams[G.tid].conf && t.id !== G.tid; });
-  var tough = pool.filter(function(t) { return Math.abs(getTOvr(t) - myOvr) <= 6; }).sort(function() { return 0.5 - Math.random(); }).slice(0, 3);
-  var mid = pool.filter(function(t) { return getTOvr(t) >= myOvr - 11 && getTOvr(t) < myOvr + 4; }).sort(function() { return 0.5 - Math.random(); }).slice(0, 4);
-  var easy = pool.filter(function(t) { return getTOvr(t) < myOvr - 8; }).sort(function() { return 0.5 - Math.random(); }).slice(0, 3);
-  var picks = tough.concat(mid).concat(easy);
-  var seen = {}; SetupState.NC_PICKS = [];
-  picks.forEach(function(t) { if (!seen[t.id] && SetupState.NC_PICKS.length < 10) { seen[t.id] = true; SetupState.NC_PICKS.push(t.id); } });
-  while (SetupState.NC_PICKS.length < 10) {
-    var t = pool[ri(0, pool.length - 1)];
-    if (!seen[t.id]) { seen[t.id] = true; SetupState.NC_PICKS.push(t.id); }
-  }
+  SetupState.NC_PICKS = pickBalancedOOC();
+}
+
+function ncEdge(opp) {
+  var d = getTOvr(opp) - getTOvr(G.teams[G.tid]);
+  return d >= 4 ? { l: 'Tough', c: 'var(--red)' } : d >= -4 ? { l: 'Even', c: 'var(--gld2)' } : { l: 'Easier', c: 'var(--grn2)' };
 }
 
 function renderNCSchedule() {
   var t = G.teams[G.tid];
+  var counts = { Tough: 0, Even: 0, Easier: 0 };
+  SetupState.NC_PICKS.forEach(function(id) { if (G.teams[id]) counts[ncEdge(G.teams[id]).l]++; });
   var h = '<div class="setup-wrap" style="max-width:720px;">'
     + stepHeader(t.name, t.conf + ' · Prestige ' + t.schoolPrestige + ' · OVR ' + getTOvr(t))
-    + '<div class="panel"><div class="panel-h"><span>Non-conference schedule</span><small>Auto-generated · swap any opponent</small></div>'
-    + '<div class="panel-b flush"><div class="tbl-wrap"><table>'
-    + '<thead><tr><th></th><th>Opponent</th><th class="num">OVR</th><th class="num">Edge</th><th></th></tr></thead><tbody>';
+    + Acq.header('Non-conference schedule', 'Season ' + G.yr + ' · 10 games before ' + t.conf + ' play',
+      [{ v: counts.Tough, l: 'tough' }, { v: counts.Even, l: 'even' }, { v: counts.Easier, l: 'easier' }])
+    + '<div class="acq-tool"><span class="sec-sub" style="margin:0;">Tap a game to swap the opponent.</span>'
+    + '<button class="acq-filter-btn" style="margin-left:auto;" data-setup="nc-auto">Auto-pick again</button></div>'
+    + '<div class="acq-list">';
   SetupState.NC_PICKS.forEach(function(id, i) {
-    var opp = G.teams[id];
-    var myOvr = getTOvr(t);
-    var diff = getTOvr(opp) - myOvr;
-    var diffCol = diff >= 4 ? 'var(--red)' : diff >= -4 ? 'var(--gld2)' : 'var(--grn2)';
-    var diffStr = diff > 0 ? '+' + diff : '' + diff;
-    h += '<tr>'
-      + '<td>' + teamLogo(opp.name, 'sm') + '</td>'
-      + '<td><div>' + opp.name + '</div><div class="pt-sub">' + (i % 2 === 0 ? 'Home' : 'Away') + ' · ' + opp.conf + '</div></td>'
-      + '<td class="num">' + getTOvr(opp) + '</td>'
-      + '<td class="num" style="color:' + diffCol + ';">' + diffStr + '</td>'
-      + '<td><button class="btn-quiet" data-swapnc="' + i + '">Swap</button></td></tr>';
+    var opp = G.teams[id]; if (!opp) return;
+    var e = ncEdge(opp);
+    h += Acq.row({ open: 'data-swapnc="' + i + '"', name: opp.name,
+      sub: (i % 2 === 0 ? 'Home' : 'Away') + ' · ' + opp.conf,
+      big: getTOvr(opp), small: '<span style="color:' + e.c + ';">' + e.l + '</span>' });
   });
-  h += '</tbody></table></div></div></div>'
-    + '<div class="big-btn-row">'
+  h += '</div>'
+    + '<div class="big-btn-row" style="margin-top:14px;">'
     + '<button class="btn-big secondary" data-setup="back-jobs">Back</button>'
     + '<button class="btn-big" data-setup="start-dynasty">Start season</button></div>'
     + '</div>';
@@ -345,35 +340,51 @@ export function goBackToJobs() {
 window.goBackToJobs = goBackToJobs;
 
 export function swapNC(idx) {
+  var me = G.teams[G.tid], cur = G.teams[SetupState.NC_PICKS[idx]];
   var pool = G.teams.filter(function(t) {
-    return t.conf !== G.teams[G.tid].conf && t.id !== G.tid && SetupState.NC_PICKS.indexOf(t.id) < 0;
-  }).sort(function(a, b) { return b.baseOvr - a.baseOvr; });
+    return t.conf !== me.conf && t.id !== G.tid && SetupState.NC_PICKS.indexOf(t.id) < 0;
+  }).sort(function(a, b) { return getTOvr(b) - getTOvr(a); });
+  var band = 'all', text = '';
   var overlay = document.createElement('div');
-  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(31,38,48,.45);z-index:99999;display:flex;align-items:center;justify-content:center;padding:12px;';
-  overlay.innerHTML = '<div class="panel" style="width:min(480px,100%);max-height:80vh;display:flex;flex-direction:column;overflow:hidden;margin-bottom:0;" role="dialog" aria-label="Swap opponent">'
-    + '<div class="panel-h"><span>Swap opponent</span>'
-    + '<button class="btn-quiet" id="swap-close">Close</button></div>'
-    + '<input id="swap-search" class="setup-input" placeholder="Search teams..." style="border:none;border-bottom:1px solid var(--bdr);border-radius:0;" autocomplete="off">'
-    + '<div id="swap-list" style="overflow-y:auto;"></div></div>';
+  overlay.className = 'nc-ov';
+  overlay.innerHTML = '<div class="panel nc-ov-p" role="dialog" aria-label="Swap opponent">'
+    + '<div class="panel-h"><span>Swap opponent</span><button class="btn-quiet" data-ov="close">Close</button></div>'
+    + '<div class="nc-ov-top"><div class="pp-note" style="margin-bottom:8px;">Replacing ' + (cur ? '<b>' + cur.name + '</b>' : 'this game') + ' (' + (idx % 2 === 0 ? 'home' : 'away') + ').</div>'
+    + '<input class="setup-input" data-ov="search" placeholder="Search schools or conferences" autocomplete="off" style="width:100%;margin-bottom:8px;">'
+    + '<div class="fbar" data-ov="bands"></div></div>'
+    + '<div class="acq-list nc-ov-list" data-ov="list"></div></div>';
   document.body.appendChild(overlay);
-  function renderSwapList(f) {
-    var list = document.getElementById('swap-list'); list.innerHTML = '';
-    pool.filter(function(t) { return !f || t.name.toLowerCase().indexOf(f) >= 0 || t.conf.toLowerCase().indexOf(f) >= 0; })
-    .forEach(function(t) {
-      var d = document.createElement('div');
-      d.setAttribute('role', 'button');
-      d.setAttribute('tabindex', '0');
-      d.style.cssText = 'padding:10px 12px;cursor:pointer;border-bottom:1px solid var(--bdr);display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;';
-      d.innerHTML = '<span style="font-weight:600;">' + t.name + '</span><span style="color:var(--txt3);font-size:11px;flex-shrink:0;">' + t.conf + ' · OVR ' + getTOvr(t) + '</span>';
-      function pick() { SetupState.NC_PICKS[idx] = t.id; document.body.removeChild(overlay); showStep('nc-schedule'); }
-      d.addEventListener('click', pick);
-      d.addEventListener('keydown', function(ev) { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); pick(); } });
-      list.appendChild(d);
-    });
+  var q = function(k) { return overlay.querySelector('[data-ov="' + k + '"]'); };
+  function close() { if (overlay.parentNode) document.body.removeChild(overlay); }
+  function draw() {
+    q('bands').innerHTML = [['all', 'All'], ['Tough', 'Tough'], ['Even', 'Even'], ['Easier', 'Easier']].map(function(b) {
+      return '<button class="fchip' + (band === b[0] ? ' on' : '') + '" data-band="' + b[0] + '">' + b[1] + '</button>';
+    }).join('');
+    q('list').innerHTML = pool.filter(function(t) {
+      return (band === 'all' || ncEdge(t).l === band) && (!text || (t.name + ' ' + t.conf).toLowerCase().indexOf(text) >= 0);
+    }).map(function(t) {
+      var e = ncEdge(t);
+      return '<div class="acq-row" data-pick="' + t.id + '" role="button" tabindex="0">'
+        + '<div class="acq-main"><div class="acq-name">' + t.name + '</div><div class="acq-sub">' + t.conf + '</div></div>'
+        + '<div class="acq-right"><div class="acq-big">' + getTOvr(t) + '</div><div class="acq-small" style="color:' + e.c + ';">' + e.l + '</div></div></div>';
+    }).join('') || '<div class="empty-state">No schools match.</div>';
   }
-  renderSwapList('');
-  document.getElementById('swap-search').addEventListener('input', function() { renderSwapList(this.value.toLowerCase()); });
-  document.getElementById('swap-close').addEventListener('click', function() { document.body.removeChild(overlay); });
+  function pick(id) { SetupState.NC_PICKS[idx] = id; close(); showStep('nc-schedule'); }
+  overlay.addEventListener('click', function(ev) {
+    var el = ev.target;
+    if (el === overlay || (el.closest && el.closest('[data-ov="close"]'))) { close(); return; }
+    var b = el.closest && el.closest('[data-band]');
+    if (b) { band = b.getAttribute('data-band'); draw(); return; }
+    var r = el.closest && el.closest('[data-pick]');
+    if (r) pick(parseInt(r.getAttribute('data-pick'), 10));
+  });
+  overlay.addEventListener('keydown', function(ev) {
+    if (ev.key === 'Escape') { close(); return; }
+    var r = ev.target.closest && ev.target.closest('[data-pick]');
+    if (r && (ev.key === 'Enter' || ev.key === ' ')) { ev.preventDefault(); pick(parseInt(r.getAttribute('data-pick'), 10)); }
+  });
+  q('search').addEventListener('input', function() { text = this.value.toLowerCase(); draw(); });
+  draw();
 }
 window.swapNC = swapNC;
 

@@ -41,6 +41,8 @@ function renderConfHub() {
   var ct = G.confTourneys[myConf];
   var h = '<div style="margin-bottom:12px;"><div class="sec-head">Conference tournaments</div>'
     + '<div class="sec-sub">' + myConf + ' · Season ' + G.yr + '</div></div>';
+  // Brackets not built yet (the moment the regular season ends)
+  if (!ct) return h + '<div class="panel"><div class="panel-b" style="font-size:13.5px;">The brackets are being set. Tap Play to start the conference tournaments.</div></div>';
 
   if (ct) h += renderConfBracketCard(myConf, ct, true);
 

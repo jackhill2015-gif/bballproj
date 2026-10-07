@@ -813,6 +813,11 @@ function checkNCAAdone() {
 // ═══════════════════════════════════════════════════════════
 
 export function playTournamentGame(watch) {
+  // Saves stuck between the regular season and the brackets: build them now
+  if (G.phase === 'conf_tourn' && (!G.confTourneys || !Object.keys(G.confTourneys).length)) {
+    startConfTourney();
+    return;
+  }
   if (G.phase === 'conf_tourn') {
     var um = getUserConfMatchup();
     if (um) {

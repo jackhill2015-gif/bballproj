@@ -1448,3 +1448,13 @@ table.ups td { vertical-align: middle; }
 #upd-bar[hidden] { display: none; }
 #upd-btn { flex: 0 0 auto; padding: 7px 14px; border: none; border-radius: var(--radius); background: var(--blu); color: #fff; font: inherit; font-weight: 600; cursor: pointer; }
 @media (min-width: 900px) { #upd-bar { left: auto; right: 20px; bottom: 20px; max-width: 420px; } }
+
+/* Setup: swap a non-conference opponent */
+.nc-ov { position: fixed; inset: 0; z-index: 99999; background: rgba(31,38,48,.45); display: flex; align-items: center; justify-content: center; padding: 12px; }
+.nc-ov-p { width: min(480px, 100%); max-height: 85vh; display: flex; flex-direction: column; overflow: hidden; margin-bottom: 0; }
+.nc-ov-top { padding: 10px 12px 0; }
+.nc-ov-list { overflow-y: auto; flex: 1; padding: 0 12px 12px; }
+@media (max-width: 640px) {
+  .nc-ov { padding: 0; align-items: stretch; }
+  .nc-ov-p { width: 100%; max-height: none; height: 100%; border-radius: 0; border: none; }
+}

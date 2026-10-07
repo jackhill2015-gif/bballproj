@@ -221,7 +221,10 @@ export function pickBalancedOOC() {
   var easy = shuf(pool.filter(function(t) { return getTOvr(t) < myOvr - 8; })).slice(0, 3);
   var seen = {}, picks = [];
   tough.concat(mid).concat(easy).forEach(function(t) { if (!seen[t.id] && picks.length < 10) { seen[t.id] = true; picks.push(t.id); } });
-  shuf(pool.slice()).forEach(function(t) { if (!seen[t.id] && picks.length < 10) { seen[t.id] = true; picks.push(t.id); } });
+  // Short on any band: fill with the closest-rated teams left, never a
+  // random blowout either way
+  shuf(pool.slice()).sort(function(a, b) { return Math.abs(getTOvr(a) - myOvr) - Math.abs(getTOvr(b) - myOvr); })
+    .forEach(function(t) { if (!seen[t.id] && picks.length < 10) { seen[t.id] = true; picks.push(t.id); } });
   return picks;
 }
 
@@ -519,10 +522,11 @@ export function advanceWeek() {
   applyAutoLineup(); // injuries and returns are handled for you when it's on
 
   if (G.gi >= 30 && G.phase === 'reg') {
+    // Build the brackets first, then draw: drawing the tournament screen
+    // before any bracket existed crashed and left the season stuck
     G.phase = 'conf_tourn';
-    saveState();
-    updateAll();
     if (_ext.startConfTourney) _ext.startConfTourney();
+    else { saveState(); updateAll(); }
     return;
   }
   saveState();
