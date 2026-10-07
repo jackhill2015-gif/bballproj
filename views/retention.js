@@ -196,34 +196,35 @@ export function renderRetention() {
   (t.rost || []).forEach(function(p) { if (pc.hasOwnProperty(p.pos)) pc[p.pos]++; });
   var needs = Object.keys(pc).filter(function(k) { return pc[k] < 2; });
 
-  var h = '<div class="acq-head"><div class="acq-title">Departures</div>'
+  var h = '<div class="dep-wrap"><div class="acq-head"><div class="acq-title">Departures</div>'
     + '<div class="acq-line"><span>Who is leaving, and who wants an NIL deal to stay</span></div></div>';
-  h += '<div class="dep-sum"><span><b>' + (dep.length + notBack.length) + '</b> leaving</span><span><b>' + returning + '</b> returning</span>'
-    + '<span><b>' + Math.max(0, 15 - returning) + '</b> open spots</span>'
-    + (needs.length ? '<span>Thin at <b>' + needs.join(', ') + '</b></span>' : '') + '</div>';
+  h += '<div class="dep-sum"><div class="dep-stat"><b>' + (dep.length + notBack.length) + '</b><span>leaving</span></div>'
+    + '<div class="dep-stat"><b>' + returning + '</b><span>returning</span></div>'
+    + '<div class="dep-stat"><b>' + Math.max(0, 15 - returning) + '</b><span>open spots</span></div>'
+    + (needs.length ? '<div class="dep-stat dep-thin"><span>Thin at</span><b>' + needs.join(', ') + '</b></div>' : '') + '</div>';
 
   // Leaving
-  h += '<div class="card-title" style="margin-top:12px;">Leaving</div><div class="acq-list">';
-  if (!dep.length && !notBack.length) h += '<div class="sg-none" style="padding:8px 0;">Nobody is leaving this year.</div>';
+  h += '<div class="dep-sec">Leaving</div><div class="acq-list">';
+  if (!dep.length && !notBack.length) h += '<div class="sg-none dep-empty">Nobody is leaving this year.</div>';
   dep.forEach(function(d) {
-    h += '<div class="acq-row" style="cursor:default;"><div class="acq-main"><div class="acq-name">' + d.name + ' <span class="acq-cls">' + d.pos + ' · ' + d.cls + '</span></div>'
+    h += '<div class="acq-row dep-row"><div class="acq-main"><div class="acq-name">' + d.name + ' <span class="acq-cls">' + d.pos + ' · ' + d.cls + '</span></div>'
       + '<div class="acq-sub">' + d.ppg + ' ppg · ' + d.rpg + ' rpg · ' + (d.apg || '0.0') + ' apg</div></div>'
       + '<div class="acq-right"><div class="acq-big">' + d.ovr + '</div><div class="acq-small">' + (d.reason === 'Graduated' ? 'Graduated' : d.reason === 'Drafted' ? 'Drafted' + (d.pick ? ', pick ' + d.pick : '') : 'Declared for the draft') + '</div></div></div>';
   });
   notBack.forEach(function(p) {
     var sl = seasonLine(p);
-    h += '<div class="acq-row" style="cursor:default;"><div class="acq-main"><div class="acq-name">' + pLink(p.name, G.tid) + ' <span class="acq-cls">' + p.pos + ' · ' + p.cls + '</span></div>'
+    h += '<div class="acq-row dep-row"><div class="acq-main"><div class="acq-name">' + pLink(p.name, G.tid) + ' <span class="acq-cls">' + p.pos + ' · ' + p.cls + '</span></div>'
       + '<div class="acq-sub">' + (sl ? sl.ppg.toFixed(1) + ' ppg · ' + sl.rpg.toFixed(1) + ' rpg · ' + sl.apg.toFixed(1) + ' apg · ' : '') + (p.notReturningWhy || 'Wants a fresh start').toLowerCase().replace(/^./, function(c) { return c.toUpperCase(); }) + '</div></div>'
       + '<div class="acq-right"><div class="acq-big">' + p.ovr + '</div><div class="acq-small">Not interested in returning</div></div></div>';
   });
   h += '</div>';
 
   // NIL requests
-  h += '<div class="card-title" style="margin-top:16px;">NIL requests</div>';
+  h += '<div class="dep-sec">NIL requests</div>';
   if (!r.asks.length) {
-    h += '<div class="sg-none" style="padding:4px 0 8px;">No one asked for an NIL deal this year.</div>';
+    h += '<div class="sg-none dep-empty">No one asked for an NIL deal this year.</div>';
   } else {
-    h += '<div class="sec-sub" style="margin:0 0 6px;">Pay to keep a player, or let him enter the transfer portal (he stays if no school signs him). '
+    h += '<div class="dep-note">Pay to keep a player, or let him enter the transfer portal (he stays if no school signs him). '
       + '<b>' + (G.pts || 0) + '</b> NIL available · asks total ' + total + (kept ? ' · committed ' + kept : '') + '</div><div class="acq-list">';
     r.asks.forEach(function(a, i) {
       var cant = a.decision !== 'keep' && (G.pts || 0) < a.ask;
@@ -238,6 +239,6 @@ export function renderRetention() {
     h += '</div>';
   }
 
-  h += '<div class="acq-sticky"><button class="btn-big btn-full" data-ret-done="1">Open the transfer portal</button></div>';
+  h += '<div class="acq-sticky"><button class="btn-big btn-full" data-ret-done="1">Open the transfer portal</button></div></div>';
   return h;
 }

@@ -13,7 +13,6 @@ Claim a job before you start so two agents don't edit the same screens. Remove y
 
 | Who | Job | Files / screens touched | Since |
 |-----|-----|-------------------------|-------|
-| Muse | Faces (facesjs), dark-mode check on newer screens, help page update, departures screen redesign | vendor/facesjs.js, views/player.js, views/roster.js, views/acq.js, style.css, views/help.js, views/retention.js (renderRetention only), sw.js, index.html | 2026-10-06 |
 
 ## Messages
 
@@ -32,8 +31,8 @@ Leave a note for the other agent. Delete it once it's handled.
 
 ## Recently shipped (newest first, keep about 8)
 
+- Departures screen redesign: stat-block summary, calmer rows, sticky button no longer covers the last row on phones. *(Muse)*
 - Help page update: Targets tab green/red outcomes, one pursuit per open roster spot, honest recruit odds, recruiting budget in plain words, signing-day class rankings, skill points carrying over. *(Muse)*
-- Dark-mode check on newer screens: season recap (both tabs), Targets tab, signing-day class rankings, move-on dialog, schedule swap sheet — all clean, no fixes needed. *(Muse)*
 - "Not interested in returning" tied to playing time and season results (strong ~15% of offseasons, average ~50%, bad ~75%; up to 1/2/3 players). *(Claude)*
 - Top-60 NBA draft (any class, every team). "Not interested in returning" shows on Departures (~1 in 3 offseasons, no portal surprises). Move on with NIL asks undecided (= let go). Seeding: record counts more, coach bonus no longer pads your rating. *(Claude)*
 - Player faces (facesjs, vendored, Apache-2.0): deterministic faces from name + class year, no save changes. Large on player pages, small on roster rows and portal/recruit pages. *(Muse)*
