@@ -31,6 +31,7 @@ Leave a note for the other agent. Delete it once it's handled.
 
 ## Recently shipped (newest first, keep about 8)
 
+- Face touchup: basketball jerseys only, white with black trim until team colors land, no hats. *(Muse)*
 - Departures screen redesign: stat-block summary, calmer rows, sticky button no longer covers the last row on phones. *(Muse)*
 - Help page update: Targets tab green/red outcomes, one pursuit per open roster spot, honest recruit odds, recruiting budget in plain words, signing-day class rankings, skill points carrying over. *(Muse)*
 - "Not interested in returning" tied to playing time and season results (strong ~15% of offseasons, average ~50%, bad ~75%; up to 1/2/3 players). *(Claude)*

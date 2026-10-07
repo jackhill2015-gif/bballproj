@@ -58,6 +58,15 @@ function facePortrait(p) {
   var face;
   try {
     face = generate(undefined, { gender: 'male' });
+    // Hoops OS look: basketball jerseys only, white with black trim, no hats.
+    // (Still inside the seeded override, so the pick is deterministic.)
+    var BB_JERSEYS = ['jersey', 'jersey2', 'jersey3', 'jersey4', 'jersey5'];
+    if (face.jersey) face.jersey.id = BB_JERSEYS[Math.floor(Math.random() * BB_JERSEYS.length)];
+    face.teamColors = ['#ffffff', '#000000', '#000000'];
+    var acc = face.accessories && face.accessories.id;
+    if (acc === 'hat' || acc === 'hat2' || acc === 'hat3' || acc === 'santa-hat') {
+      face.accessories.id = 'none';
+    }
   } finally {
     Math.random = realRandom;
   }
