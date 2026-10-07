@@ -6,7 +6,7 @@
 //  fails if a game file is missing from this list.
 // ═══════════════════════════════════════════════════════════
 
-var CACHE = 'hoops-os-v8';
+var CACHE = 'hoops-os-v9';
 var APP_FILES = [
   "./",
   "index.html",
@@ -17,6 +17,7 @@ var APP_FILES = [
   "icons/icon-512.png",
   "icons/icon-maskable-512.png",
   "backup.js",
+  "confformats.js",
   "constants.js",
   "events.js",
   "facilities.js",

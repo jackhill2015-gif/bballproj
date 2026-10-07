@@ -368,7 +368,7 @@ export function simPoss(offT, defT) {
   if (isClutch) makePct -= 4;
   // Home court + score effects, matching simGame so watched games play like
   // simmed ones. Tournament games are neutral-site.
-  var liveHome = (G.phase === 'reg' && offT === LS.tH);
+  var liveHome = (G.phase === 'reg' || !!(LS.game && LS.game._campus)) && offT === LS.tH;
   if (liveHome) makePct += HOME_BONUS + (offT.id === G.tid ? arenaBonus(G.tid) : 0);
   if (LS.half >= 2) {
     var liveLead = (offT === LS.tH) ? (LS.hs - LS.as) : (LS.as - LS.hs);
@@ -421,6 +421,9 @@ var SCORE_EFFECT_MAX = 9;
 // ── Full Game Simulation (Final Engine) ──────────────────
 // Possession-based with play types, clutch, momentum, fouls, fatigue, schemes.
 // Stats accumulate on player objects. No separate distributeStats needed.
+// Tournament site override: conference games on campus (higher seed hosts)
+export var SITE = { campus: false };
+
 export function simGame(home, away, userIsHome) {
   var hScore = 0, aScore = 0;
   var hOrig = [], aOrig = [];
@@ -452,7 +455,7 @@ export function simGame(home, away, userIsHome) {
   // M8 FIX: wire the sellout-crowd event (events.js sets G.nextHomeBonus=3).
   // Applies to the user's next home game only, consumed once.
   // Conference and NCAA tournament games are neutral-site: no home court.
-  var neutralSite = G.phase === 'conf_tourn' || G.phase === 'ncaa';
+  var neutralSite = (G.phase === 'conf_tourn' || G.phase === 'ncaa') && !SITE.campus;
   var homeBonus = neutralSite ? 0 : HOME_BONUS + (home.id === G.tid ? arenaBonus(G.tid) : 0);
   if (!neutralSite && userIsHomeActual && (G.nextHomeBonus || 0) > 0) {
     homeBonus += G.nextHomeBonus;

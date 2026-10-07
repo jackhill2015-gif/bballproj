@@ -284,10 +284,11 @@ function _slimConfTourneys(cts) {
       seeds: (ct.seeds || []).map(idOf),
       rounds: (ct.rounds || []).map(function(rd) {
         return rd.map(function(m) {
-          return { t1: idOf(m.t1), t2: idOf(m.t2), s1: m.s1, s2: m.s2, winner: idOf(m.winner) };
+          return { t1: idOf(m.t1), t2: idOf(m.t2), s1: m.s1, s2: m.s2, winner: idOf(m.winner), campus: !!m.campus };
         });
       }),
       carry: (ct.carry || []).map(idOf), // T3: teams holding a bye into the next round
+      fmt: ct.fmt || null,               // real conference format (confformats.js)
       done: !!ct.done,
       champ: idOf(ct.champ)
     };
@@ -433,10 +434,11 @@ function _fattenConfTourneys(slim) {
       seeds: (ct.seeds || []).map(_teamRef),
       rounds: (ct.rounds || []).map(function(rd) {
         return rd.map(function(m) {
-          return { t1: _teamRef(m.t1), t2: _teamRef(m.t2), s1: m.s1, s2: m.s2, winner: _teamRef(m.winner) };
+          return { t1: _teamRef(m.t1), t2: _teamRef(m.t2), s1: m.s1, s2: m.s2, winner: _teamRef(m.winner), campus: !!m.campus };
         });
       }),
       carry: (ct.carry || []).map(_teamRef), // T3: restore bye teams
+      fmt: ct.fmt || null,
       done: !!ct.done,
       champ: _teamRef(ct.champ)
     };

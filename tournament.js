@@ -4,11 +4,12 @@
 //  Selection Sunday reveal, tournament game play/resolution.
 // ═══════════════════════════════════════════════════════════
 
+import { formatFor, roundsIn } from './confformats.js';
 import { payTourneyWin } from './finance.js';
 import { recomputeRatings, resumeScore } from './ratings.js';
 import { ge, txt, fmtScore } from './utils.js';
 import { G, LS, SetupState, saveState } from './state.js';
-import { simGame } from './simulation.js';
+import { simGame, SITE } from './simulation.js';
 import { recordGameMorale } from './morale.js';
 import { snapRoster, userLinesFromRes, surfaceUserGameRecords } from './records.js';
 
@@ -60,7 +61,7 @@ export function getNCAAroundName() {
 // rounds: first round, second round, quarterfinals, semifinals, final)
 export function confRoundLabel(ct, ri, short) {
   var n = (ct && ct.seeds) ? ct.seeds.length : 8;
-  var total = Math.max(1, Math.ceil(Math.log2(Math.max(2, n))));
+  var total = (ct && ct.fmt) ? roundsIn(ct.fmt) : Math.max(1, Math.ceil(Math.log2(Math.max(2, n))));
   var fromEnd = total - 1 - ri;
   if (fromEnd === 0) return short ? 'Final' : 'Championship';
   if (fromEnd === 1) return short ? 'SF' : 'Semifinals';
@@ -76,6 +77,45 @@ export function getConfRoundName(ct, conf) {
 //  CONFERENCE TOURNAMENTS
 // ═══════════════════════════════════════════════════════════
 
+// Real-format round builder: last round's winners + the seeds entering
+// this round, paired best seed vs worst. Campus games: higher seed hosts.
+function buildFormatRound(conf, ct) {
+  var r = ct.rounds.length, fmt = ct.fmt;
+  var field = r === 0 ? [] : ct.rounds[r - 1].map(function(m) { return m.winner; }).filter(Boolean);
+  var ent = fmt.enter[r];
+  if (ent) for (var s = ent[0]; s <= ent[1]; s++) if (ct.seeds[s - 1]) field.push(ct.seeds[s - 1]);
+  if (field.length <= 1 && !fmt.enter[r + 1]) {
+    ct.done = true;
+    ct.champ = field[0] || null;
+    if (ct.champ) {
+      if (ct.champ.id === G.tid) {
+        G.confTitles++; G.prestige = Math.min(5, G.prestige + 1);
+        addLog('ev', G.gi, '<b>' + conf + ' tournament champions.</b>');
+        toast(conf + ' tournament champions', 'var(--gld)');
+      } else {
+        addLog('ev', G.gi, conf + ' won by <b>' + ct.champ.name + '</b>');
+      }
+    }
+    return;
+  }
+  var rank = {};
+  ct.seeds.forEach(function(t, i) { rank[t.id] = i; });
+  field.sort(function(a, b) { return rank[a.id] - rank[b.id]; });
+  var campus = fmt.campus === 'all' || (typeof fmt.campus === 'number' && r < fmt.campus);
+  var round = [], n = field.length;
+  for (var i = 0; i < Math.floor(n / 2); i++) {
+    round.push({ t1: field[i], t2: field[n - 1 - i], s1: null, s2: null, winner: null, campus: campus });
+  }
+  ct.rounds.push(round);
+}
+
+// Conference game: neutral site unless the format puts it on campus
+// (then t1, the higher seed, hosts)
+function simConf(m) {
+  SITE.campus = !!m.campus;
+  try { return simGame(m.t1, m.t2, true); } finally { SITE.campus = false; }
+}
+
 export function startConfTourney() {
   var confs = {};
   G.teams.forEach(function(t) {
@@ -87,10 +127,12 @@ export function startConfTourney() {
     var teams = confs[conf].slice().sort(function(a, b) {
       return b.cWins - a.cWins || b.pts - a.pts;
     });
+    var fmt = formatFor(conf, teams.length); // real format (confformats.js)
     G.confTourneys[conf] = {
-      seeds: teams,
+      seeds: teams,            // every team, ranked; the top fmt.q qualify
+      fmt: fmt,
       rounds: [],
-      carry: [], // teams holding a bye into the next round
+      carry: [], // teams holding a bye into the next round (older saves)
       done: false, champ: null
     };
     buildNextConfRound(conf);
@@ -104,6 +146,7 @@ export function startConfTourney() {
 function buildNextConfRound(conf) {
   var ct = G.confTourneys[conf];
   if (!ct || ct.done) return;
+  if (ct.fmt) { buildFormatRound(conf, ct); return; }
   ct.carry = ct.carry || [];
   var survivors;
   if (ct.rounds.length === 0) {
@@ -215,7 +258,7 @@ export function simConfFull(conf) {
     if (!round) break;
     round.forEach(function(m) {
       if (m.winner !== null) return;
-      var res = simGame(m.t1, m.t2, true);
+      var res = simConf(m);
       m.s1 = res.homeScore; m.s2 = res.awayScore;
       m.winner = res.homeScore > res.awayScore ? m.t1 : m.t2;
       tallyPostseason(m.winner, m.winner === m.t1 ? m.t2 : m.t1);
@@ -238,7 +281,7 @@ function advanceConfRoundExceptUser(conf) {
   last.forEach(function(m) {
     if (m.winner !== null) return;
     if (m.t1.id === G.tid || m.t2.id === G.tid) return;
-    var res = simGame(m.t1, m.t2, true);
+    var res = simConf(m);
     m.s1 = res.homeScore; m.s2 = res.awayScore;
     m.winner = res.homeScore > res.awayScore ? m.t1 : m.t2;
     tallyPostseason(m.winner, m.winner === m.t1 ? m.t2 : m.t1);
@@ -262,7 +305,7 @@ export function advanceConfTourney() {
     if (!round) return;
     round.forEach(function(m) {
       if (m.winner !== null) return;
-      var res = simGame(m.t1, m.t2, true);
+      var res = simConf(m);
       m.s1 = res.homeScore; m.s2 = res.awayScore;
       m.winner = res.homeScore > res.awayScore ? m.t1 : m.t2;
       tallyPostseason(m.winner, m.winner === m.t1 ? m.t2 : m.t1);
@@ -290,7 +333,7 @@ export function simConfRound(conf) {
   if (!round) return;
   round.forEach(function(m) {
     if (m.winner !== null) return;
-    var res = simGame(m.t1, m.t2, true);
+    var res = simConf(m);
     m.s1 = res.homeScore; m.s2 = res.awayScore;
     m.winner = res.homeScore > res.awayScore ? m.t1 : m.t2;
     tallyPostseason(m.winner, m.winner === m.t1 ? m.t2 : m.t1);
@@ -665,7 +708,7 @@ export function playTournamentGame(watch) {
       LS.tH = m.t1; LS.tA = m.t2;
       LS.game = {
         home: true, conf: true, played: false, uScore: 0, oScore: 0,
-        _matchup: m, _conf: um.conf, _ct: um.ct, _type: 'conf'
+        _matchup: m, _conf: um.conf, _ct: um.ct, _type: 'conf', _campus: !!m.campus
       };
       LS.userTeam = G.teams[G.tid];
       LS.clock = 1200; LS.half = 1; LS.hs = 0; LS.as = 0;
@@ -680,7 +723,7 @@ export function playTournamentGame(watch) {
         LS._recPre = { h: snapRoster(m.t1), a: snapRoster(m.t2), hid: m.t1.id, aid: m.t2.id };
         if (_ext.openModal) _ext.openModal(m.t1, m.t2, true, rn);
       } else {
-        var res = simGame(m.t1, m.t2, true);
+        var res = simConf(m);
         LS.hs = res.homeScore; LS.as = res.awayScore;
         LS._recLines = userLinesFromRes(res);
         resolveTournamentGame();
@@ -758,7 +801,7 @@ export function resolveTournamentGame() {
       if (!round) return;
       round.forEach(function(rm) {
         if (rm.winner !== null) return;
-        var res3 = simGame(rm.t1, rm.t2, true);
+        var res3 = simConf(rm);
         rm.s1 = res3.homeScore; rm.s2 = res3.awayScore;
         rm.winner = res3.homeScore > res3.awayScore ? rm.t1 : rm.t2;
         tallyPostseason(rm.winner, rm.winner === rm.t1 ? rm.t2 : rm.t1);

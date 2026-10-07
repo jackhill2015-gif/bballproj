@@ -50,8 +50,9 @@ function renderConfHub() {
     // Your run is over (or you have a bye): a way forward without the top-bar menu
     // Still alive (a bye this round) or knocked out?
     var _lost = ct && ct.rounds.some(function(rd) { return rd.some(function(m) { return m.winner && (m.t1.id === G.tid || m.t2.id === G.tid) && m.winner.id !== G.tid; }); });
-    var _inField = ct && ct.seeds.some(function(t) { return t.id === G.tid; });
-    var _msg = !_inField ? 'You did not qualify for the ' + myConf + ' tournament.'
+    var _seedIdx = ct ? ct.seeds.findIndex(function(t) { return t.id === G.tid; }) : -1;
+    var _inField = _seedIdx >= 0 && _seedIdx < ((ct.fmt && ct.fmt.q) || ct.seeds.length);
+    var _msg = !_inField ? 'You finished ' + (_seedIdx + 1) + 'th and missed the cut for the ' + myConf + ' tournament (top ' + ((ct.fmt && ct.fmt.q) || '') + ' qualify).'
       : _lost ? 'Your conference tournament is over. Selection Sunday is next.'
       : 'You have a bye this round. Sim it to see who you play next.';
     h += '<div class="panel"><div class="panel-b" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">'
@@ -106,7 +107,7 @@ function renderConfBracketCard(conf, ct, expanded) {
     + (ct.done && ct.champ
       ? '<small>Champion: ' + ct.champ.name + '</small>'
       : '<span class="tag t-rival">Live</span>') + '</div>'
-    + '<div class="panel-b"><div class="br-region">';
+    + '<div class="panel-b">' + (expanded && ct.fmt && ct.fmt.note ? '<div class="pp-note" style="margin-bottom:8px;">' + ct.fmt.note + '</div>' : '') + '<div class="br-region">';
 
   if (expanded) {
     h += '<div style="display:flex;overflow-x:auto;">';

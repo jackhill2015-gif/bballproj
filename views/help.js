@@ -90,6 +90,14 @@ export function renderHelp() {
     + 'button. Before a step where it matters, you get a heads-up (unspent skill points, open roster spots with '
     + 'no offers out, unspent recruiting points, a position with nobody next season); tap again to continue anyway.');
 
+  h += sec('Conference tournaments',
+    'Each conference runs its tournament the way it really does (2026 formats). Some take every team, others only '
+    + 'the top finishers: the ACC takes 15 of 18, the MAC and Big West 8, the Ivy League 4. Top seeds get byes, often two '
+    + 'or three (the Big Ten\'s top four skip three rounds). Several leagues use a stepladder where two seeds join each '
+    + 'round. Most play at a neutral site, but the Patriot, America East and NEC play every game on the higher seed\'s '
+    + 'court, and the Horizon opens on campus. The format for your league shows above its bracket. The champion gets '
+    + 'the automatic NCAA bid.');
+
   h += sec('Non-conference schedule',
     'Every offseason, after signing day, you set next season\'s 10 non-conference games. The game suggests a '
     + 'balanced slate (a few tough, mostly even, a few easier); tap any game to swap the opponent, or auto-pick again.');
