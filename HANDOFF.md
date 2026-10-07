@@ -89,8 +89,39 @@ Leave a note for the other agent. Delete it once it's handled. **Claude sessions
      - walk-ons fill positions to 2 and the roster to 11
      - walk-ons are below average, and about 1 in 12 has high potential
    - Browser at 390/1280, light and dark, with low-prestige and blueblood saves.
-3. NIT for teams that miss the NCAA. Then draft night + program alumni.
-4. Rename the game (undecided). Don't rename anything yet.
+3. **2026-27 conference realignment + formats** (Claude; touches constants.js ALL_TEAMS, confformats.js, maybe season.js schedule building). Researched 2026-10-07. Sources are in Jack's chat with Claude.
+   - **Membership moves** (school: from → to):
+     - **Pac-12 rebuilt, 9 teams:** OSU, WSU, plus Boise St, Colorado St, Fresno St, San Diego St, Utah St (all from MW), Gonzaga (WCC), Texas St (Sun Belt).
+     - **Mountain West, 10:** Air Force, Nevada, New Mexico, UNLV, San Jose St, Wyoming, Grand Canyon, plus Hawaii and UC Davis (Big West) and UTEP (CUSA).
+     - **WCC, 10:** loses Gonzaga, adds Denver (Summit).
+     - **Big West, 12:** loses Hawaii and UC Davis; adds Cal Baptist and Utah Valley (WAC) and Sacramento St (Big Sky).
+     - **WAC renamed "United Athletic Conference" (UAC), 9:** Abilene Chr, Tarleton St, UT Arlington, plus Austin Peay, Central Arkansas, Eastern Ky, North Alabama, West Georgia (all from ASUN) and Little Rock (OVC). Southern Utah and Utah Tech go to the Big Sky.
+     - **Big Sky, 11:** adds Southern Utah and Utah Tech, loses Sacramento St.
+     - **ASUN, 8:** loses 5 to the UAC; adds West Florida (new to D1, not tournament-eligible).
+     - **OVC, 9:** loses Little Rock (UAC) and Tennessee Tech (SoCon).
+     - **SoCon, 11:** adds Tennessee Tech.
+     - **CUSA, 10:** loses UTEP (MW) and Louisiana Tech (Sun Belt).
+     - **Sun Belt, 14:** Texas St out, Louisiana Tech in.
+     - **MAC, 12:** N Illinois goes to the Horizon.
+     - **Horizon, 12:** adds N Illinois.
+     - **Summit, 8:** Denver out.
+     - **NEC, 9:** St Francis PA leaves D1.
+     - **Renamed only:** MAAC → "Metro Conference".
+     - **Unchanged:** power conferences, American, MVC, CAA, A-10, Patriot, America East, Big South, MEAC, SWAC, Ivy, Southland.
+   - **Eligibility:** Le Moyne is eligible in 2026-27. Mercyhurst, New Haven, West Georgia and West Florida are not, so they can't win the auto bid (NEC uses an "AQ game" if an ineligible team wins). The game may not model this; at minimum, don't give an ineligible team the bid.
+   - **2027 tournament formats known:**
+     - **Pac-12, 9 teams, MGM Grand Las Vegas:** 8v9 first; the winner plays the 5 seed; 6v7 in round 2; seeds 3-4 enter the QF; seeds 1-2 enter the SF.
+     - **MW, 10, Las Vegas:** 7v10 and 8v9, then seeds 1-6 in the QF.
+     - **MAC:** seeds 1-2 to the SF, 3-4 to the QF (looks like 8 teams, Cleveland).
+     - **NEC:** 8 teams, campus sites, reseeded.
+     - **OVC:** likely all 9, Evansville.
+     - **Summit:** 8, Sioux Falls.
+     - **ASUN:** all 8, Jacksonville.
+   - **Formats not announced** (WCC 10, UAC 9, Big West 12, Big Sky 11, Horizon 12, SoCon 11, CUSA 10): use the conference's previous format if it still fits the size, otherwise the standard format, and note it as unconfirmed.
+   - Also apply the 2026 check: the Horizon play-in is on campus. The 2026 Pac-12/WCC fix is superseded by this.
+   - Old saves keep their 2025-26 alignment unless you deliberately migrate them. Discuss with Jack before changing a save in progress.
+4. NIT for teams that miss the NCAA. Then draft night + program alumni.
+5. Rename the game (undecided). Don't rename anything yet.
 
 ## House rules
 
