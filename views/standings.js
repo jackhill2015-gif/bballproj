@@ -8,6 +8,11 @@ import { ge } from '../utils.js';
 import { G } from '../state.js';
 import { getUiPrefs, setUiPrefs } from './ui-prefs.js';
 
+// Team name link (same shape as the player pLink convention).
+function tLink(tid, name) {
+  return '<span class="tname-link" data-action="team" data-tid="' + tid + '" role="button" tabindex="0">' + name + '</span>';
+}
+
 function fmtRating(t) {
   var r = typeof t.rating === 'number' ? t.rating : 0;
   return (r > 0 ? '+' : '') + r.toFixed(1);
@@ -47,7 +52,7 @@ export function renderStandings() {
     var winPct = total > 0 ? (t.wins / total * 100).toFixed(0) : '--';
     h += '<tr' + (isU ? ' class="hl"' : '') + '>'
       + '<td class="num rk">' + (i + 1) + '</td>'
-      + '<td class="tname' + (isU ? ' u' : '') + '">' + t.name + '</td>'
+      + '<td class="tname' + (isU ? ' u' : '') + '">' + tLink(t.id, t.name) + '</td>'
       + '<td class="dim">' + t.conf + '</td>'
       + '<td class="num">' + t.wins + '-' + t.loss + '</td>'
       + '<td class="num">' + fmtRating(t) + '</td>'
@@ -63,7 +68,7 @@ export function renderStandings() {
     var utPct = utTotal > 0 ? (ut.wins / utTotal * 100).toFixed(0) : '--';
     h += '<tr class="hl user-extra">'
       + '<td class="num rk">' + userRank + '</td>'
-      + '<td class="tname u">' + ut.name + '</td>'
+      + '<td class="tname u">' + tLink(ut.id, ut.name) + '</td>'
       + '<td class="dim">' + ut.conf + '</td>'
       + '<td class="num">' + ut.wins + '-' + ut.loss + '</td>'
       + '<td class="num">' + fmtRating(ut) + '</td>'
@@ -118,7 +123,7 @@ function confHTML(natSorted) {
     var gb = lead ? ((lead.cWins - t.cWins) + (t.cLoss - lead.cLoss)) / 2 : 0;
     h += '<tr' + (isU ? ' class="hl"' : '') + '>'
       + '<td class="num rk">' + (i + 1) + '</td>'
-      + '<td class="tname' + (isU ? ' u' : '') + '">' + t.name + '</td>'
+      + '<td class="tname' + (isU ? ' u' : '') + '">' + tLink(t.id, t.name) + '</td>'
       + '<td class="num">' + t.cWins + '-' + t.cLoss + '</td>'
       + '<td class="num dim">' + (gb <= 0 ? '–' : (gb % 1 ? gb.toFixed(1) : gb)) + '</td>'
       + '<td class="num">' + t.wins + '-' + t.loss + '</td>'

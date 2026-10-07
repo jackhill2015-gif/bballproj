@@ -53,6 +53,7 @@ var APP_FILES = [
   "views/standings.js",
   "views/stats.js",
   "views/strategy.js",
+  "views/team.js",
   "views/trophies.js",
   "views/ui-prefs.js",
 ];

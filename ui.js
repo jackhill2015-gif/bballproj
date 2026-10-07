@@ -12,6 +12,7 @@ import { ge, txt, fR, clamp } from './utils.js';
 import { G, LS, SetupState, saveState } from './state.js';
 import { simPoss, simGame } from './simulation.js';
 import { openPlayerFromEl } from './views/player.js';
+import { openTeamFromEl, openGameDetailFromEl } from './views/team.js';
 import { closeSheet } from './views/sheet.js';
 import { openDevReport } from './views/devreport.js';
 
@@ -610,6 +611,12 @@ function handleAction(el) {
       break;
     case 'player':
       openPlayerFromEl(el);
+      break;
+    case 'team':
+      openTeamFromEl(el);
+      break;
+    case 'game':
+      openGameDetailFromEl(el);
       break;
     case 'sheet-close':
       closeSheet();

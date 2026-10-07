@@ -1424,3 +1424,8 @@ table.ups td { vertical-align: middle; }
 }
 /* Desktop: a steady height too */
 @media (min-width: 700px) { .sheet-panel { min-height: min(640px, 88vh); } }
+
+/* Muse: team-pages */
+.tname-link { color: var(--blu); cursor: pointer; font-weight: 600; }
+.tname-link:hover { text-decoration: underline; }
+.sched-row[data-action="game"] { cursor: pointer; }

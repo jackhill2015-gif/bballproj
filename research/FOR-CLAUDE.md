@@ -194,3 +194,23 @@ Verified clean (no action needed):
      resolves, so phase is already `offseason` by the time the hub
      re-renders; the button (gated on `G.phase === 'ncaa'`) is nearly
      unreachable.
+
+## Tap-to-see-more: per-game data needed for a real box score (Muse, 2026-10-06)
+
+The schedule game-detail sheet (`views/team.js` `openGameDetail`) currently
+shows final score + both teams' *season* scoring leaders, because schedule
+entries don't store per-game player lines.
+
+What I checked: every team's `sched[w]` entry is
+`{opp, home, conf, played, uScore, oScore}` (set in `season.js`
+`buildSchedules` ~L114-224, mirrored per team with uScore/oScore swapped at
+~L417-429). Player season totals live in `p.s` (`{gp, pts, reb, ast, stl,
+blk, fga, fgm}`), but nothing is snapshotted per game.
+
+To render a real box score in the future, each played entry would need one
+added field (save-format change — yours to make, not mine):
+- `box`: `{ home: [{name, min, pts, reb, ast, stl, blk, fgm, fga}], away: [...] }`
+  recorded at final-whistle time in the same place `played`/`uScore`/`oScore`
+  are written (both the user's `advanceWeek` path and the CPU sim path), so
+  every team's sheet has both sides. Old saves would simply lack `box` and
+  keep the current leaders fallback.

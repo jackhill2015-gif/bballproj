@@ -27,6 +27,11 @@ function pLink(name, tid) {
   return '<span class="pname" data-action="player" data-player-name="' + String(name).replace(/"/g, '&quot;') + '" data-tid="' + tid + '" role="button" tabindex="0">' + name + '</span>';
 }
 
+// Clickable team name (opens the team page; convention in views/team.js)
+function tLink(tid, name) {
+  return '<span class="tname-link" data-action="team" data-tid="' + tid + '" role="button" tabindex="0">' + name + '</span>';
+}
+
 
 // ── Cached POY race (recomputed when week/phase changes) ──
 var _raceCache = { key: '', rows: [] };
@@ -201,7 +206,7 @@ function renderGameCard() {
       var rk = rankMap();
       var r = rivalIds(), rev = revengeIds();
       var flags = (r[no.id] ? ' <span class="tag t-rival">Rival</span>' : '') + (rev[no.id] ? ' <span class="tag t-revenge">Revenge</span>' : '');
-      var body = '<div class="ng-row"><div class="ng-opp">' + (ng.home ? 'vs ' : 'at ') + (rk[no.id] <= 25 ? '#' + rk[no.id] + ' ' : '') + no.name + flags + '</div>'
+      var body = '<div class="ng-row"><div class="ng-opp">' + (ng.home ? 'vs ' : 'at ') + (rk[no.id] <= 25 ? '#' + rk[no.id] + ' ' : '') + tLink(no.id, no.name) + flags + '</div>'
         + '<div class="ng-meta">' + no.wins + '-' + no.loss + ', OVR ' + getTOvr(no) + '</div></div>'
         + '<div class="prob-row"><span>Win probability</span><span style="color:' + wpColor(wp) + ';font-weight:600;">' + wp + '%</span></div>'
         + '<div class="prob-bar"><div class="prob-fill" style="width:' + wp + '%;background:' + wpColor(wp) + ';"></div></div>'
@@ -360,7 +365,7 @@ function renderMiniStandings() {
   conf.sort(function(a, b) { return (b.cWins / Math.max(1, b.cWins + b.cLoss)) - (a.cWins / Math.max(1, a.cWins + a.cLoss)) || b.pts - a.pts; });
   var h = '<table><thead><tr><th>#</th><th>Team</th><th class="num">Conf</th><th class="num">Overall</th></tr></thead><tbody>';
   conf.slice(0, 8).forEach(function(tm, i) {
-    h += '<tr' + (tm.id === G.tid ? ' class="hl"' : '') + '><td>' + (i + 1) + '</td><td>' + tm.name + '</td>'
+    h += '<tr' + (tm.id === G.tid ? ' class="hl"' : '') + '><td>' + (i + 1) + '</td><td>' + tLink(tm.id, tm.name) + '</td>'
       + '<td class="num">' + tm.cWins + '-' + tm.cLoss + '</td><td class="num">' + tm.wins + '-' + tm.loss + '</td></tr>';
   });
   return panel(t.conf + ' standings', h + '</tbody></table>', { flush: true });

@@ -10,6 +10,11 @@ import { G } from '../state.js';
 import { allConfDone, getUserNCAAmatchup, getUserConfMatchup, getConfRoundName } from '../tournament.js';
 import { getUiPrefs, setUiPrefs } from './ui-prefs.js';
 
+// Team name link (same shape as the player pLink convention).
+function tLink(tid, name) {
+  return '<span class="tname-link" data-action="team" data-tid="' + tid + '" role="button" tabindex="0">' + name + '</span>';
+}
+
 export function renderBracket() {
   var el = ge('bracket-content');
   if (!el) return;
@@ -81,7 +86,7 @@ function matchupMini(t1, t2, s1, s2, winner, seeds) {
     var cls = isu ? ' is-user' : isWin ? ' winner' : '';
     h += '<div class="br-team' + cls + '">'
       + '<span class="br-seed">' + seedNum + '</span>'
-      + '<span class="br-tname">' + e.t.name + '</span>'
+      + '<span class="br-tname">' + tLink(e.t.id, e.t.name) + '</span>'
       + (played ? '<span class="br-score">' + e.s + '</span>' : '') + '</div>';
   });
   return h + '</div>';
@@ -228,7 +233,7 @@ function slotRow(b, k, mt) {
   var lost = played && !won && other && playedRound(other, k);
   var cls = (b.team.id === G.tid ? ' me' : '') + (won ? ' w' : '') + (lost ? ' l' : '');
   return '<div class="bx-team' + cls + '"><span class="bx-seed">' + b.seed + '</span>'
-    + '<span class="bx-name">' + b.team.name + '</span>'
+    + '<span class="bx-name">' + tLink(b.team.id, b.team.name) + '</span>'
     + '<span class="bx-sc">' + (played ? b.sc[k] : '') + '</span></div>';
 }
 function matchBox(mt, k) {

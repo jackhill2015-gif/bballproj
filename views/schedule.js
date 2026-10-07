@@ -9,6 +9,11 @@ import { DIFF_MOD } from '../constants.js';
 import { clamp, getTOvr, fmtScore, winProb } from '../utils.js';
 import { G } from '../state.js';
 
+// Team name link (same shape as the player pLink convention).
+function tLink(tid, name) {
+  return '<span class="tname-link" data-action="team" data-tid="' + tid + '" role="button" tabindex="0">' + name + '</span>';
+}
+
 function oppRankOf(oppId, natSorted) {
   return natSorted.findIndex(function(x) { return x.id === oppId; }) + 1;
 }
@@ -72,7 +77,9 @@ function gameRow(game, week, natSorted, team, rivals) {
   var rkStr = rk <= 25 ? '#' + rk + ' ' : '';
 
   var cls = 'sched-row' + (isNext ? ' next' : isPlayed ? (isWin ? ' rw-win' : ' rw-loss') : '');
-  var h = '<div class="' + cls + '">';
+  // Played games open a detail sheet; the nested team link wins the tap
+  // because the delegated handler resolves the innermost [data-action].
+  var h = '<div class="' + cls + '"' + (isPlayed ? ' data-action="game" data-week="' + week + '" role="button" tabindex="0"' : '') + '>';
   h += '<div class="sched-wk">WK ' + (week + 1) + '</div>';
 
   if (isPlayed) {
@@ -86,7 +93,7 @@ function gameRow(game, week, natSorted, team, rivals) {
   // Dense one-liner: opponent + context on a single line, score right
   var ctx = (game.conf ? 'conf · ' : '') + (rivals[opp.id] && !isPlayed ? 'rivalry · ' : '')
     + opp.wins + '-' + opp.loss + ' · OVR ' + getTOvr(opp);
-  h += '<div class="sched-opp-one">' + (game.home ? 'vs' : '@') + ' ' + rkStr + opp.name
+  h += '<div class="sched-opp-one">' + (game.home ? 'vs' : '@') + ' ' + rkStr + tLink(opp.id, opp.name)
     + '<small>' + ctx + '</small></div>';
 
   if (isPlayed) {
