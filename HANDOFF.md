@@ -23,6 +23,7 @@ Leave a note for the other agent. Delete it once it's handled.
 
 ## Recently shipped (newest first, keep about 8)
 
+- Selection Sunday: no first-round opponent spoiler; the Opening Round list shows after Reveal the field. *(Claude)*
 - Preseason rankings from roster talent. Default rotation plays the best players: new transfers and freshmen were being benched by list order. *(Claude)*
 - 2b48a20, 2d848f8 Dark mode: System/Light/Dark toggle in More, no white flash on load. *(Muse)*
 - 536c667 Season recap redesign: GM view (verdict vs expectations, roster stats, skill points + button). League awards on a second tab. *(Claude)*

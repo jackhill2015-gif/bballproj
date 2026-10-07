@@ -100,7 +100,8 @@ const btn = _els['br-reveal-btn'];
 ok(btn.textContent.includes('Reveal the field'), 'reveal button says Reveal the field (got: "' + btn.textContent + '")');
 btn.onclick(); // the single reveal action
 const wrapKids = _els['br-bracket'].children.length;
-ok(wrapKids === 4, 'one click reveals all 4 regions at once (got ' + wrapKids + ')');
+const expectKids = 4 + (G.ncaaOpening ? 1 : 0); // + the Opening Round card (2027 format)
+ok(wrapKids === expectKids, 'one click reveals all 4 regions (and the Opening Round) at once (got ' + wrapKids + ')');
 ok(btn.textContent.includes('Go to the tournament'), 'after reveal, button becomes Go to the tournament (got: "' + btn.textContent + '")');
 navTarget = null;
 btn.onclick(); // close

@@ -598,9 +598,10 @@ export function showBracketReveal(userSeed) {
       }
     }
     if (userOpen) {
-      var oSlot = bracketEntryAt(userOpen.pos), oOpp = userOpen.t1.id === G.tid ? userOpen.t2 : userOpen.t1;
-      txt('br-user-opp', 'Opening Round vs ' + oOpp.name + ' (' + oOpp.wins + '-' + oOpp.loss + '). The winner is the ' + NCAA_REGIONS[oSlot.region] + ' ' + oSlot.seed + ' seed.');
-    } else txt('br-user-opp', opp ? userRegionName + ' region. First round vs ' + opp.seed + ' ' + opp.team.name + ' (' + opp.team.wins + '-' + opp.team.loss + ').' : '');
+      var oSlot = bracketEntryAt(userOpen.pos);
+      // No opponent here: revealing the field shows the matchups
+      txt('br-user-opp', 'You play in the Opening Round. Win and you are the ' + NCAA_REGIONS[oSlot.region] + ' ' + oSlot.seed + ' seed.');
+    } else txt('br-user-opp', userRegionName ? userRegionName + ' region. Reveal the field to see your first-round matchup.' : '');
     txt('br-seed-line', bidLine.charAt(0).toUpperCase() + bidLine.slice(1) + ' confirmed.');
   } else {
     txt('br-seed-line', 'The field of ' + field.length + ' is set (' + bidLine + '). Your program did not qualify.');
@@ -638,14 +639,7 @@ export function showBracketReveal(userSeed) {
       return h + '</tbody></table></div></div>';
     }
     var bh = '<div class="grid-2">' + bubbleList('Last four in', lastIn, 'At-large') + bubbleList('First four out', firstOut, 'Missed the field') + '</div>';
-    if (G.ncaaOpening) {
-      bh += '<div class="panel"><div class="panel-h"><span>Opening Round</span><small>12 games for the last 12 spots</small></div><div class="panel-b flush"><table><tbody>';
-      G.ncaaOpening.games.forEach(function(g) {
-        var sl = bracketEntryAt(g.pos), mine = g.t1.id === G.tid || g.t2.id === G.tid;
-        bh += '<tr' + (mine ? ' class="hl"' : '') + '><td>' + g.t1.name + ' vs ' + g.t2.name + '</td><td class="dim" style="white-space:nowrap;">For ' + NCAA_REGIONS[sl.region] + ' ' + sl.seed + '</td></tr>';
-      });
-      bh += '</tbody></table></div></div>';
-    }
+
     bubble.innerHTML = bh;
     bubble.style.display = 'block';
   }
@@ -690,11 +684,25 @@ function buildRevealRegionCard(step) {
 
 // Full-field reveal: ONE click spawns the entire bracket at once — all four
 // regions, immediately. No region-by-region stepping.
+// Opening Round games, shown once the field is revealed (not before: no spoilers)
+function openingRevealCard() {
+  var col = document.createElement('div');
+  col.className = 'panel brv-fade brv-open';
+  var h = '<div class="panel-h"><span>Opening Round</span><small>12 games for the last 12 spots</small></div><div class="panel-b flush"><table><tbody>';
+  G.ncaaOpening.games.forEach(function(g) {
+    var sl = bracketEntryAt(g.pos), mine = g.t1.id === G.tid || g.t2.id === G.tid;
+    h += '<tr' + (mine ? ' class="hl"' : '') + '><td>' + g.t1.name + ' vs ' + g.t2.name + '</td><td class="dim" style="white-space:nowrap;">For ' + NCAA_REGIONS[sl.region] + ' ' + sl.seed + '</td></tr>';
+  });
+  col.innerHTML = h + '</tbody></table></div>';
+  return col;
+}
+
 export function revealFullBracket() {
   var wrap = ge('br-bracket');
   var btn = ge('br-reveal-btn');
   if (!wrap) return;
   wrap.innerHTML = '';
+  if (G.ncaaOpening) wrap.appendChild(openingRevealCard());
   for (var step = 0; step < 4; step++) {
     wrap.appendChild(buildRevealRegionCard(step));
   }

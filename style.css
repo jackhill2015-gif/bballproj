@@ -1623,3 +1623,6 @@ table.ups td { vertical-align: middle; }
 .nav-theme .more-theme-seg { flex-direction: column; }
 .nav-theme .theme-opt { border-right: none; border-bottom: 1px solid var(--bdr2); min-height: 32px; text-align: left; padding-left: 10px; }
 .nav-theme .theme-opt:last-child { border-bottom: none; }
+
+/* Selection Sunday: Opening Round card spans the full width above the regions */
+.brv-open { grid-column: 1 / -1; }
