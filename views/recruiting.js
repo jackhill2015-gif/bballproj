@@ -157,34 +157,46 @@ function signChanceFromBids(ub, best) {
 }
 
 // ── Within reach ──
-// A recruit is within reach when your fair share of points (budget / open
-// spots) gives at least a 50% signing-day chance, by the same rule signing
-// day uses (prestige gates, home state/region and interest included).
+// A recruit is within reach when going after him like a top target (up to
+// two spots' worth of points: 2 x budget / open spots, at most the whole
+// budget) gives at least a 50% signing-day chance, by the same rule signing
+// day uses (prestige gates, home state/region and interest included). So the
+// board scales with your program: bluebloods see the 5-stars they can land,
+// small schools the best players at their level.
 // Cached per recruit; the cache resets when the phase, budget or open spots
 // change, and a recruit's entry when his points change.
-export var REACH_CHANCE = 0.5;
+export var REACH_SHARES = 2;
 var _reach = { key: '', map: {}, rankOf: null };
 function reachKey() {
   return G.recruitPhase + '|' + G.recruitingBudget + '|' + openSpots() + '|' + G.tid + '|' + (G.coach ? G.coach.rec : 70);
 }
-function fairShare() {
+// The most you'd put on one top target
+function reachPoints() {
   var budget = G.recruitingBudget || calcRecruitingBudget();
-  return budget / Math.max(1, openSpots());
+  return Math.min(budget, REACH_SHARES * budget / Math.max(1, openSpots()));
+}
+// Points a recruit needs for an even (50%) signing-day chance, by the
+// signing-day rule. Infinity when no amount gets there (prestige gates).
+export function pointsFor50(r, rankOf) {
+  var target = 0.7 * finalBestRivalBid(r, rankOf);
+  var had = r.points;
+  r.points = 0; var b0 = calcUserBid(r);
+  r.points = 100; var b1 = calcUserBid(r);
+  r.points = had;
+  var per = (b1 - b0) / 100;
+  if (b0 >= target) return 0;
+  return per > 0 ? (target - b0) / per : Infinity;
 }
 export function withinReach(r) {
   var key = reachKey();
   if (_reach.key !== key) {
     var rankOf = {};
     G.teams.slice().sort(function(a, b) { return b.pts - a.pts; }).forEach(function(t, i) { rankOf[t.id] = i + 1; });
-    _reach = { key: key, map: {}, rankOf: rankOf, fair: fairShare() };
+    _reach = { key: key, map: {}, rankOf: rankOf, pts: reachPoints() };
   }
   var c = _reach.map[r.id];
   if (c && c.pts === (r.points || 0)) return c.ok;
-  var had = r.points;
-  r.points = _reach.fair;
-  var ub = calcUserBid(r);
-  r.points = had;
-  var ok = signChanceFromBids(ub, finalBestRivalBid(r, _reach.rankOf)) >= REACH_CHANCE;
+  var ok = pointsFor50(r, _reach.rankOf) <= _reach.pts;
   _reach.map[r.id] = { pts: r.points || 0, ok: ok };
   return ok;
 }
