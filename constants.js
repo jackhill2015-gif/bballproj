@@ -373,6 +373,57 @@ export const STATE_TO_REGION = {};
 })();
 
 // ── Team → State mapping (by team name) ──────────────────
+// ── 2026-27 realignment ─────────────────────────────────────
+// ALL_TEAMS is the 2025-26 alignment and stays the index table (tid = index).
+// A save remembers its alignment (G.align): saves from before this change
+// keep 2025-26; new dynasties use 2026-27. teamsFor(align) gives the table
+// for an alignment without reordering anything.
+export var CURRENT_ALIGN = 2026;
+var MOVES_2026 = {
+  // Pac-12 rebuilt (9)
+  'Boise St': 'Pac-12', 'Colorado St': 'Pac-12', 'Fresno St': 'Pac-12', 'San Diego St': 'Pac-12', 'Utah St': 'Pac-12',
+  'Gonzaga': 'Pac-12', 'Texas St': 'Pac-12',
+  // Mountain West (10)
+  'Hawaii': 'MW', 'UC Davis': 'MW', 'UTEP': 'MW',
+  // WCC (10)
+  'Denver': 'WCC',
+  // Big West (12)
+  'Cal Baptist': 'Big West', 'Utah Valley': 'Big West', 'Sacramento State': 'Big West',
+  // United Athletic Conference (the WAC renamed, 9)
+  'Austin Peay': 'UAC', 'Central Arkansas': 'UAC', 'Eastern Ky': 'UAC', 'North Alabama': 'UAC', 'West Georgia': 'UAC',
+  'Little Rock': 'UAC',
+  // Big Sky (11)
+  'Southern Utah': 'Big Sky', 'Utah Tech': 'Big Sky',
+  // SoCon (11)
+  'Tennessee Tech': 'SoCon',
+  // Sun Belt (14)
+  'Louisiana Tech': 'Sun Belt',
+  // Horizon (12)
+  'N Illinois': 'Horizon'
+};
+var RENAMES_2026 = { 'WAC': 'UAC', 'MAAC': 'Metro' };
+// St Francis PA leaves D1; West Florida (new to D1, ASUN) takes over its slot
+var SLOTS_2026 = { 'St Francis PA': { n: 'West Florida', c: 'ASUN', o: 52 } };
+// Reclassifying schools can't take an NCAA bid until this season (2026 =
+// the 2026-27 season). Le Moyne is eligible in 2026-27. Later years assume
+// the 3-year transition that made Le Moyne eligible.
+export var ELIGIBLE_FROM_2026 = { 'Mercyhurst': 2027, 'West Georgia': 2027, 'New Haven': 2028, 'West Florida': 2029 };
+
+export function teamsFor(align) {
+  return ALL_TEAMS.map(function(td) {
+    var t = { n: td.n, c: td.c, o: td.o };
+    if (align >= 2026) {
+      if (SLOTS_2026[td.n]) { var r = SLOTS_2026[td.n]; t = { n: r.n, c: r.c, o: r.o }; }
+      else {
+        if (RENAMES_2026[t.c]) t.c = RENAMES_2026[t.c];
+        if (MOVES_2026[t.n]) t.c = MOVES_2026[t.n];
+      }
+      if (ELIGIBLE_FROM_2026[t.n]) t.e = ELIGIBLE_FROM_2026[t.n];
+    }
+    return t;
+  });
+}
+
 export const TEAM_STATES = {
   // ACC
   "Duke":"NC","UNC":"NC","Virginia":"VA","Syracuse":"NY","Miami FL":"FL","Florida St":"FL",
@@ -497,6 +548,7 @@ export const TEAM_STATES = {
   "North Alabama":"AL",
   "Stetson":"FL",
   "West Georgia":"GA",
+  "West Florida":"FL",
   "Eastern Washington":"WA",
   "Idaho":"ID",
   "Idaho State":"ID",

@@ -25,8 +25,8 @@ check(asks.length >= 2 && asks.length <= 4, '2-4 players ask (' + asks.length + 
 check(asks.every(a => a.ask >= 25 && a.ask <= 200 && a.ask % 5 === 0), 'asks are 25-200 NIL in steps of 5 (' + asks.map(a => a.ask).join(', ') + ')');
 const roster = G.teams[G.tid].rost;
 check(asks.every(a => { const p = roster.find(x => x.name === a.name); return p && p.cls !== 'SR' && !p.rs; }), 'only returning, non-redshirt players ask');
-const best = roster.filter(p => p.cls !== 'SR' && !p.rs).sort((a, b) => b.ovr - a.ovr)[0];
-check(asks.some(a => a.name === best.name), 'best returner always asks');
+const best = roster.filter(p => p.cls !== 'SR' && !p.rs && p.notReturningYr !== G.yr).sort((a, b) => b.ovr - a.ovr)[0]; // not-interested players don't ask
+check(asks.some(a => a.name === best.name), 'best returner (who wants to stay) always asks');
 check(R.moveOnWarning(() => {}) === true && R.moveOnWarning(() => {}) === false, 'undecided requests get a heads-up first, then you can move on');
 
 G.pts = 0;
@@ -38,6 +38,14 @@ check(FI.ledger().spend.retention === spend0 + asks[0].ask, 'retention spend log
 RT.decideRetention(0, 'go');
 check(G.pts === 1000 && FI.ledger().spend.retention === spend0, 'switching to let go refunds the deal');
 RT.decideRetention(0, 'keep');
+// Decided rows show the decision and a quiet Change, not live Keep / Let go
+const row0 = () => RT.renderRetention().split('class="ret-row').filter(x => x.indexOf('data-ri="0"') >= 0)[0] || '';
+check(/Staying/.test(row0()) && !/data-ret="keep"/.test(row0()) && !/data-ret="go"/.test(row0()) && /data-ret="undo"/.test(row0()), 'kept row: "Staying" + Change, no live Keep / Let go');
+check(RT.decideRetention(0, 'undo').ok && !asks[0].decision && G.pts === 1000, 'Change undoes the decision and refunds the deal');
+check(/data-ret="keep"/.test(row0()) && /data-ret="go"/.test(row0()), 'undecided row shows Keep and Let go again');
+RT.decideRetention(0, 'go');
+check(/Entering the portal/.test(row0()) && !/data-ret="keep"/.test(row0()), 'let-go row: "Entering the portal" + Change');
+RT.decideRetention(0, 'undo'); RT.decideRetention(0, 'keep');
 for (let i = 1; i < asks.length; i++) RT.decideRetention(i, 'go');
 
 // survives a save round trip

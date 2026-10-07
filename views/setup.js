@@ -8,7 +8,7 @@
 //  preserved with identical names/signatures.
 // ═══════════════════════════════════════════════════════════
 
-import { DIFF_DESC, calcSchoolPrestige, calcExpectations, ALL_TEAMS } from '../constants.js';
+import { DIFF_DESC, calcSchoolPrestige, calcExpectations, ALL_TEAMS, teamsFor } from '../constants.js';
 import { ri, ge, txt, getTier, getTOvr, fR } from '../utils.js';
 import { G, SetupState, loadState, deleteSave, saveState } from '../state.js';
 import { SLOTS, readSlot, removeSlot, activeSlot, setActiveSlot, storageMode, flushWrites } from '../storage.js';
@@ -68,7 +68,7 @@ export function slotSummary(raw) {
     var t = saved && saved.teams && saved.teams[saved.tid];
     if (!t) return null;
     // Saves store team results only; name/conference come from the team table
-    var td = ALL_TEAMS[saved.tid] || {};
+    var td = teamsFor(saved.align || 2025)[saved.tid] || {}; // the save's own conference alignment
     return {
       team: t.name || td.n || '---',
       conf: t.conf || td.c || '',

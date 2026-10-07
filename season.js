@@ -8,7 +8,7 @@ import { recomputeRatings, snapshotRanks } from './ratings.js';
 import { ensureGoals, noteUserResult, settleGoals, checkAchievements } from './goals.js';
 import { practiceBonus, trainingChance, facilitiesFor } from './facilities.js';
 import { payGate, payTvShare, ledger as financeLedger } from './finance.js';
-import { ALL_TEAMS, POS, CLS, RECRUIT_STATE_POOL, COACH_FN, COACH_LN, calcSchoolPrestige, SKILL_POINT_TABLE, calcExpectations } from './constants.js';
+import { ALL_TEAMS, teamsFor, CURRENT_ALIGN, POS, CLS, RECRUIT_STATE_POOL, COACH_FN, COACH_LN, calcSchoolPrestige, SKILL_POINT_TABLE, calcExpectations } from './constants.js';
 import {
   ri, clamp, getTOvr, fixMins, freshS, autoLineup, getTeamStyle, getOvr, ge, txt, fmtScore,
   awardScore, pickPositionalTeam
@@ -56,9 +56,14 @@ function navTo(v) { if (_ext.navTo) _ext.navTo(v); }
 //  UNIVERSE BUILDING
 // ═══════════════════════════════════════════════════════════
 
-export function buildUniverse() {
+// align: which season's conference alignment to build (constants.js
+// teamsFor). New dynasties use the current one; loadState re-labels teams
+// for a save made on an older alignment.
+export function buildUniverse(align) {
   G.teams = [];
-  ALL_TEAMS.forEach(function(td, i) {
+  G.align = align || CURRENT_ALIGN;
+  G.alignYr0 = G.yr; // first season played on this alignment (eligibility clock)
+  teamsFor(G.align).forEach(function(td, i) {
     var rost = [];
     for (var j = 0; j < 13; j++) {
       rost.push(genPlayer(td.o, POS[j % 5], CLS[ri(0, 3)]));
@@ -81,7 +86,7 @@ export function buildUniverse() {
     };
 
     G.teams.push({
-      id: i, name: td.n, conf: td.c, baseOvr: td.o, rost: rost,
+      id: i, name: td.n, conf: td.c, baseOvr: td.o, rost: rost, eligibleFrom: td.e || 0,
       wins: 0, loss: 0, cWins: 0, cLoss: 0,
       pts: td.o * 10 + ri(-30, 30),
       sched: [], streak: 0,

@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { getTOvr, getOvr, rawOvr, scaleOvr } from './utils.js';
-import { RECRUIT_STATE_POOL, calcSchoolPrestige, COACH_FN, COACH_LN } from './constants.js';
+import { RECRUIT_STATE_POOL, calcSchoolPrestige, COACH_FN, COACH_LN, teamsFor } from './constants.js';
 import { readSlot, writeSlot, removeSlot, activeSlot } from './storage.js';
 
 // ── Current save version — bump this when adding new fields ──
@@ -315,7 +315,8 @@ function _slimConfTourneys(cts) {
       carry: (ct.carry || []).map(idOf), // T3: teams holding a bye into the next round
       fmt: ct.fmt || null,               // real conference format (confformats.js)
       done: !!ct.done,
-      champ: idOf(ct.champ)
+      champ: idOf(ct.champ),
+      bid: ct.bid === undefined ? undefined : idOf(ct.bid) // auto bid when the champ isn't eligible
     };
   });
   return out;
@@ -382,6 +383,7 @@ function _writeSave() {
     var lean = {
       _saveVersion: SAVE_VERSION,
       _savedAt: Date.now(), // storage.js keeps the newer copy if two exist
+      align:G.align||2025,alignYr0:G.alignYr0||null,
       tid:G.tid,yr:G.yr,gi:G.gi,wk:G.wk,pts:G.pts,
       phase:G.phase,difficulty:G.difficulty,
       confTitles:G.confTitles,championships:G.championships,prestige:G.prestige,
@@ -479,6 +481,7 @@ function _fattenConfTourneys(slim) {
       done: !!ct.done,
       champ: _teamRef(ct.champ)
     };
+    if (ct.bid !== undefined) out[conf].bid = _teamRef(ct.bid);
   });
   return out;
 }
@@ -542,6 +545,16 @@ export function loadState() {
       if(typeof r.points!=='number')r.points=0;
       if(typeof r.status!=='string')r.status=r.signed>=0?(r.signed===G.tid?'committed':'gone'):'open';
       if(!r.homeState)r.homeState=RECRUIT_STATE_POOL[Math.floor(Math.random()*RECRUIT_STATE_POOL.length)];
+    });
+
+    // Conference alignment: saves from before the 2026-27 realignment keep
+    // 2025-26. Names, conferences and eligibility come from the alignment
+    // table, not the save, so re-label the universe to match it.
+    G.align = s.align || 2025; G.alignYr0 = s.alignYr0 || null;
+    var _tbl = teamsFor(G.align);
+    G.teams.forEach(function(t, i) {
+      var td = _tbl[i]; if (!td) return;
+      t.name = td.n; t.conf = td.c; t.baseOvr = td.o; t.eligibleFrom = td.e || 0;
     });
 
     // Teams
