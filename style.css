@@ -1408,8 +1408,19 @@ table.ups td { vertical-align: middle; }
 .pp-odds { font-size: 13px; color: var(--txt2); }
 
 /* Departures (departures + NIL requests on one screen) */
-.dep-sum { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--txt2); padding: 8px 0; border-bottom: 1px solid var(--bdr); }
-.dep-sum b { color: var(--txt); font-weight: 600; }
+.dep-wrap { padding-bottom: 84px; }
+@media (max-width: 860px) { .dep-wrap { padding-bottom: 132px; } }
+.dep-sum { display: flex; flex-wrap: wrap; gap: 10px 24px; padding: 12px 2px; border-bottom: 1px solid var(--bdr); }
+.dep-stat { display: flex; flex-direction: column; gap: 1px; }
+.dep-stat b { font-size: 17px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.dep-stat span { font-size: 11.5px; color: var(--txt3); }
+.dep-stat.dep-thin span { color: var(--gld2); }
+.dep-stat.dep-thin b { font-size: 13px; }
+.dep-sec { font-size: 13px; font-weight: 600; color: var(--txt2); margin: 16px 0 2px; }
+.dep-row { cursor: default; }
+.dep-empty { padding: 8px 0; }
+.dep-note { font-size: 12.5px; color: var(--txt2); margin: 0 0 8px; line-height: 1.45; }
+.dep-note b { color: var(--txt); }
 .ret-row { display: flex; align-items: center; gap: 10px; padding: 9px 4px; border-bottom: 1px solid var(--bdr); }
 .ret-row.kept { background: var(--grn-soft); }
 .ret-row.gone { background: var(--s2); }
