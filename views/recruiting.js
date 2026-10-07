@@ -767,6 +767,7 @@ function bindOffseason(el) {
     }
     if (q('[data-ret-done]')) { finishRetention(); return; }
     if ((m = q('[data-skill-dec]'))) { deallocateSkillPoint(m.getAttribute('data-skill-dec')); return; }
+    if ((m = q('[data-rctab]'))) { if (window._setRecapTab) window._setRecapTab(m.getAttribute('data-rctab')); renderOffseason(); return; }
     if ((m = q('[data-skill-inc]'))) { allocateSkillPoint(m.getAttribute('data-skill-inc')); return; }
     if (q('[data-finish-skills]')) { finishSkillPoints(); return; }
     if ((m = q('[data-apply-job]'))) { applyForJob(parseInt(m.getAttribute('data-apply-job'), 10)); return; }

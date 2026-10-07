@@ -1478,3 +1478,39 @@ table.ups td { vertical-align: middle; }
 .tg-r { flex: 0 0 auto; font-size: 12.5px; text-align: right; color: var(--txt2); max-width: 45%; }
 .tg-row.good .tg-r { color: var(--grn2); font-weight: 600; }
 .tg-none { font-size: 13px; color: var(--txt3); padding: 8px 0; }
+
+/* Season recap (GM view) */
+.rc-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+.rc-tabs { margin: 0; }
+.rc-grid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); gap: 12px; align-items: start; }
+.rc-grid .panel { margin-bottom: 10px; }
+.rc-v { font-size: 20px; font-weight: 600; }
+.rc-v.good { color: var(--grn2); }
+.rc-v.bad { color: var(--red); }
+.rc-vline { font-size: 13px; color: var(--txt2); margin-top: 3px; line-height: 1.45; }
+.rc-kv { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 10px; }
+.rc-kv > div { display: flex; flex-direction: column; }
+.rc-kv b { font-size: 15px; font-variant-numeric: tabular-nums; }
+.rc-kv span { font-size: 11.5px; color: var(--txt3); }
+.rc-goals { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--bdr); font-size: 12.5px; }
+.rc-gh { color: var(--txt3); }
+.rc-goal.good { color: var(--grn2); }
+.rc-goal.bad { color: var(--red); }
+.rc-tbl td, .rc-tbl th { padding-top: 4px; padding-bottom: 4px; font-size: 12.5px; }
+.rc-pn { white-space: nowrap; }
+.rc-pm { font-size: 11px; color: var(--txt3); }
+.rc-leave { font-size: 10.5px; color: var(--gld2); border: 1px solid var(--bdr2); border-radius: var(--radius); padding: 0 4px; margin-left: 2px; }
+.rc-earned { display: flex; flex-wrap: wrap; gap: 3px 12px; font-size: 12.5px; color: var(--grn2); }
+.rc-earned.none { color: var(--txt3); }
+.rc-right #skill-panel td { padding-top: 5px; padding-bottom: 5px; }
+@media (max-width: 760px) {
+  .rc-grid { grid-template-columns: 1fr; gap: 0; }
+  .rc-left { display: contents; }
+  .rc-verdict { order: 1; }
+  .rc-right { order: 2; margin-bottom: 10px; }
+  .rc-roster { order: 3; }
+  .rc-x { display: none; }
+  .rc-pn { white-space: normal; }
+  .rc-tbl td, .rc-tbl th { padding-left: 6px; padding-right: 6px; }
+  .rc-right #skill-panel td div[style*="font-size:11px"] { display: none; }
+}

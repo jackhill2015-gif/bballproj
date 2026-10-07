@@ -116,7 +116,114 @@ function moneyPanels() {
 //  RENDER
 // ═══════════════════════════════════════════════════════════
 
+
+// ═══════════════════════════════════════════════════════════
+//  GM RECAP — your season on one screen: the verdict against the
+//  athletic director's expectations, your roster with stats, and the
+//  skill points with the button to move on. League awards live on a
+//  second tab.
+// ═══════════════════════════════════════════════════════════
+var _rcTab = 'you';
+export function setRecapTab(t) { _rcTab = t === 'league' ? 'league' : 'you'; }
+if (typeof window !== 'undefined') window._setRecapTab = setRecapTab;
+
+function ordinal(n) { var s = ['th', 'st', 'nd', 'rd'], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); }
+
+function verdictHTML(t, rank, tf) {
+  var exp = G.expectations;
+  var sa = G.seasonAchievements || {};
+  var v = { txt: 'Season complete', cls: '', line: '' };
+  if (exp) {
+    var ncaaMiss = exp.ncaa && !sa.madeNCAA;
+    if (t.wins > exp.high) v = { txt: 'Beat expectations', cls: 'good' };
+    else if (t.wins >= exp.low && !ncaaMiss) v = { txt: 'Met expectations', cls: '' };
+    else if (t.wins >= exp.low) v = { txt: 'Short of expectations', cls: 'bad' };
+    else if (exp.danger !== undefined && t.wins < exp.danger) v = { txt: 'Well short of expectations', cls: 'bad' };
+    else v = { txt: 'Short of expectations', cls: 'bad' };
+    v.line = 'The athletic director expected ' + exp.low + '-' + exp.high + ' wins' + (exp.ncaa ? ' and an NCAA bid' : '') + '. '
+      + 'You won ' + t.wins + (exp.ncaa || sa.madeNCAA ? (sa.madeNCAA ? ' and made the tournament.' : ' and missed the tournament.') : '.');
+  }
+  if (G.coach && G.coach.hotSeat) v.line += ' <b>You are on the hot seat.</b> Another season like this and you will be replaced.';
+  var confT = G.teams.filter(function(x) { return x.conf === t.conf; })
+    .sort(function(a, b) { return (b.cWins - b.cLoss) - (a.cWins - a.cLoss) || b.pts - a.pts; });
+  var confPos = confT.findIndex(function(x) { return x.id === t.id; }) + 1;
+  var l = ledger(), tot = totals(l);
+  var gs = G.goals && G.goals.results && G.goals.yr === G.yr ? G.goals.results : [];
+  var met = gs.filter(function(r) { return r.done; }).length;
+  var h = '<div class="panel rc-verdict"><div class="panel-b">'
+    + '<div class="rc-v ' + v.cls + '">' + v.txt + '</div>'
+    + (v.line ? '<div class="rc-vline">' + v.line + '</div>' : '')
+    + '<div class="rc-kv">'
+    + '<div><b>' + t.wins + '-' + t.loss + '</b><span>Record</span></div>'
+    + '<div><b>' + ordinal(confPos) + '</b><span>' + t.conf + ' (' + t.cWins + '-' + t.cLoss + ')</span></div>'
+    + '<div><b>#' + rank + '</b><span>Final rank</span></div>'
+    + '<div><b>' + tf + '</b><span>NCAA</span></div>'
+    + '<div><b>' + (tot.net >= 0 ? '+' : '−') + Math.abs(tot.net) + '</b><span>NIL net</span></div>'
+    + '</div>';
+  if (gs.length) {
+    h += '<div class="rc-goals"><span class="rc-gh">Goals ' + met + ' of ' + gs.length + '</span>'
+      + gs.map(function(r) { return '<span class="rc-goal ' + (r.done ? 'good' : 'bad') + '">' + (r.done ? '✓ ' : '✗ ') + r.text + '</span>'; }).join('') + '</div>';
+  }
+  return h + '</div></div>';
+}
+
+function rosterHTML(t) {
+  var rows = (t.rost || []).slice().sort(function(a, b) { return (b.mins || 0) - (a.mins || 0) || b.ovr - a.ovr; });
+  var h = '<div class="panel rc-roster"><div class="panel-h"><span>Your roster</span><small>Season stats</small></div>'
+    + '<div class="panel-b flush"><div class="tbl-wrap"><table class="rc-tbl"><thead><tr>'
+    + '<th>Player</th><th class="num">OVR</th><th class="num rc-x">MIN</th><th class="num">PPG</th><th class="num">RPG</th><th class="num">APG</th><th class="num rc-x">FG%</th>'
+    + '</tr></thead><tbody>';
+  rows.forEach(function(p) {
+    var s = p.s || {}, gp = s.gp || 0;
+    var per = function(k) { return gp ? (s[k] / gp).toFixed(1) : '–'; };
+    var ppg = gp ? s.pts / gp : 0;
+    var leaving = p.cls === 'SR' && !p.rs ? 'Graduating' : (ppg >= 16 && p.cls !== 'FR' ? 'Draft' : '');
+    h += '<tr><td><div class="rc-pn">' + pLink(p.name, G.tid) + ' <span class="rc-pm">' + p.pos + ' · ' + p.cls + '</span>'
+      + (leaving ? ' <span class="rc-leave">' + leaving + '</span>' : '') + '</div></td>'
+      + '<td class="num">' + p.ovr + '</td><td class="num rc-x">' + (p.mins || 0) + '</td>'
+      + '<td class="num">' + per('pts') + '</td><td class="num">' + per('reb') + '</td><td class="num">' + per('ast') + '</td>'
+      + '<td class="num rc-x">' + (s.fga ? Math.round(s.fgm / s.fga * 100) : '–') + '</td></tr>';
+  });
+  return h + '</tbody></table></div></div></div>';
+}
+
+function coachingHTML(skillPts) {
+  var pts = G.skillPointsToSpend || 0;
+  var h = '<div class="panel rc-coach"><div class="panel-h"><span>Skill points</span><small>' + skillPts.length + ' earned this season</small></div><div class="panel-b">';
+  if (skillPts.length) h += '<div class="rc-earned">' + skillPts.map(function(l) { return '<span>✓ ' + l + '</span>'; }).join('') + '</div>';
+  else h += '<div class="rc-earned none">No achievements this season.</div>';
+  h += '</div></div>';
+  if (typeof window !== 'undefined' && window._skillPanelHTML) h += window._skillPanelHTML();
+  h += '<button class="btn-big btn-full" data-action="begin-offseason">Begin offseason' + (pts > 0 ? ' (' + pts + ' point' + (pts > 1 ? 's' : '') + ' carry over)' : '') + '</button>';
+  return h;
+}
+
 export function renderSeasonRecap() {
+  var t = G.teams[G.tid];
+  var sorted = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; });
+  var rank = sorted.findIndex(function(x) { return x.id === G.tid; }) + 1;
+  var lastHistory = G.history && G.history.length ? G.history[G.history.length - 1] : null;
+  var tf = lastHistory ? lastHistory.tourneyFinish : '';
+  tf = { CHAMP: 'Champion', 'Championship Game': 'Runner-up', 'Did Not Qualify': 'No bid', 'Conf Tourney': 'No bid',
+    'Round of 64': 'First round', 'Round of 32': 'Second round', 'Opening round': 'Opening round' }[tf] || tf || '—';
+  var natChamp = null;
+  if (G.bracket && G.bracket.length) { var still = G.bracket.filter(function(b) { return b.active; }); if (still.length === 1) natChamp = still[0].team; }
+
+  var h = '<div class="rc-head"><div><div class="sec-head" style="margin:0;">' + t.name + ' · ' + G.yr + ' season</div>'
+    + '<div class="sec-sub" style="margin:2px 0 0;">' + (natChamp ? natChamp.name + ' won the national title.' : 'Season complete.') + '</div></div>'
+    + '<div class="fbar rc-tabs"><button class="fchip' + (_rcTab === 'you' ? ' on' : '') + '" data-rctab="you">Your season</button>'
+    + '<button class="fchip' + (_rcTab === 'league' ? ' on' : '') + '" data-rctab="league">League awards</button></div></div>';
+  if (_rcTab === 'league') {
+    h += leagueHTML();
+    h += '<button class="btn-big btn-full" style="margin-top:12px;" data-rctab="you">Back to your season</button>';
+    return h;
+  }
+  h += '<div class="rc-grid"><div class="rc-left">' + verdictHTML(t, rank, tf) + rosterHTML(t) + '</div>'
+    + '<div class="rc-right">' + coachingHTML(calcSkillPoints()) + '</div></div>';
+  return h;
+}
+
+function leagueHTML() {
   var t = G.teams[G.tid];
   var year = G.yr;
   var awards = calcAwards();
@@ -147,10 +254,7 @@ export function renderSeasonRecap() {
       + '<div style="font-size:12px;color:var(--txt2);margin-top:4px;">' + sub + '</div></div></div>';
   }
 
-  var h = '<div class="sec-head">Season ' + year + ' Recap</div>'
-    + '<div class="sec-sub" style="margin-bottom:12px;">National champion · awards · your program</div>';
-
-  h += '<div class="grid-2">';
+  var h = '<div class="grid-2">';
 
   // LEFT — league
   h += '<div>';
@@ -184,18 +288,6 @@ export function renderSeasonRecap() {
 
   // RIGHT — your program
   h += '<div>';
-  h += '<div class="panel"><div class="panel-h"><span>Your season</span></div><div class="panel-b">'
-    + '<div class="dash-sum">'
-    + '<div class="dash-team"><h1>' + t.name + '</h1>'
-    + '<div class="sub">' + t.conf + ' · season ' + year + '</div></div>'
-    + '<div class="kv">'
-    + '<div><b>' + t.wins + '-' + t.loss + '</b><span>Record</span></div>'
-    + '<div><b style="font-family:var(--mono);">#' + rank + '</b><span>Final rank</span></div>'
-    + '<div><b>' + tf + '</b><span>NCAA tournament</span></div>'
-    + '<div><b>' + (t.schoolPrestige || '—') + '</b><span>Prestige</span></div>'
-    + '</div></div>'
-    + '<div style="font-size:12px;color:var(--txt2);">Conference: ' + t.cWins + '-' + t.cLoss + ' (' + t.conf + ')</div>'
-    + '</div></div>';
   h += moneyPanels();
 
   if (awards.allAmerican.length) {
@@ -235,25 +327,6 @@ export function renderSeasonRecap() {
     h += '</div></div>';
   }
 
-  h += '<div class="panel"><div class="panel-h"><span>Coaching XP earned</span></div><div class="panel-b">'
-    + '<div style="font-family:var(--mono);font-size:20px;margin-bottom:8px;">' + skillPts.length
-    + ' <span style="font-size:12px;color:var(--txt2);">skill point' + (skillPts.length !== 1 ? 's' : '') + '</span></div>';
-  if (skillPts.length) {
-    skillPts.forEach(function(label) {
-      h += '<div style="font-size:12px;color:var(--grn2);padding:3px 0;">✓ ' + label + '</div>';
-    });
-  } else {
-    h += '<div style="font-size:12px;color:var(--txt3);">No achievements this season.</div>';
-  }
   h += '</div></div>';
-
-  h += '</div></div>';
-
-  // Skill points are spent right here (no separate screen)
-  if (typeof window !== 'undefined' && window._skillPanelHTML) h += window._skillPanelHTML();
-
-  h += '<div class="big-btn-row" style="text-align:center;">'
-    + '<button class="btn-big" data-action="begin-offseason">Begin offseason</button></div>';
-
   return h;
 }
