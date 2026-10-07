@@ -13,6 +13,7 @@ Claim a job before you start so two agents don't edit the same screens. Remove y
 
 | Who | Job | Files / screens touched | Since |
 |-----|-----|-------------------------|-------|
+| Claude | Within reach scales with your school (bluebloods see the 5-stars they can land) | views/recruiting.js (withinReach only), test-harness/within-reach-test.mjs, sw.js | 2026-10-07 |
 
 ## Messages
 
