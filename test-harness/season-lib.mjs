@@ -15,7 +15,7 @@ T.registerTournamentCallbacks({ toast() {}, addLog() {}, updateAll() {}, navTo()
 
 export function newDynasty(tid = 0) {
   S.buildUniverse();
-  Object.assign(G, { tid, yr: 2025, gi: 0, wk: 0, pts: 120, phase: 'reg', difficulty: 'normal',
+  Object.assign(G, { tid, yr: 2026, alignYr0: 2026, gi: 0, wk: 0, pts: 120, phase: 'reg', difficulty: 'normal',
     bracket: [], confTourneys: {}, confTitles: 0, championships: 0, logs: [], history: [], leagueChamps: [],
     recruitPhase: 0, recruitingBudget: 0, recruitingSpent: 0, recruitTargets: [], departingPlayers: [],
     offseasonStep: 'turnover', injuries: [], buffs: [], nextHomeBonus: 0, momentum: { tid: -1, pts: 0 }, prestige: 3,

@@ -44,7 +44,7 @@ for (const n of [1, 2, 3]) {
   check(G.tid === teams[n] && G.teams[G.tid].wins === wins[n], 'slot ' + n + ' loads its own dynasty (team ' + teams[n] + ')');
 }
 const sum2 = slotSummary(STO.readSlot(2));
-check(sum2 && sum2.team && /^\d+-\d+$/.test(sum2.record.replace(/–/, '-')) && sum2.coach === 'Test Coach' && sum2.yr === 2025, 'home card summary: team, season, record, coach (' + (sum2 && [sum2.team, sum2.yr, sum2.record, sum2.coach].join(', ')) + ')');
+check(sum2 && sum2.team && /^\d+-\d+$/.test(sum2.record.replace(/–/, '-')) && sum2.coach === 'Test Coach' && sum2.yr === 2026 && sum2.season === 1, 'home card summary: team, season, record, coach (' + (sum2 && [sum2.team, sum2.yr, sum2.record, sum2.coach].join(', ')) + ')');
 check(slotSummary(null) === null && slotSummary('not json') === null, 'empty or broken slot shows as empty');
 
 // Delete one slot

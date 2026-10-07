@@ -28,7 +28,7 @@ continueGame('season 2 end of regular season');
 runConfTourneys(); runNCAA();
 S.beginOffseason(); S.doOffseason();
 continueGame('season 3 preseason');
-check(G.yr === 2027 && G.phase === 'reg', 'reached season 3 (yr ' + G.yr + ')');
+check(G.yr === 2028 && G.phase === 'reg', 'reached season 3 (yr ' + G.yr + ')');
 // rankings sanity: preseason top 25 should be strong rosters
 const top = G.teams.slice().sort((a, b) => b.pts - a.pts).slice(0, 25);
 const avgTop = top.reduce((s, t) => s + U.getTOvr(t), 0) / 25;
