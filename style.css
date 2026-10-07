@@ -1678,3 +1678,27 @@ table.ups td { vertical-align: middle; }
 .ret-change { min-height: 32px; }
 .dep-why { white-space: normal; }
 .dep-row .acq-main { min-width: 0; }
+
+/* First-time tips (views/tips.js): calm dismissable cards. They render
+   in-flow at the top of the content, so they push content down and can
+   never cover the Play button or the bottom nav. */
+.tip-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  background: var(--blu-soft);
+  border: 1px solid var(--bdr2);
+  border-radius: 8px;
+}
+.tip-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--txt2);
+}
+.tip-gotit { flex: none; }
+/* Top-bar logo goes Home */
+.tb-brand[data-action] { cursor: pointer; -webkit-tap-highlight-color: transparent; }

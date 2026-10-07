@@ -26,7 +26,8 @@ var DEFAULTS = {
   stats: { category: 'poy' },
   rankings: { tab: 'nat', conf: null },
   bracket: { region: null },
-  theme: { mode: 'system' }
+  theme: { mode: 'system' },
+  tips: { home: true, roster: true, offseason: true, recruiting: true }
 };
 
 function oneOf(v, list, dflt) { return list.indexOf(v) >= 0 ? v : dflt; }
@@ -64,6 +65,10 @@ function validateSection(name, raw) {
       (typeof raw.region === 'number' && raw.region >= 0 && raw.region <= 3)) ? raw.region : d.region;
   } else if (name === 'theme') {
     o.mode = oneOf(raw.mode, ['system', 'light', 'dark'], d.mode);
+  } else if (name === 'tips') {
+    ['home', 'roster', 'offseason', 'recruiting'].forEach(function(k) {
+      o[k] = bool(raw[k], d[k]);
+    });
   }
   return o;
 }
