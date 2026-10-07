@@ -46,7 +46,8 @@ registerPortalCallbacks({
 // ── Current recruiting tab ──
 var _tab = 'board';
 // Filters + sort persist across visits via ui-prefs (localStorage only).
-var _filter = Object.assign({ pos: 'All', stars: 0, sort: 'rank', dir: 1, near: false, targets: false, fit: 'all' }, getUiPrefs('recruiting'));
+// fit 'reach' (Within reach) is the default view; 'all' is Show everyone.
+var _filter = Object.assign({ pos: 'All', stars: 0, sort: 'rank', dir: 1, near: false, targets: false, fit: 'reach' }, getUiPrefs('recruiting'));
 var _detailId = -1; // recruit ID shown in detail, -1 = none
 
 // ═══════════════════════════════════════════════════════════
@@ -133,12 +134,12 @@ function calcSchoolChances(r) {
 
 // Best rival bid as it will stand on signing day (rivals bid harder each
 // round), so the odds you see are the odds you'll face at the end
-function finalBestRivalBid(r) {
-  var ranked = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; });
+function finalBestRivalBid(r, rankOf) {
+  var ranked = rankOf ? null : G.teams.slice().sort(function(a, b) { return b.pts - a.pts; });
   var agg = PHASES[3].cpuAgg, best = 0;
   (r.rivals || []).forEach(function(rv) {
     var team = G.teams[rv.tid]; if (!team) return;
-    var rk = ranked.findIndex(function(t) { return t.id === rv.tid; }) + 1;
+    var rk = rankOf ? rankOf[rv.tid] : ranked.findIndex(function(t) { return t.id === rv.tid; }) + 1;
     var pw = rk <= 10 ? 1.8 : rk <= 25 ? 1.4 : rk <= 64 ? 1.0 : 0.65;
     var sb = r.stars >= 5 ? 1.6 : r.stars >= 4 ? 1.3 : r.stars >= 3 ? 1.0 : 0.7;
     var geo = getGeoBonus(getTeamState(team), r.homeState);
@@ -153,6 +154,39 @@ function signChanceFromBids(ub, best) {
   if (!best) return ub > 0 ? 0.95 : 0;
   var ratio = ub / (0.7 * best);
   return Math.max(0.02, Math.min(0.97, 1 / (1 + Math.exp(-5 * (ratio - 1)))));
+}
+
+// ── Within reach ──
+// A recruit is within reach when your fair share of points (budget / open
+// spots) gives at least a 50% signing-day chance, by the same rule signing
+// day uses (prestige gates, home state/region and interest included).
+// Cached per recruit; the cache resets when the phase, budget or open spots
+// change, and a recruit's entry when his points change.
+export var REACH_CHANCE = 0.5;
+var _reach = { key: '', map: {}, rankOf: null };
+function reachKey() {
+  return G.recruitPhase + '|' + G.recruitingBudget + '|' + openSpots() + '|' + G.tid + '|' + (G.coach ? G.coach.rec : 70);
+}
+function fairShare() {
+  var budget = G.recruitingBudget || calcRecruitingBudget();
+  return budget / Math.max(1, openSpots());
+}
+export function withinReach(r) {
+  var key = reachKey();
+  if (_reach.key !== key) {
+    var rankOf = {};
+    G.teams.slice().sort(function(a, b) { return b.pts - a.pts; }).forEach(function(t, i) { rankOf[t.id] = i + 1; });
+    _reach = { key: key, map: {}, rankOf: rankOf, fair: fairShare() };
+  }
+  var c = _reach.map[r.id];
+  if (c && c.pts === (r.points || 0)) return c.ok;
+  var had = r.points;
+  r.points = _reach.fair;
+  var ub = calcUserBid(r);
+  r.points = had;
+  var ok = signChanceFromBids(ub, finalBestRivalBid(r, _reach.rankOf)) >= REACH_CHANCE;
+  _reach.map[r.id] = { pts: r.points || 0, ok: ok };
+  return ok;
 }
 
 // Cache school chances per recruit per phase
@@ -266,7 +300,7 @@ window.setRecruitTab = setRecruitTab;
 export function setRecruitFilter(key, val) {
   if (key === 'show') {
     _filter.near = val === 'near'; _filter.targets = val === 'targets';
-    _filter.fit = (val === 'near' || val === 'targets') ? 'all' : val;
+    _filter.fit = (val === 'near' || val === 'targets') ? 'reach' : val;
   } else if (key === 'sortsel') { _filter.sort = val; _filter.dir = val === 'rank' ? 1 : -1; }
   else _filter[key] = val;
   setUiPrefs('recruiting', _filter); renderOffseason();
@@ -701,8 +735,8 @@ function moveOnIssue() {
   if (step === 'schedule') {
     var r = window._nextRoster ? window._nextRoster() : [];
     var missing = ['PG', 'SG', 'SF', 'PF', 'C'].filter(function(pos) { return !r.some(function(x) { return x.pos === pos; }); });
-    if (missing.length) return 'Next season you have no ' + missing.join(' or ') + ' on the roster.';
-    if (r.length < 10) return 'Next season you only have ' + r.length + ' players. Walk-ons will fill the rest.';
+    if (missing.length) return 'Next season you have no ' + missing.join(' or ') + ' on the roster. Walk-ons will fill in.';
+    if (r.length < 11) return 'Next season you only have ' + r.length + ' players. Walk-ons will fill the rest.';
   }
   return null;
 }
@@ -1440,14 +1474,19 @@ function rSortVal(r) {
 }
 
 var STARS_LABEL = { 5: '5★', 4: '4★ and up', 3: '3★ and up', 2: '2★ and up' };
-var RSHOW_LABEL = { start: 'Would start', rot: 'Starter or rotation', need: 'Fills a need', near: 'Home state and region', targets: 'My targets' };
+var RSHOW_LABEL = { reach: 'Within reach', all: 'Everyone', start: 'Would start', rot: 'Starter or rotation', need: 'Fills a need', near: 'Home state and region', targets: 'My targets' };
 var RSORT_LABEL = { rank: 'National rank', ovr: 'Overall', pot: 'Potential', stars: 'Stars' };
-function recruitShow() { return _filter.targets ? 'targets' : _filter.near ? 'near' : (_filter.fit || 'all'); }
+function recruitShow() { return _filter.targets ? 'targets' : _filter.near ? 'near' : (_filter.fit || 'reach'); }
 
-function renderBoard(open, left) {
+// The Board's recruits for the current filters, in display order. Within
+// reach (the default) also keeps anyone you're already pursuing, and with
+// the default sort shows the best players first.
+export function boardList(open) {
   var ts = getTeamState(G.teams[G.tid]);
   if (!_filter.dir) _filter.dir = 1;
+  var reach = recruitShow() === 'reach';
   var filtered = open.filter(function(r) {
+    if (reach && !isPursuing(r) && !withinReach(r)) return false;
     if (_filter.pos !== 'All' && r.pos !== _filter.pos) return false;
     if (_filter.stars > 0 && r.stars < _filter.stars) return false;
     if (_filter.targets && G.recruitTargets.indexOf(r.id) < 0) return false;
@@ -1460,11 +1499,22 @@ function renderBoard(open, left) {
     }
     return true;
   });
+  var best = reach && _filter.sort === 'rank';
   filtered.sort(function(a, b) {
+    if (best && a.ovr !== b.ovr) return b.ovr - a.ovr;
     var x = rSortVal(a), y = rSortVal(b);
     if (x < y) return -_filter.dir; if (x > y) return _filter.dir;
     return a.natRank - b.natRank;
   });
+  return filtered;
+}
+// Test hooks: the odds the recruit page shows; set Board filters without the UI
+export function _schoolChancesForTest(r) { return calcSchoolChances(r); }
+export function setBoardFilter(vals) { Object.assign(_filter, vals); }
+
+function renderBoard(open, left) {
+  var ts = getTeamState(G.teams[G.tid]);
+  var filtered = boardList(open);
   var active = [];
   if (_filter.pos !== 'All') active.push({ key: 'pos', label: _filter.pos });
   if (recruitShow() !== 'all') active.push({ key: 'show', label: RSHOW_LABEL[recruitShow()] });
@@ -1485,7 +1535,7 @@ function renderBoard(open, left) {
     });
   });
   h += '</div>';
-  if (!filtered.length) h += Acq.empty('No prospects match these filters.');
+  if (!filtered.length) h += Acq.empty(recruitShow() === 'reach' ? 'No prospects within reach match these filters. Show everyone to see the full board.' : 'No prospects match these filters.');
   return h;
 }
 
@@ -1524,7 +1574,7 @@ function recruitFilterSheet() {
   var h = '<div class="card-title">Position</div><div class="fbar">';
   ['All', 'PG', 'SG', 'SF', 'PF', 'C'].forEach(function(pz) { h += rChip('pos', pz, pz, _filter.pos === pz); });
   h += '</div><div class="card-title" style="margin-top:10px;">Show</div><div class="fbar">';
-  [['all', 'Everyone']].concat(Object.keys(RSHOW_LABEL).map(function(k) { return [k, RSHOW_LABEL[k]]; })).forEach(function(o) {
+  Object.keys(RSHOW_LABEL).map(function(k) { return [k, k === 'all' ? 'Show everyone' : RSHOW_LABEL[k]]; }).forEach(function(o) {
     h += rChip('show', o[0], o[1], recruitShow() === o[0]);
   });
   h += '</div><div class="card-title" style="margin-top:10px;">Stars</div><div class="fbar">';
@@ -1540,7 +1590,7 @@ function openRecruitPage(rid) { Acq.openPage('recruit', rid); }
 function openRecruitFilter() { Acq.openPage('recruit-filter', 0); }
 function clearRecruitFilter(key) {
   if (key === 'pos') _filter.pos = 'All';
-  else if (key === 'show') { _filter.fit = 'all'; _filter.near = false; _filter.targets = false; }
+  else if (key === 'show') { _filter.fit = recruitShow() === 'reach' ? 'all' : 'reach'; _filter.near = false; _filter.targets = false; }
   else if (key === 'stars') _filter.stars = 0;
   else if (key === 'sort') { _filter.sort = 'rank'; _filter.dir = 1; }
   setUiPrefs('recruiting', _filter); renderOffseason();

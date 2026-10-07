@@ -14,6 +14,7 @@ var KEY = 'hoops_os_ui';
 
 var POS = ['All', 'PG', 'SG', 'SF', 'PF', 'C'];
 var FIT = ['all', 'start', 'rot', 'need'];
+var RECRUIT_FIT = ['reach', 'all', 'start', 'rot', 'need']; // 'reach' = Within reach (default)
 var PORTAL_TIERS = ['all', 'a', 'b', 'c', 'd', 'e'];
 var PORTAL_SORTS = ['ovr', 'pot', 'odds', 'ask', 'name', 'pos', 'offer', 'from'];
 var RECRUIT_SORTS = ['rank', 'ovr', 'pot', 'stars', 'name', 'pos'];
@@ -21,7 +22,7 @@ var STAT_CATS = ['poy', 'ppg', 'rpg', 'apg', 'fg', 'spg', 'bpg'];
 
 var DEFAULTS = {
   portal: { pos: 'All', tier: 'all', mine: false, fit: 'all', sort: 'ovr', dir: -1 },
-  recruiting: { pos: 'All', stars: 0, sort: 'rank', dir: 1, near: false, targets: false, fit: 'all' },
+  recruiting: { pos: 'All', stars: 0, sort: 'rank', dir: 1, near: false, targets: false, fit: 'reach', reachV: 1 },
   stats: { category: 'poy' },
   rankings: { tab: 'nat', conf: null },
   bracket: { region: null },
@@ -49,7 +50,10 @@ function validateSection(name, raw) {
     o.dir = dir(raw.dir, d.dir);
     o.near = bool(raw.near, d.near);
     o.targets = bool(raw.targets, d.targets);
-    o.fit = oneOf(raw.fit, FIT, d.fit);
+    // Saved before Within reach existed: "all" was just the default, so
+    // those players start on Within reach too (once)
+    o.fit = raw.reachV ? oneOf(raw.fit, RECRUIT_FIT, d.fit) : (raw.fit === 'all' ? d.fit : oneOf(raw.fit, RECRUIT_FIT, d.fit));
+    o.reachV = 1;
   } else if (name === 'stats') {
     o.category = oneOf(raw.category, STAT_CATS, d.category);
   } else if (name === 'rankings') {

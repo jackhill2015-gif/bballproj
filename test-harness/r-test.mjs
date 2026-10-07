@@ -176,11 +176,15 @@ const nameMismatch = gone.filter(r => r.goneTo && G.teams[r.signed] && G.teams[r
 check(nameMismatch.length === 0, 'R1: goneTo matches the signed team name', 'bad=' + nameMismatch.length);
 
 console.log('── Board lists every open recruit (no show-more) ──');
+R.setBoardFilter({ fit: 'all', near: false, targets: false, pos: 'All', stars: 0 }); // Show everyone
 R.renderOffseason();
 const html = _els['offseason-content'].innerHTML;
 const rows = (html.match(/data-acq-open-r="/g) || []).length;
 const openN = G.recruits.filter(r => !(r.signed >= 0)).length;
 check(rows === openN, 'board renders every open recruit', 'rows=' + rows + ' open=' + openN);
+R.setBoardFilter({ fit: 'reach' }); R.renderOffseason();
+const reachRows = (_els['offseason-content'].innerHTML.match(/data-acq-open-r="/g) || []).length;
+check(reachRows === R.boardList(G.recruits.filter(r => r.status === 'open')).length && reachRows < openN, 'default board renders every recruit within reach', 'rows=' + reachRows);
 check(html.indexOf('data-show-more') < 0, 'no show-more button');
 
 console.log('── doOffseason: R2 signees join, R6 class cap, R9 portal before walk-ons ──');

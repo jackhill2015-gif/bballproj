@@ -14,7 +14,7 @@ import {
   awardScore, pickPositionalTeam
 } from './utils.js';
 import { G, LS, SetupState, saveState } from './state.js';
-import { genPlayer, simGame, calcGrowth } from './simulation.js';
+import { genPlayer, genWalkon, simGame, calcGrowth } from './simulation.js';
 import { recordGameMorale } from './morale.js';
 import { rollEvents } from './events.js';
 import {
@@ -983,6 +983,28 @@ export function beginOffseason() {
 //  OFFSEASON
 // ═══════════════════════════════════════════════════════════
 
+// Walk-on freshmen until every position has WALKON_MIN_POS players and the
+// roster has WALKON_MIN_ROSTER (never past the 15-man limit). They come in
+// well below the roster's average. Returns the players added.
+export var WALKON_MIN_POS = 2, WALKON_MIN_ROSTER = 11;
+export function addWalkons(t) {
+  var added = [];
+  var count = function(pos) { return t.rost.filter(function(p) { return p.pos === pos; }).length; };
+  var avg = t.rost.length ? t.rost.reduce(function(a, p) { return a + (p.ovr || 0); }, 0) / t.rost.length : 62;
+  while (t.rost.length < 15) {
+    var thin = POS.filter(function(pos) { return count(pos) < WALKON_MIN_POS; });
+    if (!thin.length && t.rost.length >= WALKON_MIN_ROSTER) break;
+    var pool = thin.length ? thin : POS;
+    var fewest = Math.min.apply(null, pool.map(count));
+    pool = pool.filter(function(pos) { return count(pos) === fewest; });
+    var np = genWalkon(Math.max(40, Math.round(avg) - ri(9, 13)), pool[ri(0, pool.length - 1)]);
+    np.s = freshS();
+    t.rost.push(np);
+    added.push(np);
+  }
+  return added;
+}
+
 export function doOffseason() {
   var t = G.teams[G.tid];
 
@@ -1048,12 +1070,12 @@ export function doOffseason() {
     t.rost.push(np);
   });
 
-  // Fill roster to minimum
-  while (t.rost.length < 10) {
-    var np = genPlayer(ri(62, 74), POS[ri(0, 4)], 'FR');
-    np.s = freshS();
-    t.rost.push(np);
-  }
+  // Walk-ons fill out the roster: 2 at every position, 11 in all
+  var _wo = addWalkons(t);
+  if (_wo.length) addLog('ev', G.gi, _wo.length + ' walk-on' + (_wo.length !== 1 ? 's' : '') + ' joined to fill out the roster (' + POS.map(function(pos) {
+    var n = _wo.filter(function(p) { return p.pos === pos; }).length;
+    return n > 1 ? n + ' ' + pos : n ? pos : '';
+  }).filter(Boolean).join(', ') + ').');
   fixMins(t.rost);
 
   // Advance year
