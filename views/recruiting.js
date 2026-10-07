@@ -1330,8 +1330,8 @@ window.applyForJob = applyForJob;
 
 function showJobModal(job, offered, onContinue) {
   var overlay = document.createElement('div');
-  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(10,25,50,.55);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;';
-  var content = '<div style="background:#fff;border:1px solid var(--bdr);border-radius:10px;padding:24px;width:min(420px,100%);text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.18);">'
+  overlay.style.cssText = 'position:fixed;inset:0;background:var(--scrim);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;';
+  var content = '<div style="background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:24px;width:min(420px,100%);text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.18);">'
     + '<div class="tag ' + (offered ? 't-ok' : 't-rival') + '" style="margin-bottom:10px;">' + (offered ? 'Job offered' : 'Not interested') + '</div>'
     + '<div style="font-size:19px;font-weight:600;margin:8px 0 4px;">' + job.team.name + '</div>'
     + '<div class="sec-sub" style="margin-bottom:16px;">' + job.team.conf + ' \u00b7 Prestige ' + (job.team.schoolPrestige || '?') + '</div>';

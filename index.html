@@ -15,6 +15,26 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<script>
+/* Theme pre-paint: set data-theme (and chrome colors) before style.css
+   loads so dark-mode users never see a white frame. Mirrors
+   views/ui-prefs.js (localStorage key "hoops_os_ui", theme.mode). */
+try {
+  var _tp = JSON.parse(window.localStorage.getItem('hoops_os_ui') || '{}');
+  var _tm = (_tp && _tp.theme) ? _tp.theme.mode : null;
+  if (_tm !== 'system' && _tm !== 'light' && _tm !== 'dark') _tm = null;
+  var _dark = _tm === 'dark' ||
+    (!_tm && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  if (_tm === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+  else if (_tm === 'light') document.documentElement.setAttribute('data-theme', 'light');
+  if (_dark) {
+    var _tc = document.querySelector('meta[name="theme-color"]');
+    if (_tc) _tc.setAttribute('content', '#14181d');
+    var _sb = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
+    if (_sb) _sb.setAttribute('content', 'black-translucent');
+  }
+} catch (e) {}
+</script>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -115,6 +135,15 @@
         <div id="game-log"></div>
       </div>
       <button class="nav-new" data-action="new-dynasty">New Dynasty</button>
+      <div class="nav-sep"></div>
+      <div class="more-theme nav-theme">
+        <div class="more-theme-label">Appearance</div>
+        <div class="more-theme-seg" role="group" aria-label="Appearance">
+          <button class="theme-opt on" data-action="theme" data-mode="system" aria-pressed="true"><span>System</span></button>
+          <button class="theme-opt" data-action="theme" data-mode="light" aria-pressed="false"><span>Light</span></button>
+          <button class="theme-opt" data-action="theme" data-mode="dark" aria-pressed="false"><span>Dark</span></button>
+        </div>
+      </div>
     </nav>
 
     <!-- More sheet (mobile): destinations beyond the 5-icon bar -->
@@ -130,6 +159,15 @@
       <button class="nav-btn" data-action="devreport"><span>Development report</span></button>
       <button class="nav-btn" data-action="backup"><span>Back up dynasty</span></button>
       <button class="nav-btn" data-action="new-dynasty"><span>New Dynasty</span></button>
+      <div class="more-sep"></div>
+      <div class="more-theme">
+        <div class="more-theme-label">Appearance</div>
+        <div class="more-theme-seg" role="group" aria-label="Appearance">
+          <button class="theme-opt on" data-action="theme" data-mode="system" aria-pressed="true"><span>System</span></button>
+          <button class="theme-opt" data-action="theme" data-mode="light" aria-pressed="false"><span>Light</span></button>
+          <button class="theme-opt" data-action="theme" data-mode="dark" aria-pressed="false"><span>Dark</span></button>
+        </div>
+      </div>
     </div>
 
     <main id="center">

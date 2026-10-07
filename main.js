@@ -22,7 +22,7 @@ import {
   toast, addLog, updateAll, navTo, refreshView,
   openModal, stepSim, skipGame, finalizeModal,
   togglePlayMenu, renderLog,
-  registerUICallbacks, initOutsideClickHandlers, updateAdvanceBtn
+  registerUICallbacks, initOutsideClickHandlers, updateAdvanceBtn, initTheme
 } from './ui.js';
 
 // ── Views ────────────────────────────────────────────────
@@ -206,6 +206,7 @@ window._renderSeasonRecap = renderSeasonRecap;
 
 buildUniverse();
 initOutsideClickHandlers();
+initTheme();
 showHomeScreen();
 if (typeof window !== 'undefined') window._gameStarted = true; // update guard in index.html
 

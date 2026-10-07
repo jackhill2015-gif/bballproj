@@ -15,6 +15,7 @@ import { openPlayerFromEl } from './views/player.js';
 import { openTeamFromEl, openGameDetailFromEl } from './views/team.js';
 import { closeSheet } from './views/sheet.js';
 import { openDevReport } from './views/devreport.js';
+import { getUiPrefs, setUiPrefs } from './views/ui-prefs.js';
 
 // ── Late-Binding Registry ────────────────────────────────
 var _views = {
@@ -454,6 +455,53 @@ export function teamAbbr(name) {
   return String(name || '???').replace(/[^A-Za-z]/g, '').slice(0, 4).toUpperCase() || '???';
 }
 
+// ── Theme (dark mode): System / Light / Dark ──
+// The mode lives in ui-prefs ("hoops_os_ui" key, theme section). "system"
+// leaves data-theme off <html> so the prefers-color-scheme CSS rule decides.
+export function themeMode() {
+  return getUiPrefs('theme').mode || 'system';
+}
+export function themeIsDark() {
+  var m = themeMode();
+  if (m === 'dark') return true;
+  if (m === 'light') return false;
+  return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+}
+export function applyTheme() {
+  var m = themeMode(), root = document.documentElement;
+  if (!root || !root.setAttribute) return; // node test shims: no DOM
+  if (m === 'dark') root.setAttribute('data-theme', 'dark');
+  else if (m === 'light') root.setAttribute('data-theme', 'light');
+  else root.removeAttribute('data-theme');
+  var dark = themeIsDark();
+  var meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', dark ? '#14181d' : '#ffffff');
+  var sb = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
+  if (sb) sb.setAttribute('content', dark ? 'black-translucent' : 'default');
+  var opts = document.querySelectorAll('.theme-opt');
+  for (var i = 0; i < opts.length; i++) {
+    var on = opts[i].getAttribute('data-mode') === m;
+    opts[i].classList.toggle('on', on);
+    opts[i].setAttribute('aria-pressed', on ? 'true' : 'false');
+  }
+}
+export function setTheme(mode) {
+  if (['system', 'light', 'dark'].indexOf(mode) < 0) return;
+  setUiPrefs('theme', { mode: mode });
+  applyTheme();
+}
+// Sync toggle state + browser chrome on boot; keep the chrome in sync if
+// the OS theme changes while the setting is System.
+export function initTheme() {
+  applyTheme();
+  try {
+    var mq = window.matchMedia('(prefers-color-scheme: dark)');
+    var rerun = function() { applyTheme(); };
+    if (mq.addEventListener) mq.addEventListener('change', rerun);
+    else if (mq.addListener) mq.addListener(rerun);
+  } catch (e) {}
+}
+
 // ═══════════════════════════════════════════════════════════
 //  MAIN UPDATE — ONE render path per action
 // ═══════════════════════════════════════════════════════════
@@ -628,6 +676,9 @@ function handleAction(el) {
       break;
     case 'more':
       toggleMoreSheet();
+      break;
+    case 'theme':
+      setTheme(el.getAttribute('data-mode'));
       break;
     case 'notif-toggle':
       toggleNotif();

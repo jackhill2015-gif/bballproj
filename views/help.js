@@ -129,7 +129,7 @@ export function renderHelp() {
     'Both screens work the same way. The Board lists every player: his type (for example Floor general or Rim protector) '
     + 'and where he would land on your roster next season: Best player, Starter, Rotation or Bench. Need means he upgrades '
     + 'your roster\'s thinnest area. Tap a player for his page: Overview (your offer or recruiting points, plus fit with your '
-    + 'roster), Ratings (strengths, weaknesses and rating bars) and Odds (every school's chance to sign him, yours included). Filters live behind the '
+    + 'roster), Ratings (strengths, weaknesses and rating bars) and Odds (every school\'s chance to sign him, yours included). Filters live behind the '
     + 'Filter button; tap a filter chip to clear it. Targets or My offers is where you manage everyone you are pursuing. '
     + 'Your class shows round results and who has signed. Roster shows your depth chart for next season. The button at '
     + 'the bottom closes the round.');
