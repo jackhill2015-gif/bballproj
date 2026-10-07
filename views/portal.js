@@ -896,7 +896,7 @@ function portalPage(st) {
   if (!f) return { title: 'Transfer portal', html: Acq.empty('This player has already decided. See Your class for the result.') };
   var e = ensureEntrant(f.e), stage = G.portalStage || 0, ch = portalChance(e), stats = entrantStats(e);
   var left = { FR: 3, SO: 2, JR: 1, SR: 0 }[e.cls];
-  var h = Acq.pageTop(e.name, e.pos + ' · ' + e.cls + ' · from ' + e.fromName, e.ovr, e.pot || e.ovr);
+  var h = Acq.pageTop(e.name, e.pos + ' · ' + e.cls + ' · from ' + e.fromName, e.ovr, e.pot || e.ovr, '', e);
   h += Acq.pageTabs([{ id: 'overview', label: 'Overview' }, { id: 'ratings', label: 'Ratings' }, { id: 'schools', label: 'Odds' }], st.tab);
   if (st.tab === 'ratings') {
     h += typeTagsHTML(e) + ratingBarsHTML(e);

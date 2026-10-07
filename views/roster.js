@@ -16,6 +16,7 @@ import { G, saveState } from '../state.js';
 import { moodTag, moodColors, MORALE_DEFAULT } from '../morale.js';
 import { gameplanPanelHTML, handleGameplanClick, handleGameplanChange } from './strategy.js';
 import { playerType } from './scouting.js';
+import { playerFaceSmallHTML } from './faces.js';
 
 var _dragIdx = -1;
 
@@ -88,7 +89,7 @@ function depthRow(p, i) {
     // drag handle (desktop) — nudge buttons are the touch path
     + '<div class="drag-handle" data-drag="' + i + '" role="button" tabindex="0" aria-label="Drag ' + p.name + ' to reorder (or use arrow keys)" title="Drag to reorder">☰</div>'
     + '<span class="pos-chip">' + p.pos + '</span>'
-    + '<div class="dr-name"><span class="pname" data-action="player" data-player="' + G.tid + ':' + i + '" role="button" tabindex="0">' + p.name + '</span> <span class="cls-txt">' + (p.rsUsed ? 'RS ' : '') + p.cls + '</span>' + moodPill
+    + '<div class="dr-name">' + playerFaceSmallHTML(p) + '<span class="pname" data-action="player" data-player="' + G.tid + ':' + i + '" role="button" tabindex="0">' + p.name + '</span> <span class="cls-txt">' + (p.rsUsed ? 'RS ' : '') + p.cls + '</span>' + moodPill
     + (p.rs ? '<span class="rs-tag">Redshirt</span>' : '')
     + '<div class="dr-sub">' + line + '</div></div>'
     + '<div class="dr-ovr"><b>' + p.ovr + '</b><small style="color:' + potCol + ';">Pot ' + pot + '</small></div>'

@@ -1633,3 +1633,12 @@ table.ups td { vertical-align: middle; }
 .cr-name { font-weight: 600; }
 .cr-sub { font-size: 11.5px; color: var(--txt3); }
 .cr-gap { text-align: center; color: var(--txt3); }
+
+/* Muse: player faces (facesjs, vendored) */
+.pf-with-face { display: flex; gap: 14px; align-items: center; }
+.pf-face { width: 96px; flex: none; }
+.pf-face svg { width: 100%; height: auto; display: block; }
+.pp-id { display: flex; gap: 10px; align-items: center; min-width: 0; }
+.pface { width: 34px; height: 34px; border-radius: 50%; overflow: hidden; flex: none; display: inline-block; vertical-align: middle; background: var(--inset); }
+.pface svg { width: 100%; height: 100%; display: block; }
+.dr-name .pface { width: 30px; height: 30px; margin-right: 6px; }

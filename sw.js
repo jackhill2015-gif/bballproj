@@ -6,7 +6,7 @@
 //  fails if a game file is missing from this list.
 // ═══════════════════════════════════════════════════════════
 
-var CACHE = 'hoops-os-v22';
+var CACHE = 'hoops-os-v23';
 var APP_FILES = [
   "./",
   "index.html",
@@ -57,6 +57,17 @@ var APP_FILES = [
   "views/team.js",
   "views/trophies.js",
   "views/ui-prefs.js",
+  "views/faces.js",
+  "vendor/facesjs/generate.js",
+  "vendor/facesjs/display.js",
+  "vendor/facesjs/override.js",
+  "vendor/facesjs/svgs.js",
+  "vendor/facesjs/svgs-index.js",
+  "vendor/facesjs/common.js",
+  "vendor/facesjs/utils.js",
+  "vendor/facesjs/generateRelative.js",
+  "vendor/facesjs/dlv.js",
+  "vendor/facesjs/dset.js",
 ];
 
 self.addEventListener('install', function(e) {

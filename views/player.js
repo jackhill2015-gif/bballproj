@@ -21,6 +21,7 @@
 import { G } from '../state.js';
 import { openSheet } from './sheet.js';
 import { playerType, strengthsAndWeaknesses } from './scouting.js';
+import { playerFaceHTML } from './faces.js';
 
 var RATING_LABELS = [
   ['sht', 'Shooting'],
@@ -65,9 +66,10 @@ function profileHTML(t, p) {
   var cls = p.cls + (p.rsUsed ? ' (RS)' : '');
   var sub = p.pos + ' · ' + cls + ' · ' + t.name
     + (p.rs ? ' · <span class="tag t-home">Redshirting</span>' : '');
-  var h = '<div class="pf-top"><div class="pf-name">' + p.name + '</div>'
+  var h = '<div class="pf-top pf-with-face">' + playerFaceHTML(p)
+    + '<div><div class="pf-name">' + p.name + '</div>'
     + '<div class="pf-sub">' + sub + '</div>'
-    + '<div class="pf-ovr"><b>' + p.ovr + '</b> OVR <span class="dim">· ' + (p.pot || p.ovr) + ' POT</span></div></div>';
+    + '<div class="pf-ovr"><b>' + p.ovr + '</b> OVR <span class="dim">· ' + (p.pot || p.ovr) + ' POT</span></div></div></div>';
 
   // Player type + strengths/weaknesses (views/scouting.js, read-only)
   var sw = strengthsAndWeaknesses(p);

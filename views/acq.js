@@ -17,6 +17,7 @@ import { G } from '../state.js';
 import { openSheet, isSheetOpen } from './sheet.js';
 import { nextSeasonRoster } from './scouting.js';
 import { ge } from '../utils.js';
+import { playerFaceSmallHTML } from './faces.js';
 
 // ── Header / tabs / toolbar / sticky bar ──────────────────
 export function header(title, roundLine, stats) {
@@ -124,8 +125,16 @@ export function pageTabs(list, cur) {
 }
 
 // Top of a player page: name line + big overall/potential
-export function pageTop(name, line, ovr, pot, extra) {
-  return '<div class="pp-top"><div><div class="pp-name">' + name + '</div><div class="pp-line">' + line + '</div></div>'
+export function pageTop(name, line, ovr, pot, extra, p) {
+  // p (the player object) is optional. portal.js passes it; for recruit pages
+  // (recruiting.js is Claude's file) look it up read-only by name.
+  if (!p && typeof G !== 'undefined') {
+    p = ((G.recruits || []).find(function(r) { return r.name === name; })
+      || (G.portalEntrants || []).find(function(e) { return e.name === name; })
+      || null);
+  }
+  var face = p ? playerFaceSmallHTML(p) : '';
+  return '<div class="pp-top"><div class="pp-id">' + face + '<div><div class="pp-name">' + name + '</div><div class="pp-line">' + line + '</div></div></div>'
     + '<div class="pp-nums"><div><b>' + ovr + '</b><span>Overall</span></div><div><b>' + pot + '</b><span>Potential</span></div></div></div>'
     + (extra || '');
 }
