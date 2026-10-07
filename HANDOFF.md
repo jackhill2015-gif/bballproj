@@ -49,10 +49,27 @@ Leave a note for the other agent. Delete it once it's handled.
 
 ## Up next (Jack's queue)
 
-1. 30-season stress test: save size and speed.
+1. **Storage overhaul: IndexedDB + 3 save slots + 30-season stress test** (Claude, next fresh session). Brief:
+   - **Why:** saves live in localStorage `hoops_os_v3` (~1.1 MB after one season, ~5 MB browser cap). Three slots or a long dynasty would hit the wall.
+   - **Approach** (keep the game synchronous):
+     - At boot, before the home screen, read saves from IndexedDB into memory.
+     - Keep `G` and `loadState()` working from memory exactly as now.
+     - Write saves back to IndexedDB in the background, debounced like today's `saveState()`.
+     - Flush on `visibilitychange` / `pagehide` (see `flushPendingSave`).
+     - Never leave a half-written save: write to a temp key, then swap.
+   - **Slots:** one IndexedDB record (or database) per slot. The active slot is remembered in a small localStorage pref.
+   - **Home screen:** three slot cards, each showing team, season, record and coach, with Continue / New / Delete per slot. Delete confirms.
+   - **Migration:** on first run, copy the existing `hoops_os_v3` save into slot 1. Keep the localStorage copy until the IndexedDB write is confirmed and reads back identical, then remove it to free space.
+   - **Persistence:** call `navigator.storage.persist()` once (ignore failures).
+   - **Backup/restore (backup.js):** works on the active slot. Restore into a chosen slot.
+   - **Fallback:** if IndexedDB is unavailable (some private modes), fall back to localStorage with a calm notice.
+   - **Compression:** optional (e.g. vendored lz-string). Measure first.
+   - **Tests:** node tests use the localStorage shim. Keep that path working, so tests mostly don't change. Add a migration test and a slots test.
+   - **Stress test:** sim 30 seasons in one slot, with all 3 slots full. Report save size per season and time per save/load. Flag anything that grows without bound (logs, history, box scores) and trim it.
+   - **Check:** a real browser at 390px and 1280px, light and dark. A mid-dynasty save from before the change must load.
+   - Reference: Basketball GM keeps one IndexedDB database per league.
 2. NIT for teams that miss the NCAA. Then draft night + program alumni.
-3. Multiple save slots.
-4. Rename the game (undecided). Don't rename anything yet.
+3. Rename the game (undecided). Don't rename anything yet.
 
 ## House rules
 
