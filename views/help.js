@@ -84,7 +84,7 @@ export function renderHelp() {
     + 'when it matters.');
 
   h += sec('The offseason, in order',
-    'Season recap (spend your skill points right there), the coaching carousel, departures (who is leaving, '
+    'Season recap (spend your skill points right there — unspent points carry over to next season), the coaching carousel, departures (who is leaving, '
     + 'and NIL requests from players who want to stay), the transfer portal, recruiting, signing day, and your '
     + 'non-conference schedule for next season. Each step advances with the button at the bottom or the top-bar '
     + 'button. Before a step where it matters, you get a heads-up (unspent skill points, open roster spots with '
@@ -130,7 +130,9 @@ export function renderHelp() {
     + 'and where he would land on your roster next season: Best player, Starter, Rotation or Bench. Need means he upgrades '
     + 'your roster\'s thinnest area. Tap a player for his page: Overview (your offer or recruiting points, plus fit with your '
     + 'roster), Ratings (strengths, weaknesses and rating bars) and Odds (every school\'s chance to sign him, yours included). Filters live behind the '
-    + 'Filter button; tap a filter chip to clear it. Targets or My offers is where you manage everyone you are pursuing. '
+    + 'Filter button; tap a filter chip to clear it. You can pursue at most one player per open roster spot, '
+    + 'so nobody who signs is ever cut for room. Targets is where you manage everyone you are pursuing: '
+    + 'players who signed with you show green, players who went elsewhere show red. '
     + 'Your class shows round results and who has signed. Roster shows your depth chart for next season. The button at '
     + 'the bottom closes the round.');
 
@@ -143,10 +145,14 @@ export function renderHelp() {
     + 'a small school can dream, but the math punishes it.');
 
   h += sec('Recruiting',
-    'Mark prospects as targets, then spend recruiting points from a budget set by your prestige, '
-    + 'open roster spots, and your coach\'s recruiting skill. It runs on the same three-round '
-    + 'rhythm as the portal: concentrate points on a few prospects or spread them, watch the odds '
-    + 'move, and drop out after round one for a 75% refund. The class resolves on signing day.');
+    'Mark prospects as targets, then spend recruiting points from a budget built in plain sight: '
+    + 'you start with a base amount, add points for every open roster spot (each spot is worth more '
+    + 'at a prestigious school), and your coach\'s recruiting skill nudges it higher. More open spots '
+    + 'and more prestige mean more points. It runs on the same three-round rhythm as the portal: '
+    + 'concentrate points on a few prospects or spread them, watch the odds move, and drop out after '
+    + 'round one for a 75% refund. The odds shown are your real chance to sign him on signing day, '
+    + 'not a flavor number. Signing day ends with class rankings for every school, for recruiting '
+    + 'classes and transfer classes alike.');
 
   h += sec('Job security',
     'Every season comes with a win expectation based on your roster. Finish below the danger line '
