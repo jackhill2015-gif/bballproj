@@ -5,10 +5,16 @@
 
 import { getTOvr, getOvr, rawOvr, scaleOvr } from './utils.js';
 import { RECRUIT_STATE_POOL, calcSchoolPrestige, COACH_FN, COACH_LN } from './constants.js';
+import { readSlot, writeSlot, removeSlot, activeSlot } from './storage.js';
 
 // ── Current save version — bump this when adding new fields ──
 var SAVE_VERSION = 11;
-var SAVE_KEY = 'hoops_os_v3';
+// Saves live in the active save slot (storage.js: IndexedDB, or the
+// localStorage key 'hoops_os_v3' for slot 1 when IndexedDB is unavailable).
+
+// CPU coach firings kept per team in the save. Nothing shows them and they
+// grew by ~5 KB a season, so only the latest few are kept.
+export var COACH_HISTORY_KEEP = 5;
 
 // ── Main Game State ──
 export const G = {
@@ -375,6 +381,7 @@ function _writeSave() {
   try {
     var lean = {
       _saveVersion: SAVE_VERSION,
+      _savedAt: Date.now(), // storage.js keeps the newer copy if two exist
       tid:G.tid,yr:G.yr,gi:G.gi,wk:G.wk,pts:G.pts,
       phase:G.phase,difficulty:G.difficulty,
       confTitles:G.confTitles,championships:G.championships,prestige:G.prestige,
@@ -392,7 +399,7 @@ function _writeSave() {
       teams:G.teams.map(function(t,i){
         var b={id:t.id,wins:t.wins,loss:t.loss,cWins:t.cWins,cLoss:t.cLoss,
           pts:t.pts,ts:t.ts,schoolPrestige:t.schoolPrestige,coach:t.coach,
-          strat:t.strat,streak:t.streak||0,coachHistory:t.coachHistory||[],lastRank:t.lastRank||0,rating:t.rating||0};
+          strat:t.strat,streak:t.streak||0,coachHistory:(t.coachHistory||[]).slice(-COACH_HISTORY_KEEP),lastRank:t.lastRank||0,rating:t.rating||0};
         if(i===G.tid){b.sched=t.sched;}
         else{
           // v10: CPU schedule entries packed as [opp, home, conf, played, uScore, oScore]
@@ -415,12 +422,13 @@ function _writeSave() {
       facilities:G.facilities||null,finance:G.finance||null,devReport:G.devReport||null,retention:G.retention||null,draft:G.draft||null,signings:G.signings||null,ncPicks:G.ncPicks||null,autoLineup:!!G.autoLineup
     };
     var str=JSON.stringify(lean);
-    try { localStorage.setItem(SAVE_KEY,str); }
+    try { writeSlot(activeSlot(),str); }
     catch (qe) {
-      // Out of space: drop the activity log (non-essential) and retry once
+      // Out of space (localStorage fallback): drop the activity log
+      // (non-essential) and retry once
       lean.logs = [];
       str = JSON.stringify(lean);
-      localStorage.setItem(SAVE_KEY,str);
+      writeSlot(activeSlot(),str);
     }
     console.log('[Save] v'+SAVE_VERSION+' '+Math.round(str.length/1024)+'KB');
   }catch(e){console.error('Save failed',e);}
@@ -478,7 +486,7 @@ function _fattenConfTourneys(slim) {
 export function loadState() {
   try {
     _flushPendingSave();
-    var raw=localStorage.getItem(SAVE_KEY);if(!raw)return false;
+    var raw=readSlot(activeSlot());if(!raw)return false;
     var s=JSON.parse(raw);
     var _origVer = s._saveVersion || 1;
 
@@ -488,7 +496,7 @@ export function loadState() {
       console.log('[Load] Save version ' + ver + ', current ' + SAVE_VERSION + ' — migrating...');
       s = runMigrations(s);
       // Re-save migrated data
-      localStorage.setItem(SAVE_KEY, JSON.stringify(s));
+      try { writeSlot(activeSlot(), JSON.stringify(s)); } catch (we) {}
       console.log('[Load] Migration complete.');
     }
 
@@ -583,13 +591,14 @@ export function loadState() {
 
 export function deleteSave(){
   if (_saveTimer) { clearTimeout(_saveTimer); _saveTimer = null; }
-  try { localStorage.removeItem(SAVE_KEY); } catch (e) {}
+  _idlePending = false;
+  removeSlot(activeSlot());
 }
-export function hasSave(){ try { return !!localStorage.getItem(SAVE_KEY); } catch (e) { return false; } }
+export function hasSave(){ return !!readSlot(activeSlot()); }
 export function getRawSave(){
   _flushPendingSave();
   var r = null;
-  try { r = localStorage.getItem(SAVE_KEY); } catch (e) { return null; }
+  try { r = readSlot(activeSlot()); } catch (e) { return null; }
   if(!r)return null;
   try{return JSON.parse(r);}catch(e){return null;}
 }

@@ -45,35 +45,8 @@ try {
 <div id="home-screen" style="display:none;">
   <div class="home-brand">Hoops <em>OS</em></div>
   <div class="home-tagline"><span id="home-team-count">365</span> D1 programs. One champion. Build your dynasty.</div>
-  <div class="home-cards">
-    <div class="home-new" data-action="new-dynasty-start" role="button" tabindex="0" aria-label="Start a new dynasty">
-      <div class="home-new-icon">＋</div>
-      <div>
-        <div class="home-new-label">New dynasty</div>
-        <div class="home-new-sub">Start from scratch</div>
-      </div>
-    </div>
-    <div id="home-save-slot" style="display:none;" class="home-save">
-      <div class="home-save-title">Saved dynasty</div>
-      <div class="home-dynasty-row">
-        <div class="home-dynasty-info">
-          <div class="home-dynasty-team" id="home-team-name">---</div>
-          <div class="home-dynasty-meta" id="home-dynasty-meta">---</div>
-          <div class="home-dynasty-stats">
-            <div class="home-dynasty-stat"><div class="home-dynasty-stat-v" id="home-record">0-0</div><div class="home-dynasty-stat-l">Record</div></div>
-            <div class="home-dynasty-stat"><div class="home-dynasty-stat-v" id="home-year">2025</div><div class="home-dynasty-stat-l">Year</div></div>
-            <div class="home-dynasty-stat"><div class="home-dynasty-stat-v" id="home-seasons">1</div><div class="home-dynasty-stat-l">Seasons</div></div>
-            <div class="home-dynasty-stat"><div class="home-dynasty-stat-v" id="home-titles">0</div><div class="home-dynasty-stat-l">Titles</div></div>
-          </div>
-        </div>
-        <div class="home-play-btn" data-action="load-play" role="button" tabindex="0">Continue</div>
-      </div>
-      <div class="home-delete">
-        <button class="btn-quiet" data-action="backup">Back up</button>
-        <button class="home-delete-btn" data-action="delete-save">Delete save</button>
-      </div>
-    </div>
-  </div>
+  <div class="home-cards" id="home-slots" aria-label="Save slots"></div>
+  <div id="home-storage-note" class="home-note" hidden>This browser is using basic storage, which has less room. Back up your dynasty now and then.</div>
   <div class="home-backup">Have a backup file? <button class="btn-quiet" data-action="restore">Restore from backup</button></div>
 </div>
 
@@ -261,7 +234,7 @@ try {
 <!-- Update guard: if a deploy loads half new and half old files, the game
      can't start (a file asks for something the other version lacks). Show a
      calm reload bar that clears the offline copy and loads everything fresh.
-     Saves live in localStorage and are not touched. Also shown when a new
+     Saves (IndexedDB / localStorage) are not touched. Also shown when a new
      version finishes installing in the background. -->
 <div id="upd-bar" hidden><span id="upd-msg">A new version is ready.</span><button type="button" id="upd-btn">Reload</button></div>
 <script>
