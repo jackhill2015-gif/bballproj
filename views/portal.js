@@ -875,7 +875,7 @@ function portalPage(st) {
   var e = ensureEntrant(f.e), stage = G.portalStage || 0, ch = portalChance(e), stats = entrantStats(e);
   var left = { FR: 3, SO: 2, JR: 1, SR: 0 }[e.cls];
   var h = Acq.pageTop(e.name, e.pos + ' · ' + e.cls + ' · from ' + e.fromName, e.ovr, e.pot || e.ovr);
-  h += Acq.pageTabs([{ id: 'overview', label: 'Overview' }, { id: 'ratings', label: 'Ratings' }, { id: 'schools', label: 'Schools' }], st.tab);
+  h += Acq.pageTabs([{ id: 'overview', label: 'Overview' }, { id: 'ratings', label: 'Ratings' }, { id: 'schools', label: 'Odds' }], st.tab);
   if (st.tab === 'ratings') {
     h += typeTagsHTML(e) + ratingBarsHTML(e);
     h += '<div class="scout-stats">'
@@ -883,6 +883,8 @@ function portalPage(st) {
       + '<span><b>' + (stats ? stats.apg.toFixed(1) : '–') + '</b> apg</span><span><b>' + (stats ? (stats.fg * 100).toFixed(1) + '%' : '–') + '</b> FG</span>'
       + '<span><b>' + (stats ? stats.gp : 0) + '</b> games last season</span></div>';
   } else if (st.tab === 'schools') {
+    h += '<div class="pp-note" style="margin-bottom:10px;">Each school\'s chance to sign him if he decided today. '
+      + (e.offer ? 'Raise your offer to move up.' : 'You have not made an offer yet.') + '</div>';
     var total = ch.bid; ch.suitors.forEach(function(x) { total += x.bid; });
     var rowsS = ch.suitors.map(function(x) { return { name: x.name, pct: Math.round(x.bid / Math.max(1, total) * 100), me: false }; });
     rowsS.push({ name: G.teams[G.tid].name, pct: ch.pct, me: true });
@@ -892,14 +894,12 @@ function portalPage(st) {
         + '<div class="school-bar"><div class="school-fill" style="width:' + x.pct + '%;background:' + (x.me ? 'var(--blu)' : 'var(--bdr2)') + ';"></div></div>'
         + '<div class="school-pct">' + x.pct + '%</div></div>';
     });
-    if (!e.offer) h += '<div class="pp-note" style="margin-top:8px;">Your odds without an offer. Make one on the Overview tab.</div>';
   } else {
     h += offerControl(e, stage);
     h += '<div class="pp-sec"><div class="scout-type">' + playerType(e) + '</div>'
       + '<div class="pp-note">Leaving ' + e.fromName + ': ' + e.reason.toLowerCase() + '. '
       + (left === undefined ? '' : (left > 0 ? left + ' season' + (left > 1 ? 's' : '') + ' of eligibility left after this one.' : 'Final season.')) + '</div></div>';
     h += '<div class="pp-sec"><div class="card-title">Fit with ' + G.teams[G.tid].name + ' next season</div>' + fitListHTML(e) + '</div>';
-    h += '<div class="pp-sec pp-odds">Your odds: <b style="color:' + chanceColor(ch.pct) + ';">' + ch.pct + '%</b> against ' + ch.suitors.length + ' other school' + (ch.suitors.length === 1 ? '' : 's') + '.</div>';
   }
   return { title: 'Transfer portal', html: h };
 }

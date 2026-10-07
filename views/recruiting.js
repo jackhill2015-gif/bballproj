@@ -1417,17 +1417,19 @@ function recruitPage(st) {
   var isTarget = G.recruitTargets.indexOf(r.id) >= 0;
   var stName = STATE_NAMES[r.homeState] || r.homeState;
   var h = Acq.pageTop(r.name, r.pos + ' · <span class="stars">' + starStr(r.stars) + '</span> · #' + r.natRank + ' nationally · ' + stName, r.ovr, r.pot || r.ovr, geoBadges(r, sp) ? '<div style="margin:-4px 0 8px;">' + geoBadges(r, sp) + '</div>' : '');
-  h += Acq.pageTabs([{ id: 'overview', label: 'Overview' }, { id: 'ratings', label: 'Ratings' }, { id: 'schools', label: 'Schools' }], st.tab);
+  h += Acq.pageTabs([{ id: 'overview', label: 'Overview' }, { id: 'ratings', label: 'Ratings' }, { id: 'schools', label: 'Odds' }], st.tab);
   if (r.status !== 'open') {
     h += Acq.empty(r.signed === G.tid ? 'He signed with you.' : 'He signed with ' + (r.goneTo || 'another school') + '.');
   } else if (st.tab === 'ratings') {
     h += typeTagsHTML(r) + ratingBarsHTML(r);
   } else if (st.tab === 'schools') {
+    h += '<div class="pp-note" style="margin-bottom:10px;">Each school\'s chance to sign him if he decided today. '
+      + (isTarget && r.points ? 'Add points to move up.' : 'Target him and add points to get in the race.') + '</div>';
     h += schoolRaceHTML(r, 0);
   } else {
     h += '<div class="pp-offer"><div class="pp-offer-l"><span>Recruiting points</span>' + stepperRow(r, left, false) + '</div>'
       + '<div class="pp-offer-r"><span>' + left + ' points left</span>'
-      + (isTarget ? '<span style="color:var(--blu);">' + userPctOf(r) + '% odds</span><button class="btn-quiet btn-sm" data-rem-target="' + r.id + '">Drop target</button>'
+      + (isTarget ? '<button class="btn-quiet btn-sm" data-rem-target="' + r.id + '">Drop target</button>'
         : '<button class="btn-big" style="width:auto;padding:0 16px;min-height:36px;" data-add-target="' + r.id + '">Add to targets</button>')
       + '</div></div>';
     h += '<div class="pp-sec"><div class="scout-type">' + playerType(r) + '</div></div>';
