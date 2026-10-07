@@ -18,7 +18,7 @@ import { genPlayer, simGame, calcGrowth } from './simulation.js';
 import { recordGameMorale } from './morale.js';
 import { rollEvents } from './events.js';
 import {
-  snapRoster, userLinesFromRes, surfaceUserGameRecords,
+  snapRoster, diffRoster, userLinesFromRes, surfaceUserGameRecords,
   processSeasonRecords, clearSeasonBreaks
 } from './records.js';
 
@@ -434,6 +434,20 @@ export function recordResult() {
   var oScore = uHome ? LS.as : LS.hs;
   game.uScore = uScore;
   game.oScore = oScore;
+  // Box score for your game (both teams), from the sim's per-game lines
+  // (quick sim) or a before/after diff (watched game)
+  try {
+    var _bx = function(lines) {
+      return (lines || []).filter(function(L) { return L.p && (L.p.mins > 0 || L.pts || L.reb || L.ast); })
+        .map(function(L) { return [L.p.name, L.p.pos, L.pts || 0, L.reb || 0, L.ast || 0, L.stl || 0, L.blk || 0]; })
+        .sort(function(a, b) { return b[2] - a[2]; });
+    };
+    var hl = null, al = null;
+    if (LS._boxPlines) { hl = LS._boxPlines.h && LS._boxPlines.h.lines; al = LS._boxPlines.a && LS._boxPlines.a.lines; }
+    else if (LS._recPre) { hl = diffRoster(LS.tH, LS._recPre.h); al = diffRoster(LS.tA, LS._recPre.a); }
+    if (hl || al) game.box = uHome ? { u: _bx(hl), o: _bx(al) } : { u: _bx(al), o: _bx(hl) };
+  } catch (e) { /* box score is optional */ }
+  LS._boxPlines = null;
   var won = uScore > oScore;
   var t = G.teams[G.tid], opp = uHome ? LS.tA : LS.tH;
   // S1: mirror the result onto the OPPONENT's schedule entry so their
@@ -546,6 +560,7 @@ export function launchSim(watch) {
     var res = simGame(tH, tA, game.home);
     LS.hs = res.homeScore; LS.as = res.awayScore;
     LS._recLines = userLinesFromRes(res);
+    LS._boxPlines = res.plines || null;
     recordResult();
     simCPUWeek();
     advanceWeek();

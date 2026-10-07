@@ -165,9 +165,23 @@ export function openGameDetail(week) {
     + ' <span style="color:var(--txt3);">vs</span> '
     + teamLink(opp.id, opp.name) + '</div></div>';
 
-  h += '<div class="sec-head">' + me.name + ' leaders</div>' + leaderRows(me);
-  h += '<div class="sec-head" style="margin-top:14px;">' + opp.name + ' leaders</div>' + leaderRows(opp);
-  h += '<div style="font-size:12px;color:var(--txt3);margin-top:10px;">Season scoring leaders — per-game box scores are not tracked.</div>';
+  if (g.box) {
+    // Box score saved with the game (season.js recordResult): [name, pos, pts, reb, ast, stl, blk]
+    var boxTbl = function(team, rows) {
+      var t = '<div class="sec-head" style="margin-top:10px;">' + team.name + '</div><div class="tbl-wrap"><table><thead><tr>'
+        + '<th>Player</th><th class="num">PTS</th><th class="num">REB</th><th class="num">AST</th><th class="num">STL</th><th class="num">BLK</th></tr></thead><tbody>';
+      rows.forEach(function(r) {
+        t += '<tr><td>' + esc(r[0]) + ' <span style="color:var(--txt3);font-size:11px;">' + r[1] + '</span></td>'
+          + '<td class="num"><b>' + r[2] + '</b></td><td class="num">' + r[3] + '</td><td class="num">' + r[4] + '</td><td class="num">' + r[5] + '</td><td class="num">' + r[6] + '</td></tr>';
+      });
+      return t + '</tbody></table></div>';
+    };
+    h += boxTbl(me, g.box.u || []) + boxTbl(opp, g.box.o || []);
+  } else {
+    h += '<div class="sec-head">' + me.name + ' leaders</div>' + leaderRows(me);
+    h += '<div class="sec-head" style="margin-top:14px;">' + opp.name + ' leaders</div>' + leaderRows(opp);
+    h += '<div style="font-size:12px;color:var(--txt3);margin-top:10px;">Season scoring leaders. Box scores are saved for games played from now on.</div>';
+  }
   openSheet(h, 'Game detail');
 }
 

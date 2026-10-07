@@ -19,10 +19,8 @@ while (n < 4 && ++guard < 200) {
 }
 const played = G.teams[G.tid].sched.map((g, w) => ({ g, w })).filter(x => x.g && x.g.played);
 check(played.length >= 4, 'played schedule entries exist: ' + played.length);
-// Recon finding: entries carry scores only — no per-game player lines,
-// so the game sheet must use the season-leaders fallback.
-check(played.every(x => x.g.uScore !== undefined && !x.g.box && !x.g.players),
-  'schedule entries have scores, no per-game player lines');
+// Entries carry scores; games you played also keep a box score (boxscore-test)
+check(played.every(x => x.g.uScore !== undefined), 'schedule entries have scores');
 // Sheet openers run clean on real data
 try {
   TM.openTeamPage(G.tid);
