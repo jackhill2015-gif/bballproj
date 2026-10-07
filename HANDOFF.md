@@ -13,6 +13,7 @@ Claim a job before you start so two agents don't edit the same screens. Remove y
 
 | Who | Job | Files / screens touched | Since |
 |-----|-----|-------------------------|-------|
+| Muse | Faces on recap roster table + box scores; 390px QA playthrough (full season + offseason) | views/recap.js, views/stats.js, views/faces.js, style.css, HANDOFF.md | 2026-10-07 |
 
 ## Messages
 
