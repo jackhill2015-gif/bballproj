@@ -100,12 +100,14 @@ export function renderHelp() {
     + 'class panel keeps a running list of transfers in, recruits signed, and open roster spots. On signing day you '
     + 'see the whole class before the season starts, and Home recaps your offseason moves for the first few weeks.');
 
-  h += sec('Scouting reports',
-    'Every recruit and transfer shows his player type (for example Floor general, Sharpshooter, Rim protector) '
-    + 'and where he would land on your roster next season: would start, rotation minutes, or bench. Open a player for '
-    + 'the full report: strengths and weaknesses judged against his position, rating bars, whether he upgrades your '
-    + 'roster\'s thinnest area, how he suits your gameplan, and who he would compete with at his position. The Fit '
-    + 'filter narrows the list to players who would start, play in the rotation, or fill a need.');
+  h += sec('Recruiting and the transfer portal: the layout',
+    'Both screens work the same way. The Board lists every player: his type (for example Floor general or Rim protector) '
+    + 'and where he would land on your roster next season: Best player, Starter, Rotation or Bench. Need means he upgrades '
+    + 'your roster\'s thinnest area. Tap a player for his page: Overview (your offer or recruiting points, plus fit with your '
+    + 'roster), Ratings (strengths, weaknesses and rating bars) and Schools (who else is after him). Filters live behind the '
+    + 'Filter button; tap a filter chip to clear it. Targets or My offers is where you manage everyone you are pursuing. '
+    + 'Your class shows round results and who has signed. Roster shows your depth chart for next season. The button at '
+    + 'the bottom closes the round.');
 
   h += sec('The transfer portal',
     'The portal runs in three rounds: initial offers, follow-up, and decision day. Offers are '

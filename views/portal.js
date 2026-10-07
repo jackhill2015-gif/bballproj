@@ -15,8 +15,9 @@ import { CLS, TEAM_STATES, STATE_TO_REGION, RECRUIT_STATE_POOL } from '../consta
 import { portalEntryChance, moralePortalReason, MORALE_DEFAULT } from '../morale.js';
 import { teamLogo } from '../ui.js';
 import * as Battle from './battle.js';
-import { scoutLine, scoutingHTML, fitReport } from './scouting.js';
+import { scoutLine, scoutingHTML, fitReport, playerType, typeTagsHTML, ratingBarsHTML, fitListHTML } from './scouting.js';
 import { beginReport, noteSigning, reportHTML, classPanelHTML } from './signings.js';
+import * as Acq from './acq.js';
 import { getUiPrefs, setUiPrefs } from './ui-prefs.js';
 
 // Clickable player name (opens the profile; convention in views/player.js)
@@ -813,49 +814,20 @@ function entrantRow(e, stage) {
     + '</tr>';
 }
 
-export function renderPortal() {
-  var board = portalBoard();
-  var mine = board.filter(function(e) { return e.fromTid === G.tid; });
-  var avail = board.filter(function(e) { return e.fromTid !== G.tid; });
-  var stage = G.portalStage || 0;
-  var stg = Battle.stageOf(stage);
-  var offersOut = avail.filter(function(e) { return (e.offer || 0) > 0; }).length;
-  var committed = avail.reduce(function(s, e) { return s + (e.offer || 0); }, 0);
-  var tier = TIERS.find(function(t) { return t.id === _pf.tier; }) || TIERS[0];
+// ═══════════════════════════════════════════════════════════
+//  PORTAL SCREEN — shared acquisition layout (views/acq.js):
+//  Board · My offers · Your class · Roster, a clean list, and a
+//  player page (sheet) for each entrant
+// ═══════════════════════════════════════════════════════════
+var _ptab = 'board';
+export function setPortalTab(t) { _ptab = t; rerender(); }
 
-  var h = '<div class="portal-wrap">';
-  h += '<div style="margin-bottom:10px;"><div class="sec-head">Transfer portal</div>'
-    + '<div class="sec-sub">' + stg.tag + ': ' + stg.name + '. ' + stg.desc + '</div></div>';
-  h += Battle.stageStepperHTML(stage);
+var SHOW_LABEL = { start: 'Would start', rot: 'Starter or rotation', need: 'Fills a need', mine: 'My offers' };
+var SORT_LABEL = { ovr: 'Overall', pot: 'Potential', odds: 'Your odds', ask: 'Ask' };
 
-  h += '<div class="kv" style="margin-bottom:12px;">'
-    + '<div><b data-nil-left>' + (G.pts || 0) + '</b><span>NIL available</span></div>'
-    + '<div><b data-nil-offered>' + committed + '</b><span>NIL offered</span></div>'
-    + '<div><b data-offers-out>' + offersOut + '</b><span>Open offers</span></div>'
-    + '<div><b>' + avail.length + '</b><span>In portal</span></div></div>';
-
-  if (mine.length) {
-    h += '<div class="final-line l" style="display:block;">'
-      + (mine.length === 1 ? 'One of your players' : mine.length + ' of your players') + ' entered the portal: '
-      + mine.map(function(e) { return '<b>' + e.name + '</b> (' + e.pos + ', ' + e.ovr + ')'; }).join(', ') + '.</div>';
-  }
-
-  // What happened last round, and who is coming next season
-  h += reportHTML();
-  h += classPanelHTML();
-
-  // Filters: position buttons + two dropdowns
-  _pf.tier = 'all'; // overall bands retired; sort by overall instead
-  h += '<div class="fbar">';
-  ['All', 'PG', 'SG', 'SF', 'PF', 'C'].forEach(function(pz) { h += chip('pos', pz, pz, _pf.pos === pz); });
-  h += '</div><div class="fsel-row">'
-    + fsel('show', 'Show', [['all', 'Everyone'], ['start', 'Would start'], ['rot', 'Starter or rotation'], ['need', 'Fills a need'], ['mine', 'My offers']], _pf.mine ? 'mine' : _pf.fit)
-    + fsel('sortsel', 'Sort', [['ovr', 'Overall'], ['pot', 'Potential'], ['odds', 'Your odds'], ['ask', 'Ask']], _pf.sort)
-    + '</div>';
-
+function filteredBoard(avail) {
   var rows = avail.filter(function(e) {
     if (_pf.pos !== 'All' && e.pos !== _pf.pos) return false;
-    if (!tier.test(e)) return false;
     if (_pf.mine && !(e.offer > 0)) return false;
     if (_pf.fit !== 'all') {
       var fr = fitReport(e);
@@ -870,20 +842,157 @@ export function renderPortal() {
     if (x < y) return -1 * _pf.dir; if (x > y) return 1 * _pf.dir;
     return b.e.ovr - a.e.ovr;
   });
+  return rows;
+}
 
-  h += '<div class="sec-sub" style="margin:6px 0;">' + rows.length + ' of ' + avail.length + ' players. Tap a player for his scouting report.</div>';
-  h += '<div class="tbl-wrap"><table class="ptbl"><thead><tr>'
-    + th('pos', 'Pos') + th('name', 'Player') + th('ovr', 'Ovr', 'num') + th('pot', 'Pot', 'num')
-    + th('ask', 'Ask', 'num') + th('offer', 'Your offer') + th('odds', 'Odds', 'num')
-    + '</tr></thead><tbody>';
-  rows.forEach(function(r) {
-    h += entrantRow(r.e, stage);
-    if (r.e.pid === _pDetail) h += '<tr class="detail-row"><td colspan="7">' + detailRow(r.e) + '</td></tr>';
+function entrantListRow(e, ch) {
+  var offer = e.offer || 0;
+  return Acq.row({
+    open: 'data-acq-open-p="' + e.pid + '"', hl: offer > 0,
+    name: e.name + ' <span class="acq-cls">' + e.cls + '</span>',
+    tag: offer > 0 ? ' <span class="tag t-home">Offer ' + offer + '</span>' : '',
+    sub: e.pos + ' · ' + scoutLine(e),
+    big: e.ovr,
+    small: offer > 0 ? '<span style="color:' + chanceColor(ch.pct) + ';">' + ch.pct + '% odds</span>' : 'Ask ' + portalCost(e)
   });
-  h += '</tbody></table></div>';
-  if (!avail.length) h += '<div class="empty-state">No players are in the portal this year.</div>';
-  else if (!rows.length) h += '<div class="empty-state">No players match these filters.</div>';
+}
 
-  h += '<button class="btn-big btn-full" style="margin-top:14px;" data-pstage>' + stg.btn + '</button>';
+function offerControl(e, stage) {
+  var offer = e.offer || 0, nil = G.pts || 0;
+  var canSub = offer > 0, canAdd = nil >= PORTAL_OFFER_STEP;
+  return '<div class="pp-offer"><div class="pp-offer-l"><span>Your offer</span><div class="bt-offer">'
+    + '<button class="stepper' + (canSub ? '' : ' off') + '" data-poff-dec="' + e.pid + '" aria-label="Lower offer">−</button>'
+    + '<span class="offer-v' + (offer ? ' on' : '') + '">' + offer + '</span>'
+    + '<button class="stepper plus' + (canAdd ? '' : ' off') + '" data-poff-inc="' + e.pid + '" aria-label="Raise offer">+</button></div></div>'
+    + '<div class="pp-offer-r"><span>Ask ' + portalCost(e) + ' NIL</span><span>' + nil + ' NIL available</span>'
+    + (offer > 0 && stage >= 1 ? '<button class="btn-quiet btn-sm" data-ppivot="' + e.pid + '">Withdraw (75% back)</button>' : '')
+    + '</div></div>';
+}
+
+function portalPage(st) {
+  var f = findEntrant(st.id);
+  if (!f) return { title: 'Transfer portal', html: Acq.empty('This player has already decided. See Your class for the result.') };
+  var e = ensureEntrant(f.e), stage = G.portalStage || 0, ch = portalChance(e), stats = entrantStats(e);
+  var left = { FR: 3, SO: 2, JR: 1, SR: 0 }[e.cls];
+  var h = Acq.pageTop(e.name, e.pos + ' · ' + e.cls + ' · from ' + e.fromName, e.ovr, e.pot || e.ovr);
+  h += Acq.pageTabs([{ id: 'overview', label: 'Overview' }, { id: 'ratings', label: 'Ratings' }, { id: 'schools', label: 'Schools' }], st.tab);
+  if (st.tab === 'ratings') {
+    h += typeTagsHTML(e) + ratingBarsHTML(e);
+    h += '<div class="scout-stats">'
+      + '<span><b>' + (stats ? stats.ppg.toFixed(1) : '–') + '</b> ppg</span><span><b>' + (stats ? stats.rpg.toFixed(1) : '–') + '</b> rpg</span>'
+      + '<span><b>' + (stats ? stats.apg.toFixed(1) : '–') + '</b> apg</span><span><b>' + (stats ? (stats.fg * 100).toFixed(1) + '%' : '–') + '</b> FG</span>'
+      + '<span><b>' + (stats ? stats.gp : 0) + '</b> games last season</span></div>';
+  } else if (st.tab === 'schools') {
+    var total = ch.bid; ch.suitors.forEach(function(x) { total += x.bid; });
+    var rowsS = ch.suitors.map(function(x) { return { name: x.name, pct: Math.round(x.bid / Math.max(1, total) * 100), me: false }; });
+    rowsS.push({ name: G.teams[G.tid].name + (e.offer ? '' : ' (no offer yet)'), pct: ch.pct, me: true });
+    rowsS.sort(function(a, b) { return b.pct - a.pct; });
+    rowsS.forEach(function(x) {
+      h += '<div class="school-row"><div class="school-name" style="' + (x.me ? 'color:var(--blu);font-weight:600;' : '') + '">' + x.name + '</div>'
+        + '<div class="school-bar"><div class="school-fill" style="width:' + x.pct + '%;background:' + (x.me ? 'var(--blu)' : 'var(--bdr2)') + ';"></div></div>'
+        + '<div class="school-pct">' + x.pct + '%</div></div>';
+    });
+  } else {
+    h += offerControl(e, stage);
+    h += '<div class="pp-sec"><div class="scout-type">' + playerType(e) + '</div>'
+      + '<div class="pp-note">Leaving ' + e.fromName + ': ' + e.reason.toLowerCase() + '. '
+      + (left === undefined ? '' : (left > 0 ? left + ' season' + (left > 1 ? 's' : '') + ' of eligibility left after this one.' : 'Final season.')) + '</div></div>';
+    h += '<div class="pp-sec"><div class="card-title">Fit with ' + G.teams[G.tid].name + ' next season</div>' + fitListHTML(e) + '</div>';
+    h += '<div class="pp-sec pp-odds">Your odds: <b style="color:' + chanceColor(ch.pct) + ';">' + ch.pct + '%</b> against ' + ch.suitors.length + ' other school' + (ch.suitors.length === 1 ? '' : 's') + '.</div>';
+  }
+  return { title: 'Transfer portal', html: h };
+}
+
+function portalFilterSheet() {
+  var h = '<div class="card-title">Position</div><div class="fbar">';
+  ['All', 'PG', 'SG', 'SF', 'PF', 'C'].forEach(function(pz) { h += chip('pos', pz, pz, _pf.pos === pz); });
+  h += '</div><div class="card-title" style="margin-top:10px;">Show</div><div class="fbar">';
+  [['all', 'Everyone'], ['start', 'Would start'], ['rot', 'Starter or rotation'], ['need', 'Fills a need'], ['mine', 'My offers']].forEach(function(o) {
+    h += chip('show', o[0], o[1], (_pf.mine ? 'mine' : _pf.fit) === o[0]);
+  });
+  h += '</div><div class="card-title" style="margin-top:10px;">Sort by</div><div class="fbar">';
+  Object.keys(SORT_LABEL).forEach(function(k) { h += chip('sortsel', k, SORT_LABEL[k], _pf.sort === k); });
+  h += '</div><button class="btn-big btn-full" style="margin-top:14px;" data-action="sheet-close">Show players</button>';
+  return { title: 'Filter the portal', html: h };
+}
+Acq.registerSheet('portal', portalPage);
+Acq.registerSheet('portal-filter', portalFilterSheet);
+export function openPortalPage(pid) { Acq.openPage('portal', pid); }
+export function openPortalFilter() { Acq.openPage('portal-filter', 0); }
+export function clearPortalFilter(key) {
+  if (key === 'pos') _pf.pos = 'All';
+  else if (key === 'show') { _pf.fit = 'all'; _pf.mine = false; }
+  else if (key === 'sort') { _pf.sort = 'ovr'; _pf.dir = -1; }
+  setUiPrefs('portal', _pf); rerender();
+}
+
+export function renderPortal() {
+  var board = portalBoard();
+  var mine = board.filter(function(e) { return e.fromTid === G.tid; });
+  var avail = board.filter(function(e) { return e.fromTid !== G.tid; });
+  var stage = G.portalStage || 0;
+  var stg = Battle.stageOf(stage);
+  var offers = avail.filter(function(e) { return (e.offer || 0) > 0; });
+  var committed = offers.reduce(function(s, e) { return s + (e.offer || 0); }, 0);
+  _pf.tier = 'all';
+  var signedIn = ((G.signings && G.signings.yr === G.yr) ? G.signings.log : []).filter(function(x) { return x.kind === 'portal' && x.outcome === 'you'; });
+
+  var h = '<div class="portal-wrap">';
+  h += Acq.header('Transfer portal', stg.tag + ' · ' + stg.name, [
+    { v: G.pts || 0, l: 'NIL', attr: 'data-nil-left' }, { v: committed, l: 'offered' }]);
+  h += Acq.tabs([
+    { id: 'board', label: 'Board', n: avail.length },
+    { id: 'offers', label: 'My offers', n: offers.length },
+    { id: 'class', label: 'Your class', n: signedIn.length },
+    { id: 'roster', label: 'Roster' }], _ptab);
+
+  var rep = G.signings && G.signings.yr === G.yr && G.signings.report;
+  if (rep && _ptab !== 'class') {
+    var nIn = rep.items.filter(function(x) { return x.outcome === 'you'; }).length;
+    var nOut = rep.items.length - nIn;
+    h += Acq.banner('<b>' + rep.title.replace('Transfer portal, ', '').replace(/^./, function(c) { return c.toUpperCase(); }) + ' results:</b> '
+      + nIn + ' signed with you' + (nOut ? ', ' + nOut + ' other outcome' + (nOut > 1 ? 's' : '') : '') + '. <u>See results</u>', 'data-acqtab="class"');
+  }
+  if (mine.length && _ptab === 'board') {
+    h += Acq.banner((mine.length === 1 ? 'One of your players is' : mine.length + ' of your players are') + ' in the portal: '
+      + mine.map(function(e) { return '<b>' + e.name + '</b> (' + e.pos + ', ' + e.ovr + ')'; }).join(', ') + '.');
+  }
+
+  if (_ptab === 'board') {
+    var rows = filteredBoard(avail);
+    var active = [];
+    if (_pf.pos !== 'All') active.push({ key: 'pos', label: _pf.pos });
+    var show = _pf.mine ? 'mine' : _pf.fit;
+    if (show !== 'all') active.push({ key: 'show', label: SHOW_LABEL[show] });
+    if (_pf.sort !== 'ovr') active.push({ key: 'sort', label: 'By ' + (SORT_LABEL[_pf.sort] || _pf.sort).toLowerCase() });
+    h += Acq.toolbar(active, rows.length + ' of ' + avail.length);
+    h += '<div class="acq-list">';
+    rows.forEach(function(r) { h += entrantListRow(r.e, r.ch); });
+    h += '</div>';
+    if (!avail.length) h += Acq.empty('No players are in the portal this year.');
+    else if (!rows.length) h += Acq.empty('No players match these filters.');
+  } else if (_ptab === 'offers') {
+    if (!offers.length) h += Acq.empty('No offers yet. Open a player on the Board and make an offer.');
+    else {
+      h += '<div class="sec-sub" style="margin:4px 0 8px;">Adjust your offers here. Odds update as you go.</div><div class="acq-list">';
+      offers.sort(function(a, b) { return b.ovr - a.ovr; }).forEach(function(e) {
+        var ch = portalChance(e);
+        h += '<div class="acq-orow"><div class="acq-main" data-acq-open-p="' + e.pid + '" role="button" tabindex="0"><div class="acq-name">' + e.name + ' <span class="acq-cls">' + e.pos + ', ' + e.ovr + '</span></div>'
+          + '<div class="acq-sub">' + playerType(e) + ' · Ask ' + portalCost(e) + ' · <b style="color:' + chanceColor(ch.pct) + ';">' + ch.pct + '% odds</b> ' + Battle.trendHTML(ch.pct, e._prevPct) + '</div></div>'
+          + '<div class="bt-offer"><button class="stepper" data-poff-dec="' + e.pid + '" aria-label="Lower offer">−</button>'
+          + '<span class="offer-v on">' + e.offer + '</span>'
+          + '<button class="stepper plus' + ((G.pts || 0) >= PORTAL_OFFER_STEP ? '' : ' off') + '" data-poff-inc="' + e.pid + '" aria-label="Raise offer">+</button></div></div>';
+      });
+      h += '</div>';
+    }
+  } else if (_ptab === 'class') {
+    h += reportHTML() + classPanelHTML();
+  } else {
+    var inc = {}; signedIn.forEach(function(x) { inc[x.name] = true; });
+    h += Acq.rosterTabHTML(inc);
+  }
+
+  h += Acq.sticky('data-pstage', stg.btn);
+  Acq.refreshSheet();
   return h + '</div>';
 }

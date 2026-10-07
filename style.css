@@ -1345,3 +1345,62 @@ table.ups td { vertical-align: middle; }
 .sg-to { color: var(--txt2); font-size: 12.5px; white-space: nowrap; }
 .sg-none { font-size: 13px; color: var(--txt3); padding: 2px 0; }
 .sg-warn { font-size: 12.5px; color: var(--red); background: var(--red-soft); border-radius: var(--radius); padding: 7px 9px; margin: 4px 0 8px; }
+
+/* ═══ Acquisition screens: portal + recruiting (views/acq.js) ═══ */
+.acq-head { margin-bottom: 8px; }
+.acq-title { font-size: 18px; font-weight: 700; }
+.acq-line { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; font-size: 13px; color: var(--txt2); margin-top: 2px; }
+.acq-stats { display: inline-flex; gap: 14px; }
+.acq-stats b { color: var(--txt); font-weight: 600; font-variant-numeric: tabular-nums; }
+.acq-tabs { display: flex; border-bottom: 1px solid var(--bdr); margin: 6px 0 10px; overflow-x: auto; }
+.acq-tab { flex: 1 0 auto; background: none; border: none; border-bottom: 2px solid transparent; padding: 9px 10px; font: inherit; font-size: 13.5px; color: var(--txt2); cursor: pointer; min-height: 40px; white-space: nowrap; }
+.acq-tab span { color: var(--txt3); font-size: 12px; }
+.acq-tab.on { color: var(--txt); font-weight: 600; border-bottom-color: var(--blu); }
+.acq-banner { font-size: 13px; padding: 8px 10px; border: 1px solid var(--bdr); border-left: 3px solid var(--blu); border-radius: var(--radius); margin-bottom: 8px; background: var(--s1); }
+.acq-banner[role="button"] { cursor: pointer; }
+.acq-banner u { color: var(--blu); text-decoration: none; font-weight: 500; }
+.acq-tool { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
+.acq-filter-btn { font: inherit; font-size: 13px; padding: 6px 12px; min-height: 36px; border: 1px solid var(--bdr2); background: var(--s1); border-radius: var(--radius); cursor: pointer; }
+.acq-filter-btn span { display: inline-block; min-width: 18px; padding: 0 5px; margin-left: 4px; border-radius: 9px; background: var(--blu); color: #fff; font-size: 11px; }
+.acq-chip { font: inherit; font-size: 12.5px; padding: 5px 9px; min-height: 32px; border: 1px solid var(--blu); color: var(--blu-d); background: var(--blu-soft); border-radius: var(--radius); cursor: pointer; }
+.acq-count { margin-left: auto; font-size: 12px; color: var(--txt3); }
+.acq-list { border-top: 1px solid var(--bdr); }
+.acq-row, .acq-orow { display: flex; align-items: center; gap: 10px; padding: 9px 4px; border-bottom: 1px solid var(--bdr); }
+.acq-row { cursor: pointer; }
+.acq-row:active { background: var(--s2); }
+.acq-row.hl, .acq-orow { background: var(--blu-soft); }
+.acq-main { flex: 1; min-width: 0; }
+.acq-orow .acq-main { cursor: pointer; }
+.acq-name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.acq-name .stars { font-weight: 400; font-size: 11.5px; color: var(--gld2); margin-left: 2px; }
+.acq-cls { font-weight: 400; font-size: 12px; color: var(--txt3); }
+.acq-sub { font-size: 12.5px; color: var(--txt2); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.acq-right { text-align: right; flex-shrink: 0; }
+.acq-big { font-size: 17px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.acq-small { font-size: 11.5px; color: var(--txt3); }
+.acq-sticky { position: sticky; bottom: 0; padding: 10px 0 8px; background: linear-gradient(to top, var(--bg) 70%, transparent); z-index: 5; margin-top: 8px; }
+@media (max-width: 860px) { .acq-sticky { bottom: calc(51px + env(safe-area-inset-bottom)); } }
+.acq-pos { margin-bottom: 10px; }
+.acq-pos-h { font-size: 12px; font-weight: 600; color: var(--txt2); border-bottom: 1px solid var(--bdr); padding-bottom: 3px; }
+.acq-pos-h span { color: var(--txt3); font-weight: 400; }
+.acq-pos-row { display: flex; justify-content: space-between; font-size: 13px; padding: 5px 0; border-bottom: 1px solid var(--bdr); }
+.acq-pos-none { font-size: 12.5px; color: var(--red); padding: 5px 0; }
+
+/* Player page (sheet) */
+.pp-top { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; margin-bottom: 10px; }
+.pp-name { font-size: 18px; font-weight: 700; }
+.pp-line { font-size: 12.5px; color: var(--txt2); margin-top: 2px; }
+.pp-line .stars { color: var(--gld2); }
+.pp-nums { display: flex; gap: 14px; text-align: center; }
+.pp-nums b { display: block; font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.pp-nums span { font-size: 11px; color: var(--txt3); }
+.pp-tabs { display: flex; border-bottom: 1px solid var(--bdr); margin-bottom: 12px; }
+.pp-tab { flex: 1; background: none; border: none; border-bottom: 2px solid transparent; padding: 8px 6px; font: inherit; font-size: 13.5px; color: var(--txt2); cursor: pointer; min-height: 40px; }
+.pp-tab.on { color: var(--txt); font-weight: 600; border-bottom-color: var(--blu); }
+.pp-offer { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding: 10px; border: 1px solid var(--bdr); border-radius: var(--radius); margin-bottom: 12px; background: var(--s2); }
+.pp-offer-l > span, .pp-offer-r > span { display: block; font-size: 12px; color: var(--txt3); }
+.pp-offer-l > span { margin-bottom: 4px; }
+.pp-offer-r { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.pp-sec { margin-bottom: 12px; }
+.pp-note { font-size: 12.5px; color: var(--txt2); margin-top: 2px; }
+.pp-odds { font-size: 13px; color: var(--txt2); }

@@ -193,37 +193,50 @@ export function fitReport(p) {
 export function scoutLine(p) {
   var f = fitReport(p);
   var col = f.role === 'Starter' ? 'var(--grn2)' : f.role === 'Rotation' ? 'var(--txt2)' : 'var(--txt3)';
-  return '<span class="sc-type">' + playerType(p) + '</span> · <span style="color:' + col + ';">' + f.roleTxt + '</span>'
-    + (f.fillsNeed ? ' · <span style="color:var(--grn2);">Fills a need</span>' : '');
+  // Short labels so the line fits a phone row; the full sentence is on the player page
+  var short = f.rank === 1 ? 'Best player' : f.role === 'Starter' ? 'Starter' : f.role === 'Rotation' ? 'Rotation' : 'Bench';
+  return '<span class="sc-type">' + playerType(p) + '</span> · <span style="color:' + col + ';">' + short + '</span>'
+    + (f.fillsNeed ? ' · <span style="color:var(--grn2);">Need</span>' : '');
 }
 export function roleOf(p) { return fitReport(p).role; }
 
 // Full report for a detail row
-export function scoutingHTML(p) {
-  var sw = strengthsAndWeaknesses(p), f = fitReport(p), t = G.teams[G.tid];
-  var h = '<div class="scout">';
-  h += '<div class="scout-col"><div class="card-title">Scouting report</div>'
-    + '<div class="scout-type">' + playerType(p) + ' <span>' + p.pos + '</span></div>';
-  h += '<div class="scout-tags">'
+// ── Report pieces (the player page uses them on separate tabs) ──
+export function typeTagsHTML(p) {
+  var sw = strengthsAndWeaknesses(p);
+  return '<div class="scout-type">' + playerType(p) + ' <span>' + p.pos + '</span></div>'
+    + '<div class="scout-tags">'
     + sw.strengths.map(function(s) { return '<span class="sc-tag up">' + s.charAt(0).toUpperCase() + s.slice(1) + '</span>'; }).join('')
     + sw.weaknesses.map(function(s) { return '<span class="sc-tag dn">Weak ' + s + '</span>'; }).join('')
     + (sw.strengths.length + sw.weaknesses.length ? '' : '<span class="sc-tag">No standout skills or holes</span>')
     + '</div>';
+}
+export function ratingBarsHTML(p) {
+  var h = '';
   ATTRS.forEach(function(a) {
     var v = p[a], w = Math.max(4, Math.min(100, (v - 35) / 64 * 100));
     var col = v >= 85 ? 'var(--grn2)' : v >= 70 ? 'var(--blu)' : v >= 58 ? 'var(--txt3)' : 'var(--red)';
     h += '<div class="sc-bar"><span class="sc-bl">' + ATTR_NAME[a] + '</span><span class="sc-track"><span style="width:' + w + '%;background:' + col + ';"></span></span><b>' + v + '</b></div>';
   });
-  h += '</div>';
-
-  h += '<div class="scout-col"><div class="card-title">Fit with ' + (t ? t.name : 'your team') + ' next season</div><ul class="scout-fit">'
+  return h;
+}
+export function fitListHTML(p) {
+  var f = fitReport(p);
+  return '<ul class="scout-fit">'
     + '<li><b>' + f.roleTxt + '</b> (would rank #' + f.rank + ' on your roster by overall rating). ' + f.posTxt + '</li>'
     + (f.needTxt ? '<li' + (f.fillsNeed ? ' class="good"' : '') + '>' + f.needTxt + '</li>' : '')
     + (f.schemeTxt ? '<li' + (f.schemeFit > 0 ? ' class="good"' : f.schemeFit < 0 ? ' class="bad"' : '') + '>' + f.schemeTxt + '</li>' : '')
     + (f.defTxt ? '<li>' + f.defTxt + '</li>' : '')
-    + '</ul>';
-  h += '<div class="scout-depth"><span>Your ' + p.pos + 's next season:</span> '
+    + '</ul>'
+    + '<div class="scout-depth"><span>Your ' + p.pos + 's next season:</span> '
     + (f.depth.length ? f.depth.map(function(x) { return x.name + ' ' + x.ovr + ' (' + x.cls + (x.signed ? ', signed' : '') + ')'; }).join(', ') : 'none')
-    + '</div></div>';
-  return h + '</div>';
+    + '</div>';
+}
+// Your roster next season (returners + signed recruits), best first
+export function nextSeasonRoster() { return nextSeason(); }
+
+export function scoutingHTML(p) {
+  var t = G.teams[G.tid];
+  return '<div class="scout"><div class="scout-col"><div class="card-title">Scouting report</div>' + typeTagsHTML(p) + ratingBarsHTML(p) + '</div>'
+    + '<div class="scout-col"><div class="card-title">Fit with ' + (t ? t.name : 'your team') + ' next season</div>' + fitListHTML(p) + '</div></div>';
 }

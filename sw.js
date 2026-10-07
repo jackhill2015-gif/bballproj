@@ -6,7 +6,7 @@
 //  fails if a game file is missing from this list.
 // ═══════════════════════════════════════════════════════════
 
-var CACHE = 'hoops-os-v5';
+var CACHE = 'hoops-os-v6';
 var APP_FILES = [
   "./",
   "index.html",
@@ -32,6 +32,7 @@ var APP_FILES = [
   "tournament.js",
   "ui.js",
   "utils.js",
+  "views/acq.js",
   "views/battle.js",
   "views/bracket.js",
   "views/dashboard.js",

@@ -178,7 +178,7 @@ check(nameMismatch.length === 0, 'R1: goneTo matches the signed team name', 'bad
 console.log('── Board lists every open recruit (no show-more) ──');
 R.renderOffseason();
 const html = _els['offseason-content'].innerHTML;
-const rows = (html.match(/data-rid="/g) || []).length;
+const rows = (html.match(/data-acq-open-r="/g) || []).length;
 const openN = G.recruits.filter(r => !(r.signed >= 0)).length;
 check(rows === openN, 'board renders every open recruit', 'rows=' + rows + ' open=' + openN);
 check(html.indexOf('data-show-more') < 0, 'no show-more button');

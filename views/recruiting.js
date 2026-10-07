@@ -18,13 +18,14 @@ import { ge, clamp, ri } from '../utils.js';
 import { hasRestlessStarAt } from '../morale.js';
 import { TEAM_STATES, STATE_TO_REGION, STATE_NAMES, SCHOOL_RECRUIT_GATES, COACH_FN, COACH_LN, RECRUIT_STATE_POOL } from '../constants.js';
 import { G, LS, SetupState, saveState, calcRecruitingBudget } from '../state.js';
-import { renderPortal, genPortalEntrants, registerPortalCallbacks, adjustOffer, pivotOffer, advancePortalStage, advanceFromPortal, setPortalFilter, togglePortalDetail, PORTAL_OFFER_STEP } from './portal.js';
+import { renderPortal, genPortalEntrants, registerPortalCallbacks, adjustOffer, pivotOffer, advancePortalStage, advanceFromPortal, setPortalFilter, togglePortalDetail, PORTAL_OFFER_STEP, setPortalTab, openPortalPage, openPortalFilter, clearPortalFilter } from './portal.js';
 import { genPlayer } from '../simulation.js';
 import { buildRetentionAsks, renderRetention, decideRetention, applyRetention, retentionPending } from './retention.js';
 import { teamLogo } from '../ui.js';
 import * as Battle from './battle.js';
-import { scoutLine, scoutingHTML, fitReport } from './scouting.js';
+import { scoutLine, scoutingHTML, fitReport, playerType, typeTagsHTML, ratingBarsHTML, fitListHTML } from './scouting.js';
 import { beginReport, noteSigning, reportHTML, classPanelHTML, signingDayHTML } from './signings.js';
+import * as Acq from './acq.js';
 import { getUiPrefs, setUiPrefs } from './ui-prefs.js';
 
 var _ext = { toast: null, addLog: null, updateAll: null };
@@ -161,7 +162,7 @@ export function adjustPoints(rid, delta) {
   }
   r.points = nv; delete r._schools; delete r._schoolsPhase;
   recalcSpent(); saveState();
-  updateRecruitRow(rid); // in-place: no full re-render
+  renderOffseason();
 }
 window.adjustPoints = adjustPoints;
 
@@ -169,7 +170,6 @@ export function addTarget(rid) {
   if (G.recruitTargets.indexOf(rid) < 0) G.recruitTargets.push(rid);
   saveState();
   // On the board, just flip that row (no 400-row rebuild); elsewhere re-render
-  if (_tab === 'board' && _detailId !== rid && patchTargetRow(rid)) return;
   renderOffseason();
 }
 
@@ -508,45 +508,33 @@ export function renderOffseason() {
   var open = G.recruits.filter(function(r) { return r.status === 'open'; });
   var h = '';
 
-  // ── Header ──
-  h += '<div style="margin-bottom:12px;"><div class="sec-head">Recruiting ' + G.yr + '</div>'
-    + '<div class="sec-sub">' + phase.tag + ': ' + phase.name + '. ' + phase.desc + '</div></div>';
+  // Shared acquisition layout (views/acq.js): slim header, tabs, list, sticky button
+  var sp0 = (G.teams[G.tid] && G.teams[G.tid].schoolPrestige) || 50;
+  h += Acq.header('Recruiting', phase.tag + ' · ' + phase.name, [
+    { v: left, l: 'points', attr: 'data-budget-left' }, { v: sp0, l: 'prestige' }]);
+  var classN = G.recruits.filter(function(r) { return r.signed === G.tid; }).length;
+  h += Acq.tabs([
+    { id: 'board', label: 'Board', n: open.length },
+    { id: 'targets', label: 'Targets', n: G.recruitTargets.length },
+    { id: 'commits', label: 'Your class', n: classN },
+    { id: 'roster', label: 'Roster' }], _tab);
 
-  h += Battle.stageStepperHTML(G.recruitPhase - 1);
+  var rep = G.signings && G.signings.yr === G.yr && G.signings.report;
+  if (rep && _tab !== 'commits') {
+    var nIn = rep.items.filter(function(x) { return x.outcome === 'you'; }).length;
+    var nOut = rep.items.length - nIn;
+    var ttl = rep.title.replace('Recruiting, ', '').replace('Transfer portal, ', 'Portal ');
+    h += Acq.banner('<b>' + ttl.charAt(0).toUpperCase() + ttl.slice(1) + ' results:</b> ' + nIn + ' signed with you'
+      + (nOut ? ', ' + nOut + ' other outcome' + (nOut > 1 ? 's' : '') : '') + '. <u>See results</u>', 'data-acqtab="commits"');
+  }
 
-  // ── Stats bar ──
-  var leftCol = left > 30 ? 'var(--grn2)' : left > 0 ? 'var(--gld2)' : 'var(--red)';
-  h += '<div class="stat-strip" style="grid-template-columns:repeat(4,1fr);">'
-    + '<div class="stat-cell"><div class="sv" data-budget-left style="color:' + leftCol + ';">' + left + '</div><div class="sl">Budget</div></div>'
-    + '<div class="stat-cell"><div class="sv">' + ((G.teams[G.tid] && G.teams[G.tid].schoolPrestige) || 50) + '</div><div class="sl">Prestige</div></div>'
-    + '<div class="stat-cell"><div class="sv">' + Math.max(0, 13 - G.teams[G.tid].rost.length) + '</div><div class="sl">Open spots</div></div>'
-    + '<div class="stat-cell hot"><div class="sv">' + commits.length + '</div><div class="sl">Commits</div></div>'
-    + '</div>';
-
-  // What happened last round (portal decision day, or the last recruiting phase)
-  h += reportHTML();
-
-  // ── Tabs (Strategy-screen rhythm) ──
-  var tabs = [
-    { id: 'board', label: 'Board (' + open.length + ')' },
-    { id: 'targets', label: 'Targets (' + G.recruitTargets.length + ')' },
-    { id: 'commits', label: 'Your class (' + commits.length + ')' },
-    { id: 'roster', label: 'Roster' }
-  ];
-  h += '<div class="strat-tabs" role="tablist" aria-label="Recruiting sections">';
-  tabs.forEach(function(tb) {
-    h += '<button class="strat-tab' + (_tab === tb.id ? ' on' : '') + '" role="tab" data-rtab="' + tb.id + '">' + tb.label + '</button>';
-  });
-  h += '</div>';
-
-  // ── Tab content ──
   if (_tab === 'board') h += renderBoard(open, left);
   else if (_tab === 'targets') h += renderTargets(left);
-  else if (_tab === 'commits') h += classPanelHTML();
-  else if (_tab === 'roster') h += renderRosterNeeds();
+  else if (_tab === 'commits') h += reportHTML() + classPanelHTML();
+  else h += Acq.rosterTabHTML();
 
-  // ── Advance button ──
-  h += '<button class="btn-big btn-full" style="margin-top:16px;" data-phase-advance>' + phase.btnLabel + '</button>';
+  h += Acq.sticky('data-phase-advance', phase.btnLabel);
+  Acq.refreshSheet();
 
   el.innerHTML = offseasonStrip() + h;
   bindOffseason(el);
@@ -587,6 +575,8 @@ function phaseAdvance() {
 //  whole offseason view (recruiting + portal HTML)
 // ═══════════════════════════════════════════════════════════
 
+Acq.setSheetBinder(function(el) { bindOffseason(el); });
+
 function bindOffseason(el) {
   el.onclick = function(e) {
     var q = function(sel) { return e.target.closest ? e.target.closest(sel) : null; };
@@ -597,6 +587,12 @@ function bindOffseason(el) {
     // the stopPropagation equivalent — a button tap can never fall
     // through to the row's open/close-detail handler. Keep it that way:
     // any new in-row button selector goes above [data-pdetail]/[data-rid].
+    // Shared acquisition layout (views/acq.js) — portal and recruiting
+    var onPortal = G.offseasonStep === 'portal';
+    if ((m = q('[data-pptab]'))) { Acq.setPageTab(m.getAttribute('data-pptab')); return; }
+    if ((m = q('[data-acqtab]'))) { var _t = m.getAttribute('data-acqtab'); if (onPortal) setPortalTab(_t); else setRecruitTab(_t); return; }
+    if (q('[data-acq-filter]')) { if (onPortal) openPortalFilter(); else openRecruitFilter(); return; }
+    if ((m = q('[data-acq-clear]'))) { if (onPortal) clearPortalFilter(m.getAttribute('data-acq-clear')); else clearRecruitFilter(m.getAttribute('data-acq-clear')); return; }
     if ((m = q('[data-pt-dec]'))) { adjustPoints(parseInt(m.getAttribute('data-pt-dec'), 10), -5); return; }
     if ((m = q('[data-pt-inc]'))) { adjustPoints(parseInt(m.getAttribute('data-pt-inc'), 10), 5); return; }
     if ((m = q('[data-add-target]'))) { addTarget(parseInt(m.getAttribute('data-add-target'), 10)); return; }
@@ -628,6 +624,7 @@ function bindOffseason(el) {
     if ((m = q('[data-pdetail]'))) { togglePortalDetail(parseInt(m.getAttribute('data-pdetail'), 10)); return; }
     if ((m = q('[data-rfchip]'))) {
       var fk = m.getAttribute('data-rfchip'), fv = m.getAttribute('data-rval');
+      if (fk === 'show' || fk === 'sortsel') { setRecruitFilter(fk, fv); return; }
       if (fk === 'sort') {
         if (_filter.sort === fv) _filter.dir = -(_filter.dir || 1);
         else { _filter.sort = fv; _filter.dir = (fv === 'rank' || fv === 'name' || fv === 'pos') ? 1 : -1; }
@@ -636,8 +633,10 @@ function bindOffseason(el) {
       setUiPrefs('recruiting', _filter);
       renderOffseason(); return;
     }
-    // Board row → detail (checked last; steppers/target buttons win)
-    if ((m = q('[data-rid]'))) { showDetail(parseInt(m.getAttribute('data-rid'), 10)); return; }
+    // Rows → player page (checked last; buttons above always win)
+    if ((m = q('[data-acq-open-p]'))) { openPortalPage(parseInt(m.getAttribute('data-acq-open-p'), 10)); return; }
+    if ((m = q('[data-acq-open-r]'))) { openRecruitPage(parseInt(m.getAttribute('data-acq-open-r'), 10)); return; }
+    if ((m = q('[data-rid]'))) { openRecruitPage(parseInt(m.getAttribute('data-rid'), 10)); return; }
   };
   el.onchange = function(e) {
     var ps = e.target.closest ? e.target.closest('[data-pselect]') : null;
@@ -649,9 +648,8 @@ function bindOffseason(el) {
     }
   };
   el.onkeydown = function(e) {
-    if ((e.key === 'Enter' || e.key === ' ') && e.target && e.target.getAttribute) {
-      var m = e.target.closest ? e.target.closest('[data-rid]') : null;
-      if (m && e.target === m) { e.preventDefault(); showDetail(parseInt(m.getAttribute('data-rid'), 10)); }
+    if ((e.key === 'Enter' || e.key === ' ') && e.target && e.target.getAttribute && e.target.getAttribute('role') === 'button' && e.target.tagName !== 'BUTTON') {
+      e.preventDefault(); e.target.click();
     }
   };
 }
@@ -742,7 +740,7 @@ function stepperRow(r, left, removable) {
     + '<button class="stepper' + (pts >= 5 ? '' : ' off') + '" data-pt-dec="' + r.id + '" aria-label="Remove 5 points from ' + r.name + '" aria-disabled="' + (pts >= 5 ? 'false' : 'true') + '">−</button>'
     + '<div class="pts-val" data-pts-val="' + r.id + '">' + pts + '</div>'
     + '<button class="stepper plus' + (left >= 5 ? '' : ' off') + '" data-pt-inc="' + r.id + '" aria-label="Add 5 points to ' + r.name + '" aria-disabled="' + (left >= 5 ? 'false' : 'true') + '">+</button>'
-    + '<span style="font-size:10px;color:var(--txt3);">pts</span>'
+    + '<span style="font-size:11px;color:var(--txt3);">points</span>'
     + '<div style="flex:1;"></div>';
   if (removable) h += '<button class="btn-quiet btn-sm" style="min-height:28px;padding:4px;" data-rem-target="' + r.id + '" aria-label="Drop ' + r.name + '">Drop</button>';
   return h + '</div>';
@@ -1230,32 +1228,14 @@ function rSortVal(r) {
   }
 }
 
+var STARS_LABEL = { 5: '5★', 4: '4★ and up', 3: '3★ and up', 2: '2★ and up' };
+var RSHOW_LABEL = { start: 'Would start', rot: 'Starter or rotation', need: 'Fills a need', near: 'Home state and region', targets: 'My targets' };
+var RSORT_LABEL = { rank: 'National rank', ovr: 'Overall', pot: 'Potential', stars: 'Stars' };
+function recruitShow() { return _filter.targets ? 'targets' : _filter.near ? 'near' : (_filter.fit || 'all'); }
+
 function renderBoard(open, left) {
-  var sp = (G.teams[G.tid] && G.teams[G.tid].schoolPrestige) || 50;
   var ts = getTeamState(G.teams[G.tid]);
   if (!_filter.dir) _filter.dir = 1;
-  var h = '';
-
-  // Filters: position buttons + three dropdowns (same pattern as the portal)
-  h += '<div class="fbar">';
-  ['All', 'PG', 'SG', 'SF', 'PF', 'C'].forEach(function(pz) { h += rChip('pos', pz, pz, _filter.pos === pz); });
-  var showCur = _filter.targets ? 'targets' : _filter.near ? 'near' : (_filter.fit || 'all');
-  h += '</div><div class="fsel-row">'
-    + rSel('show', 'Show', [['all', 'Everyone'], ['start', 'Would start'], ['rot', 'Starter or rotation'], ['need', 'Fills a need'], ['near', 'Home state and region'], ['targets', 'My targets']], showCur)
-    + rSel('stars', 'Stars', [[0, 'Any'], [5, '5★'], [4, '4★ and up'], [3, '3★ and up'], [2, '2★ and up']], _filter.stars)
-    + rSel('sortsel', 'Sort', [['rank', 'National rank'], ['ovr', 'Overall'], ['pot', 'Potential'], ['stars', 'Stars']], _filter.sort)
-    + '</div>';
-  h += '<div class="fbar"><span class="flbl">Fit</span>';
-  [['all', 'All'], ['start', 'Would start'], ['rot', 'Starter or rotation'], ['need', 'Fills a need']].forEach(function(f) {
-    h += rChip('fit', f[0], f[1], (_filter.fit || 'all') === f[0]);
-  });
-  h += '</div>';
-  h += '<div class="fbar fbar-sort"><span class="flbl">Sort</span>';
-  [['rank', 'Rank'], ['ovr', 'Overall'], ['pot', 'Potential'], ['stars', 'Stars']].forEach(function(o) {
-    h += rChip('sort', o[0], o[1] + (_filter.sort === o[0] ? (_filter.dir > 0 ? ' ▴' : ' ▾') : ''), _filter.sort === o[0]);
-  });
-  h += '</div>';
-
   var filtered = open.filter(function(r) {
     if (_filter.pos !== 'All' && r.pos !== _filter.pos) return false;
     if (_filter.stars > 0 && r.stars < _filter.stars) return false;
@@ -1274,33 +1254,82 @@ function renderBoard(open, left) {
     if (x < y) return -_filter.dir; if (x > y) return _filter.dir;
     return a.natRank - b.natRank;
   });
-
-  h += '<div class="sec-sub" style="margin:6px 0;">' + filtered.length + ' of ' + open.length + ' prospects shown. Select a prospect to see the schools recruiting him.</div>';
-  h += '<div class="tbl-wrap"><table class="ptbl rtbl"><thead><tr>'
-    + rTh('rank', '#', 'num') + rTh('pos', 'Pos') + rTh('name', 'Prospect') + rTh('stars', 'Stars')
-    + rTh('ovr', 'Ovr', 'num') + rTh('pot', 'Pot', 'num') + '<th></th></tr></thead><tbody>';
+  var active = [];
+  if (_filter.pos !== 'All') active.push({ key: 'pos', label: _filter.pos });
+  if (recruitShow() !== 'all') active.push({ key: 'show', label: RSHOW_LABEL[recruitShow()] });
+  if (_filter.stars > 0) active.push({ key: 'stars', label: STARS_LABEL[_filter.stars] || (_filter.stars + '★') });
+  if (_filter.sort !== 'rank') active.push({ key: 'sort', label: 'By ' + (RSORT_LABEL[_filter.sort] || _filter.sort).toLowerCase() });
+  var h = Acq.toolbar(active, filtered.length + ' of ' + open.length);
+  h += '<div class="acq-list">';
   filtered.forEach(function(r) {
     var isTarget = G.recruitTargets.indexOf(r.id) >= 0;
-    var stName = STATE_NAMES[r.homeState] || r.homeState;
-    var potCol = r.pot > r.ovr + 6 ? 'var(--grn2)' : 'var(--txt2)';
-    var act = isTarget
-      ? '<span class="tgt-on">Targeted</span>'
-      : '<button class="btn-quiet btn-sm" data-add-target="' + r.id + '">Target</button>';
-    h += '<tr class="rrow' + (isTarget ? ' hl' : '') + (r.id === _detailId ? ' open' : '') + '" data-rid="' + r.id + '" tabindex="0" aria-label="View ' + r.name + '">'
-      + '<td class="num c-rank">' + r.natRank + '</td>'
-      + '<td class="c-pos">' + r.pos + '</td>'
-      + '<td class="pt-name c-name"><b>' + r.name + '</b> ' + geoBadges(r, sp)
-      + '<div class="pt-sub">' + scoutLine(r) + '</div><div class="pt-sub">' + stName + '</div></td>'
-      + '<td class="c-stars" data-l=""><span class="stars">' + starStr(r.stars) + '</span></td>'
-      + '<td class="num c-ovr" data-l="Ovr"><b>' + r.ovr + '</b></td>'
-      + '<td class="num c-pot" data-l="Pot" style="color:' + potCol + ';">' + (r.pot || r.ovr) + '</td>'
-      + '<td class="c-act">' + act + '</td></tr>';
-    // Details open right under the selected prospect, not at the top of the page
-    if (r.id === _detailId) h += '<tr class="detail-row"><td colspan="7">' + renderDetailPanel(r, left) + '</td></tr>';
+    var geo = getGeoLabel(ts, r.homeState);
+    h += Acq.row({
+      open: 'data-acq-open-r="' + r.id + '"', hl: isTarget,
+      name: r.name + ' <span class="stars">' + starStr(r.stars) + '</span>',
+      tag: (geo === 'HOME' ? ' <span class="tag t-ok">Home</span>' : geo === 'REGION' ? ' <span class="tag t-home">Region</span>' : ''),
+      sub: r.pos + ' · ' + scoutLine(r),
+      big: r.ovr,
+      small: isTarget ? '<span style="color:var(--blu);">' + userPctOf(r) + '% odds</span>' : '#' + r.natRank
+    });
   });
-  h += '</tbody></table></div>';
-  if (!filtered.length) h += '<div class="empty-state">No prospects match these filters.</div>';
+  h += '</div>';
+  if (!filtered.length) h += Acq.empty('No prospects match these filters.');
   return h;
+}
+
+// Recruit page (sheet): Overview · Ratings · Schools
+function recruitPage(st) {
+  var r = G.recruits.find(function(x) { return x.id === st.id; });
+  if (!r) return null;
+  var sp = (G.teams[G.tid] && G.teams[G.tid].schoolPrestige) || 50;
+  var left = G.recruitingBudget - G.recruitingSpent;
+  var isTarget = G.recruitTargets.indexOf(r.id) >= 0;
+  var stName = STATE_NAMES[r.homeState] || r.homeState;
+  var h = Acq.pageTop(r.name, r.pos + ' · <span class="stars">' + starStr(r.stars) + '</span> · #' + r.natRank + ' nationally · ' + stName, r.ovr, r.pot || r.ovr, geoBadges(r, sp) ? '<div style="margin:-4px 0 8px;">' + geoBadges(r, sp) + '</div>' : '');
+  h += Acq.pageTabs([{ id: 'overview', label: 'Overview' }, { id: 'ratings', label: 'Ratings' }, { id: 'schools', label: 'Schools' }], st.tab);
+  if (r.status !== 'open') {
+    h += Acq.empty(r.signed === G.tid ? 'He signed with you.' : 'He signed with ' + (r.goneTo || 'another school') + '.');
+  } else if (st.tab === 'ratings') {
+    h += typeTagsHTML(r) + ratingBarsHTML(r);
+  } else if (st.tab === 'schools') {
+    h += schoolRaceHTML(r, 0);
+  } else {
+    h += '<div class="pp-offer"><div class="pp-offer-l"><span>Recruiting points</span>' + stepperRow(r, left, false) + '</div>'
+      + '<div class="pp-offer-r"><span>' + left + ' points left</span>'
+      + (isTarget ? '<span style="color:var(--blu);">' + userPctOf(r) + '% odds</span><button class="btn-quiet btn-sm" data-rem-target="' + r.id + '">Drop target</button>'
+        : '<button class="btn-big" style="width:auto;padding:0 16px;min-height:36px;" data-add-target="' + r.id + '">Add to targets</button>')
+      + '</div></div>';
+    h += '<div class="pp-sec"><div class="scout-type">' + playerType(r) + '</div></div>';
+    h += '<div class="pp-sec"><div class="card-title">Fit with ' + G.teams[G.tid].name + ' next season</div>' + fitListHTML(r) + '</div>';
+  }
+  return { title: 'Recruit', html: h };
+}
+
+function recruitFilterSheet() {
+  var h = '<div class="card-title">Position</div><div class="fbar">';
+  ['All', 'PG', 'SG', 'SF', 'PF', 'C'].forEach(function(pz) { h += rChip('pos', pz, pz, _filter.pos === pz); });
+  h += '</div><div class="card-title" style="margin-top:10px;">Show</div><div class="fbar">';
+  [['all', 'Everyone']].concat(Object.keys(RSHOW_LABEL).map(function(k) { return [k, RSHOW_LABEL[k]]; })).forEach(function(o) {
+    h += rChip('show', o[0], o[1], recruitShow() === o[0]);
+  });
+  h += '</div><div class="card-title" style="margin-top:10px;">Stars</div><div class="fbar">';
+  [[0, 'Any'], [5, '5★'], [4, '4★ and up'], [3, '3★ and up'], [2, '2★ and up']].forEach(function(o) { h += rChip('stars', o[0], o[1], _filter.stars === o[0]); });
+  h += '</div><div class="card-title" style="margin-top:10px;">Sort by</div><div class="fbar">';
+  Object.keys(RSORT_LABEL).forEach(function(k) { h += rChip('sortsel', k, RSORT_LABEL[k], _filter.sort === k); });
+  h += '</div><button class="btn-big btn-full" style="margin-top:14px;" data-action="sheet-close">Show prospects</button>';
+  return { title: 'Filter recruits', html: h };
+}
+Acq.registerSheet('recruit', recruitPage);
+Acq.registerSheet('recruit-filter', recruitFilterSheet);
+function openRecruitPage(rid) { Acq.openPage('recruit', rid); }
+function openRecruitFilter() { Acq.openPage('recruit-filter', 0); }
+function clearRecruitFilter(key) {
+  if (key === 'pos') _filter.pos = 'All';
+  else if (key === 'show') { _filter.fit = 'all'; _filter.near = false; _filter.targets = false; }
+  else if (key === 'stars') _filter.stars = 0;
+  else if (key === 'sort') { _filter.sort = 'rank'; _filter.dir = 1; }
+  setUiPrefs('recruiting', _filter); renderOffseason();
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1353,7 +1382,7 @@ function renderTargets(left) {
     h += '<div style="display:flex;align-items:center;gap:8px;">'
       + '<div class="leader-rank">#' + r.natRank + '</div>'
       + '<span class="pos-chip">' + r.pos + '</span>'
-      + '<div class="leader-name" style="flex:1;">' + r.name + (leading ? ' <span class="tag t-ok">Leading</span>' : '')
+      + '<div class="leader-name" style="flex:1;cursor:pointer;" data-acq-open-r="' + r.id + '" role="button" tabindex="0">' + r.name + (leading ? ' <span class="tag t-ok">Leading</span>' : '')
       + (r.late ? ' <span class="tag t-ok">Late</span>' : '')
       + '<small><span style="color:var(--gld2);">' + starStr(r.stars) + '</span> · OVR ' + r.ovr + ' · ' + (STATE_NAMES[r.homeState] || r.homeState) + '</small></div>'
       + '<div style="text-align:right;flex-shrink:0;"><div class="leader-val" data-user-pct="' + r.id + '" style="color:' + pctCol + ';font-size:14px;">' + userPct + '%</div>'
