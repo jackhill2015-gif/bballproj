@@ -220,6 +220,44 @@
   <div id="recap-content"></div>
 </div>
 
+<!-- Update guard: if a deploy loads half new and half old files, the game
+     can't start (a file asks for something the other version lacks). Show a
+     calm reload bar that clears the offline copy and loads everything fresh.
+     Saves live in localStorage and are not touched. Also shown when a new
+     version finishes installing in the background. -->
+<div id="upd-bar" hidden><span id="upd-msg">A new version is ready.</span><button type="button" id="upd-btn">Reload</button></div>
+<script>
+(function() {
+  var shown = false;
+  function show(msg) {
+    var bar = document.getElementById('upd-bar');
+    if (!bar || shown) return;
+    shown = true;
+    document.getElementById('upd-msg').textContent = msg;
+    bar.hidden = false;
+  }
+  window._showUpdateBar = show;
+  function hardReload() {
+    var p = (window.caches && caches.keys) ? caches.keys().then(function(ks) { return Promise.all(ks.map(function(k) { return caches.delete(k); })); }) : Promise.resolve();
+    p.catch(function() {}).then(function() { location.reload(); });
+  }
+  document.addEventListener('click', function(e) { if (e.target && e.target.id === 'upd-btn') hardReload(); });
+  window.addEventListener('error', function(e) {
+    var m = String((e && e.message) || '');
+    if (/does not provide an export|Importing a module script failed|Failed to fetch dynamically imported|is not defined|Cannot find module/i.test(m) && !window._gameStarted) {
+      show('The game didn\u2019t load cleanly after an update.');
+    }
+  });
+  // A new version took over while the game was open
+  if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
+    var hadController = !!navigator.serviceWorker.controller;
+    navigator.serviceWorker.addEventListener('controllerchange', function() {
+      if (hadController) show('A new version is ready.');
+    });
+  }
+})();
+</script>
+
 <!-- Dynamic team-count tagline: ALL_TEAMS.length == G.teams.length post-dedupe -->
 <script type="module">
 import { ALL_TEAMS } from './constants.js';

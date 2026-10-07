@@ -207,6 +207,7 @@ window._renderSeasonRecap = renderSeasonRecap;
 buildUniverse();
 initOutsideClickHandlers();
 showHomeScreen();
+if (typeof window !== 'undefined') window._gameStarted = true; // update guard in index.html
 
 // Offline support: register the service worker (installed home-screen app
 // keeps working with no signal). Skipped where unsupported or on file://.

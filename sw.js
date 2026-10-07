@@ -6,7 +6,7 @@
 //  fails if a game file is missing from this list.
 // ═══════════════════════════════════════════════════════════
 
-var CACHE = 'hoops-os-v10';
+var CACHE = 'hoops-os-v11';
 var APP_FILES = [
   "./",
   "index.html",
@@ -85,11 +85,19 @@ function networkFirst(req) {
     var fromCache = function() {
       return caches.match(req, { ignoreSearch: true }).then(function(hit) { return hit || caches.match('index.html'); });
     };
-    // A stalled connection shouldn't hang the game: fall back after 3 s
+    // A stalled connection shouldn't hang the game. Only the page itself
+    // falls back quickly; game files wait longer, because mixing new files
+    // with old cached ones breaks the game (a file asks for something the
+    // other version doesn't have).
+    var wait = req.mode === 'navigate' ? 3000 : 10000;
     var timer = setTimeout(function() {
       fromCache().then(function(hit) { if (hit && !done) { done = true; resolve(hit); } });
-    }, 3000);
-    fetch(req).then(function(res) {
+    }, wait);
+    // 'no-cache' checks every file with the server, so a fresh deploy never
+    // mixes with the browser's stored copies (GitHub Pages lets browsers
+    // keep files for 10 minutes otherwise)
+    var sameOrigin = new URL(req.url).origin === self.location.origin;
+    fetch(req, sameOrigin ? { cache: 'no-cache' } : undefined).then(function(res) {
       clearTimeout(timer);
       if (res && (res.ok || res.type === 'opaque')) {
         var copy = res.clone();
