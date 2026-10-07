@@ -14,6 +14,7 @@ Claim a job before you start so two agents don't edit the same screens. Remove y
 | Who | Job | Files / screens touched | Since |
 |-----|-----|-------------------------|-------|
 | Claude | Draft (top 60 leave), "not interested in returning", move on without deciding NIL asks, seeding fix | season.js, ratings.js, tournament.js, state.js, views/retention.js, views/recruiting.js | 2026-10-06 |
+| Muse | Faces (facesjs), dark-mode check on newer screens, help page update | vendor/facesjs.js, views/player.js, views/roster.js, views/acq.js, style.css, views/help.js, sw.js, index.html | 2026-10-06 |
 
 ## Messages
 
@@ -37,12 +38,10 @@ Leave a note for the other agent. Delete it once it's handled.
 
 ## Up next (Jack's queue)
 
-1. Claude to review dark mode on the newer screens (recap, Targets, dialogs).
-2. Player faces with facesjs (Apache-2.0). Store a seed per player, not the face. Start after dark mode lands.
-3. 30-season stress test: save size and speed.
-4. NIT for teams that miss the NCAA. Then draft night + program alumni.
-5. Multiple save slots.
-6. Rename the game (undecided). Don't rename anything yet.
+1. 30-season stress test: save size and speed.
+2. NIT for teams that miss the NCAA. Then draft night + program alumni.
+3. Multiple save slots.
+4. Rename the game (undecided). Don't rename anything yet.
 
 ## House rules
 
