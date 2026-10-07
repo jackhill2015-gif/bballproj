@@ -18,9 +18,9 @@ import { ge, clamp, ri, getTOvr } from '../utils.js';
 import { hasRestlessStarAt } from '../morale.js';
 import { TEAM_STATES, STATE_TO_REGION, STATE_NAMES, SCHOOL_RECRUIT_GATES, COACH_FN, COACH_LN, RECRUIT_STATE_POOL } from '../constants.js';
 import { G, LS, SetupState, saveState, calcRecruitingBudget } from '../state.js';
-import { renderPortal, genPortalEntrants, registerPortalCallbacks, adjustOffer, pivotOffer, advancePortalStage, advanceFromPortal, setPortalFilter, togglePortalDetail, PORTAL_OFFER_STEP, setPortalTab, openPortalPage, openPortalFilter, clearPortalFilter } from './portal.js';
+import { renderPortal, genPortalEntrants, registerPortalCallbacks, adjustOffer, pivotOffer, advancePortalStage, advanceFromPortal, setPortalFilter, togglePortalDetail, PORTAL_OFFER_STEP, setPortalTab, entryOdds, openPortalPage, openPortalFilter, clearPortalFilter } from './portal.js';
 import { genPlayer } from '../simulation.js';
-import { buildRetentionAsks, renderRetention, decideRetention, applyRetention, retentionPending } from './retention.js';
+import { buildRetentionAsks, renderRetention, decideRetention, applyRetention, retentionPending, rollNotReturning } from './retention.js';
 import { teamLogo } from '../ui.js';
 import * as Battle from './battle.js';
 import { scoutLine, scoutingHTML, fitReport, playerType, typeTagsHTML, ratingBarsHTML, fitListHTML } from './scouting.js';
@@ -290,6 +290,7 @@ export function proceedToRecruiting() {
   }
   // Departures + player retention share one screen (always shown, so you
   // see who left even when nobody asks for NIL)
+  rollNotReturning(entryOdds);
   buildRetentionAsks();
   G.offseasonStep = 'retention';
   saveState(); updateAll(); renderOffseason();
@@ -306,9 +307,9 @@ function openPortal() {
 }
 
 export function finishRetention() {
-  var n = retentionPending();
-  if (n) { toast('Decide on ' + n + ' more NIL request' + (n > 1 ? 's' : '') + ' first'); return false; }
   var r = G.retention || { asks: [] };
+  // Anyone you didn't decide on is let go (enters the portal)
+  r.asks.forEach(function(a) { if (!a.decision) a.decision = 'go'; });
   var kept = r.asks.filter(function(a) { return a.decision === 'keep'; });
   var gone = r.asks.filter(function(a) { return a.decision === 'go'; });
   if (kept.length) addLog('ev', G.gi, 'Retention: kept ' + kept.map(function(a) { return a.name; }).join(', ') + ' for ' + kept.reduce(function(s, a) { return s + a.ask; }, 0) + ' NIL.');
@@ -683,6 +684,10 @@ function moveOnIssue() {
     var ret = (t.rost || []).filter(function(p) { return !(p.cls === 'SR' && !p.rs); }).length - inPortal;
     return ret + (G.recruits || []).filter(function(r) { return r.signed === G.tid; }).length;
   };
+  if (step === 'retention' && retentionPending()) {
+    var np = retentionPending();
+    return np + ' NIL request' + (np > 1 ? 's are' : ' is') + ' undecided. Anyone you don\'t keep enters the transfer portal.';
+  }
   if (step === 'portal' && (G.portalStage || 0) >= 2) { // decision day only
     var offers = (G.portalEntrants || []).filter(function(e) { return e.fromTid !== G.tid && (e.offer || 0) > 0; }).length;
     var open = 15 - nextN();
@@ -710,18 +715,20 @@ export function moveOnWarning(onContinue) {
   var key = (G.offseasonStep || '') + ':' + (G.portalStage || 0) + ':' + (G.recruitPhase || 0) + ':' + msg;
   if (_warnKey === key) { _warnKey = ''; return false; }
   _warnKey = key;
-  if (typeof document === 'undefined' || !document.body || !document.createElement) {
+  if (typeof document === 'undefined' || !document.body || typeof document.body.appendChild !== 'function' || !document.createElement) {
     toast(msg + ' Tap again to continue anyway.', 'var(--gld)');
     return true;
   }
-  var old = document.getElementById('mo-ov'); if (old) old.parentNode.removeChild(old);
+  var old = document.getElementById('mo-ov'); if (old && old.parentNode) old.parentNode.removeChild(old);
   var ov = document.createElement('div');
   ov.id = 'mo-ov'; ov.className = 'mo-ov';
   ov.innerHTML = '<div class="panel mo-p" role="alertdialog" aria-label="Before you move on"><div class="panel-h"><span>Before you move on</span></div>'
     + '<div class="panel-b"><div class="mo-msg"></div><div class="big-btn-row" style="margin:0;">'
     + '<button class="btn-big secondary" data-mo="back">Go back</button>'
     + '<button class="btn-big" data-mo="go">Continue anyway</button></div></div></div>';
-  ov.querySelector('.mo-msg').textContent = msg;
+  var mm = ov.querySelector && ov.querySelector('.mo-msg');
+  if (!mm) { toast(msg + ' Tap again to continue anyway.', 'var(--gld)'); return true; } // no real DOM (tests)
+  mm.textContent = msg;
   document.body.appendChild(ov);
   var close = function() { if (ov.parentNode) ov.parentNode.removeChild(ov); };
   ov.addEventListener('click', function(e) {
@@ -796,7 +803,7 @@ function bindOffseason(el) {
       if (_rr.ok) { saveState(); updateAll(); renderOffseason(); }
       return;
     }
-    if (q('[data-ret-done]')) { finishRetention(); return; }
+    if (q('[data-ret-done]')) { if (!moveOnWarning(finishRetention)) finishRetention(); return; }
     if ((m = q('[data-skill-dec]'))) { deallocateSkillPoint(m.getAttribute('data-skill-dec')); return; }
     if ((m = q('[data-sgtab]'))) { if (window._setSigningTab) window._setSigningTab(m.getAttribute('data-sgtab')); renderOffseason(); return; }
     if ((m = q('[data-sgkind]'))) { if (window._setSigningTab) window._setSigningTab(null, m.getAttribute('data-sgkind')); renderOffseason(); return; }
@@ -1328,6 +1335,10 @@ export function applyForJob(jobId) {
       // Reset all state for new school
       G.departingPlayers = [];
       var t = newTeam;
+      // Your new team's draft picks already left with the draft
+      ((G.draft && G.draft.yr === G.yr && G.draft.picks) || []).forEach(function(dp) {
+        if (dp.tid === newTeam.id) G.departingPlayers.push({ name: dp.name, pos: dp.pos, cls: dp.cls, ovr: dp.ovr, reason: 'Drafted', pick: dp.pick, ppg: '–', rpg: '–', apg: '–', mins: 0 });
+      });
       t.rost.forEach(function(p) {
         var gp = p.s ? p.s.gp || 0 : 0;
         var ppg = gp > 0 ? p.s.pts / gp : 0;

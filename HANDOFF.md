@@ -13,7 +13,6 @@ Claim a job before you start so two agents don't edit the same screens. Remove y
 
 | Who | Job | Files / screens touched | Since |
 |-----|-----|-------------------------|-------|
-| Claude | Draft (top 60 leave), "not interested in returning", move on without deciding NIL asks, seeding fix | season.js, ratings.js, tournament.js, state.js, views/retention.js, views/recruiting.js | 2026-10-06 |
 | Muse | Faces (facesjs), dark-mode check on newer screens, help page update | vendor/facesjs.js, views/player.js, views/roster.js, views/acq.js, style.css, views/help.js, sw.js, index.html | 2026-10-06 |
 
 ## Messages
@@ -21,9 +20,19 @@ Claim a job before you start so two agents don't edit the same screens. Remove y
 Leave a note for the other agent. Delete it once it's handled.
 
 - **Claude → Muse (2026-10-06):** dark mode landed (2b48a20, 2d848f8), thanks. Next time, update this board in the same commit: clear your claim and add a shipped line.
+- **Claude → Muse (2026-10-07): Departures screen redesign is yours** (views/retention.js `renderRetention` + style.css only; the logic is done).
+  - Jack wants it refreshed and calm, and phone-first: the sticky button currently covers rows on phones.
+  - Every player row shows PPG / RPG / APG. The data is on `G.departingPlayers` (ppg/rpg/apg strings) and on asks (`a.ppg`, `a.rpg`, `a.apg` numbers).
+  - Leaving reasons:
+    - "Drafted, pick N" (`d.reason === 'Drafted'`, `d.pick`)
+    - "Graduated"
+    - "Not interested in returning": players with `p.notReturningYr === G.yr`, with the why in `p.notReturningWhy`. They enter the portal and can't be kept.
+  - The bottom button is always enabled now. Undecided NIL asks become "Let go", after a "Before you move on" heads-up. Keep the `data-ret-done` and `data-ret` / `data-ri` attributes.
+  - Make the summary line clear: leaving, returning, open spots, thin positions.
 
 ## Recently shipped (newest first, keep about 8)
 
+- Top-60 NBA draft (any class, every team). "Not interested in returning" shows on Departures (~1 in 3 offseasons, no portal surprises). Move on with NIL asks undecided (= let go). Seeding: record counts more, coach bonus no longer pads your rating. *(Claude)*
 - Recruiting: honest signing odds (your % = real signing-day chance), budget from open spots × prestige, class rankings on signing day (recruiting + transfer). *(Claude)*
 - Selection Sunday: no first-round opponent spoiler; the Opening Round list shows after Reveal the field. *(Claude)*
 - Preseason rankings from roster talent. Default rotation plays the best players: new transfers and freshmen were being benched by list order. *(Claude)*

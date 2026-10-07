@@ -27,7 +27,7 @@ const roster = G.teams[G.tid].rost;
 check(asks.every(a => { const p = roster.find(x => x.name === a.name); return p && p.cls !== 'SR' && !p.rs; }), 'only returning, non-redshirt players ask');
 const best = roster.filter(p => p.cls !== 'SR' && !p.rs).sort((a, b) => b.ovr - a.ovr)[0];
 check(asks.some(a => a.name === best.name), 'best returner always asks');
-check(R.finishRetention() === false && G.offseasonStep === 'retention', 'cannot continue until every request is decided');
+check(R.moveOnWarning(() => {}) === true && R.moveOnWarning(() => {}) === false, 'undecided requests get a heads-up first, then you can move on');
 
 G.pts = 0;
 check(!RT.decideRetention(0, 'keep').ok, 'keeping without enough NIL is refused');
@@ -64,6 +64,16 @@ for (const [label, lo, hi] of [['small', 0, 35], ['mid', 45, 60], ['power', 80, 
   console.log('  ' + label.padEnd(6) + ' asks ' + String(tot).padStart(4) + ' / income ' + inc + '  (' + G.retention.asks.map(a => a.ovr + ':' + a.ask).join(' ') + ')');
   check(tot <= Math.max(inc * 0.75, G.retention.asks.length * 25), label + ': keeping everyone costs at most 75% of a season of income (' + Math.round(tot / inc * 100) + '%)');
 }
+
+// Moving on with requests undecided lets those players go
+console.log('── undecided = let go ──');
+S.buildUniverse(); newDynasty(tid); toTurnover(); R.proceedToRecruiting();
+const und = G.retention.asks.map(a => a.name);
+R.finishRetention();
+check(G.offseasonStep === 'portal' && G.retention.asks.every(a => a.decision === 'go'), 'undecided requests become let go');
+check(und.every(n => G.portalEntrants.some(e => e.fromTid === G.tid && e.name === n)), 'and those players enter the portal');
+const mineIn = G.portalEntrants.filter(e => e.fromTid === G.tid);
+check(mineIn.every(e => e.forced), 'none of your players enter the portal by surprise (only let-go or not-interested)');
 
 console.log(fails ? fails + ' FAILED' : 'all retention checks passed');
 process.exit(fails ? 1 : 0);

@@ -54,21 +54,49 @@ function whyAsk(p, rank) {
   return 'Other schools are calling';
 }
 
+function seasonLine(p) {
+  var s = p.s || {}, gp = s.gp || 0;
+  if (!gp) return null;
+  return { ppg: Math.round(s.pts / gp * 10) / 10, rpg: Math.round(s.reb / gp * 10) / 10, apg: Math.round(s.ast / gp * 10) / 10 };
+}
+
+// Players who won't negotiate: the portal decides them here (not by surprise
+// later), at most one a year and in roughly a third of offseasons. Mostly
+// bench players chasing minutes; unhappy players are likelier.
+var LEAVE_DAMPEN = 0.2;
+export function rollNotReturning(entryOddsFn) {
+  var t = G.teams[G.tid];
+  if (!entryOddsFn || !t) return [];
+  var byOvr = t.rost.slice().sort(function(a, b) { return b.ovr - a.ovr; });
+  var ctx = { fifthBest: byOvr[4] ? byOvr[4].ovr : 0, weak: (t.schoolPrestige || 50) < 45, coachChange: false };
+  var out = [];
+  byOvr.slice().sort(function() { return Math.random() - 0.5; }).some(function(p) {
+    if (p.cls === 'SR' || p.rs) return false;
+    var o = entryOddsFn(p, t, Object.assign({ depth: byOvr.indexOf(p) + 1 }, ctx));
+    if (o && Math.random() < o.chance * LEAVE_DAMPEN) {
+      p.notReturningYr = G.yr; p.notReturningWhy = o.reason;
+      out.push(p); return true;
+    }
+    return false;
+  });
+  return out;
+}
+
 // Build this offseason's asks from the user's returning players.
 // The best two returners always ask; a third from the top six asks when
 // unhappy or by chance, and a fourth only when he is clearly unhappy.
 export function buildRetentionAsks() {
   var t = G.teams[G.tid];
-  var pool = (t.rost || []).filter(function(p) { return p.cls !== 'SR' && !p.rs; })
+  var pool = (t.rost || []).filter(function(p) { return p.cls !== 'SR' && !p.rs && p.notReturningYr !== G.yr; })
     .sort(function(a, b) { return b.ovr - a.ovr; }).slice(0, 6);
   var asks = [];
   pool.forEach(function(p, i) {
     var m = (typeof p.morale === 'number') ? p.morale : MORALE_DEFAULT;
     var asksNow = i < 2 || (asks.length < 3 && (m < 40 || Math.random() < 0.2)) || (asks.length < 4 && m < 30);
     if (!asksNow || asks.length >= 4) return;
-    var ppg = lastPpg(p);
+    var ppg = lastPpg(p), sl = seasonLine(p);
     asks.push({ name: p.name, pos: p.pos, cls: p.cls, ovr: p.ovr, pot: p.pot || p.ovr,
-      ppg: ppg === null ? null : Math.round(ppg * 10) / 10,
+      ppg: sl ? sl.ppg : (ppg === null ? null : Math.round(ppg * 10) / 10), rpg: sl ? sl.rpg : null, apg: sl ? sl.apg : null,
       ask: retentionAsk(p), why: whyAsk(p, i), decision: null });
   });
   // Keeping everyone should be possible but expensive: the combined asks
@@ -131,24 +159,31 @@ export function renderRetention() {
   var kept = r.asks.filter(function(a) { return a.decision === 'keep'; }).reduce(function(s, a) { return s + a.ask; }, 0);
   var t = G.teams[G.tid];
   var dep = G.departingPlayers || [];
-  var returning = (t.rost || []).length;
+  var notBack = (t.rost || []).filter(function(p) { return p.notReturningYr === G.yr; });
+  var returning = (t.rost || []).length - notBack.length;
   var pc = { PG: 0, SG: 0, SF: 0, PF: 0, C: 0 };
   (t.rost || []).forEach(function(p) { if (pc.hasOwnProperty(p.pos)) pc[p.pos]++; });
   var needs = Object.keys(pc).filter(function(k) { return pc[k] < 2; });
 
   var h = '<div class="acq-head"><div class="acq-title">Departures</div>'
     + '<div class="acq-line"><span>Who is leaving, and who wants an NIL deal to stay</span></div></div>';
-  h += '<div class="dep-sum"><span><b>' + dep.length + '</b> leaving</span><span><b>' + returning + '</b> returning</span>'
+  h += '<div class="dep-sum"><span><b>' + (dep.length + notBack.length) + '</b> leaving</span><span><b>' + returning + '</b> returning</span>'
     + '<span><b>' + Math.max(0, 15 - returning) + '</b> open spots</span>'
     + (needs.length ? '<span>Thin at <b>' + needs.join(', ') + '</b></span>' : '') + '</div>';
 
   // Leaving
   h += '<div class="card-title" style="margin-top:12px;">Leaving</div><div class="acq-list">';
-  if (!dep.length) h += '<div class="sg-none" style="padding:8px 0;">Nobody is leaving this year.</div>';
+  if (!dep.length && !notBack.length) h += '<div class="sg-none" style="padding:8px 0;">Nobody is leaving this year.</div>';
   dep.forEach(function(d) {
     h += '<div class="acq-row" style="cursor:default;"><div class="acq-main"><div class="acq-name">' + d.name + ' <span class="acq-cls">' + d.pos + ' · ' + d.cls + '</span></div>'
       + '<div class="acq-sub">' + d.ppg + ' ppg · ' + d.rpg + ' rpg · ' + (d.apg || '0.0') + ' apg</div></div>'
-      + '<div class="acq-right"><div class="acq-big">' + d.ovr + '</div><div class="acq-small">' + (d.reason === 'Graduated' ? 'Graduated' : 'Declared for the draft') + '</div></div></div>';
+      + '<div class="acq-right"><div class="acq-big">' + d.ovr + '</div><div class="acq-small">' + (d.reason === 'Graduated' ? 'Graduated' : d.reason === 'Drafted' ? 'Drafted' + (d.pick ? ', pick ' + d.pick : '') : 'Declared for the draft') + '</div></div></div>';
+  });
+  notBack.forEach(function(p) {
+    var sl = seasonLine(p);
+    h += '<div class="acq-row" style="cursor:default;"><div class="acq-main"><div class="acq-name">' + pLink(p.name, G.tid) + ' <span class="acq-cls">' + p.pos + ' · ' + p.cls + '</span></div>'
+      + '<div class="acq-sub">' + (sl ? sl.ppg.toFixed(1) + ' ppg · ' + sl.rpg.toFixed(1) + ' rpg · ' + sl.apg.toFixed(1) + ' apg · ' : '') + (p.notReturningWhy || 'Wants a fresh start').toLowerCase().replace(/^./, function(c) { return c.toUpperCase(); }) + '</div></div>'
+      + '<div class="acq-right"><div class="acq-big">' + p.ovr + '</div><div class="acq-small">Not interested in returning</div></div></div>';
   });
   h += '</div>';
 
@@ -163,7 +198,7 @@ export function renderRetention() {
       var cant = a.decision !== 'keep' && (G.pts || 0) < a.ask;
       h += '<div class="ret-row' + (a.decision === 'keep' ? ' kept' : a.decision === 'go' ? ' gone' : '') + '">'
         + '<div class="acq-main"><div class="acq-name">' + pLink(a.name, G.tid) + ' <span class="acq-cls">' + a.pos + ' · ' + a.cls + ' · ' + a.ovr + '</span></div>'
-        + '<div class="acq-sub">' + a.why + (a.ppg !== null ? ' · ' + a.ppg.toFixed(1) + ' ppg' : '') + '</div></div>'
+        + '<div class="acq-sub">' + a.why + (a.ppg !== null ? ' · ' + a.ppg.toFixed(1) + ' ppg' : '') + (a.rpg !== null && a.rpg !== undefined ? ' · ' + a.rpg.toFixed(1) + ' rpg · ' + a.apg.toFixed(1) + ' apg' : '') + '</div></div>'
         + '<div class="ret-side"><div class="ret-ask">' + a.ask + ' <span>NIL</span></div><div class="ret-btns">'
         + '<button class="ret-btn' + (a.decision === 'keep' ? ' on' : '') + '" data-ret="keep" data-ri="' + i + '"' + (cant ? ' disabled title="Not enough NIL"' : '') + '>Keep</button>'
         + '<button class="ret-btn' + (a.decision === 'go' ? ' on go' : '') + '" data-ret="go" data-ri="' + i + '">Let go</button>'
@@ -172,7 +207,6 @@ export function renderRetention() {
     h += '</div>';
   }
 
-  h += '<div class="acq-sticky"><button class="btn-big btn-full" data-ret-done="1"' + (pending ? ' disabled' : '') + '>'
-    + (pending ? 'Decide on ' + pending + ' more request' + (pending > 1 ? 's' : '') : 'Open the transfer portal') + '</button></div>';
+  h += '<div class="acq-sticky"><button class="btn-big btn-full" data-ret-done="1">Open the transfer portal</button></div>';
   return h;
 }

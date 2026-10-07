@@ -222,6 +222,12 @@ export function genPortalEntrants() {
     tm.rost.forEach(function(p) {
       // Let go at retention: always enters
       if (p.forcePortal) { delete p.forcePortal; if (tm.id === G.tid) { forced.push({ p: p, reason: 'NIL deal', forced: true }); return; } }
+      // Your players: only the ones decided on the Departures screen enter
+      // (let go at retention, or not interested in returning). No surprises.
+      if (tm.id === G.tid) {
+        if (p.notReturningYr === G.yr) forced.push({ p: p, reason: p.notReturningWhy || 'Fresh start', forced: true });
+        return;
+      }
       var o = entryOdds(p, tm, Object.assign({ depth: byOvr.indexOf(p) + 1 }, ctx0));
       if (o && Math.random() < o.chance) cands.push({ p: p, reason: o.reason });
     });

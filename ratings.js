@@ -24,8 +24,17 @@ var ITERATIONS = 40;
 // Rating → the t.pts scale used across the UI (1000 = average D1 team).
 function toPts(r) { return Math.round(1000 + r * 10); }
 
+// Your coach's offense/defense skill adds points to your games (simulation.js).
+// It still wins you games, but it's taken back out of the margins the
+// rankings and seeding use, so it doesn't pad your power rating.
+function userCoachEdge() {
+  if (!G.coach) return 0;
+  return Math.round((G.coach.off - 70) * 0.15) + Math.round((G.coach.def - 70) * 0.15);
+}
+var _edge = 0;
 function addGame(games, a, b, margin, home) {
   // margin from a's point of view; home: +1 a home, -1 a away, 0 neutral
+  if (a === G.tid) margin -= _edge; else if (b === G.tid) margin += _edge;
   var m = Math.max(-MARGIN_CAP, Math.min(MARGIN_CAP, margin)) - HCA * home;
   games[a].push({ opp: b, m: m });
   games[b].push({ opp: a, m: -m });
@@ -36,6 +45,7 @@ function addGame(games, a, b, margin, home) {
 // conference tournament games (neutral).
 function collectGames() {
   var games = G.teams.map(function() { return []; });
+  _edge = userCoachEdge();
   G.teams.forEach(function(t) {
     (t.sched || []).forEach(function(s) {
       if (!s || !s.played || typeof s.opp !== 'number' || !G.teams[s.opp]) return;
@@ -126,10 +136,14 @@ export function recomputeRatings() {
 
 // Selection committee resume for NCAA at-large picks and seeding: the
 // ranking score plus a little extra credit for winning games.
+// Selection committee resume: power rating plus a real weight on record.
+// 0.6 win pct is worth +20 (2 points of margin), 0.8 is +60. An 18-13
+// power-conference team now lands around the 8-11 line, not a 3 seed.
+export var RESUME_RECORD_WEIGHT = 200;
 export function resumeScore(t) {
   var gp = (t.wins || 0) + (t.loss || 0);
   var winPct = gp ? t.wins / gp : 0;
-  return (t.pts || 0) + Math.round((winPct - 0.5) * 30);
+  return (t.pts || 0) + Math.round((winPct - 0.5) * RESUME_RECORD_WEIGHT);
 }
 
 // Remember every team's current poll position (called right before the

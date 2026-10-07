@@ -932,10 +932,32 @@ export function showRecap() {
   updateAll(); navTo('offseason');
 }
 
+// ── NBA draft: the 60 best players in the country leave, whatever their
+// class. Runs once per offseason across every roster; CPU teams lose their
+// picks right away, yours show on the Departures screen.
+export var DRAFT_PICKS = 60;
+export function runDraft() {
+  if (G.draft && G.draft.yr === G.yr) return G.draft;
+  var all = [];
+  G.teams.forEach(function(t) { (t.rost || []).forEach(function(p) { all.push({ p: p, tid: t.id }); }); });
+  all.sort(function(a, b) { return b.p.ovr - a.p.ovr || (b.p.pot || 0) - (a.p.pot || 0); });
+  var picks = all.slice(0, DRAFT_PICKS).map(function(x, i) {
+    x.p._draftYr = G.yr; x.p._draftPick = i + 1;
+    return { pick: i + 1, name: x.p.name, pos: x.p.pos, cls: x.p.cls, ovr: x.p.ovr, tid: x.tid };
+  });
+  G.draft = { yr: G.yr, picks: picks };
+  G.teams.forEach(function(t) {
+    if (t.id === G.tid) return;
+    t.rost = (t.rost || []).filter(function(p) { return p._draftYr !== G.yr; });
+  });
+  return G.draft;
+}
+
 export function beginOffseason() {
   var rs = ge('recap-screen');
   if (rs) rs.classList.remove('open');
   G.phase = 'offseason';
+  runDraft();
 
   // Calculate departing players
   var t = G.teams[G.tid];
@@ -943,11 +965,9 @@ export function beginOffseason() {
   t.rost.forEach(function(p) {
     var gp = p.s.gp || 0;
     var ppg = gp > 0 ? p.s.pts / gp : 0;
-    if (p.cls === 'SR' && !p.rs) {
-      G.departingPlayers.push({ name: p.name, pos: p.pos, cls: p.cls, ovr: p.ovr, reason: 'Graduated', ppg: ppg.toFixed(1), rpg: gp > 0 ? (p.s.reb / gp).toFixed(1) : '0.0', apg: gp > 0 ? (p.s.ast / gp).toFixed(1) : '0.0', mins: p.mins });
-    } else if (ppg >= 16 && p.cls !== 'FR') {
-      G.departingPlayers.push({ name: p.name, pos: p.pos, cls: p.cls, ovr: p.ovr, reason: 'Declared for Draft', ppg: ppg.toFixed(1), rpg: gp > 0 ? (p.s.reb / gp).toFixed(1) : '0.0', apg: gp > 0 ? (p.s.ast / gp).toFixed(1) : '0.0', mins: p.mins });
-    }
+    var line = { name: p.name, pos: p.pos, cls: p.cls, ovr: p.ovr, ppg: ppg.toFixed(1), rpg: gp > 0 ? (p.s.reb / gp).toFixed(1) : '0.0', apg: gp > 0 ? (p.s.ast / gp).toFixed(1) : '0.0', mins: p.mins };
+    if (p._draftYr === G.yr) { line.reason = 'Drafted'; line.pick = p._draftPick; G.departingPlayers.push(line); }
+    else if (p.cls === 'SR' && !p.rs) { line.reason = 'Graduated'; G.departingPlayers.push(line); }
   });
 
   // Skill points were spent on the recap screen: go straight to the carousel
