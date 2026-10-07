@@ -13,7 +13,7 @@ Claim a job before you start so two agents don't edit the same screens. Remove y
 
 | Who | Job | Files / screens touched | Since |
 |-----|-----|-------------------------|-------|
-| (nobody) | | | |
+| Claude | Draft (top 60 leave), "not interested in returning", move on without deciding NIL asks, seeding fix | season.js, ratings.js, tournament.js, state.js, views/retention.js, views/recruiting.js | 2026-10-06 |
 
 ## Messages
 
