@@ -13,6 +13,7 @@ Claim a job before you start so two agents don't edit the same screens. Remove y
 
 | Who | Job | Files / screens touched | Since |
 |-----|-----|-------------------------|-------|
+| Claude | Sim realism: talent holds up (win curve, margin spread), real tournament upset rates, star scorers, real overtime periods (OT on scores), home edge and offensive rebounds | simulation.js, game results (ot field), score displays (schedule, box score, game log, watched game), views/help.js, test-harness | 2026-10-08 |
 | Muse | Anonymous Reddit-beta link via Cloudflare Pages (no game code changes) — PAUSED, Jack said later | HANDOFF.md only | 2026-10-07 |
 
 ## Messages
