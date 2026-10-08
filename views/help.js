@@ -50,9 +50,15 @@ export function renderHelp() {
     + 'in the offseason. You can undo it during the season if you change your mind.');
 
   h += sec('Rankings',
-    'The national top 25 is ordered by power rating, adjusted for schedule strength. '
-    + 'The arrows show movement since last week. Conference tables sort by conference win '
-    + 'percentage, not raw wins.');
+    'The Top 25 is a voters\u2019 poll, modeled on ten seasons of real AP polls. The preseason poll '
+    + 'weighs roster talent, last season\u2019s final poll and program reputation. A new poll comes out '
+    + 'every other week. Voters move teams by what they did: a loss to an unranked team costs the most, '
+    + 'a road loss to a top-10 team the least, and the top five fall less than everyone else. Teams '
+    + 'just outside the poll are listed as receiving votes and move in when they earn it. After the '
+    + 'NCAA tournament a final poll puts the champion at #1. '
+    + 'The NET column is a separate efficiency rating (margin adjusted for schedule strength). The NCAA '
+    + 'committee picks and seeds the field on NET and record, not on the poll, so a team can be ranked and still '
+    + 'be seeded lower. Conference tables sort by conference win percentage, not raw wins.');
 
   h += sec('Season goals',
     'Each season the athletic director sets three goals sized to your program: a wins target, '

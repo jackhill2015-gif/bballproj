@@ -17,6 +17,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { G } from '../state.js';
+import { pollRank } from '../poll.js';
 import { fmtScore } from '../utils.js';
 import { openSheet } from './sheet.js';
 import { playerType } from './scouting.js';
@@ -37,10 +38,8 @@ function playerLink(tid, idx, name) {
     + '" role="button" tabindex="0">' + name + '</span>';
 }
 
-function natRank(tid) {
-  var s = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; });
-  return s.findIndex(function(x) { return x.id === tid; }) + 1;
-}
+// Top 25 rank (poll.js), 0 when unranked
+function natRank(tid) { return pollRank(tid); }
 
 function coachName(t) {
   if (t.coach && (t.coach.firstName || t.coach.lastName)) {
@@ -75,7 +74,7 @@ function teamHTML(t) {
   h += statStrip([
     { v: t.wins + '-' + t.loss, l: 'Overall' },
     { v: (t.cWins || 0) + '-' + (t.cLoss || 0), l: 'Conference' },
-    { v: rank > 0 ? '#' + rank : '—', l: 'National rank' },
+    { v: rank > 0 ? '#' + rank : 'NR', l: 'Top 25' },
     { v: Math.round(t.schoolPrestige || 50), l: 'Prestige' }
   ]);
 

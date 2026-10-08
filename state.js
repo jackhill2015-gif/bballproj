@@ -6,6 +6,7 @@
 import { getTOvr, getOvr, rawOvr, scaleOvr } from './utils.js';
 import { RECRUIT_STATE_POOL, calcSchoolPrestige, COACH_FN, COACH_LN, teamsFor } from './constants.js';
 import { readSlot, writeSlot, removeSlot, activeSlot } from './storage.js';
+import { ensurePoll } from './poll.js';
 
 // ── Current save version — bump this when adding new fields ──
 var SAVE_VERSION = 11;
@@ -421,7 +422,8 @@ function _writeSave() {
       lastResult:G.lastResult||null,
       jobMarket:G.jobMarket||null,
       goals:G.goals||null,goalHistory:G.goalHistory||[],achievements:G.achievements||{},
-      facilities:G.facilities||null,finance:G.finance||null,devReport:G.devReport||null,retention:G.retention||null,draft:G.draft||null,signings:G.signings||null,ncPicks:G.ncPicks||null,autoLineup:!!G.autoLineup
+      facilities:G.facilities||null,finance:G.finance||null,devReport:G.devReport||null,retention:G.retention||null,draft:G.draft||null,signings:G.signings||null,ncPicks:G.ncPicks||null,autoLineup:!!G.autoLineup,
+      poll:G.poll||null // AP-style Top 25 (poll.js): 25 ids, receiving votes, last week's 25
     };
     var str=JSON.stringify(lean);
     try { writeSlot(activeSlot(),str); }
@@ -539,6 +541,7 @@ export function loadState() {
     G.jobMarket=s.jobMarket||null;
     G.goals=s.goals||null; G.goalHistory=s.goalHistory||[]; G.achievements=s.achievements||{};
     G.facilities=s.facilities||null; G.finance=s.finance||null; G.devReport=s.devReport||null; G.retention=s.retention||null; G.draft=s.draft||null; G.signings=s.signings||null; G.ncPicks=s.ncPicks||null; G.autoLineup=!!s.autoLineup;
+    G.poll=s.poll||null;
 
     // Recruits backward compat
     G.recruits.forEach(function(r){
@@ -596,6 +599,8 @@ export function loadState() {
     G.ncaaOpening=_fattenOpening(s.ncaaOpening);
     // Converted saves are written back right away so a quick reload can't
     // read the old-scale numbers again
+    // Saves from before the voter poll: start one from the current ratings
+    if (!G.poll && G.teams.length) ensurePoll();
     if (_resave) _writeSave();
     console.log('[Load] v'+(s._saveVersion||1)+' Season '+G.yr+' gi='+G.gi);
     return true;

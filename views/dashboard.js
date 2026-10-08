@@ -10,7 +10,7 @@
 
 import { DIFF_MOD } from '../constants.js';
 import { ge, clamp, getTOvr, fR, fmtScore, awardScore, winProb as sharedWinProb } from '../utils.js';
-import { rankMap } from '../ratings.js';
+import { pollRankMap, pollRank } from '../poll.js';
 import { ensureGoals, progress, GOAL_REWARD } from '../goals.js';
 import { FACILITIES, FACILITY_MAX, myFacilities, upgradeCost } from '../facilities.js';
 import { STREAMS, BUCKETS, ledger, totals, committed } from '../finance.js';
@@ -18,7 +18,7 @@ import { G } from '../state.js';
 import { bracketHubHTML, bindBracket, scrollBracketToRound } from './bracket.js';
 import { offseasonMovesHTML } from './signings.js';
 import {
-  userRank, rankDelta, currentStreak, coachXpToNext,
+  userRank, effRank, rankDelta, currentStreak, coachXpToNext,
   NIL_SHOP, shopBoughtThisWeek, teamLogo, teamColor, notifState
 } from '../ui.js';
 
@@ -90,7 +90,8 @@ function moveTxt(d) {
 
 function renderSchoolCard() {
   var t = G.teams[G.tid];
-  var netRank = userRank();
+  var pollR = userRank();
+  var netRank = effRank(G.tid); // efficiency: what the committee seeds on
   var confTeams = G.teams.filter(function(x) { return x.conf === t.conf; });
   confTeams.sort(function(a, b) { return (b.cWins / Math.max(1, b.cWins + b.cLoss)) - (a.cWins / Math.max(1, a.cWins + a.cLoss)) || b.pts - a.pts; });
   var confRank = confTeams.findIndex(function(x) { return x.id === G.tid; }) + 1;
@@ -102,7 +103,7 @@ function renderSchoolCard() {
     + '<div class="sub">' + t.conf + ', ' + G.yr + ' ' + phase + '</div></div>'
     + '<div class="kv">'
     + '<div><b>' + fR(t.wins, t.loss) + '</b><span>Record</span></div>'
-    + '<div><b>#' + netRank + moveTxt(rankDelta()) + '</b><span>National</span></div>'
+    + '<div><b>' + (pollR ? '#' + pollR : 'NR') + moveTxt(rankDelta()) + '</b><span>Top 25</span></div>'
     + '<div><b>' + confRank + '</b><span>Conference</span></div>'
     + '<div><b>' + (seed || '–') + '</b><span>Proj. seed</span></div>'
     + '</div></div>';
@@ -203,10 +204,10 @@ function renderGameCard() {
     var no = ng && ng.opp !== undefined && ng.opp !== null ? G.teams[ng.opp] : null;
     if (ng && no) {
       var wp = winProb(t, no, ng.home);
-      var rk = rankMap();
+      var rk = pollRankMap();
       var r = rivalIds(), rev = revengeIds();
       var flags = (r[no.id] ? ' <span class="tag t-rival">Rival</span>' : '') + (rev[no.id] ? ' <span class="tag t-revenge">Revenge</span>' : '');
-      var body = '<div class="ng-row"><div class="ng-opp">' + (ng.home ? 'vs ' : 'at ') + (rk[no.id] <= 25 ? '#' + rk[no.id] + ' ' : '') + tLink(no.id, no.name) + flags + '</div>'
+      var body = '<div class="ng-row"><div class="ng-opp">' + (ng.home ? 'vs ' : 'at ') + (rk[no.id] ? '#' + rk[no.id] + ' ' : '') + tLink(no.id, no.name) + flags + '</div>'
         + '<div class="ng-meta">' + no.wins + '-' + no.loss + ', OVR ' + getTOvr(no) + '</div></div>'
         + '<div class="prob-row"><span>Win probability</span><span style="color:' + wpColor(wp) + ';font-weight:600;">' + wp + '%</span></div>'
         + '<div class="prob-bar"><div class="prob-fill" style="width:' + wp + '%;background:' + wpColor(wp) + ';"></div></div>'
@@ -243,16 +244,17 @@ function renderBriefing() {
   var t = G.teams[G.tid];
   var rows = '';
   var d = rankDelta();
-  if (d.prev) {
-    var mv = d.delta > 0 ? 'up <b>' + d.delta + '</b> to <b>#' + d.cur + '</b>' : d.delta < 0 ? 'down <b>' + Math.abs(d.delta) + '</b> to <b>#' + d.cur + '</b>' : 'holding at <b>#' + d.cur + '</b>';
-    rows += '<div class="brief-row"><span>NET rank ' + mv + ' after last week.</span></div>';
+  if (G.poll && G.poll.gi === G.gi && G.poll.kind === 'reg' && (d.prev || d.cur)) { // a new poll just came out
+    var mv = !d.cur ? 'drops out of the Top 25' : !d.prev ? 'enters the Top 25 at <b>#' + d.cur + '</b>'
+      : d.delta > 0 ? 'up <b>' + d.delta + '</b> to <b>#' + d.cur + '</b>' : d.delta < 0 ? 'down <b>' + Math.abs(d.delta) + '</b> to <b>#' + d.cur + '</b>' : 'holds at <b>#' + d.cur + '</b>';
+    rows += '<div class="brief-row"><span>New poll: ' + t.name + ' ' + mv + '.</span></div>';
   }
   var ng = t.sched[G.gi];
   if (ng && ng.opp !== undefined && ng.opp !== null && !ng.played) {
     var opp = G.teams[ng.opp];
     if (opp) {
-      var oppRank = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; }).findIndex(function(x) { return x.id === opp.id; }) + 1;
-      var scout = oppRank <= 25 ? 'Ranked #' + oppRank + ' — bring your best.' : oppRank <= 64 ? 'A winnable resume game.' : 'Take care of business.';
+      var oppPoll = pollRank(opp.id), oppEff = effRank(opp.id);
+      var scout = oppPoll ? 'Ranked #' + oppPoll + ' — bring your best.' : oppEff <= 64 ? 'A winnable resume game.' : 'Take care of business.';
       rows += '<div class="brief-row"><span>Scout: <b>' + (ng.home ? 'vs' : '@') + ' ' + opp.name + '</b> (' + opp.wins + '-' + opp.loss + '). ' + scout + '</span></div>';
     }
   }

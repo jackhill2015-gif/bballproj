@@ -1,0 +1,465 @@
+season,week,week_monday,rank,team_id,team,conf,tier,wins_before,losses_before
+2019,0,2018-11-05,1,2305,Kansas Jayhawks,Big 12,power,0,0
+2019,0,2018-11-05,2,96,Kentucky Wildcats,SEC,power,0,0
+2019,0,2018-11-05,3,2250,Gonzaga Bulldogs,WCC,high,0,0
+2019,0,2018-11-05,4,150,Duke Blue Devils,ACC,power,0,0
+2019,0,2018-11-05,5,258,Virginia Cavaliers,ACC,power,0,0
+2019,0,2018-11-05,6,2633,Tennessee Volunteers,SEC,power,0,0
+2019,0,2018-11-05,7,2440,Nevada Wolf Pack,Mountain West,high,0,0
+2019,0,2018-11-05,8,153,North Carolina Tar Heels,ACC,power,0,0
+2019,0,2018-11-05,9,222,Villanova Wildcats,Big East,high,0,0
+2019,0,2018-11-05,10,127,Michigan State Spartans,Big Ten,power,0,0
+2019,0,2018-11-05,11,2,Auburn Tigers,SEC,power,0,0
+2019,0,2018-11-05,12,2306,Kansas State Wildcats,Big 12,power,0,0
+2019,0,2018-11-05,13,277,West Virginia Mountaineers,Big 12,power,0,0
+2019,0,2018-11-05,14,2483,Oregon Ducks,Pac-12,power,0,0
+2019,0,2018-11-05,15,259,Virginia Tech Hokies,ACC,power,0,0
+2019,0,2018-11-05,16,183,Syracuse Orange,ACC,power,0,0
+2019,0,2018-11-05,17,52,Florida State Seminoles,ACC,power,0,0
+2019,0,2018-11-05,18,344,Mississippi State Bulldogs,SEC,power,0,0
+2019,0,2018-11-05,19,130,Michigan Wolverines,Big Ten,power,0,0
+2019,0,2018-11-05,20,2628,TCU Horned Frogs,Big 12,power,0,0
+2019,0,2018-11-05,21,26,UCLA Bruins,Pac-12,power,0,0
+2019,0,2018-11-05,22,228,Clemson Tigers,ACC,power,0,0
+2019,0,2018-11-05,23,99,LSU Tigers,SEC,power,0,0
+2019,0,2018-11-05,24,2509,Purdue Boilermakers,Big Ten,power,0,0
+2019,0,2018-11-05,25,264,Washington Huskies,Pac-12,power,0,0
+2019,1,2018-11-12,1,150,Duke Blue Devils,ACC,power,2,0
+2019,1,2018-11-12,2,2305,Kansas Jayhawks,Big 12,power,1,0
+2019,1,2018-11-12,3,2250,Gonzaga Bulldogs,WCC,high,2,0
+2019,1,2018-11-12,4,258,Virginia Cavaliers,ACC,power,2,0
+2019,1,2018-11-12,5,2633,Tennessee Volunteers,SEC,power,2,0
+2019,1,2018-11-12,6,2440,Nevada Wolf Pack,Mountain West,high,2,0
+2019,1,2018-11-12,7,153,North Carolina Tar Heels,ACC,power,2,0
+2019,1,2018-11-12,8,222,Villanova Wildcats,Big East,high,2,0
+2019,1,2018-11-12,9,2,Auburn Tigers,SEC,power,2,0
+2019,1,2018-11-12,10,96,Kentucky Wildcats,SEC,power,1,1
+2019,1,2018-11-12,11,127,Michigan State Spartans,Big Ten,power,1,1
+2019,1,2018-11-12,12,2306,Kansas State Wildcats,Big 12,power,1,0
+2019,1,2018-11-12,13,2483,Oregon Ducks,Pac-12,power,2,0
+2019,1,2018-11-12,15,183,Syracuse Orange,ACC,power,2,0
+2019,1,2018-11-12,16,259,Virginia Tech Hokies,ACC,power,1,0
+2019,1,2018-11-12,17,344,Mississippi State Bulldogs,SEC,power,2,0
+2019,1,2018-11-12,18,130,Michigan Wolverines,Big Ten,power,2,0
+2019,1,2018-11-12,19,228,Clemson Tigers,ACC,power,2,0
+2019,1,2018-11-12,20,26,UCLA Bruins,Pac-12,power,2,0
+2019,1,2018-11-12,21,2628,TCU Horned Frogs,Big 12,power,2,0
+2019,1,2018-11-12,22,99,LSU Tigers,SEC,power,2,0
+2019,1,2018-11-12,23,2509,Purdue Boilermakers,Big Ten,power,2,0
+2019,1,2018-11-12,24,269,Marquette Golden Eagles,Big East,high,2,0
+2019,1,2018-11-12,25,2084,Buffalo Bulls,MAC,mid,2,0
+2019,2,2018-11-19,1,150,Duke Blue Devils,ACC,power,3,0
+2019,2,2018-11-19,2,2305,Kansas Jayhawks,Big 12,power,3,0
+2019,2,2018-11-19,3,2250,Gonzaga Bulldogs,WCC,high,3,0
+2019,2,2018-11-19,4,258,Virginia Cavaliers,ACC,power,3,0
+2019,2,2018-11-19,5,2633,Tennessee Volunteers,SEC,power,3,0
+2019,2,2018-11-19,6,2440,Nevada Wolf Pack,Mountain West,high,3,0
+2019,2,2018-11-19,7,153,North Carolina Tar Heels,ACC,power,4,0
+2019,2,2018-11-19,8,2,Auburn Tigers,SEC,power,3,0
+2019,2,2018-11-19,9,130,Michigan Wolverines,Big Ten,power,5,0
+2019,2,2018-11-19,10,96,Kentucky Wildcats,SEC,power,3,1
+2019,2,2018-11-19,11,127,Michigan State Spartans,Big Ten,power,3,1
+2019,2,2018-11-19,12,2306,Kansas State Wildcats,Big 12,power,4,0
+2019,2,2018-11-19,13,259,Virginia Tech Hokies,ACC,power,4,0
+2019,2,2018-11-19,14,52,Florida State Seminoles,ACC,power,2,0
+2019,2,2018-11-19,15,344,Mississippi State Bulldogs,SEC,power,3,0
+2019,2,2018-11-19,16,228,Clemson Tigers,ACC,power,3,0
+2019,2,2018-11-19,17,26,UCLA Bruins,Pac-12,power,3,0
+2019,2,2018-11-19,18,2628,TCU Horned Frogs,Big 12,power,3,0
+2019,2,2018-11-19,19,99,LSU Tigers,SEC,power,4,0
+2019,2,2018-11-19,20,2294,Iowa Hawkeyes,Big Ten,power,4,0
+2019,2,2018-11-19,21,2483,Oregon Ducks,Pac-12,power,3,1
+2019,2,2018-11-19,22,2084,Buffalo Bulls,MAC,mid,3,0
+2019,2,2018-11-19,23,194,Ohio State Buckeyes,Big Ten,power,4,0
+2019,2,2018-11-19,24,2509,Purdue Boilermakers,Big Ten,power,4,1
+2019,2,2018-11-19,25,275,Wisconsin Badgers,Big Ten,power,3,0
+2019,3,2018-11-26,1,2250,Gonzaga Bulldogs,WCC,high,6,0
+2019,3,2018-11-26,2,2305,Kansas Jayhawks,Big 12,power,5,0
+2019,3,2018-11-26,3,150,Duke Blue Devils,ACC,power,5,1
+2019,3,2018-11-26,4,258,Virginia Cavaliers,ACC,power,6,0
+2019,3,2018-11-26,5,2440,Nevada Wolf Pack,Mountain West,high,6,0
+2019,3,2018-11-26,6,2633,Tennessee Volunteers,SEC,power,4,1
+2019,3,2018-11-26,7,130,Michigan Wolverines,Big Ten,power,6,0
+2019,3,2018-11-26,8,2,Auburn Tigers,SEC,power,5,1
+2019,3,2018-11-26,9,127,Michigan State Spartans,Big Ten,power,5,1
+2019,3,2018-11-26,10,96,Kentucky Wildcats,SEC,power,5,1
+2019,3,2018-11-26,11,153,North Carolina Tar Heels,ACC,power,6,1
+2019,3,2018-11-26,12,2306,Kansas State Wildcats,Big 12,power,6,0
+2019,3,2018-11-26,13,259,Virginia Tech Hokies,ACC,power,5,0
+2019,3,2018-11-26,14,2294,Iowa Hawkeyes,Big Ten,power,5,0
+2019,3,2018-11-26,15,52,Florida State Seminoles,ACC,power,5,1
+2019,3,2018-11-26,16,194,Ohio State Buckeyes,Big Ten,power,6,0
+2019,3,2018-11-26,17,251,Texas Longhorns,Big 12,power,5,1
+2019,3,2018-11-26,18,2483,Oregon Ducks,Pac-12,power,4,1
+2019,3,2018-11-26,19,2509,Purdue Boilermakers,Big Ten,power,5,1
+2019,3,2018-11-26,20,2641,Texas Tech Red Raiders,Big 12,power,6,0
+2019,3,2018-11-26,21,2084,Buffalo Bulls,MAC,mid,5,0
+2019,3,2018-11-26,22,275,Wisconsin Badgers,Big Ten,power,5,1
+2019,3,2018-11-26,23,222,Villanova Wildcats,Big East,high,5,2
+2019,3,2018-11-26,24,120,Maryland Terrapins,Big Ten,power,6,0
+2019,3,2018-11-26,25,344,Mississippi State Bulldogs,SEC,power,4,1
+2019,4,2018-12-03,1,2250,Gonzaga Bulldogs,WCC,high,8,0
+2019,4,2018-12-03,2,2305,Kansas Jayhawks,Big 12,power,6,0
+2019,4,2018-12-03,3,150,Duke Blue Devils,ACC,power,7,1
+2019,4,2018-12-03,4,258,Virginia Cavaliers,ACC,power,7,0
+2019,4,2018-12-03,5,130,Michigan Wolverines,Big Ten,power,8,0
+2019,4,2018-12-03,6,2440,Nevada Wolf Pack,Mountain West,high,8,0
+2019,4,2018-12-03,7,2633,Tennessee Volunteers,SEC,power,6,1
+2019,4,2018-12-03,8,2,Auburn Tigers,SEC,power,6,1
+2019,4,2018-12-03,9,96,Kentucky Wildcats,SEC,power,7,1
+2019,4,2018-12-03,10,127,Michigan State Spartans,Big Ten,power,6,2
+2019,4,2018-12-03,11,52,Florida State Seminoles,ACC,power,6,1
+2019,4,2018-12-03,12,275,Wisconsin Badgers,Big Ten,power,7,1
+2019,4,2018-12-03,13,2641,Texas Tech Red Raiders,Big 12,power,7,0
+2019,4,2018-12-03,14,153,North Carolina Tar Heels,ACC,power,6,2
+2019,4,2018-12-03,15,259,Virginia Tech Hokies,ACC,power,6,1
+2019,4,2018-12-03,16,2306,Kansas State Wildcats,Big 12,power,6,1
+2019,4,2018-12-03,17,2084,Buffalo Bulls,MAC,mid,7,0
+2019,4,2018-12-03,18,2294,Iowa Hawkeyes,Big Ten,power,6,1
+2019,4,2018-12-03,19,194,Ohio State Buckeyes,Big Ten,power,7,1
+2019,4,2018-12-03,20,9,Arizona State Sun Devils,Pac-12,power,7,0
+2019,4,2018-12-03,21,222,Villanova Wildcats,Big East,high,6,2
+2019,4,2018-12-03,22,344,Mississippi State Bulldogs,SEC,power,6,1
+2019,4,2018-12-03,23,120,Maryland Terrapins,Big Ten,power,7,1
+2019,4,2018-12-03,24,158,Nebraska Cornhuskers,Big Ten,power,7,1
+2019,4,2018-12-03,25,231,Furman Paladins,SoCon,mid,8,0
+2019,5,2018-12-10,1,2305,Kansas Jayhawks,Big 12,power,8,0
+2019,5,2018-12-10,3,2633,Tennessee Volunteers,SEC,power,7,1
+2019,5,2018-12-10,4,2250,Gonzaga Bulldogs,WCC,high,9,1
+2019,5,2018-12-10,5,130,Michigan Wolverines,Big Ten,power,10,0
+2019,5,2018-12-10,7,2440,Nevada Wolf Pack,Mountain West,high,10,0
+2019,5,2018-12-10,8,2,Auburn Tigers,SEC,power,8,1
+2019,5,2018-12-10,9,127,Michigan State Spartans,Big Ten,power,8,2
+2019,5,2018-12-10,11,2641,Texas Tech Red Raiders,Big 12,power,8,0
+2019,5,2018-12-10,12,153,North Carolina Tar Heels,ACC,power,7,2
+2019,5,2018-12-10,13,259,Virginia Tech Hokies,ACC,power,8,1
+2019,5,2018-12-10,14,2084,Buffalo Bulls,MAC,mid,9,0
+2019,5,2018-12-10,15,194,Ohio State Buckeyes,Big Ten,power,8,1
+2019,5,2018-12-10,16,275,Wisconsin Badgers,Big Ten,power,8,2
+2019,5,2018-12-10,17,222,Villanova Wildcats,Big East,high,8,2
+2019,5,2018-12-10,18,344,Mississippi State Bulldogs,SEC,power,8,1
+2019,5,2018-12-10,19,96,Kentucky Wildcats,SEC,power,7,2
+2019,5,2018-12-10,20,9,Arizona State Sun Devils,Pac-12,power,7,1
+2019,5,2018-12-10,22,2294,Iowa Hawkeyes,Big Ten,power,7,2
+2019,5,2018-12-10,23,231,Furman Paladins,SoCon,mid,10,0
+2019,5,2018-12-10,24,248,Houston Cougars,American,high,8,0
+2019,5,2018-12-10,25,84,Indiana Hoosiers,Big Ten,power,8,2
+2019,5,2018-12-10,25,183,Syracuse Orange,ACC,power,7,2
+2019,5,2018-12-10,25,2306,Kansas State Wildcats,Big 12,power,6,2
+2019,6,2018-12-17,1,2305,Kansas Jayhawks,Big 12,power,9,0
+2019,6,2018-12-17,2,150,Duke Blue Devils,ACC,power,9,1
+2019,6,2018-12-17,3,2633,Tennessee Volunteers,SEC,power,8,1
+2019,6,2018-12-17,4,130,Michigan Wolverines,Big Ten,power,11,0
+2019,6,2018-12-17,5,258,Virginia Cavaliers,ACC,power,9,0
+2019,6,2018-12-17,6,2440,Nevada Wolf Pack,Mountain West,high,11,0
+2019,6,2018-12-17,7,2,Auburn Tigers,SEC,power,9,1
+2019,6,2018-12-17,8,2250,Gonzaga Bulldogs,WCC,high,9,2
+2019,6,2018-12-17,9,153,North Carolina Tar Heels,ACC,power,8,2
+2019,6,2018-12-17,10,127,Michigan State Spartans,Big Ten,power,9,2
+2019,6,2018-12-17,11,52,Florida State Seminoles,ACC,power,8,1
+2019,6,2018-12-17,12,2641,Texas Tech Red Raiders,Big 12,power,10,0
+2019,6,2018-12-17,13,259,Virginia Tech Hokies,ACC,power,9,1
+2019,6,2018-12-17,14,2084,Buffalo Bulls,MAC,mid,10,0
+2019,6,2018-12-17,15,194,Ohio State Buckeyes,Big Ten,power,9,1
+2019,6,2018-12-17,16,275,Wisconsin Badgers,Big Ten,power,9,2
+2019,6,2018-12-17,17,344,Mississippi State Bulldogs,SEC,power,9,1
+2019,6,2018-12-17,18,9,Arizona State Sun Devils,Pac-12,power,8,1
+2019,6,2018-12-17,19,96,Kentucky Wildcats,SEC,power,8,2
+2019,6,2018-12-17,20,269,Marquette Golden Eagles,Big East,high,8,2
+2019,6,2018-12-17,21,248,Houston Cougars,American,high,10,0
+2019,6,2018-12-17,22,84,Indiana Hoosiers,Big Ten,power,9,2
+2019,6,2018-12-17,23,2294,Iowa Hawkeyes,Big Ten,power,8,2
+2019,6,2018-12-17,24,231,Furman Paladins,SoCon,mid,12,0
+2019,6,2018-12-17,25,158,Nebraska Cornhuskers,Big Ten,power,9,2
+2019,7,2018-12-24,2,130,Michigan Wolverines,Big Ten,power,12,0
+2019,7,2018-12-24,3,2633,Tennessee Volunteers,SEC,power,10,1
+2019,7,2018-12-24,5,2305,Kansas Jayhawks,Big 12,power,10,1
+2019,7,2018-12-24,6,2440,Nevada Wolf Pack,Mountain West,high,12,0
+2019,7,2018-12-24,7,2250,Gonzaga Bulldogs,WCC,high,11,2
+2019,7,2018-12-24,8,127,Michigan State Spartans,Big Ten,power,10,2
+2019,7,2018-12-24,10,259,Virginia Tech Hokies,ACC,power,10,1
+2019,7,2018-12-24,11,2641,Texas Tech Red Raiders,Big 12,power,10,1
+2019,7,2018-12-24,12,2,Auburn Tigers,SEC,power,10,2
+2019,7,2018-12-24,13,194,Ohio State Buckeyes,Big Ten,power,11,1
+2019,7,2018-12-24,14,153,North Carolina Tar Heels,ACC,power,8,3
+2019,7,2018-12-24,15,275,Wisconsin Badgers,Big Ten,power,10,2
+2019,7,2018-12-24,16,96,Kentucky Wildcats,SEC,power,9,2
+2019,7,2018-12-24,17,9,Arizona State Sun Devils,Pac-12,power,9,2
+2019,7,2018-12-24,18,269,Marquette Golden Eagles,Big East,high,10,2
+2019,7,2018-12-24,19,344,Mississippi State Bulldogs,SEC,power,11,1
+2019,7,2018-12-24,20,152,NC State Wolfpack,ACC,power,11,1
+2019,7,2018-12-24,21,2084,Buffalo Bulls,MAC,mid,11,1
+2019,7,2018-12-24,22,248,Houston Cougars,American,high,12,0
+2019,7,2018-12-24,24,2294,Iowa Hawkeyes,Big Ten,power,10,2
+2019,8,2018-12-31,1,150,Duke Blue Devils,ACC,power,11,1
+2019,8,2018-12-31,2,130,Michigan Wolverines,Big Ten,power,13,0
+2019,8,2018-12-31,3,2633,Tennessee Volunteers,SEC,power,11,1
+2019,8,2018-12-31,4,258,Virginia Cavaliers,ACC,power,11,0
+2019,8,2018-12-31,5,2305,Kansas Jayhawks,Big 12,power,11,1
+2019,8,2018-12-31,6,2440,Nevada Wolf Pack,Mountain West,high,13,0
+2019,8,2018-12-31,7,2250,Gonzaga Bulldogs,WCC,high,12,2
+2019,8,2018-12-31,8,127,Michigan State Spartans,Big Ten,power,11,2
+2019,8,2018-12-31,9,52,Florida State Seminoles,ACC,power,11,1
+2019,8,2018-12-31,10,259,Virginia Tech Hokies,ACC,power,11,1
+2019,8,2018-12-31,11,2641,Texas Tech Red Raiders,Big 12,power,11,1
+2019,8,2018-12-31,13,96,Kentucky Wildcats,SEC,power,10,2
+2019,8,2018-12-31,14,194,Ohio State Buckeyes,Big Ten,power,12,1
+2019,8,2018-12-31,15,153,North Carolina Tar Heels,ACC,power,9,3
+2019,8,2018-12-31,16,269,Marquette Golden Eagles,Big East,high,11,2
+2019,8,2018-12-31,18,152,NC State Wolfpack,ACC,power,12,1
+2019,8,2018-12-31,19,248,Houston Cougars,American,high,13,0
+2019,8,2018-12-31,20,2084,Buffalo Bulls,MAC,mid,12,1
+2019,8,2018-12-31,21,84,Indiana Hoosiers,Big Ten,power,11,2
+2019,8,2018-12-31,22,275,Wisconsin Badgers,Big Ten,power,10,3
+2019,8,2018-12-31,23,201,Oklahoma Sooners,Big 12,power,11,1
+2019,8,2018-12-31,24,158,Nebraska Cornhuskers,Big Ten,power,11,2
+2019,8,2018-12-31,25,2294,Iowa Hawkeyes,Big Ten,power,11,2
+2019,9,2019-01-07,1,150,Duke Blue Devils,ACC,power,12,1
+2019,9,2019-01-07,2,130,Michigan Wolverines,Big Ten,power,15,0
+2019,9,2019-01-07,3,2633,Tennessee Volunteers,SEC,power,12,1
+2019,9,2019-01-07,4,258,Virginia Cavaliers,ACC,power,13,0
+2019,9,2019-01-07,5,2250,Gonzaga Bulldogs,WCC,high,14,2
+2019,9,2019-01-07,6,127,Michigan State Spartans,Big Ten,power,13,2
+2019,9,2019-01-07,7,2305,Kansas Jayhawks,Big 12,power,12,2
+2019,9,2019-01-07,8,2641,Texas Tech Red Raiders,Big 12,power,13,1
+2019,9,2019-01-07,9,259,Virginia Tech Hokies,ACC,power,13,1
+2019,9,2019-01-07,10,2440,Nevada Wolf Pack,Mountain West,high,14,1
+2019,9,2019-01-07,11,2,Auburn Tigers,SEC,power,11,2
+2019,9,2019-01-07,12,153,North Carolina Tar Heels,ACC,power,11,3
+2019,9,2019-01-07,13,52,Florida State Seminoles,ACC,power,12,2
+2019,9,2019-01-07,14,344,Mississippi State Bulldogs,SEC,power,12,1
+2019,9,2019-01-07,15,152,NC State Wolfpack,ACC,power,13,1
+2019,9,2019-01-07,16,194,Ohio State Buckeyes,Big Ten,power,12,2
+2019,9,2019-01-07,17,248,Houston Cougars,American,high,15,0
+2019,9,2019-01-07,18,96,Kentucky Wildcats,SEC,power,10,3
+2019,9,2019-01-07,19,2084,Buffalo Bulls,MAC,mid,13,1
+2019,9,2019-01-07,20,66,Iowa State Cyclones,Big 12,power,12,2
+2019,9,2019-01-07,21,269,Marquette Golden Eagles,Big East,high,12,3
+2019,9,2019-01-07,22,84,Indiana Hoosiers,Big Ten,power,12,3
+2019,9,2019-01-07,23,201,Oklahoma Sooners,Big 12,power,12,2
+2019,9,2019-01-07,24,2599,St. John's Red Storm,Big East,high,14,1
+2019,9,2019-01-07,25,2628,TCU Horned Frogs,Big 12,power,12,1
+2019,10,2019-01-14,1,150,Duke Blue Devils,ACC,power,14,1
+2019,10,2019-01-14,2,130,Michigan Wolverines,Big Ten,power,17,0
+2019,10,2019-01-14,3,2633,Tennessee Volunteers,SEC,power,14,1
+2019,10,2019-01-14,4,258,Virginia Cavaliers,ACC,power,15,0
+2019,10,2019-01-14,5,2250,Gonzaga Bulldogs,WCC,high,16,2
+2019,10,2019-01-14,6,127,Michigan State Spartans,Big Ten,power,15,2
+2019,10,2019-01-14,7,2305,Kansas Jayhawks,Big 12,power,14,2
+2019,10,2019-01-14,8,2641,Texas Tech Red Raiders,Big 12,power,15,1
+2019,10,2019-01-14,9,259,Virginia Tech Hokies,ACC,power,14,1
+2019,10,2019-01-14,10,2440,Nevada Wolf Pack,Mountain West,high,16,1
+2019,10,2019-01-14,11,52,Florida State Seminoles,ACC,power,13,3
+2019,10,2019-01-14,12,96,Kentucky Wildcats,SEC,power,12,3
+2019,10,2019-01-14,13,153,North Carolina Tar Heels,ACC,power,12,4
+2019,10,2019-01-14,14,2,Auburn Tigers,SEC,power,12,3
+2019,10,2019-01-14,15,269,Marquette Golden Eagles,Big East,high,14,3
+2019,10,2019-01-14,16,2084,Buffalo Bulls,MAC,mid,15,1
+2019,10,2019-01-14,17,152,NC State Wolfpack,ACC,power,14,2
+2019,10,2019-01-14,18,145,Ole Miss Rebels,SEC,power,13,2
+2019,10,2019-01-14,19,120,Maryland Terrapins,Big Ten,power,14,3
+2019,10,2019-01-14,20,201,Oklahoma Sooners,Big 12,power,13,3
+2019,10,2019-01-14,21,248,Houston Cougars,American,high,16,1
+2019,10,2019-01-14,22,222,Villanova Wildcats,Big East,high,13,4
+2019,10,2019-01-14,23,2294,Iowa Hawkeyes,Big Ten,power,14,3
+2019,10,2019-01-14,24,344,Mississippi State Bulldogs,SEC,power,12,3
+2019,10,2019-01-14,25,84,Indiana Hoosiers,Big Ten,power,12,4
+2019,11,2019-01-21,1,2633,Tennessee Volunteers,SEC,power,16,1
+2019,11,2019-01-21,2,150,Duke Blue Devils,ACC,power,15,2
+2019,11,2019-01-21,3,258,Virginia Cavaliers,ACC,power,16,1
+2019,11,2019-01-21,4,2250,Gonzaga Bulldogs,WCC,high,18,2
+2019,11,2019-01-21,5,130,Michigan Wolverines,Big Ten,power,17,1
+2019,11,2019-01-21,6,127,Michigan State Spartans,Big Ten,power,16,2
+2019,11,2019-01-21,7,2440,Nevada Wolf Pack,Mountain West,high,18,1
+2019,11,2019-01-21,8,96,Kentucky Wildcats,SEC,power,14,3
+2019,11,2019-01-21,9,2305,Kansas Jayhawks,Big 12,power,15,3
+2019,11,2019-01-21,10,259,Virginia Tech Hokies,ACC,power,15,2
+2019,11,2019-01-21,11,153,North Carolina Tar Heels,ACC,power,14,4
+2019,11,2019-01-21,12,269,Marquette Golden Eagles,Big East,high,16,3
+2019,11,2019-01-21,13,120,Maryland Terrapins,Big Ten,power,16,3
+2019,11,2019-01-21,14,2641,Texas Tech Red Raiders,Big 12,power,15,3
+2019,11,2019-01-21,14,2084,Buffalo Bulls,MAC,mid,17,1
+2019,11,2019-01-21,16,2,Auburn Tigers,SEC,power,13,4
+2019,11,2019-01-21,17,248,Houston Cougars,American,high,18,1
+2019,11,2019-01-21,18,222,Villanova Wildcats,Big East,high,14,4
+2019,11,2019-01-21,19,2294,Iowa Hawkeyes,Big Ten,power,16,3
+2019,11,2019-01-21,20,145,Ole Miss Rebels,SEC,power,14,3
+2019,11,2019-01-21,21,152,NC State Wolfpack,ACC,power,15,3
+2019,11,2019-01-21,22,344,Mississippi State Bulldogs,SEC,power,14,3
+2019,11,2019-01-21,23,97,Louisville Cardinals,ACC,power,13,5
+2019,11,2019-01-21,24,66,Iowa State Cyclones,Big 12,power,14,4
+2019,11,2019-01-21,25,99,LSU Tigers,SEC,power,14,3
+2019,12,2019-01-28,1,2633,Tennessee Volunteers,SEC,power,18,1
+2019,12,2019-01-28,2,150,Duke Blue Devils,ACC,power,17,2
+2019,12,2019-01-28,3,258,Virginia Cavaliers,ACC,power,18,1
+2019,12,2019-01-28,4,2250,Gonzaga Bulldogs,WCC,high,19,2
+2019,12,2019-01-28,5,130,Michigan Wolverines,Big Ten,power,19,1
+2019,12,2019-01-28,6,127,Michigan State Spartans,Big Ten,power,18,3
+2019,12,2019-01-28,7,96,Kentucky Wildcats,SEC,power,16,3
+2019,12,2019-01-28,8,2440,Nevada Wolf Pack,Mountain West,high,19,1
+2019,12,2019-01-28,9,153,North Carolina Tar Heels,ACC,power,15,4
+2019,12,2019-01-28,10,269,Marquette Golden Eagles,Big East,high,18,3
+2019,12,2019-01-28,11,2305,Kansas Jayhawks,Big 12,power,16,4
+2019,12,2019-01-28,12,259,Virginia Tech Hokies,ACC,power,16,3
+2019,12,2019-01-28,13,248,Houston Cougars,American,high,20,1
+2019,12,2019-01-28,14,222,Villanova Wildcats,Big East,high,16,4
+2019,12,2019-01-28,15,97,Louisville Cardinals,ACC,power,15,5
+2019,12,2019-01-28,16,2641,Texas Tech Red Raiders,Big 12,power,16,4
+2019,12,2019-01-28,17,2509,Purdue Boilermakers,Big Ten,power,14,6
+2019,12,2019-01-28,18,2084,Buffalo Bulls,MAC,mid,18,2
+2019,12,2019-01-28,19,99,LSU Tigers,SEC,power,16,3
+2019,12,2019-01-28,20,66,Iowa State Cyclones,Big 12,power,15,5
+2019,12,2019-01-28,21,120,Maryland Terrapins,Big Ten,power,16,5
+2019,12,2019-01-28,22,344,Mississippi State Bulldogs,SEC,power,15,4
+2019,12,2019-01-28,23,152,NC State Wolfpack,ACC,power,16,4
+2019,12,2019-01-28,24,275,Wisconsin Badgers,Big Ten,power,14,6
+2019,12,2019-01-28,25,52,Florida State Seminoles,ACC,power,15,5
+2019,13,2019-02-04,1,2633,Tennessee Volunteers,SEC,power,20,1
+2019,13,2019-02-04,2,150,Duke Blue Devils,ACC,power,19,2
+2019,13,2019-02-04,3,258,Virginia Cavaliers,ACC,power,20,1
+2019,13,2019-02-04,4,2250,Gonzaga Bulldogs,WCC,high,21,2
+2019,13,2019-02-04,5,96,Kentucky Wildcats,SEC,power,18,3
+2019,13,2019-02-04,6,2440,Nevada Wolf Pack,Mountain West,high,21,1
+2019,13,2019-02-04,7,130,Michigan Wolverines,Big Ten,power,20,2
+2019,13,2019-02-04,8,153,North Carolina Tar Heels,ACC,power,17,4
+2019,13,2019-02-04,9,127,Michigan State Spartans,Big Ten,power,18,4
+2019,13,2019-02-04,10,269,Marquette Golden Eagles,Big East,high,19,3
+2019,13,2019-02-04,11,259,Virginia Tech Hokies,ACC,power,18,3
+2019,13,2019-02-04,12,248,Houston Cougars,American,high,21,1
+2019,13,2019-02-04,13,2305,Kansas Jayhawks,Big 12,power,17,5
+2019,13,2019-02-04,14,222,Villanova Wildcats,Big East,high,18,4
+2019,13,2019-02-04,15,2509,Purdue Boilermakers,Big Ten,power,16,6
+2019,13,2019-02-04,16,97,Louisville Cardinals,ACC,power,16,6
+2019,13,2019-02-04,17,66,Iowa State Cyclones,Big 12,power,17,5
+2019,13,2019-02-04,18,2641,Texas Tech Red Raiders,Big 12,power,17,5
+2019,13,2019-02-04,19,275,Wisconsin Badgers,Big Ten,power,16,6
+2019,13,2019-02-04,20,2294,Iowa Hawkeyes,Big Ten,power,17,5
+2019,13,2019-02-04,21,99,LSU Tigers,SEC,power,17,4
+2019,13,2019-02-04,22,52,Florida State Seminoles,ACC,power,16,5
+2019,13,2019-02-04,23,2084,Buffalo Bulls,MAC,mid,19,3
+2019,13,2019-02-04,24,120,Maryland Terrapins,Big Ten,power,17,6
+2019,13,2019-02-04,25,2132,Cincinnati Bearcats,American,high,19,3
+2019,14,2019-02-11,1,2633,Tennessee Volunteers,SEC,power,22,1
+2019,14,2019-02-11,2,150,Duke Blue Devils,ACC,power,21,2
+2019,14,2019-02-11,3,2250,Gonzaga Bulldogs,WCC,high,23,2
+2019,14,2019-02-11,4,258,Virginia Cavaliers,ACC,power,20,2
+2019,14,2019-02-11,5,96,Kentucky Wildcats,SEC,power,20,3
+2019,14,2019-02-11,6,130,Michigan Wolverines,Big Ten,power,22,2
+2019,14,2019-02-11,7,2440,Nevada Wolf Pack,Mountain West,high,23,1
+2019,14,2019-02-11,8,153,North Carolina Tar Heels,ACC,power,19,4
+2019,14,2019-02-11,9,248,Houston Cougars,American,high,23,1
+2019,14,2019-02-11,10,269,Marquette Golden Eagles,Big East,high,20,4
+2019,14,2019-02-11,11,127,Michigan State Spartans,Big Ten,power,19,5
+2019,14,2019-02-11,12,2509,Purdue Boilermakers,Big Ten,power,17,6
+2019,14,2019-02-11,13,222,Villanova Wildcats,Big East,high,19,5
+2019,14,2019-02-11,14,2305,Kansas Jayhawks,Big 12,power,18,6
+2019,14,2019-02-11,15,2641,Texas Tech Red Raiders,Big 12,power,19,5
+2019,14,2019-02-11,16,97,Louisville Cardinals,ACC,power,17,7
+2019,14,2019-02-11,17,52,Florida State Seminoles,ACC,power,18,5
+2019,14,2019-02-11,18,2306,Kansas State Wildcats,Big 12,power,18,5
+2019,14,2019-02-11,19,99,LSU Tigers,SEC,power,19,4
+2019,14,2019-02-11,20,275,Wisconsin Badgers,Big Ten,power,17,7
+2019,14,2019-02-11,21,2294,Iowa Hawkeyes,Big Ten,power,19,5
+2019,14,2019-02-11,22,259,Virginia Tech Hokies,ACC,power,18,5
+2019,14,2019-02-11,23,66,Iowa State Cyclones,Big 12,power,18,6
+2019,14,2019-02-11,24,120,Maryland Terrapins,Big Ten,power,18,6
+2019,14,2019-02-11,25,2084,Buffalo Bulls,MAC,mid,20,3
+2019,15,2019-02-18,1,150,Duke Blue Devils,ACC,power,23,2
+2019,15,2019-02-18,2,2250,Gonzaga Bulldogs,WCC,high,25,2
+2019,15,2019-02-18,3,258,Virginia Cavaliers,ACC,power,22,2
+2019,15,2019-02-18,4,96,Kentucky Wildcats,SEC,power,21,4
+2019,15,2019-02-18,5,2633,Tennessee Volunteers,SEC,power,23,2
+2019,15,2019-02-18,6,2440,Nevada Wolf Pack,Mountain West,high,24,1
+2019,15,2019-02-18,7,130,Michigan Wolverines,Big Ten,power,23,3
+2019,15,2019-02-18,8,153,North Carolina Tar Heels,ACC,power,20,5
+2019,15,2019-02-18,9,248,Houston Cougars,American,high,25,1
+2019,15,2019-02-18,10,127,Michigan State Spartans,Big Ten,power,21,5
+2019,15,2019-02-18,11,269,Marquette Golden Eagles,Big East,high,21,4
+2019,15,2019-02-18,12,2305,Kansas Jayhawks,Big 12,power,20,6
+2019,15,2019-02-18,13,99,LSU Tigers,SEC,power,21,4
+2019,15,2019-02-18,14,2641,Texas Tech Red Raiders,Big 12,power,21,5
+2019,15,2019-02-18,15,2509,Purdue Boilermakers,Big Ten,power,18,7
+2019,15,2019-02-18,16,52,Florida State Seminoles,ACC,power,20,5
+2019,15,2019-02-18,17,222,Villanova Wildcats,Big East,high,20,6
+2019,15,2019-02-18,18,97,Louisville Cardinals,ACC,power,18,8
+2019,15,2019-02-18,19,66,Iowa State Cyclones,Big 12,power,19,6
+2019,15,2019-02-18,20,259,Virginia Tech Hokies,ACC,power,20,5
+2019,15,2019-02-18,21,2294,Iowa Hawkeyes,Big Ten,power,20,5
+2019,15,2019-02-18,22,275,Wisconsin Badgers,Big Ten,power,17,8
+2019,15,2019-02-18,23,2306,Kansas State Wildcats,Big 12,power,19,6
+2019,15,2019-02-18,24,120,Maryland Terrapins,Big Ten,power,19,7
+2019,15,2019-02-18,25,2084,Buffalo Bulls,MAC,mid,22,3
+2019,16,2019-02-25,1,2250,Gonzaga Bulldogs,WCC,high,27,2
+2019,16,2019-02-25,2,258,Virginia Cavaliers,ACC,power,24,2
+2019,16,2019-02-25,3,150,Duke Blue Devils,ACC,power,24,3
+2019,16,2019-02-25,4,96,Kentucky Wildcats,SEC,power,23,4
+2019,16,2019-02-25,5,153,North Carolina Tar Heels,ACC,power,22,5
+2019,16,2019-02-25,6,127,Michigan State Spartans,Big Ten,power,23,5
+2019,16,2019-02-25,7,2633,Tennessee Volunteers,SEC,power,24,3
+2019,16,2019-02-25,8,248,Houston Cougars,American,high,26,1
+2019,16,2019-02-25,9,130,Michigan Wolverines,Big Ten,power,24,4
+2019,16,2019-02-25,10,269,Marquette Golden Eagles,Big East,high,23,4
+2019,16,2019-02-25,11,2641,Texas Tech Red Raiders,Big 12,power,22,5
+2019,16,2019-02-25,12,2440,Nevada Wolf Pack,Mountain West,high,25,2
+2019,16,2019-02-25,13,99,LSU Tigers,SEC,power,22,5
+2019,16,2019-02-25,14,2509,Purdue Boilermakers,Big Ten,power,20,7
+2019,16,2019-02-25,15,2305,Kansas Jayhawks,Big 12,power,20,7
+2019,16,2019-02-25,16,2306,Kansas State Wildcats,Big 12,power,21,6
+2019,16,2019-02-25,17,120,Maryland Terrapins,Big Ten,power,21,7
+2019,16,2019-02-25,18,52,Florida State Seminoles,ACC,power,21,6
+2019,16,2019-02-25,19,275,Wisconsin Badgers,Big Ten,power,19,8
+2019,16,2019-02-25,20,259,Virginia Tech Hokies,ACC,power,21,6
+2019,16,2019-02-25,21,2084,Buffalo Bulls,MAC,mid,24,3
+2019,16,2019-02-25,22,2294,Iowa Hawkeyes,Big Ten,power,21,6
+2019,16,2019-02-25,23,2132,Cincinnati Bearcats,American,high,23,4
+2019,16,2019-02-25,24,2747,Wofford Terriers,SoCon,mid,24,4
+2019,16,2019-02-25,25,264,Washington Huskies,Pac-12,power,22,5
+2019,17,2019-03-04,2,258,Virginia Cavaliers,ACC,power,26,2
+2019,17,2019-03-04,3,153,North Carolina Tar Heels,ACC,power,24,5
+2019,17,2019-03-04,4,150,Duke Blue Devils,ACC,power,25,4
+2019,17,2019-03-04,5,2633,Tennessee Volunteers,SEC,power,26,3
+2019,17,2019-03-04,6,96,Kentucky Wildcats,SEC,power,24,5
+2019,17,2019-03-04,7,130,Michigan Wolverines,Big Ten,power,26,4
+2019,17,2019-03-04,8,2641,Texas Tech Red Raiders,Big 12,power,24,5
+2019,17,2019-03-04,9,127,Michigan State Spartans,Big Ten,power,23,6
+2019,17,2019-03-04,10,99,LSU Tigers,SEC,power,24,5
+2019,17,2019-03-04,11,2509,Purdue Boilermakers,Big Ten,power,22,7
+2019,17,2019-03-04,12,248,Houston Cougars,American,high,27,2
+2019,17,2019-03-04,13,2305,Kansas Jayhawks,Big 12,power,22,7
+2019,17,2019-03-04,14,52,Florida State Seminoles,ACC,power,23,6
+2019,17,2019-03-04,15,259,Virginia Tech Hokies,ACC,power,22,6
+2019,17,2019-03-04,16,269,Marquette Golden Eagles,Big East,high,23,6
+2019,17,2019-03-04,17,2440,Nevada Wolf Pack,Mountain West,high,26,3
+2019,17,2019-03-04,18,2306,Kansas State Wildcats,Big 12,power,22,7
+2019,17,2019-03-04,19,2084,Buffalo Bulls,MAC,mid,26,3
+2019,17,2019-03-04,20,2132,Cincinnati Bearcats,American,high,25,4
+2019,17,2019-03-04,21,275,Wisconsin Badgers,Big Ten,power,20,9
+2019,17,2019-03-04,22,2747,Wofford Terriers,SoCon,mid,26,4
+2019,17,2019-03-04,23,222,Villanova Wildcats,Big East,high,22,8
+2019,17,2019-03-04,24,120,Maryland Terrapins,Big Ten,power,21,9
+2019,17,2019-03-04,25,2116,UCF Knights,American,high,22,6
+2019,18,2019-03-11,1,2250,Gonzaga Bulldogs,WCC,high,29,2
+2019,18,2019-03-11,2,258,Virginia Cavaliers,ACC,power,28,2
+2019,18,2019-03-11,3,153,North Carolina Tar Heels,ACC,power,26,5
+2019,18,2019-03-11,4,96,Kentucky Wildcats,SEC,power,26,5
+2019,18,2019-03-11,5,150,Duke Blue Devils,ACC,power,26,5
+2019,18,2019-03-11,6,127,Michigan State Spartans,Big Ten,power,25,6
+2019,18,2019-03-11,7,2641,Texas Tech Red Raiders,Big 12,power,26,5
+2019,18,2019-03-11,8,2633,Tennessee Volunteers,SEC,power,27,4
+2019,18,2019-03-11,9,99,LSU Tigers,SEC,power,26,5
+2019,18,2019-03-11,10,130,Michigan Wolverines,Big Ten,power,26,5
+2019,18,2019-03-11,11,248,Houston Cougars,American,high,29,2
+2019,18,2019-03-11,12,52,Florida State Seminoles,ACC,power,25,6
+2019,18,2019-03-11,13,2509,Purdue Boilermakers,Big Ten,power,23,8
+2019,18,2019-03-11,14,2440,Nevada Wolf Pack,Mountain West,high,28,3
+2019,18,2019-03-11,15,2306,Kansas State Wildcats,Big 12,power,24,7
+2019,18,2019-03-11,16,259,Virginia Tech Hokies,ACC,power,23,7
+2019,18,2019-03-11,17,2305,Kansas Jayhawks,Big 12,power,23,8
+2019,18,2019-03-11,18,2084,Buffalo Bulls,MAC,mid,28,3
+2019,18,2019-03-11,19,275,Wisconsin Badgers,Big Ten,power,22,9
+2019,18,2019-03-11,20,2747,Wofford Terriers,SoCon,mid,28,4
+2019,18,2019-03-11,21,120,Maryland Terrapins,Big Ten,power,22,9
+2019,18,2019-03-11,22,2,Auburn Tigers,SEC,power,22,9
+2019,18,2019-03-11,23,269,Marquette Golden Eagles,Big East,high,23,8
+2019,18,2019-03-11,24,2132,Cincinnati Bearcats,American,high,25,6
+2019,18,2019-03-11,25,222,Villanova Wildcats,Big East,high,22,9

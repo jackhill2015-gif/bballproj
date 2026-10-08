@@ -7,6 +7,7 @@
 import { formatFor, roundsIn } from './confformats.js';
 import { payTourneyWin, payOpeningWin } from './finance.js';
 import { recomputeRatings, resumeScore } from './ratings.js';
+import { selectionSundayPoll } from './poll.js';
 import { ge, txt, fmtScore } from './utils.js';
 import { G, LS, SetupState, saveState } from './state.js';
 import { simGame, SITE } from './simulation.js';
@@ -433,6 +434,7 @@ export function simOpeningRound(skipUser) {
 export function buildNCAA() {
   // Rankings fold in the conference tournaments before the committee meets.
   recomputeRatings();
+  selectionSundayPoll();
   // ── SELECTION COMMITTEE ──
   // Step 1: Conference champs get automatic bids
   var autoBids = [];

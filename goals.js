@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { G } from './state.js';
+import { pollRank } from './poll.js';
 import { getTOvr } from './utils.js';
 import { earn } from './finance.js';
 
@@ -15,7 +16,10 @@ export var ALL_GOALS_PRESTIGE = 3;
 
 function clampN(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
 
-function rankOf(tid) {
+// Top 25 rank (poll.js); unranked = 99. Used for ranked wins and Top 25 goals.
+function rankOf(tid) { return pollRank(tid) || 99; }
+// Efficiency rank: team strength, used to set the season's goals
+function effRankOf(tid) {
   var sorted = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; });
   return sorted.findIndex(function(x) { return x.id === tid; }) + 1;
 }
@@ -57,7 +61,7 @@ var NCAA_LABEL = ['', 'Make the NCAA tournament', 'Win an NCAA tournament game',
 function makeGoals() {
   var t = G.teams[G.tid];
   var exp = G.expectations || { low: 12, high: 18 };
-  var r = rankOf(G.tid);
+  var r = effRankOf(G.tid);
   var winsTarget = clampN(Math.round(exp.low + (exp.high - exp.low) * 0.6), 8, 27);
   var goals = [{ id: 'wins', target: winsTarget, text: 'Win ' + winsTarget + ' games' }];
 

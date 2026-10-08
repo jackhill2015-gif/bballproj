@@ -54,8 +54,14 @@ function recordBook() {
     return pb > pa ? b : a;
   }, hist[0]);
   rows.push({ label: 'Best win %, season', val: (bestPct.wins / Math.max(1, bestPct.wins + bestPct.loss) * 100).toFixed(1) + '%', note: bestPct.year });
+  // Final Top 25 (seasons since the poll); older seasons only have the NET rank
+  var polled = hist.filter(function(h) { return h.poll > 0; });
+  if (polled.length) {
+    var bestPoll = polled.reduce(function(a, b) { return b.poll < a.poll ? b : a; }, polled[0]);
+    rows.push({ label: 'Best final Top 25 rank', val: '#' + bestPoll.poll, note: bestPoll.year });
+  }
   var bestRank = hist.reduce(function(a, b) { return b.rank < a.rank ? b : a; }, hist[0]);
-  rows.push({ label: 'Best final rank', val: '#' + bestRank.rank, note: bestRank.year });
+  rows.push({ label: 'Best final NET rank', val: '#' + bestRank.rank, note: bestRank.year });
   // Longest recorded streak of 20+ win seasons
   var run = 0, bestRun = 0;
   hist.forEach(function(x) { run = x.wins >= 20 ? run + 1 : 0; bestRun = Math.max(bestRun, run); });
@@ -122,7 +128,7 @@ export function renderHistory() {
       else if (ch && ch.action === 'Hot Seat') act = ' <span class="tag t-rival">Hot Seat</span>';
       h += '<div class="leader-row"><div class="leader-rank" style="width:44px;">' + yr.year + '</div>'
         + '<div class="leader-name"><b>' + fR(yr.wins, yr.loss) + '</b> ' + finishBadge(yr.tourneyFinish) + act
-        + '<small>#' + yr.rank + ' NET · ' + (yr.note || '') + '</small></div></div>';
+        + '<small>' + (typeof yr.poll === 'number' ? '' : '#' + yr.rank + ' NET · ') + (yr.note || '') + '</small></div></div>';
     });
   }
   h += '</div>';

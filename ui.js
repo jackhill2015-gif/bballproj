@@ -5,6 +5,7 @@
 //  narrated recaps, coach XP, milestones, live sim modal.
 // ═══════════════════════════════════════════════════════════
 
+import { pollRank, pollPrevRank } from './poll.js';
 import { backupDynasty, restoreDynasty } from './backup.js';
 import { noteSpend } from './finance.js';
 import { upgradeFacility } from './facilities.js';
@@ -233,15 +234,19 @@ function narrateResult(type, text) {
   } catch (e) { return null; }
 }
 
+// Poll rank (poll.js) of a team by name: 1-25, or 0 when unranked
 function teamRankOf(name) {
-  var sorted = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; });
-  for (var i = 0; i < sorted.length; i++) if (sorted[i].name === name) return i + 1;
+  for (var i = 0; i < G.teams.length; i++) if (G.teams[i].name === name) return pollRank(G.teams[i].id);
   return 0;
 }
 
-export function userRank() {
+// Your Top 25 rank (0 = unranked)
+export function userRank() { return pollRank(G.tid); }
+
+// Efficiency (NET-style) rank, 1-365: team strength for seeding projections
+export function effRank(tid) {
   var sorted = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; });
-  return sorted.findIndex(function(x) { return x.id === G.tid; }) + 1;
+  return sorted.findIndex(function(x) { return x.id === tid; }) + 1;
 }
 
 // Consecutive W/L from most recent played game (+ = wins)
@@ -296,14 +301,12 @@ function awardGameXP(type, text) {
 var _prevRank = 0;
 var _milestones = { wins: 0, streak: 0, top25: false, top10: false, no1: false };
 
-// { prev, cur, delta } — delta > 0 means moved UP the rankings
-// Movement since last week's poll (t.lastRank is snapshotted in advanceWeek
-// and saved), so the arrow stays put until the next week is played.
+// { prev, cur, delta } — delta > 0 means moved UP the poll. Movement since
+// the previous poll (poll.js keeps it), so the arrow stays until the next poll.
 export function rankDelta() {
-  var t = G.teams[G.tid];
-  var prev = (t && t.lastRank) || 0;
+  var prev = pollPrevRank(G.tid);
   var cur = userRank();
-  return { prev: prev, cur: cur, delta: prev ? prev - cur : 0 };
+  return { prev: prev, cur: cur, delta: prev && cur ? prev - cur : 0 };
 }
 
 var _milestonesPrimed = false;
@@ -519,7 +522,7 @@ export function updateAll() {
 
   var t = G.teams[G.tid];
 
-  var rank = userRank();
+  var rank = userRank() || 99; // unranked counts as outside the Top 25
   checkMilestones(rank);
 
   // Topbar

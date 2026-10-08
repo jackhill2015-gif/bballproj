@@ -30,6 +30,7 @@ var APP_FILES = [
   "season.js",
   "simulation.js",
   "state.js",
+  "poll.js",
   "storage.js",
   "tournament.js",
   "ui.js",

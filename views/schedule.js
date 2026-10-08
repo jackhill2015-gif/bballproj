@@ -8,15 +8,15 @@
 import { DIFF_MOD } from '../constants.js';
 import { clamp, getTOvr, fmtScore, winProb } from '../utils.js';
 import { G } from '../state.js';
+import { pollRank } from '../poll.js';
 
 // Team name link (same shape as the player pLink convention).
 function tLink(tid, name) {
   return '<span class="tname-link" data-action="team" data-tid="' + tid + '" role="button" tabindex="0">' + name + '</span>';
 }
 
-function oppRankOf(oppId, natSorted) {
-  return natSorted.findIndex(function(x) { return x.id === oppId; }) + 1;
-}
+// Opponent's Top 25 rank (poll.js), 0 when unranked
+function oppRankOf(oppId) { return pollRank(oppId); }
 
 function rivalSet() {
   var t = G.teams[G.tid];
@@ -73,8 +73,8 @@ function gameRow(game, week, natSorted, team, rivals) {
   var isPlayed = !!game.played;
   var isWin = isPlayed && game.uScore > game.oScore;
   var isNext = !isPlayed && week === G.gi && G.phase === 'reg';
-  var rk = oppRankOf(opp.id, natSorted);
-  var rkStr = rk <= 25 ? '#' + rk + ' ' : '';
+  var rk = oppRankOf(opp.id);
+  var rkStr = rk ? '#' + rk + ' ' : '';
 
   var cls = 'sched-row' + (isNext ? ' next' : isPlayed ? (isWin ? ' rw-win' : ' rw-loss') : '');
   // Played games open a detail sheet; the nested team link wins the tap
