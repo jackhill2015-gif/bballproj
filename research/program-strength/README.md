@@ -1,6 +1,6 @@
 # Real program strength vs the game's school ratings
 
-Proposal only: nothing in the game uses this yet.
+Applied 2026-10-08 (Jack approved the blend): every school's `o` in constants.js is now `o_blend`. It sets prestige and starting talent for new dynasties; existing saves keep their saved prestige.
 
 ## Method
 
