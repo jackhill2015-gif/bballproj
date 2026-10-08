@@ -41,7 +41,7 @@ export var PULL_PRESTIGE = 0.5;
 // a hot class), fixed for the offseason: a swing of about this many
 // standard scores. It lets programs rise and fall instead of recruiting in
 // the same order every year.
-export var PULL_FORM = 0.4;
+export var PULL_FORM = 0.35;
 function recruitingForm(t) {
   var u = 0;
   for (var k = 1; k <= 3; k++) { var x = Math.sin((t.id + 1) * 12.9898 * k + G.yr * 78.233) * 43758.5453; u += x - Math.floor(x); }

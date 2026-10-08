@@ -2,7 +2,7 @@
 
 Two parts (HANDOFF.md, Up next item 0). Part 1, the recruit pool and CPU rosters, is done. Part 2 (growth, hidden potential, development coach) waits for Jack.
 
-All numbers use today's school ratings (the program-strength blend in research/program-strength is not applied).
+Numbers below use the program-strength prestige blend (research/program-strength, applied just before this re-check). The pre-blend run is noted where it differs.
 
 Measure with `node test-harness/player-dev.mjs [seasons=8]`. It plays a full dynasty on the real modules: every offseason runs the user's departures, portal, recruiting and signing day the way the game does, with a simple auto-coach for the user's school. The fast version is `player-dev-test.mjs` (4 seasons, in run-all). The shared code is in `player-dev-lib.mjs`; part 2 will add its targets to the same script.
 
@@ -18,7 +18,7 @@ Measure with `node test-harness/player-dev.mjs [seasons=8]`. It plays a full dyn
 ### What changed
 
 - **Pool** (`recruitpool.js`): about 4.2 recruits per school (1,533 for 365). 3.6 per school are drawn at the level of a real school, pulled 15% toward the middle (the best recruits now go to the best programs, which would otherwise widen the gap between them), plus a tail of recruits at the level of the weakest quarter so every school can fill its class. Stars by national rank: 25 five-stars, 110 four-stars, 330 three-stars, 520 two-stars, the rest one-star. If schools need more than usual (an old save with short rosters), the pool grows to 15% over the total need.
-- **Recruiting pull** orders programs for recruiting: half current strength (the ranking score), half school prestige, plus a yearly recruiting form per school (a good or bad year, about 0.4 standard scores, fixed for the offseason). **Rival schools** for each recruit are programs near his level by pull (a recruit who usually lands at the #40 program hears from about #18-#72), so winning and prestige both pull the best players. A blueblood's down year costs it some recruits but not its place, and a rising school climbs as it wins. Without the prestige half, bluebloods fell to 58% of preseason polls (real 85%). Without the yearly form, programs barely moved (69 moved 40+ places in 7 years, team strength vs base level r = 0.95) and preseason polls were too sticky. A form of 0.6 pushed ranked 16-25 teams out of the poll too often after a split week (28-29%, band edge 28.1).
+- **Recruiting pull** orders programs for recruiting: half current strength (the ranking score), half school prestige, plus a yearly recruiting form per school (a good or bad year, 0.35 standard scores, fixed for the offseason). **Rival schools** for each recruit are programs near his level by pull (a recruit who usually lands at the #40 program hears from about #18-#72), so winning and prestige both pull the best players. A blueblood's down year costs it some recruits but not its place, and a rising school climbs as it wins. Without the prestige half, bluebloods fell to 58% of preseason polls (real 85%). Without the yearly form, programs barely moved (69 moved 40+ places in 7 years, team strength vs base level r = 0.95) and preseason polls were too sticky. The form trades two poll stats against each other: more form pushes ranked 16-25 teams out of the poll after a split week more often (0.4: about 28%, band edge 28.1), less makes the preseason Top 25 too sticky (0.3: about 73%, band edge 72.6). 0.35 sits inside both.
 - **CPU classes**: a school signs only while it has room. Its class size is halfway between what it loses and an even class (target / 4), and its roster always ends at 13-15 (the target is 13, 14 or 15, varying by school and year). Early signings and signing day go to the suitor with room; if none of his suitors has room, he signs with the nearest program at his level that does. Schools still short after signing day, or after the portal, sign recruits nobody took. A generated freshman is the last resort.
 - **Class balance**: if next season's returning classes are uneven (under 85% of an even class), CPU schools add junior college transfers in the thin classes, at about their returners' level. This does nothing in a normal league; it is there for saves made before this change, which carry the echo.
 - **Starting rosters** are 13-15 (was 13 for everyone), the size schools keep, so the first offseason doesn't create one big freshman class. The 14th and 15th players are end-of-bench level (6 below the school), so the rotation is as before (sim-feel's star share needed it).
@@ -30,25 +30,27 @@ Measure with `node test-harness/player-dev.mjs [seasons=8]`. It plays a full dyn
 
 | | Main | Now |
 |---|---|---|
-| Recruit pool per year | 400 | 1,534 |
-| Players leaving per year | 1,087 | 1,301 |
-| Recruits joining rosters per year | 339 | 1,299 |
-| Generated top-up freshmen per year | 622 (max 804) | 0.1 (max 1) |
+| Recruit pool per year | 400 | 1,535 |
+| Players leaving per year | 1,087 | 1,304 |
+| Recruits joining rosters per year | 339 | 1,303 |
+| Generated top-up freshmen per year | 622 (max 804) | 0.3 (max 1) |
 | CPU rosters (min / mean / max) | 10 / 10.7 / 15 | 13 / 14.0 / 15 |
 | CPU schools at 13-15, worst season | 10% | 100% |
-| Players per class, lowest to highest | 535-1,205 | 1,228-1,321 |
-| Freshman minutes share, by season | 8%-27% | 15%-23% |
-| OVR by class FR / SO / JR / SR | 68.8 / 69.8 / 70.6 / 71.0 | 71.1 / 71.7 / 72.2 / 72.3 |
-| Minutes FR / SO / JR / SR | 21 / 24 / 26 / 30% | 18 / 24 / 28 / 30% |
-| Freshman minutes on the top 25 | 24% | 27% |
-| Team OVR: top 25 / median / 90th percentile down | 82.1 / 71.9 / 66.1 | 85.3 / 73.0 / 68.0 |
-| Teams moving 40+ places (season 1 to 8) | 134 | 124 |
+| Players per class, lowest to highest | 535-1,205 | 1,205-1,327 |
+| Freshman minutes share, by season | 8%-27% | 15%-24% |
+| OVR by class FR / SO / JR / SR | 68.8 / 69.8 / 70.6 / 71.0 | 71.2 / 71.9 / 72.3 / 72.4 |
+| Minutes FR / SO / JR / SR | 21 / 24 / 26 / 30% | 17 / 24 / 28 / 30% |
+| Freshman minutes on the top 25 | 24% | 29% |
+| Team OVR: top 25 / median / 90th percentile down | 82.1 / 71.9 / 66.1 | 85.8 / 73.0 / 68.0 |
+| Teams moving 40+ places (season 1 to 8) | 134 | 119 |
 | Team OVR vs school base level, r | 0.85 | 0.91 |
-| 5-star / 4-star arrives at | 84.0 / 79.1 | 88.5 / 81.9 |
+| 5-star / 4-star arrives at | 84.0 / 79.1 | 89.0 / 82.2 |
+
+(Main's column is on the old school ratings.)
 
 On main, much of the movement was noise from random top-ups. Now programs move through recruiting (results, prestige, a good or bad recruiting year) and the portal. Part 2's development (breakouts, stalls, coaching) should add more rise and fall.
 
-**Calibration** (final code): sim-feel has all targets within bands. The rankings calibration (20 seasons, two runs) has every target stat in band with 1 tracked gap (main: 3). Preseason-to-final correlation is 0.37-0.39 (real 0.43, main 0.17), bluebloods are in 75-77% of preseason polls (real 85%, main 74%), the preseason Top 25 still ranked at the end is 70-71% (real 63%, main 66%), and ranked 16-25 teams out after a split week are 26-27% (real 16%, main 25%).
+**Calibration** (final code, blend applied): sim-feel has all targets within bands. Rankings calibration, six runs (160 seasons) at form 0.35: averages are in band with 1 tracked gap (main: 3). Ranked 16-25 teams out after a split week average 27.2% (band edge 28.1, real 16%, main about 25%), close enough to the edge that a single 20-season run crosses it now and then (2 of 6 runs did). It is a poll-behaviour stat (poll.js); part 2's development variance or a poll tweak is the place to bring it down. Preseason Top 25 still ranked at the end averages 70.8% (real 63%, main 66%), preseason-to-final correlation is 0.35-0.45 (real 0.43, main 0.17), and bluebloods are in 70-77% of preseason polls (real 85%).
 
 A 16-season run (before recruiting pull was added) holds: classes 1,215-1,327, rosters 13-15 every season, at most 1 top-up a year, top-25 team OVR 84-87, median 73.
 
