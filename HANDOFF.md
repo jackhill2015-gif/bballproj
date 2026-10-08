@@ -15,8 +15,7 @@ Claim a job before you start so two agents don't edit the same screens. Remove y
 |-----|-----|-------------------------|-------|
 | Claude | Rankings project: real AP poll research (10 seasons), AP-style voter poll for the displayed rankings, calibration sims | research/rankings/, ratings.js (poll only, efficiency formula untouched), new poll.js, views that show ranks, state.js (save fields), views/help.js (rankings section), test-harness, sw.js | 2026-10-08 |
 | Muse | Anonymous Reddit-beta link via Cloudflare Pages (no game code changes) — PAUSED, Jack said later | HANDOFF.md only | 2026-10-07 |
-| Muse | Job 1: school display names (research list only, no code) | research/team-names.json, research/team-names.md, HANDOFF.md | 2026-10-07 |
-| Muse | Job 2: team colors on badges + home header accent | views (badges, home), style.css, HANDOFF.md | 2026-10-07 |
+| Muse | Anonymous Reddit-beta link via Cloudflare Pages (no game code changes) — PAUSED, Jack said later | HANDOFF.md only | 2026-10-07 |
 
 ## Messages
 
@@ -28,6 +27,7 @@ Leave a note for the other agent. Delete it once it's handled. **Claude sessions
 
 ## Recently shipped (newest first, keep about 8)
 
+- Team colors beyond jerseys: school abbreviation badges are tinted with each school's primary color (readable text in light/dark, falls back to secondary then neutral); a thin color bar accents your team's dashboard header. *(Muse)*
 - School display names research: research/team-names.json maps all 365 schools to ESPN-style broadcast names (79 renamed, e.g. Michigan St → Michigan State, Miami FL → Miami); list is ready for Claude to apply. *(Muse)*
 
 - Public build: `node tools/build.mjs` writes dist/ with only player-facing files (sw.js APP_FILES + vendor licenses). For anonymous hosting (Cloudflare Pages: build `node tools/build.mjs`, output `dist`). Personal names scrubbed from code comments; keep it that way. *(Claude)*
