@@ -1703,6 +1703,13 @@ table.ups td { vertical-align: middle; }
 /* Top-bar logo goes Home */
 .tb-brand[data-action] { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 
+/* Top 25 poll (views/standings.js) */
+.mv-new { font-size: 11px; color: var(--txt2); }
+.rv-line { margin-top: 10px; font-size: 12.5px; line-height: 1.5; color: var(--txt2); }
+.rv-line b { color: var(--txt); font-weight: 600; }
+.rv-line .rv-u { font-weight: 600; }
+.rk-tag { display: inline-block; min-width: 18px; margin-right: 5px; font-size: 11px; color: var(--txt3); font-variant-numeric: tabular-nums; }
+
 /* Team color accents: tinted school badges + dashboard header bar. */
 .team-logo { display: inline-block; padding: 1px 6px; border-radius: 4px; }
 .dash-accent { height: 3px; border-radius: 2px; margin: 0 0 10px; max-width: 280px; }

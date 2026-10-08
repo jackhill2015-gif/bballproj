@@ -36,11 +36,11 @@ export function renderTrophies() {
   h += '<div class="grid-2"><div>';
   // Seasons
   if (hist.length) {
-    var t = '<table><thead><tr><th>Year</th><th>School</th><th class="num">Record</th><th class="num">Rank</th><th>Postseason</th></tr></thead><tbody>';
+    var t = '<table><thead><tr><th>Year</th><th>School</th><th class="num">Record</th><th class="num">Final rank</th><th>Postseason</th></tr></thead><tbody>';
     hist.forEach(function(s) {
       var post = s.tourneyFinish === 'CHAMP' ? '<b>National champions</b>' : s.tourneyFinish === 'Did Not Qualify' ? '<span style="color:var(--txt3);">No NCAA bid</span>' : (s.tourneyFinish || '');
       if (s.confTitle) post += (post ? ', ' : '') + 'conf. tournament title';
-      t += '<tr><td>' + s.year + '</td><td>' + (s.school || '') + '</td><td class="num">' + s.wins + '-' + s.loss + '</td><td class="num">' + (s.rank ? '#' + s.rank : '') + '</td><td>' + post + '</td></tr>';
+      t += '<tr><td>' + s.year + '</td><td>' + (s.school || '') + '</td><td class="num">' + s.wins + '-' + s.loss + '</td><td class="num">' + (typeof s.poll === 'number' ? (s.poll ? '#' + s.poll : 'NR') : (s.rank ? '#' + s.rank : '')) + '</td><td>' + post + '</td></tr>';
     });
     h += panel('Seasons', t + '</tbody></table>');
   } else {

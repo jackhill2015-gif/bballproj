@@ -1,0 +1,362 @@
+season,week,week_monday,rank,team_id,team,conf,tier,wins_before,losses_before
+2021,0,2020-11-23,1,2250,Gonzaga Bulldogs,WCC,high,0,0
+2021,0,2020-11-23,2,239,Baylor Bears,Big 12,power,0,0
+2021,0,2020-11-23,3,222,Villanova Wildcats,Big East,high,0,0
+2021,0,2020-11-23,4,258,Virginia Cavaliers,ACC,power,0,0
+2021,0,2020-11-23,5,2294,Iowa Hawkeyes,Big Ten,power,0,0
+2021,0,2020-11-23,6,2305,Kansas Jayhawks,Big 12,power,0,0
+2021,0,2020-11-23,7,275,Wisconsin Badgers,Big Ten,power,0,0
+2021,0,2020-11-23,8,356,Illinois Fighting Illini,Big Ten,power,0,0
+2021,0,2020-11-23,9,150,Duke Blue Devils,ACC,power,0,0
+2021,0,2020-11-23,10,96,Kentucky Wildcats,SEC,power,0,0
+2021,0,2020-11-23,11,156,Creighton Bluejays,Big East,high,0,0
+2021,0,2020-11-23,13,127,Michigan State Spartans,Big Ten,power,0,0
+2021,0,2020-11-23,14,2641,Texas Tech Red Raiders,Big 12,power,0,0
+2021,0,2020-11-23,15,277,West Virginia Mountaineers,Big 12,power,0,0
+2021,0,2020-11-23,16,153,North Carolina Tar Heels,ACC,power,0,0
+2021,0,2020-11-23,17,248,Houston Cougars,American,high,0,0
+2021,0,2020-11-23,18,9,Arizona State Sun Devils,Pac-12,power,0,0
+2021,0,2020-11-23,19,251,Texas Longhorns,Big 12,power,0,0
+2021,0,2020-11-23,22,26,UCLA Bruins,Pac-12,power,0,0
+2021,0,2020-11-23,23,194,Ohio State Buckeyes,Big Ten,power,0,0
+2021,0,2020-11-23,24,164,Rutgers Scarlet Knights,Big Ten,power,0,0
+2021,0,2020-11-23,25,130,Michigan Wolverines,Big Ten,power,0,0
+2021,1,2020-11-30,1,2250,Gonzaga Bulldogs,WCC,high,2,0
+2021,1,2020-11-30,2,239,Baylor Bears,Big 12,power,2,0
+2021,1,2020-11-30,3,2294,Iowa Hawkeyes,Big Ten,power,2,0
+2021,1,2020-11-30,4,275,Wisconsin Badgers,Big Ten,power,2,0
+2021,1,2020-11-30,5,356,Illinois Fighting Illini,Big Ten,power,3,0
+2021,1,2020-11-30,6,150,Duke Blue Devils,ACC,power,1,0
+2021,1,2020-11-30,7,2305,Kansas Jayhawks,Big 12,power,1,1
+2021,1,2020-11-30,8,127,Michigan State Spartans,Big Ten,power,2,0
+2021,1,2020-11-30,9,156,Creighton Bluejays,Big East,high,1,0
+2021,1,2020-11-30,10,248,Houston Cougars,American,high,3,0
+2021,1,2020-11-30,11,277,West Virginia Mountaineers,Big 12,power,3,0
+2021,1,2020-11-30,12,222,Villanova Wildcats,Big East,high,2,1
+2021,1,2020-11-30,14,153,North Carolina Tar Heels,ACC,power,1,0
+2021,1,2020-11-30,15,258,Virginia Cavaliers,ACC,power,1,1
+2021,1,2020-11-30,16,259,Virginia Tech Hokies,ACC,power,3,0
+2021,1,2020-11-30,17,251,Texas Longhorns,Big 12,power,1,0
+2021,1,2020-11-30,17,2641,Texas Tech Red Raiders,Big 12,power,2,1
+2021,1,2020-11-30,20,96,Kentucky Wildcats,SEC,power,1,1
+2021,1,2020-11-30,21,2483,Oregon Ducks,Pac-12,power,0,0
+2021,1,2020-11-30,22,52,Florida State Seminoles,ACC,power,0,0
+2021,1,2020-11-30,23,194,Ohio State Buckeyes,Big Ten,power,2,0
+2021,1,2020-11-30,25,9,Arizona State Sun Devils,Pac-12,power,2,1
+2021,2,2020-12-07,2,239,Baylor Bears,Big 12,power,3,0
+2021,2,2020-12-07,3,2294,Iowa Hawkeyes,Big Ten,power,3,0
+2021,2,2020-12-07,4,127,Michigan State Spartans,Big Ten,power,5,0
+2021,2,2020-12-07,5,2305,Kansas Jayhawks,Big 12,power,4,1
+2021,2,2020-12-07,6,356,Illinois Fighting Illini,Big Ten,power,3,1
+2021,2,2020-12-07,8,156,Creighton Bluejays,Big East,high,3,0
+2021,2,2020-12-07,9,222,Villanova Wildcats,Big East,high,4,1
+2021,2,2020-12-07,10,150,Duke Blue Devils,ACC,power,2,1
+2021,2,2020-12-07,11,277,West Virginia Mountaineers,Big 12,power,4,1
+2021,2,2020-12-07,12,2633,Tennessee Volunteers,SEC,power,0,0
+2021,2,2020-12-07,13,251,Texas Longhorns,Big 12,power,4,1
+2021,2,2020-12-07,13,275,Wisconsin Badgers,Big Ten,power,3,1
+2021,2,2020-12-07,15,259,Virginia Tech Hokies,ACC,power,4,0
+2021,2,2020-12-07,16,153,North Carolina Tar Heels,ACC,power,3,1
+2021,2,2020-12-07,17,2641,Texas Tech Red Raiders,Big 12,power,4,1
+2021,2,2020-12-07,19,257,Richmond Spiders,A-10,high,2,0
+2021,2,2020-12-07,20,52,Florida State Seminoles,ACC,power,1,0
+2021,2,2020-12-07,21,164,Rutgers Scarlet Knights,Big Ten,power,3,0
+2021,2,2020-12-07,22,194,Ohio State Buckeyes,Big Ten,power,3,0
+2021,2,2020-12-07,23,9,Arizona State Sun Devils,Pac-12,power,3,1
+2021,2,2020-12-07,24,21,San Diego State Aztecs,Mountain West,high,4,0
+2021,3,2020-12-14,1,2250,Gonzaga Bulldogs,WCC,high,3,0
+2021,3,2020-12-14,2,239,Baylor Bears,Big 12,power,4,0
+2021,3,2020-12-14,3,2294,Iowa Hawkeyes,Big Ten,power,6,0
+2021,3,2020-12-14,4,127,Michigan State Spartans,Big Ten,power,6,0
+2021,3,2020-12-14,5,2305,Kansas Jayhawks,Big 12,power,6,1
+2021,3,2020-12-14,6,248,Houston Cougars,American,high,4,0
+2021,3,2020-12-14,7,222,Villanova Wildcats,Big East,high,5,1
+2021,3,2020-12-14,8,277,West Virginia Mountaineers,Big 12,power,6,1
+2021,3,2020-12-14,9,156,Creighton Bluejays,Big East,high,4,1
+2021,3,2020-12-14,10,2633,Tennessee Volunteers,SEC,power,2,0
+2021,3,2020-12-14,11,251,Texas Longhorns,Big 12,power,5,1
+2021,3,2020-12-14,12,275,Wisconsin Badgers,Big Ten,power,4,1
+2021,3,2020-12-14,13,356,Illinois Fighting Illini,Big Ten,power,4,2
+2021,3,2020-12-14,14,2641,Texas Tech Red Raiders,Big 12,power,6,1
+2021,3,2020-12-14,15,52,Florida State Seminoles,ACC,power,3,0
+2021,3,2020-12-14,18,21,San Diego State Aztecs,Mountain West,high,5,0
+2021,3,2020-12-14,19,164,Rutgers Scarlet Knights,Big Ten,power,4,0
+2021,3,2020-12-14,20,194,Ohio State Buckeyes,Big Ten,power,5,0
+2021,3,2020-12-14,21,150,Duke Blue Devils,ACC,power,2,2
+2021,3,2020-12-14,22,153,North Carolina Tar Heels,ACC,power,4,2
+2021,3,2020-12-14,23,97,Louisville Cardinals,ACC,power,4,0
+2021,3,2020-12-14,24,228,Clemson Tigers,ACC,power,5,0
+2021,4,2020-12-21,1,2250,Gonzaga Bulldogs,WCC,high,4,0
+2021,4,2020-12-21,2,239,Baylor Bears,Big 12,power,5,0
+2021,4,2020-12-21,3,2305,Kansas Jayhawks,Big 12,power,7,1
+2021,4,2020-12-21,4,2294,Iowa Hawkeyes,Big Ten,power,6,1
+2021,4,2020-12-21,5,222,Villanova Wildcats,Big East,high,7,1
+2021,4,2020-12-21,6,248,Houston Cougars,American,high,5,0
+2021,4,2020-12-21,7,277,West Virginia Mountaineers,Big 12,power,7,1
+2021,4,2020-12-21,8,2633,Tennessee Volunteers,SEC,power,4,0
+2021,4,2020-12-21,9,275,Wisconsin Badgers,Big Ten,power,6,1
+2021,4,2020-12-21,11,164,Rutgers Scarlet Knights,Big Ten,power,6,0
+2021,4,2020-12-21,12,127,Michigan State Spartans,Big Ten,power,6,1
+2021,4,2020-12-21,13,156,Creighton Bluejays,Big East,high,6,2
+2021,4,2020-12-21,14,142,Missouri Tigers,SEC,power,5,0
+2021,4,2020-12-21,15,2641,Texas Tech Red Raiders,Big 12,power,6,2
+2021,4,2020-12-21,16,258,Virginia Cavaliers,ACC,power,3,1
+2021,4,2020-12-21,17,153,North Carolina Tar Heels,ACC,power,5,2
+2021,4,2020-12-21,18,356,Illinois Fighting Illini,Big Ten,power,5,3
+2021,4,2020-12-21,19,130,Michigan Wolverines,Big Ten,power,6,0
+2021,4,2020-12-21,21,52,Florida State Seminoles,ACC,power,4,1
+2021,4,2020-12-21,22,2752,Xavier Musketeers,Big East,high,8,0
+2021,4,2020-12-21,23,194,Ohio State Buckeyes,Big Ten,power,6,1
+2021,4,2020-12-21,24,259,Virginia Tech Hokies,ACC,power,6,1
+2021,5,2020-12-28,1,2250,Gonzaga Bulldogs,WCC,high,7,0
+2021,5,2020-12-28,2,239,Baylor Bears,Big 12,power,6,0
+2021,5,2020-12-28,3,2305,Kansas Jayhawks,Big 12,power,8,1
+2021,5,2020-12-28,5,248,Houston Cougars,American,high,7,0
+2021,5,2020-12-28,6,275,Wisconsin Badgers,Big Ten,power,8,1
+2021,5,2020-12-28,7,2633,Tennessee Volunteers,SEC,power,6,0
+2021,5,2020-12-28,8,251,Texas Longhorns,Big 12,power,7,1
+2021,5,2020-12-28,9,277,West Virginia Mountaineers,Big 12,power,7,2
+2021,5,2020-12-28,10,2294,Iowa Hawkeyes,Big Ten,power,7,2
+2021,5,2020-12-28,11,156,Creighton Bluejays,Big East,high,7,2
+2021,5,2020-12-28,12,142,Missouri Tigers,SEC,power,6,0
+2021,5,2020-12-28,13,2641,Texas Tech Red Raiders,Big 12,power,7,2
+2021,5,2020-12-28,14,164,Rutgers Scarlet Knights,Big Ten,power,6,1
+2021,5,2020-12-28,15,356,Illinois Fighting Illini,Big Ten,power,7,3
+2021,5,2020-12-28,16,130,Michigan Wolverines,Big Ten,power,7,0
+2021,5,2020-12-28,17,127,Michigan State Spartans,Big Ten,power,6,2
+2021,5,2020-12-28,18,52,Florida State Seminoles,ACC,power,5,1
+2021,5,2020-12-28,19,77,Northwestern Wildcats,Big Ten,power,6,1
+2021,5,2020-12-28,21,135,Minnesota Golden Gophers,Big Ten,power,8,1
+2021,5,2020-12-28,21,2483,Oregon Ducks,Pac-12,power,6,1
+2021,5,2020-12-28,23,258,Virginia Cavaliers,ACC,power,4,2
+2021,5,2020-12-28,24,259,Virginia Tech Hokies,ACC,power,7,1
+2021,5,2020-12-28,25,194,Ohio State Buckeyes,Big Ten,power,7,2
+2021,6,2021-01-04,1,2250,Gonzaga Bulldogs,WCC,high,10,0
+2021,6,2021-01-04,2,239,Baylor Bears,Big 12,power,9,0
+2021,6,2021-01-04,4,251,Texas Longhorns,Big 12,power,8,1
+2021,6,2021-01-04,5,2294,Iowa Hawkeyes,Big Ten,power,9,2
+2021,6,2021-01-04,6,2305,Kansas Jayhawks,Big 12,power,8,2
+2021,6,2021-01-04,7,156,Creighton Bluejays,Big East,high,8,2
+2021,6,2021-01-04,8,275,Wisconsin Badgers,Big Ten,power,9,2
+2021,6,2021-01-04,9,2633,Tennessee Volunteers,SEC,power,7,1
+2021,6,2021-01-04,10,130,Michigan Wolverines,Big Ten,power,9,0
+2021,6,2021-01-04,11,248,Houston Cougars,American,high,8,1
+2021,6,2021-01-04,12,356,Illinois Fighting Illini,Big Ten,power,8,3
+2021,6,2021-01-04,13,142,Missouri Tigers,SEC,power,7,1
+2021,6,2021-01-04,14,277,West Virginia Mountaineers,Big 12,power,8,3
+2021,6,2021-01-04,15,164,Rutgers Scarlet Knights,Big Ten,power,7,2
+2021,6,2021-01-04,16,135,Minnesota Golden Gophers,Big Ten,power,10,2
+2021,6,2021-01-04,17,2483,Oregon Ducks,Pac-12,power,8,1
+2021,6,2021-01-04,18,2641,Texas Tech Red Raiders,Big 12,power,8,3
+2021,6,2021-01-04,19,228,Clemson Tigers,ACC,power,8,1
+2021,6,2021-01-04,19,259,Virginia Tech Hokies,ACC,power,8,1
+2021,6,2021-01-04,21,150,Duke Blue Devils,ACC,power,3,2
+2021,6,2021-01-04,22,258,Virginia Cavaliers,ACC,power,5,2
+2021,6,2021-01-04,23,127,Michigan State Spartans,Big Ten,power,7,3
+2021,7,2021-01-11,1,2250,Gonzaga Bulldogs,WCC,high,12,0
+2021,7,2021-01-11,2,239,Baylor Bears,Big 12,power,11,0
+2021,7,2021-01-11,4,251,Texas Longhorns,Big 12,power,10,1
+2021,7,2021-01-11,5,2294,Iowa Hawkeyes,Big Ten,power,11,2
+2021,7,2021-01-11,6,2305,Kansas Jayhawks,Big 12,power,10,2
+2021,7,2021-01-11,7,130,Michigan Wolverines,Big Ten,power,10,0
+2021,7,2021-01-11,8,156,Creighton Bluejays,Big East,high,10,2
+2021,7,2021-01-11,9,275,Wisconsin Badgers,Big Ten,power,10,2
+2021,7,2021-01-11,10,2633,Tennessee Volunteers,SEC,power,9,1
+2021,7,2021-01-11,11,248,Houston Cougars,American,high,10,1
+2021,7,2021-01-11,12,228,Clemson Tigers,ACC,power,9,1
+2021,7,2021-01-11,14,356,Illinois Fighting Illini,Big Ten,power,9,4
+2021,7,2021-01-11,15,2641,Texas Tech Red Raiders,Big 12,power,10,3
+2021,7,2021-01-11,16,97,Louisville Cardinals,ACC,power,8,1
+2021,7,2021-01-11,17,142,Missouri Tigers,SEC,power,7,2
+2021,7,2021-01-11,18,258,Virginia Cavaliers,ACC,power,7,2
+2021,7,2021-01-11,19,150,Duke Blue Devils,ACC,power,5,2
+2021,7,2021-01-11,20,259,Virginia Tech Hokies,ACC,power,9,2
+2021,7,2021-01-11,21,194,Ohio State Buckeyes,Big Ten,power,9,3
+2021,7,2021-01-11,23,135,Minnesota Golden Gophers,Big Ten,power,10,4
+2021,7,2021-01-11,25,41,UConn Huskies,Big East,high,6,1
+2021,8,2021-01-18,1,2250,Gonzaga Bulldogs,WCC,high,14,0
+2021,8,2021-01-18,2,239,Baylor Bears,Big 12,power,12,0
+2021,8,2021-01-18,3,222,Villanova Wildcats,Big East,high,8,1
+2021,8,2021-01-18,4,2294,Iowa Hawkeyes,Big Ten,power,12,2
+2021,8,2021-01-18,6,2633,Tennessee Volunteers,SEC,power,10,1
+2021,8,2021-01-18,7,130,Michigan Wolverines,Big Ten,power,11,1
+2021,8,2021-01-18,8,248,Houston Cougars,American,high,11,1
+2021,8,2021-01-18,9,2305,Kansas Jayhawks,Big 12,power,10,3
+2021,8,2021-01-18,10,275,Wisconsin Badgers,Big Ten,power,11,3
+2021,8,2021-01-18,11,156,Creighton Bluejays,Big East,high,10,3
+2021,8,2021-01-18,13,258,Virginia Cavaliers,ACC,power,9,2
+2021,8,2021-01-18,14,277,West Virginia Mountaineers,Big 12,power,9,4
+2021,8,2021-01-18,15,194,Ohio State Buckeyes,Big Ten,power,11,3
+2021,8,2021-01-18,16,259,Virginia Tech Hokies,ACC,power,11,2
+2021,8,2021-01-18,17,135,Minnesota Golden Gophers,Big Ten,power,11,4
+2021,8,2021-01-18,18,333,Alabama Crimson Tide,SEC,power,11,3
+2021,8,2021-01-18,19,142,Missouri Tigers,SEC,power,8,2
+2021,8,2021-01-18,20,228,Clemson Tigers,ACC,power,9,2
+2021,8,2021-01-18,21,2483,Oregon Ducks,Pac-12,power,9,2
+2021,8,2021-01-18,22,356,Illinois Fighting Illini,Big Ten,power,9,5
+2021,8,2021-01-18,23,41,UConn Huskies,Big East,high,7,1
+2021,8,2021-01-18,24,26,UCLA Bruins,Pac-12,power,11,2
+2021,9,2021-01-25,1,2250,Gonzaga Bulldogs,WCC,high,15,0
+2021,9,2021-01-25,2,239,Baylor Bears,Big 12,power,14,0
+2021,9,2021-01-25,3,222,Villanova Wildcats,Big East,high,10,1
+2021,9,2021-01-25,5,251,Texas Longhorns,Big 12,power,11,2
+2021,9,2021-01-25,6,248,Houston Cougars,American,high,13,1
+2021,9,2021-01-25,7,2294,Iowa Hawkeyes,Big Ten,power,12,3
+2021,9,2021-01-25,8,258,Virginia Cavaliers,ACC,power,10,2
+2021,9,2021-01-25,9,333,Alabama Crimson Tide,SEC,power,13,3
+2021,9,2021-01-25,10,2641,Texas Tech Red Raiders,Big 12,power,11,4
+2021,9,2021-01-25,11,277,West Virginia Mountaineers,Big 12,power,10,4
+2021,9,2021-01-25,12,142,Missouri Tigers,SEC,power,10,2
+2021,9,2021-01-25,13,194,Ohio State Buckeyes,Big Ten,power,12,4
+2021,9,2021-01-25,14,275,Wisconsin Badgers,Big Ten,power,12,4
+2021,9,2021-01-25,15,2305,Kansas Jayhawks,Big 12,power,10,5
+2021,9,2021-01-25,16,52,Florida State Seminoles,ACC,power,9,2
+2021,9,2021-01-25,17,156,Creighton Bluejays,Big East,high,11,4
+2021,9,2021-01-25,18,2633,Tennessee Volunteers,SEC,power,10,3
+2021,9,2021-01-25,19,356,Illinois Fighting Illini,Big Ten,power,10,5
+2021,9,2021-01-25,20,259,Virginia Tech Hokies,ACC,power,11,3
+2021,9,2021-01-25,21,135,Minnesota Golden Gophers,Big Ten,power,11,5
+2021,9,2021-01-25,22,139,Saint Louis Billikens,A-10,high,7,1
+2021,9,2021-01-25,23,26,UCLA Bruins,Pac-12,power,12,3
+2021,9,2021-01-25,24,201,Oklahoma Sooners,Big 12,power,9,4
+2021,9,2021-01-25,25,97,Louisville Cardinals,ACC,power,10,3
+2021,10,2021-02-01,1,2250,Gonzaga Bulldogs,WCC,high,17,0
+2021,10,2021-02-01,2,239,Baylor Bears,Big 12,power,16,0
+2021,10,2021-02-01,3,222,Villanova Wildcats,Big East,high,11,1
+2021,10,2021-02-01,5,248,Houston Cougars,American,high,15,1
+2021,10,2021-02-01,6,251,Texas Longhorns,Big 12,power,11,3
+2021,10,2021-02-01,7,194,Ohio State Buckeyes,Big Ten,power,14,4
+2021,10,2021-02-01,8,2294,Iowa Hawkeyes,Big Ten,power,12,4
+2021,10,2021-02-01,9,201,Oklahoma Sooners,Big 12,power,11,4
+2021,10,2021-02-01,10,333,Alabama Crimson Tide,SEC,power,14,4
+2021,10,2021-02-01,11,2633,Tennessee Volunteers,SEC,power,12,3
+2021,10,2021-02-01,12,356,Illinois Fighting Illini,Big Ten,power,11,5
+2021,10,2021-02-01,13,2641,Texas Tech Red Raiders,Big 12,power,12,5
+2021,10,2021-02-01,14,258,Virginia Cavaliers,ACC,power,11,3
+2021,10,2021-02-01,15,156,Creighton Bluejays,Big East,high,13,4
+2021,10,2021-02-01,16,259,Virginia Tech Hokies,ACC,power,13,3
+2021,10,2021-02-01,17,277,West Virginia Mountaineers,Big 12,power,11,5
+2021,10,2021-02-01,18,142,Missouri Tigers,SEC,power,11,3
+2021,10,2021-02-01,19,275,Wisconsin Badgers,Big Ten,power,13,5
+2021,10,2021-02-01,21,26,UCLA Bruins,Pac-12,power,13,3
+2021,10,2021-02-01,22,57,Florida Gators,SEC,power,10,4
+2021,10,2021-02-01,23,2305,Kansas Jayhawks,Big 12,power,11,6
+2021,10,2021-02-01,24,2509,Purdue Boilermakers,Big Ten,power,12,6
+2021,10,2021-02-01,25,2181,Drake Bulldogs,MVC,mid,16,0
+2021,11,2021-02-08,1,2250,Gonzaga Bulldogs,WCC,high,18,0
+2021,11,2021-02-08,3,130,Michigan Wolverines,Big Ten,power,13,1
+2021,11,2021-02-08,4,194,Ohio State Buckeyes,Big Ten,power,15,4
+2021,11,2021-02-08,5,222,Villanova Wildcats,Big East,high,12,2
+2021,11,2021-02-08,6,356,Illinois Fighting Illini,Big Ten,power,13,5
+2021,11,2021-02-08,7,2641,Texas Tech Red Raiders,Big 12,power,14,5
+2021,11,2021-02-08,8,248,Houston Cougars,American,high,16,2
+2021,11,2021-02-08,9,258,Virginia Cavaliers,ACC,power,13,3
+2021,11,2021-02-08,10,142,Missouri Tigers,SEC,power,13,3
+2021,11,2021-02-08,11,333,Alabama Crimson Tide,SEC,power,15,5
+2021,11,2021-02-08,12,201,Oklahoma Sooners,Big 12,power,12,5
+2021,11,2021-02-08,13,251,Texas Longhorns,Big 12,power,11,5
+2021,11,2021-02-08,14,277,West Virginia Mountaineers,Big 12,power,13,5
+2021,11,2021-02-08,15,2294,Iowa Hawkeyes,Big Ten,power,13,6
+2021,11,2021-02-08,16,2633,Tennessee Volunteers,SEC,power,13,4
+2021,11,2021-02-08,17,52,Florida State Seminoles,ACC,power,10,3
+2021,11,2021-02-08,19,156,Creighton Bluejays,Big East,high,14,5
+2021,11,2021-02-08,20,30,USC Trojans,Pac-12,power,15,3
+2021,11,2021-02-08,21,275,Wisconsin Badgers,Big Ten,power,14,6
+2021,11,2021-02-08,22,2350,Loyola Chicago Ramblers,MVC,mid,17,3
+2021,11,2021-02-08,23,197,Oklahoma State Cowboys,Big 12,power,12,5
+2021,11,2021-02-08,24,2509,Purdue Boilermakers,Big Ten,power,13,7
+2021,11,2021-02-08,25,164,Rutgers Scarlet Knights,Big Ten,power,11,6
+2021,12,2021-02-15,1,2250,Gonzaga Bulldogs,WCC,high,20,0
+2021,12,2021-02-15,3,130,Michigan Wolverines,Big Ten,power,14,1
+2021,12,2021-02-15,4,194,Ohio State Buckeyes,Big Ten,power,17,4
+2021,12,2021-02-15,5,356,Illinois Fighting Illini,Big Ten,power,14,5
+2021,12,2021-02-15,6,248,Houston Cougars,American,high,17,2
+2021,12,2021-02-15,7,258,Virginia Cavaliers,ACC,power,15,3
+2021,12,2021-02-15,8,333,Alabama Crimson Tide,SEC,power,17,5
+2021,12,2021-02-15,9,201,Oklahoma Sooners,Big 12,power,13,5
+2021,12,2021-02-15,10,222,Villanova Wildcats,Big East,high,13,3
+2021,12,2021-02-15,11,2294,Iowa Hawkeyes,Big Ten,power,15,6
+2021,12,2021-02-15,12,251,Texas Longhorns,Big 12,power,13,5
+2021,12,2021-02-15,13,277,West Virginia Mountaineers,Big 12,power,14,6
+2021,12,2021-02-15,15,2641,Texas Tech Red Raiders,Big 12,power,14,6
+2021,12,2021-02-15,16,52,Florida State Seminoles,ACC,power,11,3
+2021,12,2021-02-15,17,30,USC Trojans,Pac-12,power,17,3
+2021,12,2021-02-15,19,2633,Tennessee Volunteers,SEC,power,14,5
+2021,12,2021-02-15,20,142,Missouri Tigers,SEC,power,13,5
+2021,12,2021-02-15,21,275,Wisconsin Badgers,Big Ten,power,15,7
+2021,12,2021-02-15,22,2350,Loyola Chicago Ramblers,MVC,mid,18,4
+2021,12,2021-02-15,23,2305,Kansas Jayhawks,Big 12,power,15,7
+2021,12,2021-02-15,24,8,Arkansas Razorbacks,SEC,power,16,5
+2021,12,2021-02-15,25,21,San Diego State Aztecs,Mountain West,high,15,4
+2021,13,2021-02-22,1,2250,Gonzaga Bulldogs,WCC,high,22,0
+2021,13,2021-02-22,2,239,Baylor Bears,Big 12,power,17,0
+2021,13,2021-02-22,3,130,Michigan Wolverines,Big Ten,power,16,1
+2021,13,2021-02-22,4,194,Ohio State Buckeyes,Big Ten,power,18,5
+2021,13,2021-02-22,5,356,Illinois Fighting Illini,Big Ten,power,16,5
+2021,13,2021-02-22,6,333,Alabama Crimson Tide,SEC,power,18,5
+2021,13,2021-02-22,7,201,Oklahoma Sooners,Big 12,power,14,5
+2021,13,2021-02-22,8,222,Villanova Wildcats,Big East,high,14,3
+2021,13,2021-02-22,9,2294,Iowa Hawkeyes,Big Ten,power,17,6
+2021,13,2021-02-22,10,277,West Virginia Mountaineers,Big 12,power,15,6
+2021,13,2021-02-22,11,52,Florida State Seminoles,ACC,power,13,3
+2021,13,2021-02-22,12,248,Houston Cougars,American,high,18,3
+2021,13,2021-02-22,13,156,Creighton Bluejays,Big East,high,16,5
+2021,13,2021-02-22,14,251,Texas Longhorns,Big 12,power,13,6
+2021,13,2021-02-22,15,258,Virginia Cavaliers,ACC,power,15,5
+2021,13,2021-02-22,16,259,Virginia Tech Hokies,ACC,power,14,4
+2021,13,2021-02-22,17,2305,Kansas Jayhawks,Big 12,power,17,7
+2021,13,2021-02-22,18,2641,Texas Tech Red Raiders,Big 12,power,14,7
+2021,13,2021-02-22,19,30,USC Trojans,Pac-12,power,18,4
+2021,13,2021-02-22,20,8,Arkansas Razorbacks,SEC,power,17,5
+2021,13,2021-02-22,21,2350,Loyola Chicago Ramblers,MVC,mid,19,4
+2021,13,2021-02-22,22,21,San Diego State Aztecs,Mountain West,high,17,4
+2021,13,2021-02-22,23,275,Wisconsin Badgers,Big Ten,power,16,8
+2021,13,2021-02-22,24,142,Missouri Tigers,SEC,power,14,6
+2021,13,2021-02-22,25,2633,Tennessee Volunteers,SEC,power,15,6
+2021,14,2021-03-01,2,130,Michigan Wolverines,Big Ten,power,18,1
+2021,14,2021-03-01,3,239,Baylor Bears,Big 12,power,18,1
+2021,14,2021-03-01,4,356,Illinois Fighting Illini,Big Ten,power,18,6
+2021,14,2021-03-01,5,2294,Iowa Hawkeyes,Big Ten,power,18,7
+2021,14,2021-03-01,6,277,West Virginia Mountaineers,Big 12,power,17,6
+2021,14,2021-03-01,7,194,Ohio State Buckeyes,Big Ten,power,18,7
+2021,14,2021-03-01,8,333,Alabama Crimson Tide,SEC,power,19,6
+2021,14,2021-03-01,9,248,Houston Cougars,American,high,20,3
+2021,14,2021-03-01,10,222,Villanova Wildcats,Big East,high,15,4
+2021,14,2021-03-01,11,52,Florida State Seminoles,ACC,power,14,4
+2021,14,2021-03-01,12,8,Arkansas Razorbacks,SEC,power,19,5
+2021,14,2021-03-01,13,2305,Kansas Jayhawks,Big 12,power,18,8
+2021,14,2021-03-01,14,156,Creighton Bluejays,Big East,high,17,6
+2021,14,2021-03-01,15,251,Texas Longhorns,Big 12,power,14,7
+2021,14,2021-03-01,16,201,Oklahoma Sooners,Big 12,power,14,7
+2021,14,2021-03-01,17,197,Oklahoma State Cowboys,Big 12,power,16,6
+2021,14,2021-03-01,18,2641,Texas Tech Red Raiders,Big 12,power,15,8
+2021,14,2021-03-01,19,21,San Diego State Aztecs,Mountain West,high,19,4
+2021,14,2021-03-01,20,2350,Loyola Chicago Ramblers,MVC,mid,21,4
+2021,14,2021-03-01,21,258,Virginia Cavaliers,ACC,power,15,6
+2021,14,2021-03-01,23,2509,Purdue Boilermakers,Big Ten,power,16,8
+2021,14,2021-03-01,24,38,Colorado Buffaloes,Pac-12,power,19,7
+2021,14,2021-03-01,25,275,Wisconsin Badgers,Big Ten,power,16,9
+2021,15,2021-03-08,1,2250,Gonzaga Bulldogs,WCC,high,24,0
+2021,15,2021-03-08,2,239,Baylor Bears,Big 12,power,21,1
+2021,15,2021-03-08,3,356,Illinois Fighting Illini,Big Ten,power,20,6
+2021,15,2021-03-08,4,130,Michigan Wolverines,Big Ten,power,19,3
+2021,15,2021-03-08,5,2294,Iowa Hawkeyes,Big Ten,power,20,7
+2021,15,2021-03-08,6,333,Alabama Crimson Tide,SEC,power,21,6
+2021,15,2021-03-08,7,248,Houston Cougars,American,high,21,3
+2021,15,2021-03-08,8,8,Arkansas Razorbacks,SEC,power,21,5
+2021,15,2021-03-08,9,194,Ohio State Buckeyes,Big Ten,power,18,8
+2021,15,2021-03-08,10,277,West Virginia Mountaineers,Big 12,power,18,8
+2021,15,2021-03-08,11,2305,Kansas Jayhawks,Big 12,power,19,8
+2021,15,2021-03-08,12,197,Oklahoma State Cowboys,Big 12,power,18,7
+2021,15,2021-03-08,13,251,Texas Longhorns,Big 12,power,17,7
+2021,15,2021-03-08,14,222,Villanova Wildcats,Big East,high,16,5
+2021,15,2021-03-08,15,52,Florida State Seminoles,ACC,power,15,5
+2021,15,2021-03-08,16,258,Virginia Cavaliers,ACC,power,17,6
+2021,15,2021-03-08,17,156,Creighton Bluejays,Big East,high,18,7
+2021,15,2021-03-08,19,21,San Diego State Aztecs,Mountain West,high,20,4
+2021,15,2021-03-08,20,2641,Texas Tech Red Raiders,Big 12,power,17,9
+2021,15,2021-03-08,20,2509,Purdue Boilermakers,Big Ten,power,18,8
+2021,15,2021-03-08,22,259,Virginia Tech Hokies,ACC,power,15,5
+2021,15,2021-03-08,23,38,Colorado Buffaloes,Pac-12,power,20,7
+2021,15,2021-03-08,24,30,USC Trojans,Pac-12,power,21,6
+2021,15,2021-03-08,25,201,Oklahoma Sooners,Big 12,power,14,9

@@ -7,6 +7,7 @@
 
 import { STREAMS, BUCKETS, ledger, totals } from '../finance.js';
 import { G } from '../state.js';
+import { pollRank, pollTeams } from '../poll.js';
 import { SKILL_POINT_TABLE } from '../constants.js';
 import { awardScore, pickPositionalTeam, getTOvr, oldOvr } from '../utils.js';
 import { playerFaceSmallHTML } from './faces.js';
@@ -157,7 +158,7 @@ function verdictHTML(t, rank, tf) {
     + '<div class="rc-kv">'
     + '<div><b>' + t.wins + '-' + t.loss + '</b><span>Record</span></div>'
     + '<div><b>' + ordinal(confPos) + '</b><span>' + t.conf + ' (' + t.cWins + '-' + t.cLoss + ')</span></div>'
-    + '<div><b>#' + rank + '</b><span>Final rank</span></div>'
+    + '<div><b>' + (rank ? '#' + rank : 'NR') + '</b><span>Final poll</span></div>'
     + '<div><b>' + tf + '</b><span>NCAA</span></div>'
     + '<div><b>' + (tot.net >= 0 ? '+' : '−') + Math.abs(tot.net) + '</b><span>NIL net</span></div>'
     + '</div>';
@@ -201,8 +202,7 @@ function coachingHTML(skillPts) {
 
 export function renderSeasonRecap() {
   var t = G.teams[G.tid];
-  var sorted = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; });
-  var rank = sorted.findIndex(function(x) { return x.id === G.tid; }) + 1;
+  var rank = pollRank(G.tid); // final Top 25 (0 = unranked)
   var lastHistory = G.history && G.history.length ? G.history[G.history.length - 1] : null;
   var tf = lastHistory ? lastHistory.tourneyFinish : '';
   tf = { CHAMP: 'Champion', 'Championship Game': 'Runner-up', 'Did Not Qualify': 'No bid', 'Conf Tourney': 'No bid',
@@ -236,11 +236,9 @@ function leagueHTML() {
     if (still.length === 1) natChamp = still[0].team;
   }
 
-  // Final top 10 = the final national rankings (not raw win margin, which
-  // put 30-win low-majors ahead of the best teams)
-  var topTeams = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; }).slice(0, 10);
-  var sorted = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; });
-  var rank = sorted.findIndex(function(x) { return x.id === G.tid; }) + 1;
+  // Final top 10 = the final Top 25 poll (after the NCAA tournament)
+  var topTeams = pollTeams().slice(0, 10);
+  var rank = pollRank(G.tid);
 
   var lastHistory = G.history && G.history.length ? G.history[G.history.length - 1] : null;
   var tf = lastHistory ? lastHistory.tourneyFinish : '';

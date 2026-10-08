@@ -5,6 +5,7 @@
 
 import { ri, clamp } from './utils.js';
 import { G, saveState } from './state.js';
+import { pollRank, pollTeams } from './poll.js';
 import { addLog, toast } from './ui.js';
 
 export function rollEvents(weekNum) {
@@ -73,9 +74,8 @@ export function rollEvents(weekNum) {
   var starters = t.rost.slice(0, 5);
   if (!active.length) return;
 
-  // Rankings
-  var natSorted = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; });
-  var netRank = natSorted.findIndex(function(x) { return x.id === G.tid; }) + 1;
+  // Rankings: the Top 25 poll (poll.js)
+  var netRank = pollRank(G.tid) || 99;
   var played = t.sched.filter(function(s) { return s && s.played; });
   var lastGame = played.length ? played[played.length - 1] : null;
   var lastWin = lastGame ? lastGame.uScore > lastGame.oScore : false;
@@ -237,9 +237,10 @@ export function rollEvents(weekNum) {
 
   // 17. Major Upset (10%)
   tryFire(10, function() {
-    var top10 = natSorted.slice(0, 10);
+    var top10 = pollTeams().slice(0, 10);
+    if (!top10.length) return;
     var upset = top10[ri(0, top10.length - 1)];
-    var rank = natSorted.indexOf(upset) + 1;
+    var rank = pollRank(upset.id);
     addLog('ev', weekNum, 'Upset: #' + rank + ' <b>' + upset.name + '</b> falls to an unranked opponent.');
   });
 

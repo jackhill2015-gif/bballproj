@@ -1,0 +1,468 @@
+season,week,week_monday,rank,team_id,team,conf,tier,wins_before,losses_before
+2024,0,2023-11-06,1,2305,Kansas Jayhawks,Big 12,power,0,0
+2024,0,2023-11-06,2,150,Duke Blue Devils,ACC,power,0,0
+2024,0,2023-11-06,3,2509,Purdue Boilermakers,Big Ten,power,0,0
+2024,0,2023-11-06,4,127,Michigan State Spartans,Big Ten,power,0,0
+2024,0,2023-11-06,5,269,Marquette Golden Eagles,Big East,high,0,0
+2024,0,2023-11-06,6,41,UConn Huskies,Big East,high,0,0
+2024,0,2023-11-06,7,248,Houston Cougars,Big 12,power,0,0
+2024,0,2023-11-06,8,156,Creighton Bluejays,Big East,high,0,0
+2024,0,2023-11-06,9,2633,Tennessee Volunteers,SEC,power,0,0
+2024,0,2023-11-06,10,2226,Florida Atlantic Owls,American,high,0,0
+2024,0,2023-11-06,11,2250,Gonzaga Bulldogs,WCC,high,0,0
+2024,0,2023-11-06,12,12,Arizona Wildcats,Pac-12,power,0,0
+2024,0,2023-11-06,13,2390,Miami Hurricanes,ACC,power,0,0
+2024,0,2023-11-06,14,8,Arkansas Razorbacks,SEC,power,0,0
+2024,0,2023-11-06,15,245,Texas A&M Aggies,SEC,power,0,0
+2024,0,2023-11-06,16,96,Kentucky Wildcats,SEC,power,0,0
+2024,0,2023-11-06,17,21,San Diego State Aztecs,Mountain West,high,0,0
+2024,0,2023-11-06,18,251,Texas Longhorns,Big 12,power,0,0
+2024,0,2023-11-06,19,153,North Carolina Tar Heels,ACC,power,0,0
+2024,0,2023-11-06,20,239,Baylor Bears,Big 12,power,0,0
+2024,0,2023-11-06,21,30,USC Trojans,Pac-12,power,0,0
+2024,0,2023-11-06,22,222,Villanova Wildcats,Big East,high,0,0
+2024,0,2023-11-06,23,2608,Saint Mary's Gaels,WCC,high,0,0
+2024,0,2023-11-06,24,333,Alabama Crimson Tide,SEC,power,0,0
+2024,0,2023-11-06,25,356,Illinois Fighting Illini,Big Ten,power,0,0
+2024,1,2023-11-13,1,2305,Kansas Jayhawks,Big 12,power,2,0
+2024,1,2023-11-13,2,2509,Purdue Boilermakers,Big Ten,power,2,0
+2024,1,2023-11-13,3,12,Arizona Wildcats,Pac-12,power,2,0
+2024,1,2023-11-13,4,269,Marquette Golden Eagles,Big East,high,2,0
+2024,1,2023-11-13,5,41,UConn Huskies,Big East,high,2,0
+2024,1,2023-11-13,6,248,Houston Cougars,Big 12,power,2,0
+2024,1,2023-11-13,7,2633,Tennessee Volunteers,SEC,power,2,0
+2024,1,2023-11-13,8,156,Creighton Bluejays,Big East,high,2,0
+2024,1,2023-11-13,9,150,Duke Blue Devils,ACC,power,1,1
+2024,1,2023-11-13,10,2226,Florida Atlantic Owls,American,high,1,0
+2024,1,2023-11-13,11,2250,Gonzaga Bulldogs,WCC,high,1,0
+2024,1,2023-11-13,12,2390,Miami Hurricanes,ACC,power,2,0
+2024,1,2023-11-13,13,245,Texas A&M Aggies,SEC,power,2,0
+2024,1,2023-11-13,14,8,Arkansas Razorbacks,SEC,power,2,0
+2024,1,2023-11-13,15,239,Baylor Bears,Big 12,power,3,0
+2024,1,2023-11-13,16,30,USC Trojans,Pac-12,power,2,0
+2024,1,2023-11-13,17,96,Kentucky Wildcats,SEC,power,2,0
+2024,1,2023-11-13,18,127,Michigan State Spartans,Big Ten,power,1,1
+2024,1,2023-11-13,19,251,Texas Longhorns,Big 12,power,2,0
+2024,1,2023-11-13,20,153,North Carolina Tar Heels,ACC,power,2,0
+2024,1,2023-11-13,21,222,Villanova Wildcats,Big East,high,2,0
+2024,1,2023-11-13,22,333,Alabama Crimson Tide,SEC,power,2,0
+2024,1,2023-11-13,23,356,Illinois Fighting Illini,Big Ten,power,2,0
+2024,1,2023-11-13,24,256,James Madison Dukes,Sun Belt,mid,3,0
+2024,1,2023-11-13,25,38,Colorado Buffaloes,Pac-12,power,2,0
+2024,2,2023-11-20,1,2305,Kansas Jayhawks,Big 12,power,3,0
+2024,2,2023-11-20,2,2509,Purdue Boilermakers,Big Ten,power,3,0
+2024,2,2023-11-20,3,12,Arizona Wildcats,Pac-12,power,5,0
+2024,2,2023-11-20,4,269,Marquette Golden Eagles,Big East,high,3,0
+2024,2,2023-11-20,5,41,UConn Huskies,Big East,high,4,0
+2024,2,2023-11-20,6,248,Houston Cougars,Big 12,power,6,0
+2024,2,2023-11-20,7,2633,Tennessee Volunteers,SEC,power,3,0
+2024,2,2023-11-20,8,156,Creighton Bluejays,Big East,high,4,0
+2024,2,2023-11-20,9,150,Duke Blue Devils,ACC,power,3,1
+2024,2,2023-11-20,11,2250,Gonzaga Bulldogs,WCC,high,2,0
+2024,2,2023-11-20,12,245,Texas A&M Aggies,SEC,power,4,0
+2024,2,2023-11-20,13,239,Baylor Bears,Big 12,power,4,0
+2024,2,2023-11-20,14,153,North Carolina Tar Heels,ACC,power,3,0
+2024,2,2023-11-20,15,251,Texas Longhorns,Big 12,power,4,0
+2024,2,2023-11-20,16,96,Kentucky Wildcats,SEC,power,3,1
+2024,2,2023-11-20,17,333,Alabama Crimson Tide,SEC,power,4,0
+2024,2,2023-11-20,18,38,Colorado Buffaloes,Pac-12,power,3,0
+2024,2,2023-11-20,19,2226,Florida Atlantic Owls,American,high,2,1
+2024,2,2023-11-20,20,8,Arkansas Razorbacks,SEC,power,3,1
+2024,2,2023-11-20,21,127,Michigan State Spartans,Big Ten,power,3,2
+2024,2,2023-11-20,22,256,James Madison Dukes,Sun Belt,mid,4,0
+2024,2,2023-11-20,23,30,USC Trojans,Pac-12,power,3,1
+2024,2,2023-11-20,24,258,Virginia Cavaliers,ACC,power,4,0
+2024,2,2023-11-20,25,344,Mississippi State Bulldogs,SEC,power,5,0
+2024,3,2023-11-27,1,2509,Purdue Boilermakers,Big Ten,power,6,0
+2024,3,2023-11-27,2,12,Arizona Wildcats,Pac-12,power,6,0
+2024,3,2023-11-27,3,269,Marquette Golden Eagles,Big East,high,5,1
+2024,3,2023-11-27,4,41,UConn Huskies,Big East,high,6,0
+2024,3,2023-11-27,5,2305,Kansas Jayhawks,Big 12,power,5,1
+2024,3,2023-11-27,6,248,Houston Cougars,Big 12,power,7,0
+2024,3,2023-11-27,7,150,Duke Blue Devils,ACC,power,5,1
+2024,3,2023-11-27,8,2390,Miami Hurricanes,ACC,power,5,0
+2024,3,2023-11-27,9,239,Baylor Bears,Big 12,power,6,0
+2024,3,2023-11-27,10,2633,Tennessee Volunteers,SEC,power,4,2
+2024,3,2023-11-27,11,2250,Gonzaga Bulldogs,WCC,high,4,1
+2024,3,2023-11-27,12,96,Kentucky Wildcats,SEC,power,5,1
+2024,3,2023-11-27,13,2226,Florida Atlantic Owls,American,high,5,1
+2024,3,2023-11-27,14,245,Texas A&M Aggies,SEC,power,6,1
+2024,3,2023-11-27,15,156,Creighton Bluejays,Big East,high,5,1
+2024,3,2023-11-27,16,251,Texas Longhorns,Big 12,power,5,1
+2024,3,2023-11-27,17,153,North Carolina Tar Heels,ACC,power,5,1
+2024,3,2023-11-27,18,222,Villanova Wildcats,Big East,high,6,1
+2024,3,2023-11-27,19,252,BYU Cougars,Big 12,power,6,0
+2024,3,2023-11-27,20,36,Colorado State Rams,Mountain West,high,6,0
+2024,3,2023-11-27,21,344,Mississippi State Bulldogs,SEC,power,6,0
+2024,3,2023-11-27,22,256,James Madison Dukes,Sun Belt,mid,6,0
+2024,3,2023-11-27,23,333,Alabama Crimson Tide,SEC,power,5,1
+2024,3,2023-11-27,24,356,Illinois Fighting Illini,Big Ten,power,5,1
+2024,3,2023-11-27,25,201,Oklahoma Sooners,Big 12,power,6,0
+2024,4,2023-12-04,1,12,Arizona Wildcats,Pac-12,power,7,0
+2024,4,2023-12-04,2,2305,Kansas Jayhawks,Big 12,power,7,1
+2024,4,2023-12-04,3,248,Houston Cougars,Big 12,power,8,0
+2024,4,2023-12-04,4,2509,Purdue Boilermakers,Big Ten,power,7,1
+2024,4,2023-12-04,5,41,UConn Huskies,Big East,high,7,1
+2024,4,2023-12-04,6,239,Baylor Bears,Big 12,power,8,0
+2024,4,2023-12-04,7,2250,Gonzaga Bulldogs,WCC,high,6,1
+2024,4,2023-12-04,8,269,Marquette Golden Eagles,Big East,high,6,2
+2024,4,2023-12-04,9,153,North Carolina Tar Heels,ACC,power,7,1
+2024,4,2023-12-04,10,156,Creighton Bluejays,Big East,high,7,1
+2024,4,2023-12-04,11,2226,Florida Atlantic Owls,American,high,7,1
+2024,4,2023-12-04,12,251,Texas Longhorns,Big 12,power,6,1
+2024,4,2023-12-04,13,36,Colorado State Rams,Mountain West,high,8,0
+2024,4,2023-12-04,14,252,BYU Cougars,Big 12,power,7,0
+2024,4,2023-12-04,15,2390,Miami Hurricanes,ACC,power,6,1
+2024,4,2023-12-04,16,96,Kentucky Wildcats,SEC,power,6,2
+2024,4,2023-12-04,17,2633,Tennessee Volunteers,SEC,power,4,3
+2024,4,2023-12-04,18,256,James Madison Dukes,Sun Belt,mid,8,0
+2024,4,2023-12-04,19,201,Oklahoma Sooners,Big 12,power,7,0
+2024,4,2023-12-04,20,356,Illinois Fighting Illini,Big Ten,power,6,1
+2024,4,2023-12-04,21,245,Texas A&M Aggies,SEC,power,6,2
+2024,4,2023-12-04,22,150,Duke Blue Devils,ACC,power,5,3
+2024,4,2023-12-04,23,275,Wisconsin Badgers,Big Ten,power,6,2
+2024,4,2023-12-04,24,228,Clemson Tigers,ACC,power,7,0
+2024,4,2023-12-04,25,21,San Diego State Aztecs,Mountain West,high,7,1
+2024,5,2023-12-11,1,12,Arizona Wildcats,Pac-12,power,8,0
+2024,5,2023-12-11,2,2305,Kansas Jayhawks,Big 12,power,9,1
+2024,5,2023-12-11,3,2509,Purdue Boilermakers,Big Ten,power,9,1
+2024,5,2023-12-11,4,248,Houston Cougars,Big 12,power,10,0
+2024,5,2023-12-11,5,41,UConn Huskies,Big East,high,9,1
+2024,5,2023-12-11,6,239,Baylor Bears,Big 12,power,9,0
+2024,5,2023-12-11,7,269,Marquette Golden Eagles,Big East,high,8,2
+2024,5,2023-12-11,8,156,Creighton Bluejays,Big East,high,8,1
+2024,5,2023-12-11,9,153,North Carolina Tar Heels,ACC,power,7,2
+2024,5,2023-12-11,10,2250,Gonzaga Bulldogs,WCC,high,7,2
+2024,5,2023-12-11,11,201,Oklahoma Sooners,Big 12,power,9,0
+2024,5,2023-12-11,12,2633,Tennessee Volunteers,SEC,power,6,3
+2024,5,2023-12-11,13,228,Clemson Tigers,ACC,power,9,0
+2024,5,2023-12-11,14,96,Kentucky Wildcats,SEC,power,7,2
+2024,5,2023-12-11,15,2226,Florida Atlantic Owls,American,high,7,2
+2024,5,2023-12-11,16,356,Illinois Fighting Illini,Big Ten,power,7,2
+2024,5,2023-12-11,17,36,Colorado State Rams,Mountain West,high,9,1
+2024,5,2023-12-11,18,252,BYU Cougars,Big 12,power,8,1
+2024,5,2023-12-11,19,251,Texas Longhorns,Big 12,power,7,2
+2024,5,2023-12-11,20,256,James Madison Dukes,Sun Belt,mid,9,0
+2024,5,2023-12-11,21,150,Duke Blue Devils,ACC,power,6,3
+2024,5,2023-12-11,22,258,Virginia Cavaliers,ACC,power,8,1
+2024,5,2023-12-11,23,275,Wisconsin Badgers,Big Ten,power,7,3
+2024,5,2023-12-11,24,2390,Miami Hurricanes,ACC,power,7,2
+2024,5,2023-12-11,25,77,Northwestern Wildcats,Big Ten,power,7,1
+2024,6,2023-12-18,1,2509,Purdue Boilermakers,Big Ten,power,10,1
+2024,6,2023-12-18,2,2305,Kansas Jayhawks,Big 12,power,10,1
+2024,6,2023-12-18,3,248,Houston Cougars,Big 12,power,11,0
+2024,6,2023-12-18,4,12,Arizona Wildcats,Pac-12,power,8,1
+2024,6,2023-12-18,5,41,UConn Huskies,Big East,high,10,1
+2024,6,2023-12-18,6,269,Marquette Golden Eagles,Big East,high,9,2
+2024,6,2023-12-18,7,201,Oklahoma Sooners,Big 12,power,10,0
+2024,6,2023-12-18,8,2633,Tennessee Volunteers,SEC,power,8,3
+2024,6,2023-12-18,9,96,Kentucky Wildcats,SEC,power,8,2
+2024,6,2023-12-18,10,239,Baylor Bears,Big 12,power,9,1
+2024,6,2023-12-18,11,153,North Carolina Tar Heels,ACC,power,7,3
+2024,6,2023-12-18,12,156,Creighton Bluejays,Big East,high,9,2
+2024,6,2023-12-18,13,356,Illinois Fighting Illini,Big Ten,power,8,2
+2024,6,2023-12-18,14,2226,Florida Atlantic Owls,American,high,9,2
+2024,6,2023-12-18,15,2250,Gonzaga Bulldogs,WCC,high,8,3
+2024,6,2023-12-18,16,36,Colorado State Rams,Mountain West,high,10,1
+2024,6,2023-12-18,17,252,BYU Cougars,Big 12,power,10,1
+2024,6,2023-12-18,18,228,Clemson Tigers,ACC,power,9,1
+2024,6,2023-12-18,19,251,Texas Longhorns,Big 12,power,8,2
+2024,6,2023-12-18,20,256,James Madison Dukes,Sun Belt,mid,10,0
+2024,6,2023-12-18,21,150,Duke Blue Devils,ACC,power,7,3
+2024,6,2023-12-18,22,258,Virginia Cavaliers,ACC,power,9,1
+2024,6,2023-12-18,23,235,Memphis Tigers,American,high,8,2
+2024,6,2023-12-18,24,275,Wisconsin Badgers,Big Ten,power,8,3
+2024,6,2023-12-18,25,145,Ole Miss Rebels,SEC,power,10,0
+2024,7,2023-12-25,1,2509,Purdue Boilermakers,Big Ten,power,11,1
+2024,7,2023-12-25,2,2305,Kansas Jayhawks,Big 12,power,11,1
+2024,7,2023-12-25,3,248,Houston Cougars,Big 12,power,12,0
+2024,7,2023-12-25,4,12,Arizona Wildcats,Pac-12,power,9,2
+2024,7,2023-12-25,7,2226,Florida Atlantic Owls,American,high,10,2
+2024,7,2023-12-25,8,96,Kentucky Wildcats,SEC,power,9,2
+2024,7,2023-12-25,9,153,North Carolina Tar Heels,ACC,power,8,3
+2024,7,2023-12-25,10,269,Marquette Golden Eagles,Big East,high,10,3
+2024,7,2023-12-25,11,356,Illinois Fighting Illini,Big Ten,power,9,2
+2024,7,2023-12-25,12,201,Oklahoma Sooners,Big 12,power,10,1
+2024,7,2023-12-25,13,2250,Gonzaga Bulldogs,WCC,high,9,3
+2024,7,2023-12-25,14,252,BYU Cougars,Big 12,power,11,1
+2024,7,2023-12-25,15,36,Colorado State Rams,Mountain West,high,11,1
+2024,7,2023-12-25,16,150,Duke Blue Devils,ACC,power,8,3
+2024,7,2023-12-25,18,228,Clemson Tigers,ACC,power,10,1
+2024,7,2023-12-25,19,235,Memphis Tigers,American,high,10,2
+2024,7,2023-12-25,20,256,James Madison Dukes,Sun Belt,mid,12,0
+2024,7,2023-12-25,21,251,Texas Longhorns,Big 12,power,9,2
+2024,7,2023-12-25,22,156,Creighton Bluejays,Big East,high,9,3
+2024,7,2023-12-25,24,145,Ole Miss Rebels,SEC,power,12,0
+2024,8,2024-01-01,1,2509,Purdue Boilermakers,Big Ten,power,12,1
+2024,8,2024-01-01,2,2305,Kansas Jayhawks,Big 12,power,12,1
+2024,8,2024-01-01,3,248,Houston Cougars,Big 12,power,13,0
+2024,8,2024-01-01,4,41,UConn Huskies,Big East,high,11,2
+2024,8,2024-01-01,5,2633,Tennessee Volunteers,SEC,power,9,3
+2024,8,2024-01-01,6,96,Kentucky Wildcats,SEC,power,10,2
+2024,8,2024-01-01,7,269,Marquette Golden Eagles,Big East,high,11,3
+2024,8,2024-01-01,8,153,North Carolina Tar Heels,ACC,power,9,3
+2024,8,2024-01-01,9,356,Illinois Fighting Illini,Big Ten,power,10,2
+2024,8,2024-01-01,10,12,Arizona Wildcats,Pac-12,power,10,3
+2024,8,2024-01-01,11,201,Oklahoma Sooners,Big 12,power,12,1
+2024,8,2024-01-01,12,252,BYU Cougars,Big 12,power,12,1
+2024,8,2024-01-01,13,36,Colorado State Rams,Mountain West,high,12,1
+2024,8,2024-01-01,14,150,Duke Blue Devils,ACC,power,9,3
+2024,8,2024-01-01,15,235,Memphis Tigers,American,high,11,2
+2024,8,2024-01-01,16,228,Clemson Tigers,ACC,power,11,1
+2024,8,2024-01-01,17,2226,Florida Atlantic Owls,American,high,10,3
+2024,8,2024-01-01,18,239,Baylor Bears,Big 12,power,10,2
+2024,8,2024-01-01,19,256,James Madison Dukes,Sun Belt,mid,13,0
+2024,8,2024-01-01,20,251,Texas Longhorns,Big 12,power,10,2
+2024,8,2024-01-01,21,275,Wisconsin Badgers,Big Ten,power,9,3
+2024,8,2024-01-01,22,145,Ole Miss Rebels,SEC,power,13,0
+2024,8,2024-01-01,23,2507,Providence Friars,Big East,high,11,2
+2024,8,2024-01-01,24,2250,Gonzaga Bulldogs,WCC,high,9,4
+2024,8,2024-01-01,25,2,Auburn Tigers,SEC,power,10,2
+2024,9,2024-01-08,1,2509,Purdue Boilermakers,Big Ten,power,14,1
+2024,9,2024-01-08,2,248,Houston Cougars,Big 12,power,14,0
+2024,9,2024-01-08,3,2305,Kansas Jayhawks,Big 12,power,13,1
+2024,9,2024-01-08,4,41,UConn Huskies,Big East,high,13,2
+2024,9,2024-01-08,5,2633,Tennessee Volunteers,SEC,power,11,3
+2024,9,2024-01-08,6,96,Kentucky Wildcats,SEC,power,11,2
+2024,9,2024-01-08,7,153,North Carolina Tar Heels,ACC,power,11,3
+2024,9,2024-01-08,8,12,Arizona Wildcats,Pac-12,power,12,3
+2024,9,2024-01-08,9,201,Oklahoma Sooners,Big 12,power,13,1
+2024,9,2024-01-08,10,356,Illinois Fighting Illini,Big Ten,power,11,3
+2024,9,2024-01-08,11,150,Duke Blue Devils,ACC,power,11,3
+2024,9,2024-01-08,11,269,Marquette Golden Eagles,Big East,high,11,4
+2024,9,2024-01-08,13,235,Memphis Tigers,American,high,13,2
+2024,9,2024-01-08,14,239,Baylor Bears,Big 12,power,12,2
+2024,9,2024-01-08,15,275,Wisconsin Badgers,Big Ten,power,11,3
+2024,9,2024-01-08,16,2,Auburn Tigers,SEC,power,12,2
+2024,9,2024-01-08,17,36,Colorado State Rams,Mountain West,high,13,2
+2024,9,2024-01-08,18,252,BYU Cougars,Big 12,power,12,2
+2024,9,2024-01-08,19,21,San Diego State Aztecs,Mountain West,high,13,2
+2024,9,2024-01-08,20,328,Utah State Aggies,Mountain West,high,14,1
+2024,9,2024-01-08,21,228,Clemson Tigers,ACC,power,11,3
+2024,9,2024-01-08,22,156,Creighton Bluejays,Big East,high,11,4
+2024,9,2024-01-08,23,2250,Gonzaga Bulldogs,WCC,high,11,4
+2024,9,2024-01-08,24,2226,Florida Atlantic Owls,American,high,11,4
+2024,9,2024-01-08,25,251,Texas Longhorns,Big 12,power,11,3
+2024,10,2024-01-15,1,41,UConn Huskies,Big East,high,15,2
+2024,10,2024-01-15,2,2509,Purdue Boilermakers,Big Ten,power,15,2
+2024,10,2024-01-15,3,2305,Kansas Jayhawks,Big 12,power,14,2
+2024,10,2024-01-15,4,153,North Carolina Tar Heels,ACC,power,13,3
+2024,10,2024-01-15,5,248,Houston Cougars,Big 12,power,14,2
+2024,10,2024-01-15,6,2633,Tennessee Volunteers,SEC,power,12,4
+2024,10,2024-01-15,7,150,Duke Blue Devils,ACC,power,13,3
+2024,10,2024-01-15,8,96,Kentucky Wildcats,SEC,power,12,3
+2024,10,2024-01-15,9,239,Baylor Bears,Big 12,power,14,2
+2024,10,2024-01-15,10,235,Memphis Tigers,American,high,15,2
+2024,10,2024-01-15,11,275,Wisconsin Badgers,Big Ten,power,13,3
+2024,10,2024-01-15,12,12,Arizona Wildcats,Pac-12,power,12,4
+2024,10,2024-01-15,13,2,Auburn Tigers,SEC,power,14,2
+2024,10,2024-01-15,14,356,Illinois Fighting Illini,Big Ten,power,12,4
+2024,10,2024-01-15,15,201,Oklahoma Sooners,Big 12,power,13,3
+2024,10,2024-01-15,16,328,Utah State Aggies,Mountain West,high,16,1
+2024,10,2024-01-15,17,269,Marquette Golden Eagles,Big East,high,11,5
+2024,10,2024-01-15,18,156,Creighton Bluejays,Big East,high,13,4
+2024,10,2024-01-15,19,2628,TCU Horned Frogs,Big 12,power,13,3
+2024,10,2024-01-15,20,252,BYU Cougars,Big 12,power,13,3
+2024,10,2024-01-15,21,2168,Dayton Flyers,A-10,high,13,2
+2024,10,2024-01-15,22,145,Ole Miss Rebels,SEC,power,15,1
+2024,10,2024-01-15,23,2226,Florida Atlantic Owls,American,high,13,4
+2024,10,2024-01-15,24,66,Iowa State Cyclones,Big 12,power,13,3
+2024,10,2024-01-15,25,2641,Texas Tech Red Raiders,Big 12,power,14,2
+2024,11,2024-01-22,1,41,UConn Huskies,Big East,high,17,2
+2024,11,2024-01-22,2,2509,Purdue Boilermakers,Big Ten,power,17,2
+2024,11,2024-01-22,3,153,North Carolina Tar Heels,ACC,power,15,3
+2024,11,2024-01-22,4,248,Houston Cougars,Big 12,power,16,2
+2024,11,2024-01-22,5,2633,Tennessee Volunteers,SEC,power,14,4
+2024,11,2024-01-22,6,96,Kentucky Wildcats,SEC,power,14,3
+2024,11,2024-01-22,7,2305,Kansas Jayhawks,Big 12,power,15,3
+2024,11,2024-01-22,8,2,Auburn Tigers,SEC,power,16,2
+2024,11,2024-01-22,9,12,Arizona Wildcats,Pac-12,power,14,4
+2024,11,2024-01-22,10,356,Illinois Fighting Illini,Big Ten,power,14,4
+2024,11,2024-01-22,11,201,Oklahoma Sooners,Big 12,power,15,3
+2024,11,2024-01-22,12,150,Duke Blue Devils,ACC,power,13,4
+2024,11,2024-01-22,13,275,Wisconsin Badgers,Big Ten,power,14,4
+2024,11,2024-01-22,14,269,Marquette Golden Eagles,Big East,high,13,5
+2024,11,2024-01-22,15,239,Baylor Bears,Big 12,power,14,4
+2024,11,2024-01-22,16,2168,Dayton Flyers,A-10,high,15,2
+2024,11,2024-01-22,17,156,Creighton Bluejays,Big East,high,14,5
+2024,11,2024-01-22,18,328,Utah State Aggies,Mountain West,high,17,2
+2024,11,2024-01-22,19,235,Memphis Tigers,American,high,15,4
+2024,11,2024-01-22,20,2641,Texas Tech Red Raiders,Big 12,power,15,3
+2024,11,2024-01-22,21,252,BYU Cougars,Big 12,power,14,4
+2024,11,2024-01-22,22,2226,Florida Atlantic Owls,American,high,15,4
+2024,11,2024-01-22,23,66,Iowa State Cyclones,Big 12,power,14,4
+2024,11,2024-01-22,24,36,Colorado State Rams,Mountain West,high,15,3
+2024,11,2024-01-22,25,167,New Mexico Lobos,Mountain West,high,16,3
+2024,12,2024-01-29,1,41,UConn Huskies,Big East,high,18,2
+2024,12,2024-01-29,2,2509,Purdue Boilermakers,Big Ten,power,19,2
+2024,12,2024-01-29,3,153,North Carolina Tar Heels,ACC,power,17,3
+2024,12,2024-01-29,4,248,Houston Cougars,Big 12,power,18,2
+2024,12,2024-01-29,5,2633,Tennessee Volunteers,SEC,power,15,4
+2024,12,2024-01-29,6,275,Wisconsin Badgers,Big Ten,power,16,4
+2024,12,2024-01-29,7,150,Duke Blue Devils,ACC,power,15,4
+2024,12,2024-01-29,8,2305,Kansas Jayhawks,Big 12,power,16,4
+2024,12,2024-01-29,9,269,Marquette Golden Eagles,Big East,high,15,5
+2024,12,2024-01-29,10,96,Kentucky Wildcats,SEC,power,15,4
+2024,12,2024-01-29,11,12,Arizona Wildcats,Pac-12,power,15,5
+2024,12,2024-01-29,12,66,Iowa State Cyclones,Big 12,power,16,4
+2024,12,2024-01-29,13,156,Creighton Bluejays,Big East,high,16,5
+2024,12,2024-01-29,14,356,Illinois Fighting Illini,Big Ten,power,15,5
+2024,12,2024-01-29,15,2641,Texas Tech Red Raiders,Big 12,power,16,3
+2024,12,2024-01-29,16,2,Auburn Tigers,SEC,power,16,4
+2024,12,2024-01-29,17,328,Utah State Aggies,Mountain West,high,18,2
+2024,12,2024-01-29,18,239,Baylor Bears,Big 12,power,14,5
+2024,12,2024-01-29,19,167,New Mexico Lobos,Mountain West,high,18,3
+2024,12,2024-01-29,20,2226,Florida Atlantic Owls,American,high,17,4
+2024,12,2024-01-29,21,2168,Dayton Flyers,A-10,high,16,3
+2024,12,2024-01-29,22,252,BYU Cougars,Big 12,power,15,5
+2024,12,2024-01-29,23,201,Oklahoma Sooners,Big 12,power,15,5
+2024,12,2024-01-29,24,333,Alabama Crimson Tide,SEC,power,14,6
+2024,12,2024-01-29,25,2628,TCU Horned Frogs,Big 12,power,15,5
+2024,13,2024-02-05,1,41,UConn Huskies,Big East,high,20,2
+2024,13,2024-02-05,2,2509,Purdue Boilermakers,Big Ten,power,21,2
+2024,13,2024-02-05,3,153,North Carolina Tar Heels,ACC,power,18,4
+2024,13,2024-02-05,4,2305,Kansas Jayhawks,Big 12,power,18,4
+2024,13,2024-02-05,5,248,Houston Cougars,Big 12,power,19,3
+2024,13,2024-02-05,6,2633,Tennessee Volunteers,SEC,power,16,5
+2024,13,2024-02-05,7,269,Marquette Golden Eagles,Big East,high,17,5
+2024,13,2024-02-05,8,12,Arizona Wildcats,Pac-12,power,17,5
+2024,13,2024-02-05,9,150,Duke Blue Devils,ACC,power,16,5
+2024,13,2024-02-05,10,356,Illinois Fighting Illini,Big Ten,power,17,5
+2024,13,2024-02-05,11,275,Wisconsin Badgers,Big Ten,power,16,6
+2024,13,2024-02-05,12,2,Auburn Tigers,SEC,power,18,4
+2024,13,2024-02-05,13,239,Baylor Bears,Big 12,power,16,5
+2024,13,2024-02-05,14,66,Iowa State Cyclones,Big 12,power,16,5
+2024,13,2024-02-05,15,2579,South Carolina Gamecocks,SEC,power,19,3
+2024,13,2024-02-05,16,333,Alabama Crimson Tide,SEC,power,16,6
+2024,13,2024-02-05,17,96,Kentucky Wildcats,SEC,power,15,6
+2024,13,2024-02-05,18,2168,Dayton Flyers,A-10,high,18,3
+2024,13,2024-02-05,19,156,Creighton Bluejays,Big East,high,16,6
+2024,13,2024-02-05,20,2226,Florida Atlantic Owls,American,high,18,4
+2024,13,2024-02-05,21,252,BYU Cougars,Big 12,power,16,5
+2024,13,2024-02-05,22,328,Utah State Aggies,Mountain West,high,19,3
+2024,13,2024-02-05,23,2641,Texas Tech Red Raiders,Big 12,power,16,5
+2024,13,2024-02-05,24,21,San Diego State Aztecs,Mountain West,high,17,5
+2024,13,2024-02-05,25,167,New Mexico Lobos,Mountain West,high,18,4
+2024,14,2024-02-12,1,41,UConn Huskies,Big East,high,22,2
+2024,14,2024-02-12,2,2509,Purdue Boilermakers,Big Ten,power,22,2
+2024,14,2024-02-12,3,248,Houston Cougars,Big 12,power,21,3
+2024,14,2024-02-12,4,269,Marquette Golden Eagles,Big East,high,18,5
+2024,14,2024-02-12,5,12,Arizona Wildcats,Pac-12,power,19,5
+2024,14,2024-02-12,6,2305,Kansas Jayhawks,Big 12,power,19,5
+2024,14,2024-02-12,7,153,North Carolina Tar Heels,ACC,power,19,5
+2024,14,2024-02-12,8,2633,Tennessee Volunteers,SEC,power,17,6
+2024,14,2024-02-12,9,150,Duke Blue Devils,ACC,power,18,5
+2024,14,2024-02-12,10,66,Iowa State Cyclones,Big 12,power,18,5
+2024,14,2024-02-12,11,2579,South Carolina Gamecocks,SEC,power,21,3
+2024,14,2024-02-12,12,239,Baylor Bears,Big 12,power,17,6
+2024,14,2024-02-12,13,2,Auburn Tigers,SEC,power,19,5
+2024,14,2024-02-12,14,356,Illinois Fighting Illini,Big Ten,power,17,6
+2024,14,2024-02-12,15,333,Alabama Crimson Tide,SEC,power,17,7
+2024,14,2024-02-12,16,2168,Dayton Flyers,A-10,high,19,4
+2024,14,2024-02-12,17,156,Creighton Bluejays,Big East,high,17,7
+2024,14,2024-02-12,18,2608,Saint Mary's Gaels,WCC,high,20,6
+2024,14,2024-02-12,19,252,BYU Cougars,Big 12,power,17,6
+2024,14,2024-02-12,20,275,Wisconsin Badgers,Big Ten,power,16,8
+2024,14,2024-02-12,21,258,Virginia Cavaliers,ACC,power,19,5
+2024,14,2024-02-12,22,96,Kentucky Wildcats,SEC,power,16,7
+2024,14,2024-02-12,23,282,Indiana State Sycamores,MVC,mid,22,3
+2024,14,2024-02-12,24,2226,Florida Atlantic Owls,American,high,19,5
+2024,14,2024-02-12,25,201,Oklahoma Sooners,Big 12,power,18,6
+2024,15,2024-02-19,1,41,UConn Huskies,Big East,high,24,2
+2024,15,2024-02-19,2,248,Houston Cougars,Big 12,power,22,3
+2024,15,2024-02-19,3,2509,Purdue Boilermakers,Big Ten,power,23,3
+2024,15,2024-02-19,4,12,Arizona Wildcats,Pac-12,power,20,5
+2024,15,2024-02-19,5,2633,Tennessee Volunteers,SEC,power,19,6
+2024,15,2024-02-19,6,66,Iowa State Cyclones,Big 12,power,20,5
+2024,15,2024-02-19,7,269,Marquette Golden Eagles,Big East,high,19,6
+2024,15,2024-02-19,8,150,Duke Blue Devils,ACC,power,20,5
+2024,15,2024-02-19,9,2305,Kansas Jayhawks,Big 12,power,20,6
+2024,15,2024-02-19,10,153,North Carolina Tar Heels,ACC,power,20,6
+2024,15,2024-02-19,11,239,Baylor Bears,Big 12,power,19,6
+2024,15,2024-02-19,12,356,Illinois Fighting Illini,Big Ten,power,19,6
+2024,15,2024-02-19,13,333,Alabama Crimson Tide,SEC,power,18,7
+2024,15,2024-02-19,14,2,Auburn Tigers,SEC,power,20,6
+2024,15,2024-02-19,15,156,Creighton Bluejays,Big East,high,19,7
+2024,15,2024-02-19,16,2168,Dayton Flyers,A-10,high,21,4
+2024,15,2024-02-19,17,96,Kentucky Wildcats,SEC,power,18,7
+2024,15,2024-02-19,18,2608,Saint Mary's Gaels,WCC,high,21,6
+2024,15,2024-02-19,19,21,San Diego State Aztecs,Mountain West,high,20,6
+2024,15,2024-02-19,20,2579,South Carolina Gamecocks,SEC,power,21,5
+2024,15,2024-02-19,21,265,Washington State Cougars,Pac-12,power,20,6
+2024,15,2024-02-19,22,36,Colorado State Rams,Mountain West,high,20,6
+2024,15,2024-02-19,23,2641,Texas Tech Red Raiders,Big 12,power,18,7
+2024,15,2024-02-19,24,57,Florida Gators,SEC,power,18,7
+2024,15,2024-02-19,25,252,BYU Cougars,Big 12,power,18,7
+2024,16,2024-02-26,1,248,Houston Cougars,Big 12,power,24,3
+2024,16,2024-02-26,2,2509,Purdue Boilermakers,Big Ten,power,25,3
+2024,16,2024-02-26,3,41,UConn Huskies,Big East,high,25,3
+2024,16,2024-02-26,4,2633,Tennessee Volunteers,SEC,power,21,6
+2024,16,2024-02-26,5,269,Marquette Golden Eagles,Big East,high,21,6
+2024,16,2024-02-26,6,12,Arizona Wildcats,Pac-12,power,21,6
+2024,16,2024-02-26,7,2305,Kansas Jayhawks,Big 12,power,21,6
+2024,16,2024-02-26,8,66,Iowa State Cyclones,Big 12,power,21,6
+2024,16,2024-02-26,9,153,North Carolina Tar Heels,ACC,power,21,6
+2024,16,2024-02-26,10,150,Duke Blue Devils,ACC,power,21,6
+2024,16,2024-02-26,11,2,Auburn Tigers,SEC,power,21,6
+2024,16,2024-02-26,12,156,Creighton Bluejays,Big East,high,20,8
+2024,16,2024-02-26,13,356,Illinois Fighting Illini,Big Ten,power,20,7
+2024,16,2024-02-26,14,333,Alabama Crimson Tide,SEC,power,19,8
+2024,16,2024-02-26,15,239,Baylor Bears,Big 12,power,19,8
+2024,16,2024-02-26,16,96,Kentucky Wildcats,SEC,power,19,8
+2024,16,2024-02-26,17,2608,Saint Mary's Gaels,WCC,high,23,6
+2024,16,2024-02-26,18,2579,South Carolina Gamecocks,SEC,power,22,5
+2024,16,2024-02-26,19,265,Washington State Cougars,Pac-12,power,21,7
+2024,16,2024-02-26,20,21,San Diego State Aztecs,Mountain West,high,21,7
+2024,16,2024-02-26,21,2168,Dayton Flyers,A-10,high,21,5
+2024,16,2024-02-26,22,328,Utah State Aggies,Mountain West,high,22,5
+2024,16,2024-02-26,23,2250,Gonzaga Bulldogs,WCC,high,22,6
+2024,16,2024-02-26,24,57,Florida Gators,SEC,power,19,8
+2024,16,2024-02-26,25,58,South Florida Bulls,American,high,21,5
+2024,17,2024-03-04,1,248,Houston Cougars,Big 12,power,26,3
+2024,17,2024-03-04,2,41,UConn Huskies,Big East,high,26,3
+2024,17,2024-03-04,3,2509,Purdue Boilermakers,Big Ten,power,26,3
+2024,17,2024-03-04,4,2633,Tennessee Volunteers,SEC,power,23,6
+2024,17,2024-03-04,5,12,Arizona Wildcats,Pac-12,power,23,6
+2024,17,2024-03-04,6,66,Iowa State Cyclones,Big 12,power,23,6
+2024,17,2024-03-04,7,153,North Carolina Tar Heels,ACC,power,23,6
+2024,17,2024-03-04,8,269,Marquette Golden Eagles,Big East,high,22,7
+2024,17,2024-03-04,9,150,Duke Blue Devils,ACC,power,23,6
+2024,17,2024-03-04,10,156,Creighton Bluejays,Big East,high,22,8
+2024,17,2024-03-04,11,239,Baylor Bears,Big 12,power,21,8
+2024,17,2024-03-04,12,356,Illinois Fighting Illini,Big Ten,power,22,7
+2024,17,2024-03-04,13,2,Auburn Tigers,SEC,power,22,7
+2024,17,2024-03-04,14,2305,Kansas Jayhawks,Big 12,power,21,8
+2024,17,2024-03-04,15,96,Kentucky Wildcats,SEC,power,21,8
+2024,17,2024-03-04,16,333,Alabama Crimson Tide,SEC,power,20,9
+2024,17,2024-03-04,17,2579,South Carolina Gamecocks,SEC,power,24,5
+2024,17,2024-03-04,18,265,Washington State Cougars,Pac-12,power,23,7
+2024,17,2024-03-04,20,252,BYU Cougars,Big 12,power,21,8
+2024,17,2024-03-04,21,21,San Diego State Aztecs,Mountain West,high,22,7
+2024,17,2024-03-04,22,328,Utah State Aggies,Mountain West,high,24,5
+2024,17,2024-03-04,24,58,South Florida Bulls,American,high,22,5
+2024,17,2024-03-04,25,2168,Dayton Flyers,A-10,high,22,6
+2024,18,2024-03-11,1,248,Houston Cougars,Big 12,power,28,3
+2024,18,2024-03-11,2,41,UConn Huskies,Big East,high,28,3
+2024,18,2024-03-11,3,2509,Purdue Boilermakers,Big Ten,power,28,3
+2024,18,2024-03-11,4,153,North Carolina Tar Heels,ACC,power,25,6
+2024,18,2024-03-11,5,2633,Tennessee Volunteers,SEC,power,24,7
+2024,18,2024-03-11,6,12,Arizona Wildcats,Pac-12,power,24,7
+2024,18,2024-03-11,7,66,Iowa State Cyclones,Big 12,power,24,7
+2024,18,2024-03-11,8,156,Creighton Bluejays,Big East,high,23,8
+2024,18,2024-03-11,9,96,Kentucky Wildcats,SEC,power,23,8
+2024,18,2024-03-11,10,269,Marquette Golden Eagles,Big East,high,23,8
+2024,18,2024-03-11,11,150,Duke Blue Devils,ACC,power,24,7
+2024,18,2024-03-11,12,2,Auburn Tigers,SEC,power,24,7
+2024,18,2024-03-11,13,356,Illinois Fighting Illini,Big Ten,power,23,8
+2024,18,2024-03-11,14,239,Baylor Bears,Big 12,power,22,9
+2024,18,2024-03-11,15,2579,South Carolina Gamecocks,SEC,power,25,6
+2024,18,2024-03-11,16,2305,Kansas Jayhawks,Big 12,power,22,9
+2024,18,2024-03-11,17,2250,Gonzaga Bulldogs,WCC,high,24,6
+2024,18,2024-03-11,18,328,Utah State Aggies,Mountain West,high,26,5
+2024,18,2024-03-11,19,333,Alabama Crimson Tide,SEC,power,21,10
+2024,18,2024-03-11,20,252,BYU Cougars,Big 12,power,22,9
+2024,18,2024-03-11,21,2608,Saint Mary's Gaels,WCC,high,24,7
+2024,18,2024-03-11,22,265,Washington State Cougars,Pac-12,power,23,8
+2024,18,2024-03-11,23,2440,Nevada Wolf Pack,Mountain West,high,26,6
+2024,18,2024-03-11,24,2168,Dayton Flyers,A-10,high,24,6
+2024,18,2024-03-11,25,2641,Texas Tech Red Raiders,Big 12,power,22,9

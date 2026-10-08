@@ -1,0 +1,789 @@
+season,date,week_monday,game_id,kind,neutral,conf_game,home_id,home,home_conf,home_tier,home_rank,home_score,away_id,away,away_conf,away_tier,away_rank,away_score,notes
+2023,2022-11-07,2022-11-07,401482906,reg,0,0,150,Duke Blue Devils,ACC,power,7,71,294,Jacksonville Dolphins,ASUN,mid,0,44,
+2023,2022-11-07,2022-11-07,401482947,reg,0,0,153,North Carolina Tar Heels,ACC,power,1,69,350,UNC Wilmington Seahawks,CAA,mid,0,56,
+2023,2022-11-07,2022-11-07,401482983,reg,0,0,258,Virginia Cavaliers,ACC,power,18,73,2428,North Carolina Central Eagles,MEAC,mid,0,61,
+2023,2022-11-07,2022-11-07,401483039,reg,0,0,2,Auburn Tigers,SEC,power,15,70,2244,George Mason Patriots,A-10,high,0,52,
+2023,2022-11-07,2022-11-07,401483235,reg,0,0,2633,Tennessee Volunteers,SEC,power,11,75,2635,Tennessee Tech Golden Eagles,OVC,mid,0,43,
+2023,2022-11-07,2022-11-07,401483265,reg,0,0,239,Baylor Bears,Big 12,power,5,117,2400,Mississippi Valley State Delta Devils,SWAC,mid,0,53,
+2023,2022-11-07,2022-11-07,401483275,reg,0,0,2305,Kansas Jayhawks,Big 12,power,5,89,2437,Omaha Mavericks,Summit,mid,0,64,
+2023,2022-11-07,2022-11-07,401483298,reg,0,0,2628,TCU Horned Frogs,Big 12,power,14,73,2029,Arkansas-Pine Bluff Golden Lions,SWAC,mid,0,72,
+2023,2022-11-07,2022-11-07,401483308,reg,0,0,251,Texas Longhorns,Big 12,power,12,72,2638,UTEP Miners,CUSA,mid,0,57,
+2023,2022-11-07,2022-11-07,401483319,reg,0,0,2641,Texas Tech Red Raiders,Big 12,power,25,73,2466,Northwestern State Demons,Southland,mid,0,49,
+2023,2022-11-07,2022-11-07,401483337,reg,0,0,356,Illinois Fighting Illini,Big Ten,power,23,87,2197,Eastern Illinois Panthers,OVC,mid,0,57,
+2023,2022-11-07,2022-11-07,401483344,reg,0,0,84,Indiana Hoosiers,Big Ten,power,13,88,2413,Morehead State Eagles,OVC,mid,0,53,
+2023,2022-11-07,2022-11-07,401483365,reg,0,0,130,Michigan Wolverines,Big Ten,power,22,75,2870,Purdue Fort Wayne Mastodons,Horizon,mid,0,56,
+2023,2022-11-07,2022-11-07,401483461,reg,0,0,26,UCLA Bruins,Pac-12,power,8,76,16,Sacramento State Hornets,Big Sky,mid,0,50,
+2023,2022-11-07,2022-11-07,401484362,reg,0,0,222,Villanova Wildcats,Big East,high,16,81,2325,La Salle Explorers,A-10,high,0,68,
+2023,2022-11-07,2022-11-07,401485099,reg,0,0,156,Creighton Bluejays,Big East,high,9,72,2900,St. Thomas-Minnesota Tommies,Summit,mid,0,60,
+2023,2022-11-07,2022-11-07,401487612,reg,0,0,2168,Dayton Flyers,A-10,high,24,73,2815,Lindenwood Lions,OVC,mid,0,46,
+2023,2022-11-07,2022-11-07,401488380,reg,0,0,333,Alabama Crimson Tide,SEC,power,20,75,2344,Longwood Lancers,Big South,mid,0,54,
+2023,2022-11-07,2022-11-07,401489571,reg,0,0,8,Arkansas Razorbacks,SEC,power,10,76,2449,North Dakota State Bison,Summit,mid,0,58,
+2023,2022-11-07,2022-11-07,401489651,reg,0,0,248,Houston Cougars,American,high,3,83,2458,Northern Colorado Bears,Big Sky,mid,0,36,
+2023,2022-11-07,2022-11-07,401491799,reg,0,0,21,San Diego State Aztecs,Mountain West,high,19,80,2239,Cal State Fullerton Titans,Big West,mid,0,57,
+2023,2022-11-07,2022-11-07,401492454,reg,0,0,2483,Oregon Ducks,Pac-12,power,21,80,50,Florida A&M Rattlers,SWAC,mid,0,45,Pac-12/SWAC Legacy Series
+2023,2022-11-07,2022-11-07,401494401,reg,0,0,96,Kentucky Wildcats,SEC,power,4,95,47,Howard Bison,MEAC,mid,0,63,
+2023,2022-11-07,2022-11-07,401494933,reg,0,0,12,Arizona Wildcats,Pac-12,power,17,117,2447,Nicholls Colonels,Southland,mid,0,75,
+2023,2022-11-07,2022-11-07,401497505,reg,0,0,2250,Gonzaga Bulldogs,WCC,high,2,104,2454,North Florida Ospreys,ASUN,mid,0,63,
+2023,2022-11-10,2022-11-07,401483276,reg,0,0,2305,Kansas Jayhawks,Big 12,power,5,82,2449,North Dakota State Bison,Summit,mid,0,59,
+2023,2022-11-10,2022-11-07,401483309,reg,0,0,251,Texas Longhorns,Big 12,power,12,82,2277,Houston Christian Huskies,Southland,mid,0,31,
+2023,2022-11-10,2022-11-07,401483320,reg,0,0,2641,Texas Tech Red Raiders,Big 12,power,25,78,2640,Texas Southern Tigers,SWAC,mid,0,54,
+2023,2022-11-10,2022-11-07,401483345,reg,0,0,84,Indiana Hoosiers,Big Ten,power,13,101,2065,Bethune-Cookman Wildcats,SWAC,mid,0,49,
+2023,2022-11-10,2022-11-07,401485107,reg,0,0,156,Creighton Bluejays,Big East,high,9,96,155,North Dakota Fighting Hawks,Summit,mid,0,61,
+2023,2022-11-11,2022-11-07,401482907,reg,0,0,150,Duke Blue Devils,ACC,power,7,84,2908,South Carolina Upstate Spartans,Big South,mid,0,38,
+2023,2022-11-11,2022-11-07,401482948,reg,0,0,153,North Carolina Tar Heels,ACC,power,1,102,232,Charleston Cougars,CAA,mid,0,86,
+2023,2022-11-11,2022-11-07,401482984,reg,0,0,258,Virginia Cavaliers,ACC,power,18,89,2405,Monmouth Hawks,CAA,mid,0,42,
+2023,2022-11-11,2022-11-07,401483040,reg,0,0,2,Auburn Tigers,SEC,power,15,67,58,South Florida Bulls,American,high,0,59,
+2023,2022-11-11,2022-11-07,401483262,reg,0,0,239,Baylor Bears,Big 12,power,5,87,2450,Norfolk State Spartans,MEAC,mid,0,70,
+2023,2022-11-11,2022-11-07,401483299,reg,0,0,2628,TCU Horned Frogs,Big 12,power,14,77,2320,Lamar Cardinals,Southland,mid,0,66,
+2023,2022-11-11,2022-11-07,401483338,reg,0,0,356,Illinois Fighting Illini,Big Ten,power,23,86,140,Kansas City Roos,Summit,mid,0,48,
+2023,2022-11-11,2022-11-07,401483366,reg,1,0,130,Michigan Wolverines,Big Ten,power,22,88,2199,Eastern Michigan Eagles,MAC,mid,0,83,
+2023,2022-11-11,2022-11-07,401483462,reg,0,0,26,UCLA Bruins,Pac-12,power,8,93,299,Long Beach State Beach,Big West,mid,0,69,
+2023,2022-11-11,2022-11-07,401484363,reg,0,0,218,Temple Owls,American,high,0,68,222,Villanova Wildcats,Big East,high,16,64,
+2023,2022-11-11,2022-11-07,401484527,reg,1,0,2250,Gonzaga Bulldogs,WCC,high,2,64,127,Michigan State Spartans,Big Ten,power,0,63,Peraton Armed Forces Classic
+2023,2022-11-11,2022-11-07,401485298,reg,0,0,333,Alabama Crimson Tide,SEC,power,20,95,2335,Liberty Flames,ASUN,mid,0,59,
+2023,2022-11-11,2022-11-07,401487613,reg,0,0,2168,Dayton Flyers,A-10,high,24,74,2567,SMU Mustangs,American,high,0,62,
+2023,2022-11-11,2022-11-07,401487626,reg,0,0,8,Arkansas Razorbacks,SEC,power,10,74,2230,Fordham Rams,A-10,high,0,48,
+2023,2022-11-11,2022-11-07,401487676,reg,1,0,2603,Saint Joseph's Hawks,A-10,high,0,55,248,Houston Cougars,American,high,3,81,Veterans Classic
+2023,2022-11-11,2022-11-07,401488191,reg,0,0,2483,Oregon Ducks,Pac-12,power,21,56,300,UC Irvine Anteaters,Big West,mid,0,69,
+2023,2022-11-11,2022-11-07,401489051,reg,0,0,21,San Diego State Aztecs,Mountain West,high,19,82,252,BYU Cougars,WCC,high,0,75,
+2023,2022-11-11,2022-11-07,401493835,reg,0,0,12,Arizona Wildcats,Pac-12,power,17,95,2582,Southern Jaguars,SWAC,mid,0,78,Pac-12/SWAC Legacy Series
+2023,2022-11-11,2022-11-07,401497509,reg,0,0,96,Kentucky Wildcats,SEC,power,4,77,2184,Duquesne Dukes,A-10,high,0,52,
+2023,2022-11-13,2022-11-07,401483231,reg,1,0,2633,Tennessee Volunteers,SEC,power,11,66,38,Colorado Buffaloes,Pac-12,power,0,78,
+2023,2022-11-14,2022-11-14,401483263,reg,0,0,239,Baylor Bears,Big 12,power,5,95,2458,Northern Colorado Bears,Big Sky,mid,0,62,
+2023,2022-11-14,2022-11-14,401483300,reg,0,0,2628,TCU Horned Frogs,Big 12,power,15,63,2466,Northwestern State Demons,Southland,mid,0,64,
+2023,2022-11-14,2022-11-14,401483321,reg,0,0,2641,Texas Tech Red Raiders,Big 12,power,23,64,2348,Louisiana Tech Bulldogs,CUSA,mid,0,55,
+2023,2022-11-14,2022-11-14,401483339,reg,0,0,356,Illinois Fighting Illini,Big Ten,power,19,103,2405,Monmouth Hawks,CAA,mid,0,65,
+2023,2022-11-14,2022-11-14,401483463,reg,0,0,26,UCLA Bruins,Pac-12,power,8,86,2450,Norfolk State Spartans,MEAC,mid,0,56,
+2023,2022-11-14,2022-11-14,401485136,reg,0,0,156,Creighton Bluejays,Big East,high,10,94,107,Holy Cross Crusaders,Patriot,mid,0,65,
+2023,2022-11-14,2022-11-14,401488642,reg,0,0,248,Houston Cougars,American,high,3,83,198,Oral Roberts Golden Eagles,Summit,mid,0,45,Cougar Classic
+2023,2022-11-15,2022-11-14,401482908,reg,1,0,2305,Kansas Jayhawks,Big 12,power,6,69,150,Duke Blue Devils,ACC,power,7,64,State Farm Champions Classic
+2023,2022-11-15,2022-11-14,401482949,reg,0,0,153,North Carolina Tar Heels,ACC,power,1,72,2241,Gardner-Webb Runnin' Bulldogs,Big South,mid,0,66,
+2023,2022-11-15,2022-11-14,401483041,reg,0,0,2,Auburn Tigers,SEC,power,13,89,2737,Winthrop Eagles,Big South,mid,0,65,
+2023,2022-11-15,2022-11-14,401483165,reg,1,0,127,Michigan State Spartans,Big Ten,power,0,86,96,Kentucky Wildcats,SEC,power,4,77,State Farm Champions Classic
+2023,2022-11-15,2022-11-14,401485021,reg,0,0,24,Stanford Cardinal,Pac-12,power,0,62,21,San Diego State Aztecs,Mountain West,high,17,74,
+2023,2022-11-15,2022-11-14,401485137,reg,0,0,41,UConn Huskies,Big East,high,25,84,2084,Buffalo Bulls,MAC,mid,0,64,
+2023,2022-11-15,2022-11-14,401487390,reg,0,0,2439,UNLV Rebels,Mountain West,high,0,60,2168,Dayton Flyers,A-10,high,21,52,
+2023,2022-11-15,2022-11-14,401488381,reg,0,0,6,South Alabama Jaguars,Sun Belt,mid,0,55,333,Alabama Crimson Tide,SEC,power,18,65,
+2023,2022-11-16,2022-11-14,401482967,reg,1,0,221,Pittsburgh Panthers,ACC,power,0,60,130,Michigan Wolverines,Big Ten,power,20,91,Legends Classic
+2023,2022-11-16,2022-11-14,401483232,reg,0,0,2633,Tennessee Volunteers,SEC,power,22,81,526,Florida Gulf Coast Eagles,ASUN,mid,0,50,
+2023,2022-11-16,2022-11-14,401483310,reg,0,0,251,Texas Longhorns,Big 12,power,11,93,2250,Gonzaga Bulldogs,WCC,high,2,74,
+2023,2022-11-16,2022-11-14,401488643,reg,0,0,248,Houston Cougars,American,high,3,83,2640,Texas Southern Tigers,SWAC,mid,0,48,Cougar Classic
+2023,2022-11-16,2022-11-14,401496630,reg,0,0,8,Arkansas Razorbacks,SEC,power,9,71,2571,South Dakota State Jackrabbits,Summit,mid,0,56,
+2023,2022-11-17,2022-11-14,401483238,reg,1,0,245,Texas A&M Aggies,SEC,power,24,79,93,Murray State Racers,MVC,mid,0,88,Myrtle Beach Invitational
+2023,2022-11-17,2022-11-14,401483301,reg,0,0,2628,TCU Horned Frogs,Big 12,power,15,95,2433,UL Monroe Warhawks,Sun Belt,mid,0,60,Emerald Coast Classic - Campus Game
+2023,2022-11-17,2022-11-14,401485141,reg,0,0,156,Creighton Bluejays,Big East,high,10,80,27,UC Riverside Highlanders,Big West,mid,0,51,
+2023,2022-11-17,2022-11-14,401486296,reg,1,0,9,Arizona State Sun Devils,Pac-12,power,0,87,130,Michigan Wolverines,Big Ten,power,20,62,Legends Classic
+2023,2022-11-17,2022-11-14,401489069,reg,0,0,12,Arizona Wildcats,Pac-12,power,14,104,3101,Utah Tech Trailblazers,WAC,mid,0,77,
+2023,2022-11-17,2022-11-14,401496876,reg,0,0,96,Kentucky Wildcats,SEC,power,4,106,2569,South Carolina State Bulldogs,MEAC,mid,0,63,
+2023,2022-11-18,2022-11-14,401479700,reg,0,0,2752,Xavier Musketeers,Big East,high,0,79,84,Indiana Hoosiers,Big Ten,power,12,81,Gavitt Tipoff Games
+2023,2022-11-18,2022-11-14,401482909,reg,0,0,150,Duke Blue Devils,ACC,power,7,92,48,Delaware Blue Hens,CAA,mid,0,58,
+2023,2022-11-18,2022-11-14,401482986,reg,1,0,239,Baylor Bears,Big 12,power,5,79,258,Virginia Cavaliers,ACC,power,16,86,Main Event
+2023,2022-11-18,2022-11-14,401483042,reg,0,0,2,Auburn Tigers,SEC,power,13,72,2640,Texas Southern Tigers,SWAC,mid,0,56,
+2023,2022-11-18,2022-11-14,401483277,reg,0,0,2305,Kansas Jayhawks,Big 12,power,6,82,253,Southern Utah Thunderbirds,WAC,mid,0,76,
+2023,2022-11-18,2022-11-14,401483340,reg,1,0,26,UCLA Bruins,Pac-12,power,8,70,356,Illinois Fighting Illini,Big Ten,power,19,79,Main Event
+2023,2022-11-18,2022-11-14,401485145,reg,0,0,41,UConn Huskies,Big East,high,25,86,350,UNC Wilmington Seahawks,CAA,mid,0,50,
+2023,2022-11-18,2022-11-14,401486325,reg,1,0,245,Texas A&M Aggies,SEC,power,24,75,38,Colorado Buffaloes,Pac-12,power,0,103,Myrtle Beach Invitational
+2023,2022-11-18,2022-11-14,401488382,reg,0,0,333,Alabama Crimson Tide,SEC,power,18,104,55,Jacksonville State Gamecocks,ASUN,mid,0,62,
+2023,2022-11-19,2022-11-14,401487614,reg,0,0,2168,Dayton Flyers,A-10,high,21,60,2523,Robert Morris Colonials,Horizon,mid,0,51,
+2023,2022-11-20,2022-11-14,401482950,reg,0,0,153,North Carolina Tar Heels,ACC,power,1,80,256,James Madison Dukes,Sun Belt,mid,0,64,
+2023,2022-11-20,2022-11-14,401483346,reg,1,0,84,Indiana Hoosiers,Big Ten,power,12,86,193,Miami (OH) RedHawks,MAC,mid,0,56,Hoosier Tip-Off Classic
+2023,2022-11-20,2022-11-14,401483367,reg,0,0,130,Michigan Wolverines,Big Ten,power,20,70,195,Ohio Bobcats,MAC,mid,0,66,
+2023,2022-11-20,2022-11-14,401485149,reg,0,0,41,UConn Huskies,Big East,high,25,95,2169,Delaware State Hornets,MEAC,mid,0,60,
+2023,2022-11-20,2022-11-14,401486340,reg,1,0,2350,Loyola Chicago Ramblers,A-10,high,0,51,245,Texas A&M Aggies,SEC,power,24,67,Myrtle Beach Invitational
+2023,2022-11-20,2022-11-14,401489652,reg,0,0,2483,Oregon Ducks,Pac-12,power,0,56,248,Houston Cougars,American,high,3,66,
+2023,2022-11-20,2022-11-14,401497506,reg,0,0,2250,Gonzaga Bulldogs,WCC,high,2,88,96,Kentucky Wildcats,SEC,power,4,72,
+2023,2022-11-20,2022-11-14,401497570,reg,1,0,258,Virginia Cavaliers,ACC,power,16,70,356,Illinois Fighting Illini,Big Ten,power,19,61,Main Event
+2023,2022-11-20,2022-11-14,401497571,reg,1,0,239,Baylor Bears,Big 12,power,5,80,26,UCLA Bruins,Pac-12,power,8,75,Main Event
+2023,2022-11-21,2022-11-21,401482910,reg,0,0,150,Duke Blue Devils,ACC,power,8,74,91,Bellarmine Knights,ASUN,mid,0,57,
+2023,2022-11-21,2022-11-21,401483311,reg,1,0,2464,Northern Arizona Lumberjacks,Big Sky,mid,0,48,251,Texas Longhorns,Big 12,power,4,73,Leon Black Classic
+2023,2022-11-21,2022-11-21,401483322,reg,1,0,156,Creighton Bluejays,Big East,high,10,76,2641,Texas Tech Red Raiders,Big 12,power,21,65,Maui Jim Maui Invitational
+2023,2022-11-21,2022-11-21,401483354,reg,0,0,2294,Iowa Hawkeyes,Big Ten,power,25,100,2437,Omaha Mavericks,Summit,mid,0,64,Emerald Coast Classic - Campus Game
+2023,2022-11-21,2022-11-21,401483394,reg,1,0,21,San Diego State Aztecs,Mountain West,high,17,88,194,Ohio State Buckeyes,Big Ten,power,0,77,Maui Jim Maui Invitational
+2023,2022-11-21,2022-11-21,401483428,reg,1,0,12,Arizona Wildcats,Pac-12,power,14,101,2132,Cincinnati Bearcats,American,high,0,93,Maui Jim Maui Invitational
+2023,2022-11-21,2022-11-21,401486689,reg,1,0,8,Arkansas Razorbacks,SEC,power,9,80,97,Louisville Cardinals,ACC,power,0,54,Maui Jim Maui Invitational
+2023,2022-11-22,2022-11-21,401483043,reg,1,0,2,Auburn Tigers,SEC,power,13,85,71,Bradley Braves,MVC,mid,0,64,Cancun Challenge - Riviera Division
+2023,2022-11-22,2022-11-21,401486690,reg,1,0,8,Arkansas Razorbacks,SEC,power,9,87,156,Creighton Bluejays,Big East,high,10,90,Maui Jim Maui Invitational
+2023,2022-11-22,2022-11-21,401486691,reg,1,0,12,Arizona Wildcats,Pac-12,power,14,87,21,San Diego State Aztecs,Mountain West,high,17,70,Maui Jim Maui Invitational
+2023,2022-11-22,2022-11-21,401486693,reg,1,0,97,Louisville Cardinals,ACC,power,0,38,2641,Texas Tech Red Raiders,Big 12,power,21,70,Maui Jim Maui Invitational
+2023,2022-11-23,2022-11-21,401482942,reg,1,0,2305,Kansas Jayhawks,Big 12,power,3,80,152,NC State Wolfpack,ACC,power,0,74,Bad Boy Mowers Battle 4 Atlantis
+2023,2022-11-23,2022-11-21,401483233,reg,1,0,2633,Tennessee Volunteers,SEC,power,22,71,2086,Butler Bulldogs,Big East,high,0,45,Bad Boy Mowers Battle 4 Atlantis
+2023,2022-11-23,2022-11-21,401483264,reg,0,0,239,Baylor Bears,Big 12,power,7,89,2377,McNeese Cowboys,Southland,mid,0,60,
+2023,2022-11-23,2022-11-21,401483347,reg,0,0,84,Indiana Hoosiers,Big Ten,power,11,87,2031,Little Rock Trojans,OVC,mid,0,68,Hoosier Tip-Off Classic
+2023,2022-11-23,2022-11-21,401483464,reg,0,0,26,UCLA Bruins,Pac-12,power,19,100,2492,Pepperdine Waves,WCC,high,0,53,
+2023,2022-11-23,2022-11-21,401486399,reg,1,0,77,Northwestern Wildcats,Big Ten,power,0,42,2,Auburn Tigers,SEC,power,13,43,Cancun Challenge - Riviera Division
+2023,2022-11-23,2022-11-21,401486694,reg,1,0,12,Arizona Wildcats,Pac-12,power,14,81,156,Creighton Bluejays,Big East,high,10,79,Maui Jim Maui Invitational
+2023,2022-11-23,2022-11-21,401486695,reg,1,0,21,San Diego State Aztecs,Mountain West,high,17,74,8,Arkansas Razorbacks,SEC,power,9,78,Maui Jim Maui Invitational
+2023,2022-11-23,2022-11-21,401486696,reg,1,0,194,Ohio State Buckeyes,Big Ten,power,0,80,2641,Texas Tech Red Raiders,Big 12,power,21,73,Maui Jim Maui Invitational
+2023,2022-11-23,2022-11-21,401497591,reg,0,0,96,Kentucky Wildcats,SEC,power,15,96,2454,North Florida Ospreys,ASUN,mid,0,56,
+2023,2022-11-24,2022-11-21,401482911,reg,1,0,204,Oregon State Beavers,Pac-12,power,0,51,150,Duke Blue Devils,ACC,power,8,54,Phil Knight Legacy
+2023,2022-11-24,2022-11-21,401482951,reg,1,0,2501,Portland Pilots,WCC,high,0,81,153,North Carolina Tar Heels,ACC,power,1,89,Phil Knight Invitational
+2023,2022-11-24,2022-11-21,401483331,reg,1,0,277,West Virginia Mountaineers,Big 12,power,0,68,2509,Purdue Boilermakers,Big Ten,power,24,80,Phil Knight Legacy
+2023,2022-11-24,2022-11-21,401484355,reg,1,0,2483,Oregon Ducks,Pac-12,power,0,59,41,UConn Huskies,Big East,high,20,83,Phil Knight Invitational
+2023,2022-11-24,2022-11-21,401484356,reg,1,0,127,Michigan State Spartans,Big Ten,power,12,70,333,Alabama Crimson Tide,SEC,power,18,81,Phil Knight Invitational
+2023,2022-11-24,2022-11-21,401486719,reg,1,0,30,USC Trojans,Pac-12,power,0,66,2633,Tennessee Volunteers,SEC,power,22,73,Bad Boy Mowers Battle 4 Atlantis
+2023,2022-11-24,2022-11-21,401486720,reg,1,0,2305,Kansas Jayhawks,Big 12,power,3,69,275,Wisconsin Badgers,Big Ten,power,0,68,Bad Boy Mowers Battle 4 Atlantis
+2023,2022-11-25,2022-11-21,401482902,reg,1,0,228,Clemson Tigers,ACC,power,0,71,2294,Iowa Hawkeyes,Big Ten,power,25,74,Emerald Coast Classic
+2023,2022-11-25,2022-11-21,401482987,reg,0,0,258,Virginia Cavaliers,ACC,power,5,72,2379,Maryland-Eastern Shore Hawks,MEAC,mid,0,45,
+2023,2022-11-25,2022-11-21,401483341,reg,0,0,356,Illinois Fighting Illini,Big Ten,power,16,92,2815,Lindenwood Lions,OVC,mid,0,59,
+2023,2022-11-25,2022-11-21,401483348,reg,0,0,84,Indiana Hoosiers,Big Ten,power,11,90,2296,Jackson State Tigers,SWAC,mid,0,51,Hoosier Tip-Off Classic
+2023,2022-11-25,2022-11-21,401483361,reg,0,0,120,Maryland Terrapins,Big Ten,power,23,95,2154,Coppin State Eagles,MEAC,mid,0,79,
+2023,2022-11-25,2022-11-21,401484367,reg,1,0,2250,Gonzaga Bulldogs,WCC,high,6,102,2502,Portland State Vikings,Big Sky,mid,0,78,Phil Knight Legacy
+2023,2022-11-25,2022-11-21,401486722,reg,1,0,2305,Kansas Jayhawks,Big 12,power,3,50,2633,Tennessee Volunteers,SEC,power,22,64,Bad Boy Mowers Battle 4 Atlantis
+2023,2022-11-25,2022-11-21,401486738,reg,1,0,66,Iowa State Cyclones,Big 12,power,0,70,153,North Carolina Tar Heels,ACC,power,1,65,Phil Knight Invitational
+2023,2022-11-25,2022-11-21,401486739,reg,1,0,127,Michigan State Spartans,Big Ten,power,12,74,2483,Oregon Ducks,Pac-12,power,0,70,Phil Knight Invitational
+2023,2022-11-25,2022-11-21,401486740,reg,1,0,333,Alabama Crimson Tide,SEC,power,18,67,41,UConn Huskies,Big East,high,20,82,Phil Knight Invitational
+2023,2022-11-25,2022-11-21,401486746,reg,1,0,2752,Xavier Musketeers,Big East,high,0,64,150,Duke Blue Devils,ACC,power,8,71,Phil Knight Legacy
+2023,2022-11-25,2022-11-21,401486748,reg,1,0,2250,Gonzaga Bulldogs,WCC,high,6,66,2509,Purdue Boilermakers,Big Ten,power,24,84,Phil Knight Legacy
+2023,2022-11-26,2022-11-21,401483312,reg,0,0,251,Texas Longhorns,Big 12,power,4,91,292,UT Rio Grande Valley Vaqueros,WAC,mid,0,54,Leon Black Classic
+2023,2022-11-26,2022-11-21,401486409,reg,1,0,2628,TCU Horned Frogs,Big 12,power,0,79,2294,Iowa Hawkeyes,Big Ten,power,25,66,Emerald Coast Classic
+2023,2022-11-26,2022-11-21,401488815,reg,0,0,248,Houston Cougars,American,high,2,49,2309,Kent State Golden Flashes,MAC,mid,0,44,
+2023,2022-11-27,2022-11-21,401483044,reg,0,0,2,Auburn Tigers,SEC,power,13,65,139,Saint Louis Billikens,A-10,high,0,60,
+2023,2022-11-27,2022-11-21,401483465,reg,0,0,26,UCLA Bruins,Pac-12,power,19,81,91,Bellarmine Knights,ASUN,mid,0,60,
+2023,2022-11-27,2022-11-21,401486742,reg,1,0,127,Michigan State Spartans,Big Ten,power,12,78,2501,Portland Pilots,WCC,high,0,77,Phil Knight Invitational
+2023,2022-11-27,2022-11-21,401486743,reg,1,0,41,UConn Huskies,Big East,high,20,71,66,Iowa State Cyclones,Big 12,power,0,53,Phil Knight Invitational
+2023,2022-11-27,2022-11-21,401486744,reg,1,0,333,Alabama Crimson Tide,SEC,power,18,103,153,North Carolina Tar Heels,ACC,power,1,101,Phil Knight Invitational
+2023,2022-11-27,2022-11-21,401486751,reg,1,0,2509,Purdue Boilermakers,Big Ten,power,24,75,150,Duke Blue Devils,ACC,power,8,56,Phil Knight Legacy
+2023,2022-11-27,2022-11-21,401486752,reg,1,0,2250,Gonzaga Bulldogs,WCC,high,6,88,2752,Xavier Musketeers,Big East,high,0,84,Phil Knight Legacy
+2023,2022-11-28,2022-11-28,401483278,reg,0,0,2305,Kansas Jayhawks,Big 12,power,9,87,2640,Texas Southern Tigers,SWAC,mid,0,55,
+2023,2022-11-28,2022-11-28,401493952,reg,0,0,8,Arkansas Razorbacks,SEC,power,11,74,2653,Troy Trojans,Sun Belt,mid,0,61,
+2023,2022-11-29,2022-11-28,401479672,reg,0,0,356,Illinois Fighting Illini,Big Ten,power,16,73,183,Syracuse Orange,ACC,power,0,44,ACC/Big Ten Challenge presented by Continental Tire
+2023,2022-11-29,2022-11-28,401479673,reg,0,0,97,Louisville Cardinals,ACC,power,0,54,120,Maryland Terrapins,Big Ten,power,22,79,ACC/Big Ten Challenge presented by Continental Tire
+2023,2022-11-29,2022-11-28,401479675,reg,0,0,130,Michigan Wolverines,Big Ten,power,0,68,258,Virginia Cavaliers,ACC,power,3,70,ACC/Big Ten Challenge presented by Continental Tire
+2023,2022-11-29,2022-11-28,401479684,reg,0,0,269,Marquette Golden Eagles,Big East,high,0,96,239,Baylor Bears,Big 12,power,6,70,Big East-Big 12 Battle
+2023,2022-11-29,2022-11-28,401483166,reg,0,0,96,Kentucky Wildcats,SEC,power,19,60,91,Bellarmine Knights,ASUN,mid,0,41,
+2023,2022-11-29,2022-11-28,401485474,reg,0,0,248,Houston Cougars,American,high,1,100,2450,Norfolk State Spartans,MEAC,mid,0,52,
+2023,2022-11-29,2022-11-28,401488195,reg,0,0,21,San Diego State Aztecs,Mountain West,high,24,72,300,UC Irvine Anteaters,Big West,mid,0,69,
+2023,2022-11-30,2022-11-28,401479678,reg,0,0,150,Duke Blue Devils,ACC,power,17,81,194,Ohio State Buckeyes,Big Ten,power,25,72,ACC/Big Ten Challenge presented by Continental Tire
+2023,2022-11-30,2022-11-28,401479679,reg,0,0,52,Florida State Seminoles,ACC,power,0,69,2509,Purdue Boilermakers,Big Ten,power,5,79,ACC/Big Ten Challenge presented by Continental Tire
+2023,2022-11-30,2022-11-28,401479681,reg,0,0,84,Indiana Hoosiers,Big Ten,power,10,77,153,North Carolina Tar Heels,ACC,power,18,65,ACC/Big Ten Challenge presented by Continental Tire
+2023,2022-11-30,2022-11-28,401479682,reg,0,0,87,Notre Dame Fighting Irish,ACC,power,0,70,127,Michigan State Spartans,Big Ten,power,20,52,ACC/Big Ten Challenge presented by Continental Tire
+2023,2022-11-30,2022-11-28,401483234,reg,0,0,2633,Tennessee Volunteers,SEC,power,13,76,2377,McNeese Cowboys,Southland,mid,0,40,
+2023,2022-11-30,2022-11-28,401483270,reg,0,0,66,Iowa State Cyclones,Big 12,power,23,63,155,North Dakota Fighting Hawks,Summit,mid,0,44,
+2023,2022-12-01,2022-11-28,401479688,reg,0,0,251,Texas Longhorns,Big 12,power,2,72,156,Creighton Bluejays,Big East,high,7,67,Big East-Big 12 Battle
+2023,2022-12-01,2022-11-28,401479689,reg,0,0,41,UConn Huskies,Big East,high,8,74,197,Oklahoma State Cowboys,Big 12,power,0,64,Big East-Big 12 Battle
+2023,2022-12-01,2022-11-28,401479690,reg,0,0,2305,Kansas Jayhawks,Big 12,power,9,91,2550,Seton Hall Pirates,Big East,high,0,65,Big East-Big 12 Battle
+2023,2022-12-01,2022-11-28,401483429,reg,0,1,254,Utah Utes,Pac-12,power,0,81,12,Arizona Wildcats,Pac-12,power,4,66,
+2023,2022-12-01,2022-11-28,401483466,reg,0,1,24,Stanford Cardinal,Pac-12,power,0,66,26,UCLA Bruins,Pac-12,power,21,80,
+2023,2022-12-02,2022-11-28,401483045,reg,0,0,2,Auburn Tigers,SEC,power,15,93,2142,Colgate Raiders,Patriot,mid,0,66,
+2023,2022-12-02,2022-11-28,401483258,reg,1,0,2250,Gonzaga Bulldogs,WCC,high,14,63,239,Baylor Bears,Big 12,power,6,64,
+2023,2022-12-02,2022-11-28,401484833,reg,0,1,120,Maryland Terrapins,Big Ten,power,22,71,356,Illinois Fighting Illini,Big Ten,power,16,66,
+2023,2022-12-02,2022-11-28,401493614,reg,0,0,21,San Diego State Aztecs,Mountain West,high,24,95,2475,Occidental Tigers,,,0,57,
+2023,2022-12-03,2022-11-28,401483395,reg,0,0,194,Ohio State Buckeyes,Big Ten,power,25,96,2598,St. Francis (PA) Red Flash,NEC,mid,0,59,
+2023,2022-12-03,2022-11-28,401484834,reg,0,1,164,Rutgers Scarlet Knights,Big Ten,power,0,63,84,Indiana Hoosiers,Big Ten,power,10,48,
+2023,2022-12-03,2022-11-28,401488383,reg,0,0,333,Alabama Crimson Tide,SEC,power,11,78,2571,South Dakota State Jackrabbits,Summit,mid,0,65,
+2023,2022-12-03,2022-11-28,401488390,reg,0,1,258,Virginia Cavaliers,ACC,power,3,62,52,Florida State Seminoles,ACC,power,0,57,
+2023,2022-12-03,2022-11-28,401488392,reg,0,1,150,Duke Blue Devils,ACC,power,17,75,103,Boston College Eagles,ACC,power,0,59,
+2023,2022-12-03,2022-11-28,401488693,reg,1,0,248,Houston Cougars,American,high,1,53,2608,Saint Mary's Gaels,WCC,high,0,48,The Battleground 2k22 Presented by Basketball University
+2023,2022-12-03,2022-11-28,401494410,reg,0,0,8,Arkansas Razorbacks,SEC,power,11,99,23,San José State Spartans,Mountain West,high,0,58,
+2023,2022-12-04,2022-11-28,401479692,reg,0,0,66,Iowa State Cyclones,Big 12,power,23,71,2599,St. John's Red Storm,Big East,high,0,60,Big East-Big 12 Battle
+2023,2022-12-04,2022-11-28,401483167,reg,1,0,96,Kentucky Wildcats,SEC,power,19,73,130,Michigan Wolverines,Big Ten,power,0,69,Basketball Hall of Fame London Showcase
+2023,2022-12-04,2022-11-28,401483229,reg,0,0,2633,Tennessee Volunteers,SEC,power,13,94,2016,Alcorn State Braves,SWAC,mid,0,40,
+2023,2022-12-04,2022-11-28,401483381,reg,0,0,156,Creighton Bluejays,Big East,high,7,53,158,Nebraska Cornhuskers,Big Ten,power,0,63,
+2023,2022-12-04,2022-11-28,401483430,reg,0,1,12,Arizona Wildcats,Pac-12,power,4,81,25,California Golden Bears,Pac-12,power,0,68,
+2023,2022-12-04,2022-11-28,401483467,reg,0,1,26,UCLA Bruins,Pac-12,power,21,65,2483,Oregon Ducks,Pac-12,power,0,56,
+2023,2022-12-04,2022-11-28,401484835,reg,0,1,127,Michigan State Spartans,Big Ten,power,20,63,77,Northwestern Wildcats,Big Ten,power,0,70,
+2023,2022-12-04,2022-11-28,401484836,reg,0,1,2509,Purdue Boilermakers,Big Ten,power,5,89,135,Minnesota Golden Gophers,Big Ten,power,0,70,
+2023,2022-12-04,2022-11-28,401488393,reg,0,1,259,Virginia Tech Hokies,ACC,power,0,80,153,North Carolina Tar Heels,ACC,power,18,72,
+2023,2022-12-05,2022-12-05,401488817,reg,0,0,2250,Gonzaga Bulldogs,WCC,high,18,73,2309,Kent State Golden Flashes,MAC,mid,0,66,
+2023,2022-12-05,2022-12-05,401493615,reg,0,0,21,San Diego State Aztecs,Mountain West,high,22,60,2653,Troy Trojans,Sun Belt,mid,0,55,
+2023,2022-12-06,2022-12-05,401482912,reg,1,0,150,Duke Blue Devils,ACC,power,15,74,2294,Iowa Hawkeyes,Big Ten,power,0,62,Jimmy V Classic presented by Corona
+2023,2022-12-06,2022-12-05,401482988,reg,0,0,258,Virginia Cavaliers,ACC,power,3,55,256,James Madison Dukes,Sun Belt,mid,0,50,
+2023,2022-12-06,2022-12-05,401483261,reg,0,0,239,Baylor Bears,Big 12,power,12,80,2627,Tarleton State Texans,WAC,mid,0,57,
+2023,2022-12-06,2022-12-05,401483303,reg,0,0,2628,TCU Horned Frogs,Big 12,power,24,78,2296,Jackson State Tigers,SWAC,mid,0,51,
+2023,2022-12-06,2022-12-05,401483313,reg,1,0,251,Texas Longhorns,Big 12,power,2,78,356,Illinois Fighting Illini,Big Ten,power,17,85,Jimmy V Classic presented by Corona
+2023,2022-12-06,2022-12-05,401484837,reg,0,1,275,Wisconsin Badgers,Big Ten,power,0,64,120,Maryland Terrapins,Big Ten,power,13,59,
+2023,2022-12-06,2022-12-05,401489653,reg,0,0,248,Houston Cougars,American,high,1,76,2454,North Florida Ospreys,ASUN,mid,0,42,
+2023,2022-12-06,2022-12-05,401489667,reg,0,0,8,Arkansas Razorbacks,SEC,power,9,65,2430,UNC Greensboro Spartans,SoCon,mid,0,58,
+2023,2022-12-07,2022-12-05,401483036,reg,0,0,57,Florida Gators,SEC,power,0,54,41,UConn Huskies,Big East,high,5,75,
+2023,2022-12-07,2022-12-05,401483230,reg,0,0,2633,Tennessee Volunteers,SEC,power,7,84,2198,Eastern Kentucky Colonels,ASUN,mid,0,49,
+2023,2022-12-07,2022-12-05,401483407,reg,0,0,2509,Purdue Boilermakers,Big Ten,power,4,85,2275,Hofstra Pride,CAA,mid,0,66,
+2023,2022-12-07,2022-12-05,401484839,reg,0,1,84,Indiana Hoosiers,Big Ten,power,14,81,158,Nebraska Cornhuskers,Big Ten,power,0,65,
+2023,2022-12-08,2022-12-05,401483271,reg,0,0,2294,Iowa Hawkeyes,Big Ten,power,0,75,66,Iowa State Cyclones,Big 12,power,20,56,
+2023,2022-12-08,2022-12-05,401484841,reg,0,1,194,Ohio State Buckeyes,Big Ten,power,25,67,164,Rutgers Scarlet Knights,Big Ten,power,0,66,
+2023,2022-12-09,2022-12-05,401492101,reg,0,0,2250,Gonzaga Bulldogs,WCC,high,18,77,264,Washington Huskies,Pac-12,power,0,60,
+2023,2022-12-10,2022-12-05,401482913,reg,0,0,150,Duke Blue Devils,ACC,power,15,82,2379,Maryland-Eastern Shore Hawks,MEAC,mid,0,55,
+2023,2022-12-10,2022-12-05,401483046,reg,1,0,235,Memphis Tigers,American,high,0,82,2,Auburn Tigers,SEC,power,11,73,Holiday Hoopsgiving
+2023,2022-12-10,2022-12-05,401483203,reg,0,0,142,Missouri Tigers,SEC,power,0,67,2305,Kansas Jayhawks,Big 12,power,6,95,
+2023,2022-12-10,2022-12-05,401483296,reg,1,0,8,Arkansas Razorbacks,SEC,power,9,88,201,Oklahoma Sooners,Big 12,power,0,78,
+2023,2022-12-10,2022-12-05,401483304,reg,1,0,2567,SMU Mustangs,American,high,0,75,2628,TCU Horned Frogs,Big 12,power,24,83,
+2023,2022-12-10,2022-12-05,401483314,reg,0,0,251,Texas Longhorns,Big 12,power,2,88,2029,Arkansas-Pine Bluff Golden Lions,SWAC,mid,0,43,Jimmy Blacklock Classic
+2023,2022-12-10,2022-12-05,401483349,reg,1,0,12,Arizona Wildcats,Pac-12,power,10,89,84,Indiana Hoosiers,Big Ten,power,14,75,Las Vegas Clash
+2023,2022-12-10,2022-12-05,401483468,reg,0,0,26,UCLA Bruins,Pac-12,power,19,87,2172,Denver Pioneers,Summit,mid,0,64,
+2023,2022-12-10,2022-12-05,401484842,reg,0,1,356,Illinois Fighting Illini,Big Ten,power,17,59,213,Penn State Nittany Lions,Big Ten,power,0,74,
+2023,2022-12-10,2022-12-05,401484843,reg,0,1,158,Nebraska Cornhuskers,Big Ten,power,0,62,2509,Purdue Boilermakers,Big Ten,power,4,65,
+2023,2022-12-10,2022-12-05,401485175,reg,0,0,41,UConn Huskies,Big East,high,5,114,112358,Long Island University Sharks,NEC,mid,0,61,
+2023,2022-12-10,2022-12-05,401485177,reg,1,0,252,BYU Cougars,WCC,high,0,83,156,Creighton Bluejays,Big East,high,21,80,
+2023,2022-12-10,2022-12-05,401486795,reg,1,0,21,San Diego State Aztecs,Mountain West,high,22,61,2608,Saint Mary's Gaels,WCC,high,0,68,Jerry Colangelo Classic
+2023,2022-12-10,2022-12-05,401487477,reg,0,0,96,Kentucky Wildcats,SEC,power,16,69,43,Yale Bulldogs,Ivy,mid,0,59,
+2023,2022-12-10,2022-12-05,401488384,reg,0,0,248,Houston Cougars,American,high,1,65,333,Alabama Crimson Tide,SEC,power,8,71,
+2023,2022-12-11,2022-12-05,401483192,reg,0,0,135,Minnesota Golden Gophers,Big Ten,power,0,51,344,Mississippi State Bulldogs,SEC,power,23,69,
+2023,2022-12-11,2022-12-05,401483226,reg,1,0,120,Maryland Terrapins,Big Ten,power,13,53,2633,Tennessee Volunteers,SEC,power,7,56,Basketball Hall of Fame Invitational
+2023,2022-12-11,2022-12-05,401483272,reg,0,0,66,Iowa State Cyclones,Big 12,power,20,77,2377,McNeese Cowboys,Southland,mid,0,40,
+2023,2022-12-12,2022-12-12,401483315,reg,0,0,251,Texas Longhorns,Big 12,power,7,87,242,Rice Owls,CUSA,mid,0,81,
+2023,2022-12-12,2022-12-12,401493745,reg,0,0,2250,Gonzaga Bulldogs,WCC,high,15,88,2459,Northern Illinois Huskies,MAC,mid,0,67,
+2023,2022-12-13,2022-12-12,401488385,reg,0,0,333,Alabama Crimson Tide,SEC,power,4,91,235,Memphis Tigers,American,high,0,88,
+2023,2022-12-13,2022-12-12,401489640,reg,0,0,12,Arizona Wildcats,Pac-12,power,9,99,357,Texas A&M-Corpus Christi Islanders,Southland,mid,0,61,
+2023,2022-12-13,2022-12-12,401489654,reg,0,0,248,Houston Cougars,American,high,5,74,2448,North Carolina A&T Aggies,CAA,mid,0,46,
+2023,2022-12-14,2022-12-12,401483047,reg,0,0,2,Auburn Tigers,SEC,power,19,72,2247,Georgia State Panthers,Sun Belt,mid,0,64,
+2023,2022-12-14,2022-12-12,401483362,reg,0,0,120,Maryland Terrapins,Big Ten,power,20,60,26,UCLA Bruins,Pac-12,power,16,87,
+2023,2022-12-14,2022-12-12,401497892,reg,1,0,2296,Jackson State Tigers,SWAC,mid,0,59,344,Mississippi State Bulldogs,SEC,power,17,69,
+2023,2022-12-15,2022-12-12,401483425,reg,0,0,275,Wisconsin Badgers,Big Ten,power,22,78,2329,Lehigh Mountain Hawks,Patriot,mid,0,56,
+2023,2022-12-17,2022-12-12,401482936,reg,0,0,2390,Miami Hurricanes,ACC,power,25,91,2598,St. Francis (PA) Red Flash,NEC,mid,0,76,
+2023,2022-12-17,2022-12-12,401482953,reg,1,0,153,North Carolina Tar Heels,ACC,power,0,89,194,Ohio State Buckeyes,Big Ten,power,23,84,CBS Sports Classic
+2023,2022-12-17,2022-12-12,401482989,reg,0,0,258,Virginia Cavaliers,ACC,power,2,61,248,Houston Cougars,American,high,5,69,
+2023,2022-12-17,2022-12-12,401482998,reg,0,0,259,Virginia Tech Hokies,ACC,power,24,74,2755,Grambling Tigers,SWAC,mid,0,48,
+2023,2022-12-17,2022-12-12,401483168,reg,1,0,96,Kentucky Wildcats,SEC,power,13,53,26,UCLA Bruins,Pac-12,power,16,63,CBS Sports Classic
+2023,2022-12-17,2022-12-12,401483227,reg,0,0,12,Arizona Wildcats,Pac-12,power,9,75,2633,Tennessee Volunteers,SEC,power,6,70,
+2023,2022-12-17,2022-12-12,401483279,reg,0,0,2305,Kansas Jayhawks,Big 12,power,8,84,84,Indiana Hoosiers,Big Ten,power,14,62,
+2023,2022-12-17,2022-12-12,401483342,reg,0,0,356,Illinois Fighting Illini,Big Ten,power,18,68,2010,Alabama A&M Bulldogs,SWAC,mid,0,47,
+2023,2022-12-17,2022-12-12,401483408,reg,1,0,2509,Purdue Boilermakers,Big Ten,power,1,69,2166,Davidson Wildcats,A-10,high,0,61,Indy Classic
+2023,2022-12-17,2022-12-12,401485186,reg,0,1,2086,Butler Bulldogs,Big East,high,0,46,41,UConn Huskies,Big East,high,3,68,
+2023,2022-12-17,2022-12-12,401488386,reg,1,0,333,Alabama Crimson Tide,SEC,power,4,90,2250,Gonzaga Bulldogs,WCC,high,15,100,C.M. Newton Classic
+2023,2022-12-17,2022-12-12,401489009,reg,0,0,8,Arkansas Razorbacks,SEC,power,10,76,71,Bradley Braves,MVC,mid,0,57,
+2023,2022-12-17,2022-12-12,401494405,reg,0,0,344,Mississippi State Bulldogs,SEC,power,17,68,2447,Nicholls Colonels,Southland,mid,0,66,
+2023,2022-12-18,2022-12-12,401483048,reg,0,0,30,USC Trojans,Pac-12,power,0,74,2,Auburn Tigers,SEC,power,19,71,
+2023,2022-12-18,2022-12-12,401483257,reg,1,0,239,Baylor Bears,Big 12,power,11,65,265,Washington State Cougars,Pac-12,power,0,59,Pac-12 Coast-to-Coast Challenge
+2023,2022-12-18,2022-12-12,401483305,reg,0,0,2628,TCU Horned Frogs,Big 12,power,21,88,2400,Mississippi Valley State Delta Devils,SWAC,mid,0,43,
+2023,2022-12-18,2022-12-12,401483316,reg,1,0,251,Texas Longhorns,Big 12,power,7,72,24,Stanford Cardinal,Pac-12,power,0,62,Pac-12 Coast-to-Coast Challenge
+2023,2022-12-20,2022-12-19,401483193,reg,1,0,2181,Drake Bulldogs,MVC,mid,0,58,344,Mississippi State Bulldogs,SEC,power,15,52,Battle in the Vault
+2023,2022-12-20,2022-12-19,401483259,reg,0,0,239,Baylor Bears,Big 12,power,12,58,2466,Northwestern State Demons,Southland,mid,0,48,
+2023,2022-12-20,2022-12-19,401483350,reg,0,0,84,Indiana Hoosiers,Big Ten,power,18,96,2210,Elon Phoenix,CAA,mid,0,72,
+2023,2022-12-20,2022-12-19,401485187,reg,0,1,41,UConn Huskies,Big East,high,2,84,46,Georgetown Hoyas,Big East,high,0,73,
+2023,2022-12-20,2022-12-19,401485188,reg,0,1,2507,Providence Friars,Big East,high,0,103,269,Marquette Golden Eagles,Big East,high,24,98,
+2023,2022-12-20,2022-12-19,401488387,reg,0,0,333,Alabama Crimson Tide,SEC,power,9,84,2296,Jackson State Tigers,SWAC,mid,0,64,
+2023,2022-12-20,2022-12-19,401488398,reg,0,1,154,Wake Forest Demon Deacons,ACC,power,0,81,150,Duke Blue Devils,ACC,power,14,70,
+2023,2022-12-20,2022-12-19,401488400,reg,0,1,2390,Miami Hurricanes,ACC,power,22,66,258,Virginia Cavaliers,ACC,power,6,64,
+2023,2022-12-20,2022-12-19,401491687,reg,0,0,2250,Gonzaga Bulldogs,WCC,high,11,85,149,Montana Grizzlies,Big Sky,mid,0,75,
+2023,2022-12-20,2022-12-19,401491691,reg,0,0,12,Arizona Wildcats,Pac-12,power,5,85,147,Montana State Bobcats,Big Sky,mid,0,64,
+2023,2022-12-21,2022-12-19,401483049,reg,0,0,264,Washington Huskies,Pac-12,power,0,61,2,Auburn Tigers,SEC,power,23,84,
+2023,2022-12-21,2022-12-19,401483228,reg,0,0,2633,Tennessee Volunteers,SEC,power,8,86,2046,Austin Peay Governors,ASUN,mid,0,44,
+2023,2022-12-21,2022-12-19,401483306,reg,0,0,254,Utah Utes,Pac-12,power,0,71,2628,TCU Horned Frogs,Big 12,power,20,75,
+2023,2022-12-21,2022-12-19,401483317,reg,0,0,251,Texas Longhorns,Big 12,power,7,100,309,Louisiana Ragin' Cajuns,Sun Belt,mid,0,72,
+2023,2022-12-21,2022-12-19,401483409,reg,0,0,2509,Purdue Boilermakers,Big Ten,power,1,74,2443,New Orleans Privateers,Southland,mid,0,53,
+2023,2022-12-21,2022-12-19,401483442,reg,0,0,2539,San Francisco Dons,WCC,high,0,97,9,Arizona State Sun Devils,Pac-12,power,25,60,
+2023,2022-12-21,2022-12-19,401483469,reg,0,0,26,UCLA Bruins,Pac-12,power,13,81,302,UC Davis Aggies,Big West,mid,0,54,
+2023,2022-12-21,2022-12-19,401488402,reg,0,1,103,Boston College Eagles,ACC,power,0,70,259,Virginia Tech Hokies,ACC,power,21,65,
+2023,2022-12-21,2022-12-19,401489614,reg,0,0,248,Houston Cougars,American,high,3,83,2377,McNeese Cowboys,Southland,mid,0,44,
+2023,2022-12-21,2022-12-19,401491747,reg,0,0,8,Arkansas Razorbacks,SEC,power,10,85,2427,UNC Asheville Bulldogs,Big South,mid,0,51,
+2023,2022-12-21,2022-12-19,401494402,reg,0,0,96,Kentucky Wildcats,SEC,power,19,88,50,Florida A&M Rattlers,SWAC,mid,0,68,
+2023,2022-12-22,2022-12-19,401483205,reg,1,0,142,Missouri Tigers,SEC,power,0,93,356,Illinois Fighting Illini,Big Ten,power,16,71,
+2023,2022-12-22,2022-12-19,401483280,reg,0,0,2305,Kansas Jayhawks,Big 12,power,4,68,108,Harvard Crimson,Ivy,mid,0,54,
+2023,2022-12-22,2022-12-19,401494934,reg,0,0,12,Arizona Wildcats,Pac-12,power,5,93,2415,Morgan State Bears,MEAC,mid,0,68,
+2023,2022-12-23,2022-12-19,401483351,reg,0,0,84,Indiana Hoosiers,Big Ten,power,18,69,338,Kennesaw State Owls,ASUN,mid,0,55,
+2023,2022-12-27,2022-12-26,401483318,reg,0,0,251,Texas Longhorns,Big 12,power,6,97,2837,Texas A&M-Commerce Lions,Southland,mid,0,72,
+2023,2022-12-28,2022-12-26,401482792,reg,0,1,167,New Mexico Lobos,Mountain West,high,22,88,36,Colorado State Rams,Mountain West,high,0,69,
+2023,2022-12-28,2022-12-26,401482990,reg,0,0,258,Virginia Cavaliers,ACC,power,13,66,399,UAlbany Great Danes,Am. East,mid,0,46,
+2023,2022-12-28,2022-12-26,401483260,reg,0,0,239,Baylor Bears,Big 12,power,12,85,2447,Nicholls Colonels,Southland,mid,0,56,
+2023,2022-12-28,2022-12-26,401483307,reg,0,0,2628,TCU Horned Frogs,Big 12,power,18,103,2110,Central Arkansas Bears,ASUN,mid,0,57,
+2023,2022-12-28,2022-12-26,401484528,reg,0,1,142,Missouri Tigers,SEC,power,0,89,96,Kentucky Wildcats,SEC,power,19,75,
+2023,2022-12-28,2022-12-26,401484529,reg,0,1,2,Auburn Tigers,SEC,power,20,61,57,Florida Gators,SEC,power,0,58,
+2023,2022-12-28,2022-12-26,401484530,reg,0,1,99,LSU Tigers,SEC,power,0,60,8,Arkansas Razorbacks,SEC,power,9,57,
+2023,2022-12-28,2022-12-26,401484531,reg,0,1,145,Ole Miss Rebels,SEC,power,0,59,2633,Tennessee Volunteers,SEC,power,7,63,
+2023,2022-12-28,2022-12-26,401484532,reg,0,1,344,Mississippi State Bulldogs,SEC,power,21,67,333,Alabama Crimson Tide,SEC,power,8,78,
+2023,2022-12-28,2022-12-26,401485194,reg,0,1,41,UConn Huskies,Big East,high,2,74,222,Villanova Wildcats,Big East,high,0,66,
+2023,2022-12-28,2022-12-26,401485195,reg,0,1,2599,St. John's Red Storm,Big East,high,0,79,2752,Xavier Musketeers,Big East,high,22,84,
+2023,2022-12-28,2022-12-26,401492674,reg,0,1,202,Tulsa Golden Hurricane,American,high,0,50,248,Houston Cougars,American,high,3,89,
+2023,2022-12-28,2022-12-26,401497507,reg,0,0,2250,Gonzaga Bulldogs,WCC,high,10,120,2202,Eastern Oregon Mountaineers,,,0,42,
+2023,2022-12-29,2022-12-26,401483410,reg,0,0,2509,Purdue Boilermakers,Big Ten,power,1,82,50,Florida A&M Rattlers,SWAC,mid,0,49,
+2023,2022-12-30,2022-12-26,401483427,reg,0,0,275,Wisconsin Badgers,Big Ten,power,15,76,2711,Western Michigan Broncos,MAC,mid,0,66,
+2023,2022-12-30,2022-12-26,401490315,reg,0,1,265,Washington State Cougars,Pac-12,power,0,66,26,UCLA Bruins,Pac-12,power,11,67,
+2023,2022-12-30,2022-12-26,401500554,reg,0,1,87,Notre Dame Fighting Irish,ACC,power,0,65,2390,Miami Hurricanes,ACC,power,14,76,
+2023,2022-12-30,2022-12-26,401500555,reg,0,1,221,Pittsburgh Panthers,ACC,power,0,76,153,North Carolina Tar Heels,ACC,power,25,74,
+2023,2022-12-31,2022-12-26,401470396,reg,0,1,2250,Gonzaga Bulldogs,WCC,high,10,111,2492,Pepperdine Waves,WCC,high,0,88,
+2023,2022-12-31,2022-12-26,401482797,reg,0,1,2751,Wyoming Cowboys,Mountain West,high,0,75,167,New Mexico Lobos,Mountain West,high,22,76,
+2023,2022-12-31,2022-12-26,401483169,reg,0,0,96,Kentucky Wildcats,SEC,power,19,86,97,Louisville Cardinals,ACC,power,0,63,
+2023,2022-12-31,2022-12-26,401485198,reg,0,1,2752,Xavier Musketeers,Big East,high,22,83,41,UConn Huskies,Big East,high,2,73,
+2023,2022-12-31,2022-12-26,401488404,reg,0,1,150,Duke Blue Devils,ACC,power,17,86,52,Florida State Seminoles,ACC,power,0,67,
+2023,2022-12-31,2022-12-26,401488405,reg,0,1,59,Georgia Tech Yellow Jackets,ACC,power,0,56,258,Virginia Cavaliers,ACC,power,13,74,
+2023,2022-12-31,2022-12-26,401490316,reg,0,1,9,Arizona State Sun Devils,Pac-12,power,0,60,12,Arizona Wildcats,Pac-12,power,5,69,
+2023,2022-12-31,2022-12-26,401492677,reg,0,1,248,Houston Cougars,American,high,3,71,2116,UCF Knights,American,high,0,65,
+2023,2022-12-31,2022-12-26,401493375,reg,0,1,2305,Kansas Jayhawks,Big 12,power,4,69,197,Oklahoma State Cowboys,Big 12,power,0,67,
+2023,2022-12-31,2022-12-26,401493376,reg,0,1,66,Iowa State Cyclones,Big 12,power,0,77,239,Baylor Bears,Big 12,power,12,62,
+2023,2022-12-31,2022-12-26,401493377,reg,0,1,2306,Kansas State Wildcats,Big 12,power,0,82,277,West Virginia Mountaineers,Big 12,power,24,76,
+2023,2022-12-31,2022-12-26,401493378,reg,0,1,201,Oklahoma Sooners,Big 12,power,0,69,251,Texas Longhorns,Big 12,power,6,70,
+2023,2022-12-31,2022-12-26,401493379,reg,0,1,2628,TCU Horned Frogs,Big 12,power,18,67,2641,Texas Tech Red Raiders,Big 12,power,0,61,
+2023,2023-01-01,2022-12-26,401490320,reg,0,1,264,Washington Huskies,Pac-12,power,0,49,26,UCLA Bruins,Pac-12,power,11,74,
+2023,2023-01-02,2023-01-02,401484849,reg,0,1,2509,Purdue Boilermakers,Big Ten,power,1,64,164,Rutgers Scarlet Knights,Big Ten,power,0,65,
+2023,2023-01-03,2023-01-02,401482801,reg,0,1,278,Fresno State Bulldogs,Mountain West,high,0,71,167,New Mexico Lobos,Mountain West,high,21,67,
+2023,2023-01-03,2023-01-02,401484533,reg,0,1,333,Alabama Crimson Tide,SEC,power,7,84,145,Ole Miss Rebels,SEC,power,0,62,
+2023,2023-01-03,2023-01-02,401484534,reg,0,1,2633,Tennessee Volunteers,SEC,power,8,87,344,Mississippi State Bulldogs,SEC,power,0,53,
+2023,2023-01-03,2023-01-02,401484871,reg,0,1,275,Wisconsin Badgers,Big Ten,power,14,63,135,Minnesota Golden Gophers,Big Ten,power,0,60,
+2023,2023-01-03,2023-01-02,401488409,reg,0,1,221,Pittsburgh Panthers,ACC,power,0,68,258,Virginia Cavaliers,ACC,power,11,65,
+2023,2023-01-03,2023-01-02,401493381,reg,0,1,2641,Texas Tech Red Raiders,Big 12,power,0,72,2305,Kansas Jayhawks,Big 12,power,3,75,
+2023,2023-01-03,2023-01-02,401493382,reg,0,1,251,Texas Longhorns,Big 12,power,6,103,2306,Kansas State Wildcats,Big 12,power,0,116,
+2023,2023-01-04,2023-01-02,401469868,reg,0,1,2448,North Carolina A&T Aggies,CAA,mid,0,79,232,Charleston Cougars,CAA,mid,23,92,
+2023,2023-01-04,2023-01-02,401484537,reg,0,1,61,Georgia Bulldogs,SEC,power,0,76,2,Auburn Tigers,SEC,power,22,64,
+2023,2023-01-04,2023-01-02,401484538,reg,0,1,8,Arkansas Razorbacks,SEC,power,13,74,142,Missouri Tigers,SEC,power,20,68,
+2023,2023-01-04,2023-01-02,401485206,reg,0,1,2507,Providence Friars,Big East,high,0,73,41,UConn Huskies,Big East,high,4,61,
+2023,2023-01-04,2023-01-02,401488411,reg,0,1,152,NC State Wolfpack,ACC,power,0,84,150,Duke Blue Devils,ACC,power,16,60,
+2023,2023-01-04,2023-01-02,401488412,reg,0,1,59,Georgia Tech Yellow Jackets,ACC,power,0,76,2390,Miami Hurricanes,ACC,power,12,70,
+2023,2023-01-04,2023-01-02,401493383,reg,0,1,201,Oklahoma Sooners,Big 12,power,0,60,66,Iowa State Cyclones,Big 12,power,25,63,
+2023,2023-01-04,2023-01-02,401493384,reg,0,1,239,Baylor Bears,Big 12,power,19,87,2628,TCU Horned Frogs,Big 12,power,17,88,
+2023,2023-01-05,2023-01-02,401470401,reg,0,1,2539,San Francisco Dons,WCC,high,0,75,2250,Gonzaga Bulldogs,WCC,high,9,77,
+2023,2023-01-05,2023-01-02,401484874,reg,0,1,2294,Iowa Hawkeyes,Big Ten,power,0,91,84,Indiana Hoosiers,Big Ten,power,15,89,
+2023,2023-01-05,2023-01-02,401484875,reg,0,1,194,Ohio State Buckeyes,Big Ten,power,24,69,2509,Purdue Boilermakers,Big Ten,power,1,71,
+2023,2023-01-05,2023-01-02,401490322,reg,0,1,12,Arizona Wildcats,Pac-12,power,5,70,264,Washington Huskies,Pac-12,power,0,67,
+2023,2023-01-05,2023-01-02,401490325,reg,0,1,26,UCLA Bruins,Pac-12,power,10,60,30,USC Trojans,Pac-12,power,0,58,
+2023,2023-01-05,2023-01-02,401492685,reg,0,1,248,Houston Cougars,American,high,2,87,2567,SMU Mustangs,American,high,0,53,
+2023,2023-01-07,2023-01-02,401469877,reg,0,1,232,Charleston Cougars,CAA,mid,23,75,48,Delaware Blue Hens,CAA,mid,0,64,
+2023,2023-01-07,2023-01-02,401470404,reg,0,1,2541,Santa Clara Broncos,WCC,high,0,76,2250,Gonzaga Bulldogs,WCC,high,9,81,
+2023,2023-01-07,2023-01-02,401482807,reg,0,1,167,New Mexico Lobos,Mountain West,high,21,77,2439,UNLV Rebels,Mountain West,high,0,84,
+2023,2023-01-07,2023-01-02,401484540,reg,0,1,142,Missouri Tigers,SEC,power,20,85,238,Vanderbilt Commodores,SEC,power,0,82,
+2023,2023-01-07,2023-01-02,401484542,reg,0,1,2,Auburn Tigers,SEC,power,22,72,8,Arkansas Razorbacks,SEC,power,13,59,
+2023,2023-01-07,2023-01-02,401484545,reg,0,1,333,Alabama Crimson Tide,SEC,power,7,78,96,Kentucky Wildcats,SEC,power,0,52,
+2023,2023-01-07,2023-01-02,401484546,reg,0,1,2579,South Carolina Gamecocks,SEC,power,0,42,2633,Tennessee Volunteers,SEC,power,8,85,
+2023,2023-01-07,2023-01-02,401484877,reg,0,1,356,Illinois Fighting Illini,Big Ten,power,0,79,275,Wisconsin Badgers,Big Ten,power,14,69,
+2023,2023-01-07,2023-01-02,401485208,reg,0,1,41,UConn Huskies,Big East,high,4,69,156,Creighton Bluejays,Big East,high,0,60,
+2023,2023-01-07,2023-01-02,401485211,reg,0,1,222,Villanova Wildcats,Big East,high,0,80,2752,Xavier Musketeers,Big East,high,18,88,
+2023,2023-01-07,2023-01-02,401488415,reg,0,1,103,Boston College Eagles,ACC,power,0,64,150,Duke Blue Devils,ACC,power,16,65,
+2023,2023-01-07,2023-01-02,401488419,reg,0,1,258,Virginia Cavaliers,ACC,power,11,73,183,Syracuse Orange,ACC,power,0,66,
+2023,2023-01-07,2023-01-02,401490328,reg,0,1,12,Arizona Wildcats,Pac-12,power,5,61,265,Washington State Cougars,Pac-12,power,0,74,
+2023,2023-01-07,2023-01-02,401493385,reg,0,1,197,Oklahoma State Cowboys,Big 12,power,0,46,251,Texas Longhorns,Big 12,power,6,56,
+2023,2023-01-07,2023-01-02,401493386,reg,0,1,2628,TCU Horned Frogs,Big 12,power,17,67,66,Iowa State Cyclones,Big 12,power,25,69,
+2023,2023-01-07,2023-01-02,401493387,reg,0,1,239,Baylor Bears,Big 12,power,19,95,2306,Kansas State Wildcats,Big 12,power,0,97,
+2023,2023-01-07,2023-01-02,401493388,reg,0,1,277,West Virginia Mountaineers,Big 12,power,0,62,2305,Kansas Jayhawks,Big 12,power,3,76,
+2023,2023-01-08,2023-01-02,401484880,reg,1,1,213,Penn State Nittany Lions,Big Ten,power,0,63,2509,Purdue Boilermakers,Big Ten,power,1,76,
+2023,2023-01-08,2023-01-02,401484881,reg,0,1,84,Indiana Hoosiers,Big Ten,power,15,83,77,Northwestern Wildcats,Big Ten,power,0,84,
+2023,2023-01-08,2023-01-02,401484883,reg,0,1,120,Maryland Terrapins,Big Ten,power,0,80,194,Ohio State Buckeyes,Big Ten,power,24,73,
+2023,2023-01-08,2023-01-02,401492691,reg,0,1,2132,Cincinnati Bearcats,American,high,0,59,248,Houston Cougars,American,high,2,72,
+2023,2023-01-10,2023-01-09,401482812,reg,0,1,21,San Diego State Aztecs,Mountain West,high,23,74,2440,Nevada Wolf Pack,Mountain West,high,0,65,
+2023,2023-01-10,2023-01-09,401484549,reg,0,1,145,Ole Miss Rebels,SEC,power,0,73,2,Auburn Tigers,SEC,power,21,82,
+2023,2023-01-10,2023-01-09,401484550,reg,0,1,2633,Tennessee Volunteers,SEC,power,5,77,238,Vanderbilt Commodores,SEC,power,0,68,
+2023,2023-01-10,2023-01-09,401484885,reg,0,1,275,Wisconsin Badgers,Big Ten,power,18,65,127,Michigan State Spartans,Big Ten,power,0,69,
+2023,2023-01-10,2023-01-09,401488421,reg,0,1,258,Virginia Cavaliers,ACC,power,13,65,153,North Carolina Tar Heels,ACC,power,0,58,
+2023,2023-01-10,2023-01-09,401493390,reg,0,1,2306,Kansas State Wildcats,Big 12,power,11,65,197,Oklahoma State Cowboys,Big 12,power,0,57,
+2023,2023-01-10,2023-01-09,401493391,reg,0,1,66,Iowa State Cyclones,Big 12,power,14,84,2641,Texas Tech Red Raiders,Big 12,power,0,50,
+2023,2023-01-10,2023-01-09,401493392,reg,0,1,2305,Kansas Jayhawks,Big 12,power,2,79,201,Oklahoma Sooners,Big 12,power,0,75,
+2023,2023-01-11,2023-01-09,401469884,reg,0,1,350,UNC Wilmington Seahawks,CAA,mid,0,69,232,Charleston Cougars,CAA,mid,22,71,
+2023,2023-01-11,2023-01-09,401484551,reg,0,1,8,Arkansas Razorbacks,SEC,power,15,69,333,Alabama Crimson Tide,SEC,power,4,84,
+2023,2023-01-11,2023-01-09,401484553,reg,0,1,245,Texas A&M Aggies,SEC,power,0,82,142,Missouri Tigers,SEC,power,20,64,
+2023,2023-01-11,2023-01-09,401485216,reg,0,1,269,Marquette Golden Eagles,Big East,high,25,82,41,UConn Huskies,Big East,high,6,76,
+2023,2023-01-11,2023-01-09,401485217,reg,0,1,2752,Xavier Musketeers,Big East,high,12,90,156,Creighton Bluejays,Big East,high,0,87,
+2023,2023-01-11,2023-01-09,401488423,reg,0,1,2390,Miami Hurricanes,ACC,power,16,88,103,Boston College Eagles,ACC,power,0,72,
+2023,2023-01-11,2023-01-09,401488426,reg,0,1,150,Duke Blue Devils,ACC,power,24,77,221,Pittsburgh Panthers,ACC,power,0,69,
+2023,2023-01-11,2023-01-09,401492694,reg,0,1,248,Houston Cougars,American,high,1,83,58,South Florida Bulls,American,high,0,77,
+2023,2023-01-11,2023-01-09,401493394,reg,0,1,251,Texas Longhorns,Big 12,power,10,79,2628,TCU Horned Frogs,Big 12,power,17,75,
+2023,2023-01-12,2023-01-09,401470408,reg,0,1,252,BYU Cougars,WCC,high,0,74,2250,Gonzaga Bulldogs,WCC,high,8,75,
+2023,2023-01-12,2023-01-09,401490334,reg,0,1,204,Oregon State Beavers,Pac-12,power,0,74,12,Arizona Wildcats,Pac-12,power,9,86,
+2023,2023-01-12,2023-01-09,401490335,reg,0,1,26,UCLA Bruins,Pac-12,power,7,68,254,Utah Utes,Pac-12,power,0,49,
+2023,2023-01-13,2023-01-09,401484890,reg,0,1,2509,Purdue Boilermakers,Big Ten,power,3,73,158,Nebraska Cornhuskers,Big Ten,power,0,55,
+2023,2023-01-14,2023-01-09,401469891,reg,0,1,232,Charleston Cougars,CAA,mid,22,78,2210,Elon Phoenix,CAA,mid,0,60,
+2023,2023-01-14,2023-01-09,401470414,reg,0,1,2250,Gonzaga Bulldogs,WCC,high,8,115,2501,Portland Pilots,WCC,high,0,75,
+2023,2023-01-14,2023-01-09,401482817,reg,0,1,21,San Diego State Aztecs,Mountain West,high,23,67,167,New Mexico Lobos,Mountain West,high,0,76,
+2023,2023-01-14,2023-01-09,401484554,reg,0,1,333,Alabama Crimson Tide,SEC,power,4,106,99,LSU Tigers,SEC,power,0,66,
+2023,2023-01-14,2023-01-09,401484556,reg,0,1,238,Vanderbilt Commodores,SEC,power,0,97,8,Arkansas Razorbacks,SEC,power,15,84,
+2023,2023-01-14,2023-01-09,401484557,reg,0,1,2,Auburn Tigers,SEC,power,21,69,344,Mississippi State Bulldogs,SEC,power,0,63,
+2023,2023-01-14,2023-01-09,401484558,reg,0,1,57,Florida Gators,SEC,power,0,73,142,Missouri Tigers,SEC,power,20,64,
+2023,2023-01-14,2023-01-09,401484560,reg,0,1,2633,Tennessee Volunteers,SEC,power,5,56,96,Kentucky Wildcats,SEC,power,0,63,
+2023,2023-01-14,2023-01-09,401484892,reg,0,1,84,Indiana Hoosiers,Big Ten,power,0,63,275,Wisconsin Badgers,Big Ten,power,18,45,
+2023,2023-01-14,2023-01-09,401485220,reg,0,1,156,Creighton Bluejays,Big East,high,0,73,2507,Providence Friars,Big East,high,19,67,
+2023,2023-01-14,2023-01-09,401488428,reg,0,1,228,Clemson Tigers,ACC,power,0,72,150,Duke Blue Devils,ACC,power,24,64,
+2023,2023-01-14,2023-01-09,401488429,reg,0,1,152,NC State Wolfpack,ACC,power,0,83,2390,Miami Hurricanes,ACC,power,16,81,
+2023,2023-01-14,2023-01-09,401488433,reg,0,1,52,Florida State Seminoles,ACC,power,0,58,258,Virginia Cavaliers,ACC,power,13,67,
+2023,2023-01-14,2023-01-09,401490338,reg,0,1,2483,Oregon Ducks,Pac-12,power,0,87,12,Arizona Wildcats,Pac-12,power,9,68,
+2023,2023-01-14,2023-01-09,401490340,reg,0,1,26,UCLA Bruins,Pac-12,power,7,68,38,Colorado Buffaloes,Pac-12,power,0,54,
+2023,2023-01-14,2023-01-09,401493396,reg,0,1,2628,TCU Horned Frogs,Big 12,power,17,82,2306,Kansas State Wildcats,Big 12,power,11,68,
+2023,2023-01-14,2023-01-09,401493397,reg,0,1,2305,Kansas Jayhawks,Big 12,power,2,62,66,Iowa State Cyclones,Big 12,power,14,60,
+2023,2023-01-14,2023-01-09,401493399,reg,0,1,251,Texas Longhorns,Big 12,power,10,72,2641,Texas Tech Red Raiders,Big 12,power,0,70,
+2023,2023-01-15,2023-01-09,401485221,reg,0,1,2752,Xavier Musketeers,Big East,high,12,80,269,Marquette Golden Eagles,Big East,high,25,76,
+2023,2023-01-15,2023-01-09,401485222,reg,0,1,41,UConn Huskies,Big East,high,6,74,2599,St. John's Red Storm,Big East,high,0,85,
+2023,2023-01-16,2023-01-16,401469894,reg,0,1,232,Charleston Cougars,CAA,mid,18,82,2729,William & Mary Tribe,CAA,mid,0,54,
+2023,2023-01-16,2023-01-16,401484897,reg,0,1,127,Michigan State Spartans,Big Ten,power,0,63,2509,Purdue Boilermakers,Big Ten,power,3,64,
+2023,2023-01-16,2023-01-16,401488435,reg,0,1,2390,Miami Hurricanes,ACC,power,17,82,183,Syracuse Orange,ACC,power,0,78,
+2023,2023-01-16,2023-01-16,401489725,reg,0,1,98,Western Kentucky Hilltoppers,CUSA,mid,0,62,2226,Florida Atlantic Owls,CUSA,mid,24,76,
+2023,2023-01-17,2023-01-16,401484561,reg,0,1,238,Vanderbilt Commodores,SEC,power,0,66,333,Alabama Crimson Tide,SEC,power,4,78,
+2023,2023-01-17,2023-01-16,401484564,reg,0,1,344,Mississippi State Bulldogs,SEC,power,0,59,2633,Tennessee Volunteers,SEC,power,9,70,
+2023,2023-01-17,2023-01-16,401488437,reg,0,1,154,Wake Forest Demon Deacons,ACC,power,0,87,228,Clemson Tigers,ACC,power,19,77,
+2023,2023-01-17,2023-01-16,401492702,reg,0,1,2655,Tulane Green Wave,American,high,0,60,248,Houston Cougars,American,high,1,80,
+2023,2023-01-17,2023-01-16,401493400,reg,0,1,2306,Kansas State Wildcats,Big 12,power,13,83,2305,Kansas Jayhawks,Big 12,power,2,82,
+2023,2023-01-17,2023-01-16,401493401,reg,0,1,66,Iowa State Cyclones,Big 12,power,12,78,251,Texas Longhorns,Big 12,power,7,67,
+2023,2023-01-17,2023-01-16,401493402,reg,0,1,2641,Texas Tech Red Raiders,Big 12,power,0,74,239,Baylor Bears,Big 12,power,21,81,
+2023,2023-01-18,2023-01-16,401484565,reg,0,1,142,Missouri Tigers,SEC,power,0,79,8,Arkansas Razorbacks,SEC,power,25,76,
+2023,2023-01-18,2023-01-16,401484567,reg,0,1,99,LSU Tigers,SEC,power,0,49,2,Auburn Tigers,SEC,power,16,67,
+2023,2023-01-18,2023-01-16,401485225,reg,0,1,2550,Seton Hall Pirates,Big East,high,0,67,41,UConn Huskies,Big East,high,15,66,
+2023,2023-01-18,2023-01-16,401485226,reg,0,1,305,DePaul Blue Demons,Big East,high,0,73,2752,Xavier Musketeers,Big East,high,8,72,
+2023,2023-01-18,2023-01-16,401485227,reg,0,1,269,Marquette Golden Eagles,Big East,high,20,83,2507,Providence Friars,Big East,high,22,75,
+2023,2023-01-18,2023-01-16,401488441,reg,0,1,258,Virginia Cavaliers,ACC,power,10,78,259,Virginia Tech Hokies,ACC,power,0,68,
+2023,2023-01-18,2023-01-16,401493403,reg,0,1,277,West Virginia Mountaineers,Big 12,power,0,74,2628,TCU Horned Frogs,Big 12,power,14,65,
+2023,2023-01-19,2023-01-16,401469900,reg,0,1,2405,Monmouth Hawks,CAA,mid,0,55,232,Charleston Cougars,CAA,mid,18,69,
+2023,2023-01-19,2023-01-16,401470419,reg,0,1,2250,Gonzaga Bulldogs,WCC,high,6,67,2351,Loyola Marymount Lions,WCC,high,0,68,
+2023,2023-01-19,2023-01-16,401484903,reg,0,1,127,Michigan State Spartans,Big Ten,power,0,70,164,Rutgers Scarlet Knights,Big Ten,power,23,57,
+2023,2023-01-19,2023-01-16,401484904,reg,0,1,135,Minnesota Golden Gophers,Big Ten,power,0,39,2509,Purdue Boilermakers,Big Ten,power,3,61,
+2023,2023-01-19,2023-01-16,401487310,reg,0,1,2636,UTSA Roadrunners,CUSA,mid,0,64,2226,Florida Atlantic Owls,CUSA,mid,24,83,
+2023,2023-01-19,2023-01-16,401490345,reg,0,1,12,Arizona Wildcats,Pac-12,power,11,81,30,USC Trojans,Pac-12,power,0,66,
+2023,2023-01-19,2023-01-16,401490346,reg,0,1,9,Arizona State Sun Devils,Pac-12,power,0,62,26,UCLA Bruins,Pac-12,power,5,74,
+2023,2023-01-21,2023-01-16,401469906,reg,0,1,111,Northeastern Huskies,CAA,mid,0,61,232,Charleston Cougars,CAA,mid,18,87,
+2023,2023-01-21,2023-01-16,401470423,reg,0,1,279,Pacific Tigers,WCC,high,0,90,2250,Gonzaga Bulldogs,WCC,high,6,99,
+2023,2023-01-21,2023-01-16,401484568,reg,0,1,8,Arkansas Razorbacks,SEC,power,25,69,145,Ole Miss Rebels,SEC,power,0,57,
+2023,2023-01-21,2023-01-16,401484571,reg,0,1,99,LSU Tigers,SEC,power,0,56,2633,Tennessee Volunteers,SEC,power,9,77,
+2023,2023-01-21,2023-01-16,401484573,reg,0,1,142,Missouri Tigers,SEC,power,0,64,333,Alabama Crimson Tide,SEC,power,4,85,
+2023,2023-01-21,2023-01-16,401484574,reg,0,1,2579,South Carolina Gamecocks,SEC,power,0,66,2,Auburn Tigers,SEC,power,16,81,
+2023,2023-01-21,2023-01-16,401485229,reg,0,1,2550,Seton Hall Pirates,Big East,high,0,53,269,Marquette Golden Eagles,Big East,high,20,74,
+2023,2023-01-21,2023-01-16,401485230,reg,0,1,2752,Xavier Musketeers,Big East,high,8,95,46,Georgetown Hoyas,Big East,high,0,82,
+2023,2023-01-21,2023-01-16,401485231,reg,0,1,2507,Providence Friars,Big East,high,22,75,305,DePaul Blue Demons,Big East,high,0,64,
+2023,2023-01-21,2023-01-16,401487165,reg,0,1,2638,UTEP Miners,CUSA,mid,0,59,2226,Florida Atlantic Owls,CUSA,mid,24,67,
+2023,2023-01-21,2023-01-16,401488444,reg,0,1,150,Duke Blue Devils,ACC,power,0,68,2390,Miami Hurricanes,ACC,power,17,66,
+2023,2023-01-21,2023-01-16,401488447,reg,0,1,154,Wake Forest Demon Deacons,ACC,power,0,67,258,Virginia Cavaliers,ACC,power,10,76,
+2023,2023-01-21,2023-01-16,401488448,reg,0,1,228,Clemson Tigers,ACC,power,19,51,259,Virginia Tech Hokies,ACC,power,0,50,
+2023,2023-01-21,2023-01-16,401490350,reg,0,1,12,Arizona Wildcats,Pac-12,power,11,58,26,UCLA Bruins,Pac-12,power,5,52,
+2023,2023-01-21,2023-01-16,401493405,reg,0,1,2305,Kansas Jayhawks,Big 12,power,2,60,2628,TCU Horned Frogs,Big 12,power,14,83,
+2023,2023-01-21,2023-01-16,401493406,reg,0,1,2306,Kansas State Wildcats,Big 12,power,13,68,2641,Texas Tech Red Raiders,Big 12,power,0,58,
+2023,2023-01-21,2023-01-16,401493407,reg,0,1,197,Oklahoma State Cowboys,Big 12,power,0,61,66,Iowa State Cyclones,Big 12,power,12,59,
+2023,2023-01-21,2023-01-16,401493408,reg,0,1,201,Oklahoma Sooners,Big 12,power,0,60,239,Baylor Bears,Big 12,power,21,62,
+2023,2023-01-21,2023-01-16,401493409,reg,0,1,277,West Virginia Mountaineers,Big 12,power,0,61,251,Texas Longhorns,Big 12,power,7,69,
+2023,2023-01-22,2023-01-16,401484909,reg,0,1,2509,Purdue Boilermakers,Big Ten,power,3,58,120,Maryland Terrapins,Big Ten,power,0,55,
+2023,2023-01-22,2023-01-16,401485232,reg,0,1,41,UConn Huskies,Big East,high,15,86,2086,Butler Bulldogs,Big East,high,0,56,
+2023,2023-01-22,2023-01-16,401492710,reg,0,1,248,Houston Cougars,American,high,1,55,218,Temple Owls,American,high,0,56,
+2023,2023-01-23,2023-01-23,401482831,reg,0,1,2440,Nevada Wolf Pack,Mountain West,high,0,97,167,New Mexico Lobos,Mountain West,high,25,94,
+2023,2023-01-23,2023-01-23,401493410,reg,0,1,239,Baylor Bears,Big 12,power,17,75,2305,Kansas Jayhawks,Big 12,power,9,69,
+2023,2023-01-24,2023-01-23,401488450,reg,0,1,52,Florida State Seminoles,ACC,power,0,63,2390,Miami Hurricanes,ACC,power,20,86,
+2023,2023-01-24,2023-01-23,401488451,reg,0,1,228,Clemson Tigers,ACC,power,24,72,59,Georgia Tech Yellow Jackets,ACC,power,0,51,
+2023,2023-01-24,2023-01-23,401493411,reg,0,1,2628,TCU Horned Frogs,Big 12,power,11,79,201,Oklahoma Sooners,Big 12,power,0,52,
+2023,2023-01-24,2023-01-23,401493412,reg,0,1,66,Iowa State Cyclones,Big 12,power,12,80,2306,Kansas State Wildcats,Big 12,power,5,76,
+2023,2023-01-24,2023-01-23,401493413,reg,0,1,251,Texas Longhorns,Big 12,power,10,89,197,Oklahoma State Cowboys,Big 12,power,0,75,
+2023,2023-01-25,2023-01-23,401484578,reg,0,1,2633,Tennessee Volunteers,SEC,power,4,70,61,Georgia Bulldogs,SEC,power,0,41,
+2023,2023-01-25,2023-01-23,401484580,reg,0,1,333,Alabama Crimson Tide,SEC,power,2,66,344,Mississippi State Bulldogs,SEC,power,0,63,
+2023,2023-01-25,2023-01-23,401484581,reg,0,1,2,Auburn Tigers,SEC,power,15,63,245,Texas A&M Aggies,SEC,power,0,79,
+2023,2023-01-25,2023-01-23,401485234,reg,0,1,41,UConn Huskies,Big East,high,19,79,2752,Xavier Musketeers,Big East,high,13,82,
+2023,2023-01-25,2023-01-23,401485235,reg,0,1,2507,Providence Friars,Big East,high,23,79,2086,Butler Bulldogs,Big East,high,0,58,
+2023,2023-01-25,2023-01-23,401492713,reg,0,1,2116,UCF Knights,American,high,0,71,248,Houston Cougars,American,high,3,82,
+2023,2023-01-26,2023-01-23,401484917,reg,0,1,130,Michigan Wolverines,Big Ten,power,0,70,2509,Purdue Boilermakers,Big Ten,power,1,75,
+2023,2023-01-26,2023-01-23,401489726,reg,0,1,2226,Florida Atlantic Owls,CUSA,mid,21,85,2393,Middle Tennessee Blue Raiders,CUSA,mid,0,67,
+2023,2023-01-26,2023-01-23,401490358,reg,0,1,30,USC Trojans,Pac-12,power,0,77,26,UCLA Bruins,Pac-12,power,8,64,
+2023,2023-01-26,2023-01-23,401490360,reg,0,1,265,Washington State Cougars,Pac-12,power,0,58,12,Arizona Wildcats,Pac-12,power,6,63,
+2023,2023-01-27,2023-01-23,401482834,reg,0,1,167,New Mexico Lobos,Mountain West,high,25,81,2005,Air Force Falcons,Mountain West,high,0,73,
+2023,2023-01-28,2023-01-23,401469916,reg,0,1,232,Charleston Cougars,CAA,mid,18,81,2275,Hofstra Pride,CAA,mid,0,85,
+2023,2023-01-28,2023-01-23,401470428,reg,0,1,252,BYU Cougars,WCC,high,0,56,2608,Saint Mary's Gaels,WCC,high,22,57,
+2023,2023-01-28,2023-01-23,401470430,reg,0,1,2501,Portland Pilots,WCC,high,0,67,2250,Gonzaga Bulldogs,WCC,high,14,82,
+2023,2023-01-28,2023-01-23,401479702,reg,0,0,239,Baylor Bears,Big 12,power,17,67,8,Arkansas Razorbacks,SEC,power,0,64,SEC/Big 12 Challenge
+2023,2023-01-28,2023-01-23,401479703,reg,0,0,142,Missouri Tigers,SEC,power,0,78,66,Iowa State Cyclones,Big 12,power,12,61,SEC/Big 12 Challenge
+2023,2023-01-28,2023-01-23,401479704,reg,0,0,96,Kentucky Wildcats,SEC,power,0,68,2305,Kansas Jayhawks,Big 12,power,9,77,SEC/Big 12 Challenge
+2023,2023-01-28,2023-01-23,401479705,reg,0,0,2306,Kansas State Wildcats,Big 12,power,5,64,57,Florida Gators,SEC,power,0,50,SEC/Big 12 Challenge
+2023,2023-01-28,2023-01-23,401479706,reg,0,0,201,Oklahoma Sooners,Big 12,power,0,93,333,Alabama Crimson Tide,SEC,power,2,69,SEC/Big 12 Challenge
+2023,2023-01-28,2023-01-23,401479708,reg,0,0,344,Mississippi State Bulldogs,SEC,power,0,81,2628,TCU Horned Frogs,Big 12,power,11,74,SEC/Big 12 Challenge
+2023,2023-01-28,2023-01-23,401479709,reg,0,0,2633,Tennessee Volunteers,SEC,power,4,82,251,Texas Longhorns,Big 12,power,10,71,SEC/Big 12 Challenge
+2023,2023-01-28,2023-01-23,401479711,reg,0,0,277,West Virginia Mountaineers,Big 12,power,0,80,2,Auburn Tigers,SEC,power,15,77,SEC/Big 12 Challenge
+2023,2023-01-28,2023-01-23,401485237,reg,0,1,156,Creighton Bluejays,Big East,high,0,84,2752,Xavier Musketeers,Big East,high,13,67,
+2023,2023-01-28,2023-01-23,401485238,reg,0,1,305,DePaul Blue Demons,Big East,high,0,69,269,Marquette Golden Eagles,Big East,high,16,89,
+2023,2023-01-28,2023-01-23,401488456,reg,0,1,258,Virginia Cavaliers,ACC,power,7,76,103,Boston College Eagles,ACC,power,0,57,
+2023,2023-01-28,2023-01-23,401488457,reg,0,1,52,Florida State Seminoles,ACC,power,0,81,228,Clemson Tigers,ACC,power,24,82,
+2023,2023-01-28,2023-01-23,401488460,reg,0,1,221,Pittsburgh Panthers,ACC,power,0,71,2390,Miami Hurricanes,ACC,power,20,68,
+2023,2023-01-28,2023-01-23,401489727,reg,0,1,2226,Florida Atlantic Owls,CUSA,mid,21,70,98,Western Kentucky Hilltoppers,CUSA,mid,0,63,
+2023,2023-01-28,2023-01-23,401490364,reg,0,1,264,Washington Huskies,Pac-12,power,0,72,12,Arizona Wildcats,Pac-12,power,6,95,
+2023,2023-01-28,2023-01-23,401492718,reg,0,1,248,Houston Cougars,American,high,3,75,2132,Cincinnati Bearcats,American,high,0,69,
+2023,2023-01-29,2023-01-23,401484924,reg,0,1,2509,Purdue Boilermakers,Big Ten,power,1,77,127,Michigan State Spartans,Big Ten,power,0,61,
+2023,2023-01-29,2023-01-23,401485241,reg,0,1,222,Villanova Wildcats,Big East,high,0,65,2507,Providence Friars,Big East,high,23,70,
+2023,2023-01-30,2023-01-30,401488463,reg,0,1,183,Syracuse Orange,ACC,power,0,62,258,Virginia Cavaliers,ACC,power,6,67,
+2023,2023-01-30,2023-01-30,401493415,reg,0,1,251,Texas Longhorns,Big 12,power,10,76,239,Baylor Bears,Big 12,power,11,71,
+2023,2023-01-30,2023-01-30,401493416,reg,0,1,2641,Texas Tech Red Raiders,Big 12,power,0,80,66,Iowa State Cyclones,Big 12,power,13,77,
+2023,2023-01-31,2023-01-30,401482842,reg,0,1,2440,Nevada Wolf Pack,Mountain West,high,0,75,21,San Diego State Aztecs,Mountain West,high,22,66,
+2023,2023-01-31,2023-01-30,401484585,reg,0,1,333,Alabama Crimson Tide,SEC,power,4,101,238,Vanderbilt Commodores,SEC,power,0,44,
+2023,2023-01-31,2023-01-30,401484926,reg,0,1,120,Maryland Terrapins,Big Ten,power,0,66,84,Indiana Hoosiers,Big Ten,power,21,55,
+2023,2023-01-31,2023-01-30,401485242,reg,0,1,305,DePaul Blue Demons,Big East,high,0,76,41,UConn Huskies,Big East,high,24,90,
+2023,2023-01-31,2023-01-30,401488464,reg,0,1,103,Boston College Eagles,ACC,power,0,62,228,Clemson Tigers,ACC,power,20,54,
+2023,2023-01-31,2023-01-30,401488467,reg,0,1,2390,Miami Hurricanes,ACC,power,23,92,259,Virginia Tech Hokies,ACC,power,0,83,
+2023,2023-01-31,2023-01-30,401493417,reg,0,1,2305,Kansas Jayhawks,Big 12,power,8,90,2306,Kansas State Wildcats,Big 12,power,7,78,
+2023,2023-01-31,2023-01-30,401493418,reg,0,1,2628,TCU Horned Frogs,Big 12,power,15,76,277,West Virginia Mountaineers,Big 12,power,0,72,
+2023,2023-02-01,2023-01-30,401484588,reg,0,1,2,Auburn Tigers,SEC,power,25,94,61,Georgia Bulldogs,SEC,power,0,73,
+2023,2023-02-01,2023-01-30,401484590,reg,0,1,57,Florida Gators,SEC,power,0,67,2633,Tennessee Volunteers,SEC,power,2,54,
+2023,2023-02-01,2023-01-30,401484928,reg,0,1,2509,Purdue Boilermakers,Big Ten,power,1,80,213,Penn State Nittany Lions,Big Ten,power,0,60,
+2023,2023-02-01,2023-01-30,401485244,reg,0,1,2752,Xavier Musketeers,Big East,high,16,85,2507,Providence Friars,Big East,high,17,83,
+2023,2023-02-01,2023-01-30,401485245,reg,0,1,269,Marquette Golden Eagles,Big East,high,14,73,222,Villanova Wildcats,Big East,high,0,64,
+2023,2023-02-02,2023-01-30,401470435,reg,0,1,2250,Gonzaga Bulldogs,WCC,high,12,88,2541,Santa Clara Broncos,WCC,high,0,70,
+2023,2023-02-02,2023-01-30,401470437,reg,0,1,2608,Saint Mary's Gaels,WCC,high,18,68,2539,San Francisco Dons,WCC,high,0,59,
+2023,2023-02-02,2023-01-30,401487146,reg,0,1,5,UAB Blazers,CUSA,mid,0,86,2226,Florida Atlantic Owls,CUSA,mid,19,77,
+2023,2023-02-02,2023-01-30,401490366,reg,0,1,12,Arizona Wildcats,Pac-12,power,5,91,2483,Oregon Ducks,Pac-12,power,0,76,
+2023,2023-02-02,2023-01-30,401490369,reg,0,1,26,UCLA Bruins,Pac-12,power,9,70,264,Washington Huskies,Pac-12,power,0,61,
+2023,2023-02-02,2023-01-30,401492725,reg,0,1,2724,Wichita State Shockers,American,high,0,61,248,Houston Cougars,American,high,3,70,
+2023,2023-02-03,2023-01-30,401482845,reg,0,1,21,San Diego State Aztecs,Mountain West,high,22,72,68,Boise State Broncos,Mountain West,high,0,52,
+2023,2023-02-04,2023-01-30,401470440,reg,0,1,2608,Saint Mary's Gaels,WCC,high,18,78,2250,Gonzaga Bulldogs,WCC,high,12,70,
+2023,2023-02-04,2023-01-30,401484592,reg,0,1,99,LSU Tigers,SEC,power,0,69,333,Alabama Crimson Tide,SEC,power,4,79,
+2023,2023-02-04,2023-01-30,401484595,reg,0,1,2633,Tennessee Volunteers,SEC,power,2,46,2,Auburn Tigers,SEC,power,25,43,
+2023,2023-02-04,2023-01-30,401484932,reg,0,1,84,Indiana Hoosiers,Big Ten,power,21,79,2509,Purdue Boilermakers,Big Ten,power,1,74,
+2023,2023-02-04,2023-01-30,401485247,reg,0,1,46,Georgetown Hoyas,Big East,high,0,62,41,UConn Huskies,Big East,high,24,68,
+2023,2023-02-04,2023-01-30,401485248,reg,0,1,269,Marquette Golden Eagles,Big East,high,14,60,2086,Butler Bulldogs,Big East,high,0,52,
+2023,2023-02-04,2023-01-30,401485249,reg,0,1,2752,Xavier Musketeers,Big East,high,16,96,2599,St. John's Red Storm,Big East,high,0,71,
+2023,2023-02-04,2023-01-30,401487094,reg,0,1,2429,Charlotte 49ers,CUSA,mid,0,52,2226,Florida Atlantic Owls,CUSA,mid,19,67,
+2023,2023-02-04,2023-01-30,401488472,reg,0,1,228,Clemson Tigers,ACC,power,20,74,2390,Miami Hurricanes,ACC,power,23,78,
+2023,2023-02-04,2023-01-30,401488475,reg,0,1,259,Virginia Tech Hokies,ACC,power,0,74,258,Virginia Cavaliers,ACC,power,6,68,
+2023,2023-02-04,2023-01-30,401490372,reg,0,1,12,Arizona Wildcats,Pac-12,power,5,84,204,Oregon State Beavers,Pac-12,power,0,52,
+2023,2023-02-04,2023-01-30,401490374,reg,0,1,26,UCLA Bruins,Pac-12,power,9,76,265,Washington State Cougars,Pac-12,power,0,52,
+2023,2023-02-04,2023-01-30,401493420,reg,0,1,66,Iowa State Cyclones,Big 12,power,13,68,2305,Kansas Jayhawks,Big 12,power,8,53,
+2023,2023-02-04,2023-01-30,401493421,reg,0,1,239,Baylor Bears,Big 12,power,11,89,2641,Texas Tech Red Raiders,Big 12,power,0,62,
+2023,2023-02-04,2023-01-30,401493422,reg,0,1,197,Oklahoma State Cowboys,Big 12,power,0,79,2628,TCU Horned Frogs,Big 12,power,15,73,
+2023,2023-02-04,2023-01-30,401493423,reg,0,1,2306,Kansas State Wildcats,Big 12,power,7,66,251,Texas Longhorns,Big 12,power,10,69,
+2023,2023-02-05,2023-01-30,401492730,reg,0,1,218,Temple Owls,American,high,0,65,248,Houston Cougars,American,high,3,81,
+2023,2023-02-06,2023-02-06,401488477,reg,0,1,2390,Miami Hurricanes,ACC,power,19,81,150,Duke Blue Devils,ACC,power,0,59,
+2023,2023-02-06,2023-02-06,401493425,reg,0,1,2305,Kansas Jayhawks,Big 12,power,9,88,251,Texas Longhorns,Big 12,power,5,80,
+2023,2023-02-07,2023-02-06,401484939,reg,0,1,84,Indiana Hoosiers,Big Ten,power,18,66,164,Rutgers Scarlet Knights,Big Ten,power,24,60,
+2023,2023-02-07,2023-02-06,401485252,reg,0,1,41,UConn Huskies,Big East,high,21,87,269,Marquette Golden Eagles,Big East,high,10,72,
+2023,2023-02-07,2023-02-06,401488480,reg,0,1,258,Virginia Cavaliers,ACC,power,8,63,152,NC State Wolfpack,ACC,power,22,50,
+2023,2023-02-07,2023-02-06,401493426,reg,0,1,2306,Kansas State Wildcats,Big 12,power,12,82,2628,TCU Horned Frogs,Big 12,power,17,61,
+2023,2023-02-08,2023-02-06,401482851,reg,0,1,328,Utah State Aggies,Mountain West,high,0,61,21,San Diego State Aztecs,Mountain West,high,25,63,
+2023,2023-02-08,2023-02-06,401484602,reg,0,1,238,Vanderbilt Commodores,SEC,power,0,66,2633,Tennessee Volunteers,SEC,power,6,65,
+2023,2023-02-08,2023-02-06,401484603,reg,0,1,333,Alabama Crimson Tide,SEC,power,3,97,57,Florida Gators,SEC,power,0,69,
+2023,2023-02-08,2023-02-06,401485254,reg,0,1,2550,Seton Hall Pirates,Big East,high,0,62,156,Creighton Bluejays,Big East,high,23,75,
+2023,2023-02-08,2023-02-06,401485255,reg,0,1,2507,Providence Friars,Big East,high,20,74,46,Georgetown Hoyas,Big East,high,0,62,
+2023,2023-02-08,2023-02-06,401492733,reg,0,1,248,Houston Cougars,American,high,2,80,202,Tulsa Golden Hurricane,American,high,0,42,
+2023,2023-02-08,2023-02-06,401493427,reg,0,1,277,West Virginia Mountaineers,Big 12,power,0,76,66,Iowa State Cyclones,Big 12,power,11,71,
+2023,2023-02-08,2023-02-06,401493429,reg,0,1,239,Baylor Bears,Big 12,power,14,82,201,Oklahoma Sooners,Big 12,power,0,72,
+2023,2023-02-09,2023-02-06,401470445,reg,0,1,2250,Gonzaga Bulldogs,WCC,high,16,99,2539,San Francisco Dons,WCC,high,0,81,
+2023,2023-02-09,2023-02-06,401470447,reg,0,1,2351,Loyola Marymount Lions,WCC,high,0,78,2608,Saint Mary's Gaels,WCC,high,15,74,
+2023,2023-02-09,2023-02-06,401484944,reg,0,1,2509,Purdue Boilermakers,Big Ten,power,1,87,2294,Iowa Hawkeyes,Big Ten,power,0,73,
+2023,2023-02-09,2023-02-06,401490378,reg,0,1,25,California Golden Bears,Pac-12,power,0,62,12,Arizona Wildcats,Pac-12,power,4,85,
+2023,2023-02-09,2023-02-06,401490380,reg,0,1,204,Oregon State Beavers,Pac-12,power,0,47,26,UCLA Bruins,Pac-12,power,7,62,
+2023,2023-02-10,2023-02-06,401485257,reg,0,1,2086,Butler Bulldogs,Big East,high,0,69,2752,Xavier Musketeers,Big East,high,13,67,
+2023,2023-02-11,2023-02-06,401470448,reg,0,1,2250,Gonzaga Bulldogs,WCC,high,16,88,252,BYU Cougars,WCC,high,0,81,
+2023,2023-02-11,2023-02-06,401470450,reg,0,1,2501,Portland Pilots,WCC,high,0,64,2608,Saint Mary's Gaels,WCC,high,15,81,
+2023,2023-02-11,2023-02-06,401482856,reg,0,1,21,San Diego State Aztecs,Mountain West,high,25,82,2439,UNLV Rebels,Mountain West,high,0,71,
+2023,2023-02-11,2023-02-06,401484607,reg,0,1,2633,Tennessee Volunteers,SEC,power,6,85,142,Missouri Tigers,SEC,power,0,86,
+2023,2023-02-11,2023-02-06,401484609,reg,0,1,2,Auburn Tigers,SEC,power,0,69,333,Alabama Crimson Tide,SEC,power,3,77,
+2023,2023-02-11,2023-02-06,401484945,reg,0,1,130,Michigan Wolverines,Big Ten,power,0,61,84,Indiana Hoosiers,Big Ten,power,18,62,
+2023,2023-02-11,2023-02-06,401484947,reg,0,1,356,Illinois Fighting Illini,Big Ten,power,0,69,164,Rutgers Scarlet Knights,Big Ten,power,24,60,
+2023,2023-02-11,2023-02-06,401485258,reg,0,1,46,Georgetown Hoyas,Big East,high,0,75,269,Marquette Golden Eagles,Big East,high,10,89,
+2023,2023-02-11,2023-02-06,401485259,reg,0,1,2599,St. John's Red Storm,Big East,high,0,73,2507,Providence Friars,Big East,high,20,68,
+2023,2023-02-11,2023-02-06,401485260,reg,0,1,156,Creighton Bluejays,Big East,high,23,56,41,UConn Huskies,Big East,high,21,53,
+2023,2023-02-11,2023-02-06,401488485,reg,0,1,258,Virginia Cavaliers,ACC,power,8,69,150,Duke Blue Devils,ACC,power,0,62,
+2023,2023-02-11,2023-02-06,401488487,reg,0,1,2390,Miami Hurricanes,ACC,power,19,93,97,Louisville Cardinals,ACC,power,0,85,
+2023,2023-02-11,2023-02-06,401488488,reg,0,1,103,Boston College Eagles,ACC,power,0,62,152,NC State Wolfpack,ACC,power,22,92,
+2023,2023-02-11,2023-02-06,401490383,reg,0,1,2483,Oregon Ducks,Pac-12,power,0,63,26,UCLA Bruins,Pac-12,power,7,70,
+2023,2023-02-11,2023-02-06,401490385,reg,0,1,24,Stanford Cardinal,Pac-12,power,0,88,12,Arizona Wildcats,Pac-12,power,4,79,
+2023,2023-02-11,2023-02-06,401493430,reg,0,1,251,Texas Longhorns,Big 12,power,5,94,277,West Virginia Mountaineers,Big 12,power,0,60,
+2023,2023-02-11,2023-02-06,401493431,reg,0,1,201,Oklahoma Sooners,Big 12,power,0,55,2305,Kansas Jayhawks,Big 12,power,9,78,
+2023,2023-02-11,2023-02-06,401493432,reg,0,1,2628,TCU Horned Frogs,Big 12,power,17,68,239,Baylor Bears,Big 12,power,14,72,
+2023,2023-02-11,2023-02-06,401493433,reg,0,1,66,Iowa State Cyclones,Big 12,power,11,56,197,Oklahoma State Cowboys,Big 12,power,0,64,
+2023,2023-02-11,2023-02-06,401493434,reg,0,1,2641,Texas Tech Red Raiders,Big 12,power,0,71,2306,Kansas State Wildcats,Big 12,power,12,63,
+2023,2023-02-12,2023-02-06,401484951,reg,0,1,77,Northwestern Wildcats,Big Ten,power,0,64,2509,Purdue Boilermakers,Big Ten,power,1,58,
+2023,2023-02-13,2023-02-13,401488491,reg,0,1,153,North Carolina Tar Heels,ACC,power,0,72,2390,Miami Hurricanes,ACC,power,15,80,
+2023,2023-02-13,2023-02-13,401493435,reg,0,1,2641,Texas Tech Red Raiders,Big 12,power,0,74,251,Texas Longhorns,Big 12,power,6,67,
+2023,2023-02-13,2023-02-13,401493436,reg,0,1,239,Baylor Bears,Big 12,power,9,79,277,West Virginia Mountaineers,Big 12,power,0,67,
+2023,2023-02-14,2023-02-13,401485262,reg,0,1,2507,Providence Friars,Big East,high,24,94,156,Creighton Bluejays,Big East,high,18,86,
+2023,2023-02-14,2023-02-13,401488494,reg,0,1,183,Syracuse Orange,ACC,power,0,75,152,NC State Wolfpack,ACC,power,23,72,
+2023,2023-02-14,2023-02-13,401493437,reg,0,1,201,Oklahoma Sooners,Big 12,power,0,79,2306,Kansas State Wildcats,Big 12,power,12,65,
+2023,2023-02-14,2023-02-13,401493438,reg,0,1,197,Oklahoma State Cowboys,Big 12,power,0,76,2305,Kansas Jayhawks,Big 12,power,5,87,
+2023,2023-02-15,2023-02-13,401482861,reg,0,1,278,Fresno State Bulldogs,Mountain West,high,0,43,21,San Diego State Aztecs,Mountain West,high,21,45,
+2023,2023-02-15,2023-02-13,401484615,reg,0,1,2633,Tennessee Volunteers,SEC,power,10,68,333,Alabama Crimson Tide,SEC,power,1,59,
+2023,2023-02-15,2023-02-13,401484955,reg,0,1,77,Northwestern Wildcats,Big Ten,power,0,64,84,Indiana Hoosiers,Big Ten,power,14,62,
+2023,2023-02-15,2023-02-13,401485266,reg,0,1,269,Marquette Golden Eagles,Big East,high,11,69,2752,Xavier Musketeers,Big East,high,16,68,
+2023,2023-02-15,2023-02-13,401488496,reg,0,1,97,Louisville Cardinals,ACC,power,0,58,258,Virginia Cavaliers,ACC,power,7,61,
+2023,2023-02-15,2023-02-13,401493439,reg,0,1,66,Iowa State Cyclones,Big 12,power,19,70,2628,TCU Horned Frogs,Big 12,power,22,59,
+2023,2023-02-16,2023-02-13,401470454,reg,0,1,301,San Diego Toreros,WCC,high,0,59,2608,Saint Mary's Gaels,WCC,high,17,62,
+2023,2023-02-16,2023-02-13,401470455,reg,0,1,2351,Loyola Marymount Lions,WCC,high,0,65,2250,Gonzaga Bulldogs,WCC,high,13,108,
+2023,2023-02-16,2023-02-13,401484958,reg,0,1,120,Maryland Terrapins,Big Ten,power,0,68,2509,Purdue Boilermakers,Big Ten,power,3,54,
+2023,2023-02-16,2023-02-13,401489729,reg,0,1,2393,Middle Tennessee Blue Raiders,CUSA,mid,0,74,2226,Florida Atlantic Owls,CUSA,mid,25,70,
+2023,2023-02-16,2023-02-13,401490389,reg,0,1,12,Arizona Wildcats,Pac-12,power,8,88,254,Utah Utes,Pac-12,power,0,62,
+2023,2023-02-16,2023-02-13,401490391,reg,0,1,26,UCLA Bruins,Pac-12,power,4,73,24,Stanford Cardinal,Pac-12,power,0,64,
+2023,2023-02-16,2023-02-13,401492743,reg,0,1,2567,SMU Mustangs,American,high,0,65,248,Houston Cougars,American,high,2,80,
+2023,2023-02-18,2023-02-13,401470457,reg,0,1,2608,Saint Mary's Gaels,WCC,high,17,71,252,BYU Cougars,WCC,high,0,65,
+2023,2023-02-18,2023-02-13,401470458,reg,0,1,2492,Pepperdine Waves,WCC,high,0,88,2250,Gonzaga Bulldogs,WCC,high,13,97,
+2023,2023-02-18,2023-02-13,401484619,reg,0,1,96,Kentucky Wildcats,SEC,power,0,66,2633,Tennessee Volunteers,SEC,power,10,54,
+2023,2023-02-18,2023-02-13,401484621,reg,0,1,333,Alabama Crimson Tide,SEC,power,1,108,61,Georgia Bulldogs,SEC,power,0,59,
+2023,2023-02-18,2023-02-13,401484959,reg,0,1,84,Indiana Hoosiers,Big Ten,power,14,71,356,Illinois Fighting Illini,Big Ten,power,0,68,
+2023,2023-02-18,2023-02-13,401485267,reg,0,1,2752,Xavier Musketeers,Big East,high,16,82,305,DePaul Blue Demons,Big East,high,0,68,
+2023,2023-02-18,2023-02-13,401485268,reg,0,1,41,UConn Huskies,Big East,high,20,64,2550,Seton Hall Pirates,Big East,high,0,55,
+2023,2023-02-18,2023-02-13,401485269,reg,0,1,2507,Providence Friars,Big East,high,24,85,222,Villanova Wildcats,Big East,high,0,72,
+2023,2023-02-18,2023-02-13,401485270,reg,0,1,2599,St. John's Red Storm,Big East,high,0,67,156,Creighton Bluejays,Big East,high,18,77,
+2023,2023-02-18,2023-02-13,401488501,reg,0,1,258,Virginia Cavaliers,ACC,power,7,57,87,Notre Dame Fighting Irish,ACC,power,0,55,
+2023,2023-02-18,2023-02-13,401488503,reg,0,1,2390,Miami Hurricanes,ACC,power,15,96,154,Wake Forest Demon Deacons,ACC,power,0,87,
+2023,2023-02-18,2023-02-13,401490394,reg,0,1,12,Arizona Wildcats,Pac-12,power,8,78,38,Colorado Buffaloes,Pac-12,power,0,68,
+2023,2023-02-18,2023-02-13,401490396,reg,0,1,26,UCLA Bruins,Pac-12,power,4,78,25,California Golden Bears,Pac-12,power,0,43,
+2023,2023-02-18,2023-02-13,401493441,reg,0,1,251,Texas Longhorns,Big 12,power,6,85,201,Oklahoma Sooners,Big 12,power,0,83,
+2023,2023-02-18,2023-02-13,401493442,reg,0,1,2628,TCU Horned Frogs,Big 12,power,22,100,197,Oklahoma State Cowboys,Big 12,power,0,75,
+2023,2023-02-18,2023-02-13,401493443,reg,0,1,2305,Kansas Jayhawks,Big 12,power,5,87,239,Baylor Bears,Big 12,power,9,71,
+2023,2023-02-18,2023-02-13,401493444,reg,0,1,2306,Kansas State Wildcats,Big 12,power,12,61,66,Iowa State Cyclones,Big 12,power,19,55,
+2023,2023-02-19,2023-02-13,401484965,reg,0,1,2509,Purdue Boilermakers,Big Ten,power,3,82,194,Ohio State Buckeyes,Big Ten,power,0,55,
+2023,2023-02-19,2023-02-13,401488504,reg,0,1,152,NC State Wolfpack,ACC,power,23,77,153,North Carolina Tar Heels,ACC,power,0,69,
+2023,2023-02-19,2023-02-13,401492749,reg,0,1,248,Houston Cougars,American,high,2,72,235,Memphis Tigers,American,high,0,64,
+2023,2023-02-20,2023-02-20,401493446,reg,0,1,2628,TCU Horned Frogs,Big 12,power,24,58,2305,Kansas Jayhawks,Big 12,power,3,63,
+2023,2023-02-21,2023-02-20,401482869,reg,0,1,21,San Diego State Aztecs,Mountain West,high,22,77,36,Colorado State Rams,Mountain West,high,0,58,
+2023,2023-02-21,2023-02-20,401484628,reg,0,1,245,Texas A&M Aggies,SEC,power,25,68,2633,Tennessee Volunteers,SEC,power,11,63,
+2023,2023-02-21,2023-02-20,401484966,reg,0,1,127,Michigan State Spartans,Big Ten,power,0,80,84,Indiana Hoosiers,Big Ten,power,17,65,
+2023,2023-02-21,2023-02-20,401485272,reg,0,1,2752,Xavier Musketeers,Big East,high,16,63,222,Villanova Wildcats,Big East,high,0,64,
+2023,2023-02-21,2023-02-20,401485273,reg,0,1,156,Creighton Bluejays,Big East,high,19,71,269,Marquette Golden Eagles,Big East,high,10,73,
+2023,2023-02-21,2023-02-20,401488507,reg,0,1,259,Virginia Tech Hokies,ACC,power,0,70,2390,Miami Hurricanes,ACC,power,13,76,
+2023,2023-02-21,2023-02-20,401493447,reg,0,1,2306,Kansas State Wildcats,Big 12,power,14,75,239,Baylor Bears,Big 12,power,9,65,
+2023,2023-02-21,2023-02-20,401493449,reg,0,1,251,Texas Longhorns,Big 12,power,8,72,66,Iowa State Cyclones,Big 12,power,23,54,
+2023,2023-02-22,2023-02-20,401484632,reg,0,1,2579,South Carolina Gamecocks,SEC,power,0,76,333,Alabama Crimson Tide,SEC,power,2,78,
+2023,2023-02-22,2023-02-20,401485274,reg,0,1,41,UConn Huskies,Big East,high,18,87,2507,Providence Friars,Big East,high,20,69,
+2023,2023-02-22,2023-02-20,401488510,reg,0,1,103,Boston College Eagles,ACC,power,0,63,258,Virginia Cavaliers,ACC,power,6,48,
+2023,2023-02-22,2023-02-20,401492754,reg,0,1,248,Houston Cougars,American,high,1,89,2655,Tulane Green Wave,American,high,0,59,
+2023,2023-02-23,2023-02-20,401470461,reg,0,1,2250,Gonzaga Bulldogs,WCC,high,12,97,301,San Diego Toreros,WCC,high,0,72,
+2023,2023-02-23,2023-02-20,401470464,reg,0,1,2608,Saint Mary's Gaels,WCC,high,15,83,279,Pacific Tigers,WCC,high,0,52,
+2023,2023-02-23,2023-02-20,401484969,reg,0,1,356,Illinois Fighting Illini,Big Ten,power,0,66,77,Northwestern Wildcats,Big Ten,power,21,62,
+2023,2023-02-23,2023-02-20,401490403,reg,0,1,254,Utah Utes,Pac-12,power,0,71,26,UCLA Bruins,Pac-12,power,4,78,
+2023,2023-02-24,2023-02-20,401485277,reg,0,1,2550,Seton Hall Pirates,Big East,high,0,60,2752,Xavier Musketeers,Big East,high,16,82,
+2023,2023-02-25,2023-02-20,401470467,reg,0,1,2250,Gonzaga Bulldogs,WCC,high,12,77,2608,Saint Mary's Gaels,WCC,high,15,68,
+2023,2023-02-25,2023-02-20,401482877,reg,0,1,167,New Mexico Lobos,Mountain West,high,0,71,21,San Diego State Aztecs,Mountain West,high,22,73,
+2023,2023-02-25,2023-02-20,401484635,reg,0,1,344,Mississippi State Bulldogs,SEC,power,0,69,245,Texas A&M Aggies,SEC,power,25,62,
+2023,2023-02-25,2023-02-20,401484637,reg,0,1,333,Alabama Crimson Tide,SEC,power,2,86,8,Arkansas Razorbacks,SEC,power,0,83,
+2023,2023-02-25,2023-02-20,401484639,reg,0,1,2633,Tennessee Volunteers,SEC,power,11,85,2579,South Carolina Gamecocks,SEC,power,0,45,
+2023,2023-02-25,2023-02-20,401484972,reg,0,1,2509,Purdue Boilermakers,Big Ten,power,5,71,84,Indiana Hoosiers,Big Ten,power,17,79,
+2023,2023-02-25,2023-02-20,401485278,reg,0,1,222,Villanova Wildcats,Big East,high,0,79,156,Creighton Bluejays,Big East,high,19,67,
+2023,2023-02-25,2023-02-20,401485279,reg,0,1,2599,St. John's Red Storm,Big East,high,0,86,41,UConn Huskies,Big East,high,18,95,
+2023,2023-02-25,2023-02-20,401485280,reg,0,1,269,Marquette Golden Eagles,Big East,high,10,90,305,DePaul Blue Demons,Big East,high,0,84,
+2023,2023-02-25,2023-02-20,401488513,reg,0,1,2390,Miami Hurricanes,ACC,power,13,84,52,Florida State Seminoles,ACC,power,0,85,
+2023,2023-02-25,2023-02-20,401488517,reg,0,1,153,North Carolina Tar Heels,ACC,power,0,71,258,Virginia Cavaliers,ACC,power,6,63,
+2023,2023-02-25,2023-02-20,401490404,reg,0,1,12,Arizona Wildcats,Pac-12,power,7,88,9,Arizona State Sun Devils,Pac-12,power,0,89,
+2023,2023-02-25,2023-02-20,401492757,reg,0,1,151,East Carolina Pirates,American,high,0,57,248,Houston Cougars,American,high,1,76,
+2023,2023-02-25,2023-02-20,401493450,reg,0,1,66,Iowa State Cyclones,Big 12,power,23,50,201,Oklahoma Sooners,Big 12,power,0,61,
+2023,2023-02-25,2023-02-20,401493451,reg,0,1,2641,Texas Tech Red Raiders,Big 12,power,0,82,2628,TCU Horned Frogs,Big 12,power,24,83,
+2023,2023-02-25,2023-02-20,401493452,reg,0,1,197,Oklahoma State Cowboys,Big 12,power,0,68,2306,Kansas State Wildcats,Big 12,power,14,73,
+2023,2023-02-25,2023-02-20,401493453,reg,0,1,239,Baylor Bears,Big 12,power,9,81,251,Texas Longhorns,Big 12,power,8,72,
+2023,2023-02-25,2023-02-20,401493454,reg,0,1,2305,Kansas Jayhawks,Big 12,power,3,76,277,West Virginia Mountaineers,Big 12,power,0,74,
+2023,2023-02-26,2023-02-20,401484975,reg,0,1,120,Maryland Terrapins,Big Ten,power,0,75,77,Northwestern Wildcats,Big Ten,power,21,59,
+2023,2023-02-26,2023-02-20,401485281,reg,0,1,46,Georgetown Hoyas,Big East,high,0,68,2507,Providence Friars,Big East,high,20,88,
+2023,2023-02-26,2023-02-20,401490408,reg,0,1,38,Colorado Buffaloes,Pac-12,power,0,56,26,UCLA Bruins,Pac-12,power,4,60,
+2023,2023-02-27,2023-02-27,401493455,reg,0,1,197,Oklahoma State Cowboys,Big 12,power,0,68,239,Baylor Bears,Big 12,power,7,74,
+2023,2023-02-28,2023-02-27,401482882,reg,0,1,68,Boise State Broncos,Mountain West,high,0,66,21,San Diego State Aztecs,Mountain West,high,18,60,
+2023,2023-02-28,2023-02-27,401484641,reg,0,1,145,Ole Miss Rebels,SEC,power,0,61,245,Texas A&M Aggies,SEC,power,24,69,
+2023,2023-02-28,2023-02-27,401484643,reg,0,1,2633,Tennessee Volunteers,SEC,power,12,75,8,Arkansas Razorbacks,SEC,power,0,57,
+2023,2023-02-28,2023-02-27,401484979,reg,0,1,84,Indiana Hoosiers,Big Ten,power,15,68,2294,Iowa Hawkeyes,Big Ten,power,0,90,
+2023,2023-02-28,2023-02-27,401485282,reg,0,1,2086,Butler Bulldogs,Big East,high,0,56,269,Marquette Golden Eagles,Big East,high,6,72,
+2023,2023-02-28,2023-02-27,401488521,reg,0,1,258,Virginia Cavaliers,ACC,power,13,64,228,Clemson Tigers,ACC,power,0,57,
+2023,2023-02-28,2023-02-27,401493457,reg,0,1,2305,Kansas Jayhawks,Big 12,power,3,67,2641,Texas Tech Red Raiders,Big 12,power,0,63,
+2023,2023-03-01,2023-02-27,401484644,reg,0,1,333,Alabama Crimson Tide,SEC,power,2,90,2,Auburn Tigers,SEC,power,0,85,
+2023,2023-03-01,2023-02-27,401484645,reg,0,1,96,Kentucky Wildcats,SEC,power,23,66,238,Vanderbilt Commodores,SEC,power,0,68,
+2023,2023-03-01,2023-02-27,401484981,reg,0,1,194,Ohio State Buckeyes,Big Ten,power,0,73,120,Maryland Terrapins,Big Ten,power,21,62,
+2023,2023-03-01,2023-02-27,401485284,reg,0,1,2507,Providence Friars,Big East,high,20,89,2752,Xavier Musketeers,Big East,high,19,94,
+2023,2023-03-01,2023-02-27,401485285,reg,0,1,41,UConn Huskies,Big East,high,14,88,305,DePaul Blue Demons,Big East,high,0,59,
+2023,2023-03-01,2023-02-27,401488525,reg,0,1,87,Notre Dame Fighting Irish,ACC,power,0,88,221,Pittsburgh Panthers,ACC,power,25,81,
+2023,2023-03-01,2023-02-27,401493458,reg,0,1,2306,Kansas State Wildcats,Big 12,power,11,85,201,Oklahoma Sooners,Big 12,power,0,69,
+2023,2023-03-01,2023-02-27,401493459,reg,0,1,2628,TCU Horned Frogs,Big 12,power,22,75,251,Texas Longhorns,Big 12,power,9,73,
+2023,2023-03-01,2023-02-27,401497508,reg,0,0,2250,Gonzaga Bulldogs,WCC,high,10,104,2130,Chicago State Cougars,,,0,65,
+2023,2023-03-02,2023-02-27,401484985,reg,0,1,275,Wisconsin Badgers,Big Ten,power,0,61,2509,Purdue Boilermakers,Big Ten,power,5,63,
+2023,2023-03-02,2023-02-27,401490412,reg,0,1,26,UCLA Bruins,Pac-12,power,4,79,9,Arizona State Sun Devils,Pac-12,power,0,61,
+2023,2023-03-02,2023-02-27,401490413,reg,0,1,30,USC Trojans,Pac-12,power,0,81,12,Arizona Wildcats,Pac-12,power,8,87,
+2023,2023-03-02,2023-02-27,401492763,reg,0,1,248,Houston Cougars,American,high,1,83,2724,Wichita State Shockers,American,high,0,66,
+2023,2023-03-04,2023-02-27,401482888,reg,0,1,21,San Diego State Aztecs,Mountain West,high,18,67,2751,Wyoming Cowboys,Mountain West,high,0,50,
+2023,2023-03-04,2023-02-27,401484647,reg,0,1,245,Texas A&M Aggies,SEC,power,24,67,333,Alabama Crimson Tide,SEC,power,2,61,
+2023,2023-03-04,2023-02-27,401484648,reg,0,1,8,Arkansas Razorbacks,SEC,power,0,79,96,Kentucky Wildcats,SEC,power,23,88,
+2023,2023-03-04,2023-02-27,401484650,reg,0,1,2,Auburn Tigers,SEC,power,0,79,2633,Tennessee Volunteers,SEC,power,12,70,
+2023,2023-03-04,2023-02-27,401485287,reg,0,1,269,Marquette Golden Eagles,Big East,high,6,96,2599,St. John's Red Storm,Big East,high,0,94,
+2023,2023-03-04,2023-02-27,401485288,reg,0,1,2752,Xavier Musketeers,Big East,high,19,78,2086,Butler Bulldogs,Big East,high,0,66,
+2023,2023-03-04,2023-02-27,401485289,reg,0,1,2507,Providence Friars,Big East,high,20,58,2550,Seton Hall Pirates,Big East,high,0,82,
+2023,2023-03-04,2023-02-27,401485291,reg,0,1,222,Villanova Wildcats,Big East,high,0,59,41,UConn Huskies,Big East,high,14,71,
+2023,2023-03-04,2023-02-27,401488529,reg,0,1,258,Virginia Cavaliers,ACC,power,13,75,97,Louisville Cardinals,ACC,power,0,60,
+2023,2023-03-04,2023-02-27,401488531,reg,0,1,2390,Miami Hurricanes,ACC,power,16,78,221,Pittsburgh Panthers,ACC,power,25,76,
+2023,2023-03-04,2023-02-27,401490418,reg,0,1,26,UCLA Bruins,Pac-12,power,4,82,12,Arizona Wildcats,Pac-12,power,8,73,
+2023,2023-03-04,2023-02-27,401493460,reg,0,1,239,Baylor Bears,Big 12,power,7,58,66,Iowa State Cyclones,Big 12,power,0,73,
+2023,2023-03-04,2023-02-27,401493461,reg,0,1,251,Texas Longhorns,Big 12,power,9,75,2305,Kansas Jayhawks,Big 12,power,3,59,
+2023,2023-03-04,2023-02-27,401493462,reg,0,1,277,West Virginia Mountaineers,Big 12,power,0,89,2306,Kansas State Wildcats,Big 12,power,11,81,
+2023,2023-03-04,2023-02-27,401493463,reg,0,1,201,Oklahoma Sooners,Big 12,power,0,74,2628,TCU Horned Frogs,Big 12,power,22,60,
+2023,2023-03-05,2023-02-27,401484987,reg,0,1,213,Penn State Nittany Lions,Big Ten,power,0,65,120,Maryland Terrapins,Big Ten,power,21,64,
+2023,2023-03-05,2023-02-27,401484988,reg,0,1,84,Indiana Hoosiers,Big Ten,power,15,75,130,Michigan Wolverines,Big Ten,power,0,73,
+2023,2023-03-05,2023-02-27,401484992,reg,0,1,2509,Purdue Boilermakers,Big Ten,power,5,76,356,Illinois Fighting Illini,Big Ten,power,0,71,
+2023,2023-03-05,2023-02-27,401492766,reg,0,1,235,Memphis Tigers,American,high,0,65,248,Houston Cougars,American,high,1,67,
+2023,2023-03-06,2023-03-06,401514400,reg,1,1,2608,Saint Mary's Gaels,WCC,high,16,76,252,BYU Cougars,WCC,high,0,69,West Coast Conference Tournament - Semifinal
+2023,2023-03-06,2023-03-06,401514401,reg,1,1,2250,Gonzaga Bulldogs,WCC,high,9,84,2539,San Francisco Dons,WCC,high,0,73,West Coast Conference Tournament - Semifinal
+2023,2023-03-07,2023-03-06,401514402,reg,1,1,2608,Saint Mary's Gaels,WCC,high,16,51,2250,Gonzaga Bulldogs,WCC,high,9,77,West Coast Conference Tournament - Final
+2023,2023-03-09,2023-03-06,401514045,reg,1,1,2390,Miami Hurricanes,ACC,power,14,74,154,Wake Forest Demon Deacons,ACC,power,0,72,New York Life ACC Tournament - Quarterfinal
+2023,2023-03-09,2023-03-06,401514046,reg,1,1,150,Duke Blue Devils,ACC,power,21,96,221,Pittsburgh Panthers,ACC,power,0,69,New York Life ACC Tournament - Quarterfinal
+2023,2023-03-09,2023-03-06,401514047,reg,1,1,258,Virginia Cavaliers,ACC,power,13,68,153,North Carolina Tar Heels,ACC,power,0,59,New York Life ACC Tournament - Quarterfinal
+2023,2023-03-09,2023-03-06,401514237,reg,1,1,239,Baylor Bears,Big 12,power,10,72,66,Iowa State Cyclones,Big 12,power,0,78,Phillips 66 Big 12 Championship - Quarterfinal
+2023,2023-03-09,2023-03-06,401514238,reg,1,1,2305,Kansas Jayhawks,Big 12,power,3,78,277,West Virginia Mountaineers,Big 12,power,0,61,Phillips 66 Big 12 Championship - Quarterfinal
+2023,2023-03-09,2023-03-06,401514239,reg,1,1,2306,Kansas State Wildcats,Big 12,power,12,67,2628,TCU Horned Frogs,Big 12,power,22,80,Phillips 66 Big 12 Championship - Quarterfinal
+2023,2023-03-09,2023-03-06,401514240,reg,1,1,251,Texas Longhorns,Big 12,power,7,61,197,Oklahoma State Cowboys,Big 12,power,0,47,Phillips 66 Big 12 Championship - Quarterfinal
+2023,2023-03-09,2023-03-06,401514247,reg,1,1,269,Marquette Golden Eagles,Big East,high,6,72,2599,St. John's Red Storm,Big East,high,0,70,Big East Tournament - Quarterfinal
+2023,2023-03-09,2023-03-06,401514248,reg,1,1,41,UConn Huskies,Big East,high,11,73,2507,Providence Friars,Big East,high,0,66,Big East Tournament - Quarterfinal
+2023,2023-03-09,2023-03-06,401514249,reg,1,1,2752,Xavier Musketeers,Big East,high,15,89,305,DePaul Blue Demons,Big East,high,0,84,Big East Tournament - Quarterfinal
+2023,2023-03-09,2023-03-06,401514250,reg,1,1,156,Creighton Bluejays,Big East,high,24,87,222,Villanova Wildcats,Big East,high,0,74,Big East Tournament - Quarterfinal
+2023,2023-03-09,2023-03-06,401514407,reg,1,1,26,UCLA Bruins,Pac-12,power,2,80,38,Colorado Buffaloes,Pac-12,power,0,69,Pac-12 Tournament pres. by New York Life - Quarterfinal
+2023,2023-03-09,2023-03-06,401514409,reg,1,1,12,Arizona Wildcats,Pac-12,power,8,95,24,Stanford Cardinal,Pac-12,power,0,84,Pac-12 Tournament pres. by New York Life - Quarterfinal
+2023,2023-03-09,2023-03-06,401514976,reg,1,1,21,San Diego State Aztecs,Mountain West,high,20,64,36,Colorado State Rams,Mountain West,high,0,61,Mountain West Championship - Quarterfinal
+2023,2023-03-09,2023-03-06,401519349,reg,1,1,2633,Tennessee Volunteers,SEC,power,17,70,145,Ole Miss Rebels,SEC,power,0,55,SEC Tournament - 2nd Round
+2023,2023-03-10,2023-03-06,401514049,reg,1,1,2390,Miami Hurricanes,ACC,power,14,78,150,Duke Blue Devils,ACC,power,21,85,New York Life ACC Tournament - Semifinal
+2023,2023-03-10,2023-03-06,401514210,reg,1,1,258,Virginia Cavaliers,ACC,power,13,76,228,Clemson Tigers,ACC,power,0,56,New York Life ACC Tournament - Semifinal
+2023,2023-03-10,2023-03-06,401514241,reg,1,1,2305,Kansas Jayhawks,Big 12,power,3,71,66,Iowa State Cyclones,Big 12,power,0,58,Phillips 66 Big 12 Championship - Semifinal
+2023,2023-03-10,2023-03-06,401514242,reg,1,1,251,Texas Longhorns,Big 12,power,7,66,2628,TCU Horned Frogs,Big 12,power,22,60,Phillips 66 Big 12 Championship - Semifinal
+2023,2023-03-10,2023-03-06,401514251,reg,1,1,269,Marquette Golden Eagles,Big East,high,6,70,41,UConn Huskies,Big East,high,11,68,Big East Tournament - Semifinal
+2023,2023-03-10,2023-03-06,401514252,reg,1,1,2752,Xavier Musketeers,Big East,high,15,82,156,Creighton Bluejays,Big East,high,24,60,Big East Tournament - Semifinal
+2023,2023-03-10,2023-03-06,401514411,reg,1,1,26,UCLA Bruins,Pac-12,power,2,75,2483,Oregon Ducks,Pac-12,power,0,56,Pac-12 Tournament pres. by New York Life - Semifinal
+2023,2023-03-10,2023-03-06,401514412,reg,1,1,12,Arizona Wildcats,Pac-12,power,8,78,9,Arizona State Sun Devils,Pac-12,power,0,59,Pac-12 Tournament pres. by New York Life - Semifinal
+2023,2023-03-10,2023-03-06,401514420,reg,1,1,2509,Purdue Boilermakers,Big Ten,power,5,70,164,Rutgers Scarlet Knights,Big Ten,power,0,65,Big Ten Tournament - Quarterfinal
+2023,2023-03-10,2023-03-06,401514423,reg,1,1,84,Indiana Hoosiers,Big Ten,power,19,70,120,Maryland Terrapins,Big Ten,power,0,60,Big Ten Tournament - Quarterfinal
+2023,2023-03-10,2023-03-06,401514980,reg,1,1,21,San Diego State Aztecs,Mountain West,high,20,64,23,San José State Spartans,Mountain West,high,0,49,Mountain West Championship - Semifinal
+2023,2023-03-10,2023-03-06,401515333,reg,1,1,248,Houston Cougars,American,high,1,60,151,East Carolina Pirates,American,high,0,46,American Athletic Conference Championship - Quarterfinal
+2023,2023-03-10,2023-03-06,401519352,reg,1,1,333,Alabama Crimson Tide,SEC,power,4,72,344,Mississippi State Bulldogs,SEC,power,0,49,SEC Tournament - Quarterfinal
+2023,2023-03-10,2023-03-06,401519353,reg,1,1,142,Missouri Tigers,SEC,power,25,79,2633,Tennessee Volunteers,SEC,power,17,71,SEC Tournament - Quarterfinal
+2023,2023-03-10,2023-03-06,401519354,reg,1,1,245,Texas A&M Aggies,SEC,power,18,67,8,Arkansas Razorbacks,SEC,power,0,61,SEC Tournament - Quarterfinal
+2023,2023-03-10,2023-03-06,401519355,reg,1,1,96,Kentucky Wildcats,SEC,power,23,73,238,Vanderbilt Commodores,SEC,power,0,80,SEC Tournament - Quarterfinal
+2023,2023-03-11,2023-03-06,401514211,reg,1,1,258,Virginia Cavaliers,ACC,power,13,49,150,Duke Blue Devils,ACC,power,21,59,New York Life ACC Tournament - Final
+2023,2023-03-11,2023-03-06,401514243,reg,1,1,2305,Kansas Jayhawks,Big 12,power,3,56,251,Texas Longhorns,Big 12,power,7,76,Phillips 66 Big 12 Championship - Final
+2023,2023-03-11,2023-03-06,401514253,reg,1,1,269,Marquette Golden Eagles,Big East,high,6,65,2752,Xavier Musketeers,Big East,high,15,51,Big East Tournament - Final
+2023,2023-03-11,2023-03-06,401514413,reg,1,1,26,UCLA Bruins,Pac-12,power,2,59,12,Arizona Wildcats,Pac-12,power,8,61,Pac-12 Tournament pres. by New York Life - Final
+2023,2023-03-11,2023-03-06,401514424,reg,1,1,2509,Purdue Boilermakers,Big Ten,power,5,80,194,Ohio State Buckeyes,Big Ten,power,0,66,Big Ten Tournament - Semifinal
+2023,2023-03-11,2023-03-06,401514425,reg,1,1,84,Indiana Hoosiers,Big Ten,power,19,73,213,Penn State Nittany Lions,Big Ten,power,0,77,Big Ten Tournament - Semifinal
+2023,2023-03-11,2023-03-06,401514982,reg,1,1,21,San Diego State Aztecs,Mountain West,high,20,62,328,Utah State Aggies,Mountain West,high,0,57,Mountain West Championship - Final
+2023,2023-03-11,2023-03-06,401515337,reg,1,1,248,Houston Cougars,American,high,1,69,2132,Cincinnati Bearcats,American,high,0,48,American Athletic Conference Championship - Semifinal
+2023,2023-03-11,2023-03-06,401519356,reg,1,1,333,Alabama Crimson Tide,SEC,power,4,72,142,Missouri Tigers,SEC,power,25,61,SEC Tournament - Semifinal
+2023,2023-03-11,2023-03-06,401519357,reg,1,1,245,Texas A&M Aggies,SEC,power,18,87,238,Vanderbilt Commodores,SEC,power,0,75,SEC Tournament - Semifinal
+2023,2023-03-12,2023-03-06,401514426,reg,1,1,2509,Purdue Boilermakers,Big Ten,power,5,67,213,Penn State Nittany Lions,Big Ten,power,0,65,Big Ten Tournament - Final
+2023,2023-03-12,2023-03-06,401515339,reg,1,1,248,Houston Cougars,American,high,1,65,235,Memphis Tigers,American,high,0,75,American Athletic Conference Championship - Final
+2023,2023-03-12,2023-03-06,401519358,reg,1,1,333,Alabama Crimson Tide,SEC,power,4,82,245,Texas A&M Aggies,SEC,power,18,63,SEC Tournament - Final
+2023,2023-03-14,2023-03-13,401522116,ncaa,1,0,344,Mississippi State Bulldogs,SEC,power,11,59,221,Pittsburgh Panthers,ACC,power,11,60,Men's Basketball Championship - Midwest Region - First Four
+2023,2023-03-14,2023-03-13,401522117,ncaa,1,0,357,Texas A&M-Corpus Christi Islanders,Southland,mid,16,75,2546,Southeast Missouri State Redhawks,OVC,mid,16,71,Men's Basketball Championship - South Region - First Four
+2023,2023-03-15,2023-03-13,401522118,ncaa,1,0,2640,Texas Southern Tigers,SWAC,mid,16,61,161,Fairleigh Dickinson Knights,NEC,mid,16,84,Men's Basketball Championship - East Region - First Four
+2023,2023-03-15,2023-03-13,401522119,ncaa,1,0,9,Arizona State Sun Devils,Pac-12,power,11,98,2440,Nevada Wolf Pack,Mountain West,high,11,73,Men's Basketball Championship - West Region - First Four
+2023,2023-03-16,2023-03-13,401522120,ncaa,1,0,2294,Iowa Hawkeyes,Big Ten,power,8,75,2,Auburn Tigers,SEC,power,9,83,Men's Basketball Championship - Midwest Region - 1st Round
+2023,2023-03-16,2023-03-13,401522121,ncaa,1,0,248,Houston Cougars,American,high,1,63,94,Northern Kentucky Norse,Horizon,mid,16,52,Men's Basketball Championship - Midwest Region - 1st Round
+2023,2023-03-16,2023-03-13,401522122,ncaa,1,0,120,Maryland Terrapins,Big Ten,power,8,67,277,West Virginia Mountaineers,Big 12,power,9,65,Men's Basketball Championship - South Region - 1st Round
+2023,2023-03-16,2023-03-13,401522123,ncaa,1,0,333,Alabama Crimson Tide,SEC,power,1,96,357,Texas A&M-Corpus Christi Islanders,Southland,mid,16,75,Men's Basketball Championship - South Region - 1st Round
+2023,2023-03-16,2023-03-13,401522124,ncaa,1,0,251,Texas Longhorns,Big 12,power,2,81,2142,Colgate Raiders,Patriot,mid,15,61,Men's Basketball Championship - Midwest Region - 1st Round
+2023,2023-03-16,2023-03-13,401522125,ncaa,1,0,2305,Kansas Jayhawks,Big 12,power,1,96,47,Howard Bison,MEAC,mid,16,68,Men's Basketball Championship - West Region - 1st Round
+2023,2023-03-16,2023-03-13,401522126,ncaa,1,0,8,Arkansas Razorbacks,SEC,power,8,73,356,Illinois Fighting Illini,Big Ten,power,9,63,Men's Basketball Championship - West Region - 1st Round
+2023,2023-03-16,2023-03-13,401522127,ncaa,1,0,245,Texas A&M Aggies,SEC,power,7,59,213,Penn State Nittany Lions,Big Ten,power,10,76,Men's Basketball Championship - Midwest Region - 1st Round
+2023,2023-03-16,2023-03-13,401522128,ncaa,1,0,150,Duke Blue Devils,ACC,power,5,74,198,Oral Roberts Golden Eagles,Summit,mid,12,51,Men's Basketball Championship - East Region - 1st Round
+2023,2023-03-16,2023-03-13,401522129,ncaa,1,0,2633,Tennessee Volunteers,SEC,power,4,58,309,Louisiana Ragin' Cajuns,Sun Belt,mid,13,55,Men's Basketball Championship - East Region - 1st Round
+2023,2023-03-16,2023-03-13,401522130,ncaa,1,0,258,Virginia Cavaliers,ACC,power,4,67,231,Furman Paladins,SoCon,mid,13,68,Men's Basketball Championship - South Region - 1st Round
+2023,2023-03-16,2023-03-13,401522131,ncaa,1,0,21,San Diego State Aztecs,Mountain West,high,5,63,232,Charleston Cougars,CAA,mid,12,57,Men's Basketball Championship - South Region - 1st Round
+2023,2023-03-16,2023-03-13,401522132,ncaa,1,0,26,UCLA Bruins,Pac-12,power,2,86,2427,UNC Asheville Bulldogs,Big South,mid,15,53,Men's Basketball Championship - West Region - 1st Round
+2023,2023-03-16,2023-03-13,401522133,ncaa,1,0,77,Northwestern Wildcats,Big Ten,power,7,75,68,Boise State Broncos,Mountain West,high,10,67,Men's Basketball Championship - West Region - 1st Round
+2023,2023-03-16,2023-03-13,401522134,ncaa,1,0,12,Arizona Wildcats,Pac-12,power,2,55,163,Princeton Tigers,Ivy,mid,15,59,Men's Basketball Championship - South Region - 1st Round
+2023,2023-03-16,2023-03-13,401522135,ncaa,1,0,142,Missouri Tigers,SEC,power,7,76,328,Utah State Aggies,Mountain West,high,10,65,Men's Basketball Championship - South Region - 1st Round
+2023,2023-03-17,2023-03-13,401522136,ncaa,1,0,41,UConn Huskies,Big East,high,4,87,314,Iona Gaels,MAAC,mid,13,63,Men's Basketball Championship - West Region - 1st Round
+2023,2023-03-17,2023-03-13,401522137,ncaa,1,0,2608,Saint Mary's Gaels,WCC,high,5,63,2670,VCU Rams,A-10,high,12,51,Men's Basketball Championship - West Region - 1st Round
+2023,2023-03-17,2023-03-13,401522138,ncaa,1,0,84,Indiana Hoosiers,Big Ten,power,4,71,2309,Kent State Golden Flashes,MAC,mid,13,60,Men's Basketball Championship - Midwest Region - 1st Round
+2023,2023-03-17,2023-03-13,401522139,ncaa,1,0,2390,Miami Hurricanes,ACC,power,5,63,2181,Drake Bulldogs,MVC,mid,12,56,Men's Basketball Championship - Midwest Region - 1st Round
+2023,2023-03-17,2023-03-13,401522141,ncaa,1,0,269,Marquette Golden Eagles,Big East,high,2,78,261,Vermont Catamounts,Am. East,mid,15,61,Men's Basketball Championship - East Region - 1st Round
+2023,2023-03-17,2023-03-13,401522142,ncaa,1,0,127,Michigan State Spartans,Big Ten,power,7,72,30,USC Trojans,Pac-12,power,10,62,Men's Basketball Championship - East Region - 1st Round
+2023,2023-03-17,2023-03-13,401522144,ncaa,1,0,235,Memphis Tigers,American,high,8,65,2226,Florida Atlantic Owls,CUSA,mid,9,66,Men's Basketball Championship - East Region - 1st Round
+2023,2023-03-17,2023-03-13,401522145,ncaa,1,0,2509,Purdue Boilermakers,Big Ten,power,1,58,161,Fairleigh Dickinson Knights,NEC,mid,16,63,Men's Basketball Championship - East Region - 1st Round
+2023,2023-03-17,2023-03-13,401522148,ncaa,1,0,2250,Gonzaga Bulldogs,WCC,high,3,82,2253,Grand Canyon Lopes,WAC,mid,14,70,Men's Basketball Championship - West Region - 1st Round
+2023,2023-03-17,2023-03-13,401522149,ncaa,1,0,2628,TCU Horned Frogs,Big 12,power,6,72,9,Arizona State Sun Devils,Pac-12,power,11,70,Men's Basketball Championship - West Region - 1st Round
+2023,2023-03-17,2023-03-13,401522151,ncaa,1,0,239,Baylor Bears,Big 12,power,3,74,2540,UC Santa Barbara Gauchos,Big West,mid,14,56,Men's Basketball Championship - South Region - 1st Round
+2023,2023-03-17,2023-03-13,401522152,ncaa,1,0,156,Creighton Bluejays,Big East,high,6,72,152,NC State Wolfpack,ACC,power,11,63,Men's Basketball Championship - South Region - 1st Round
+2023,2023-03-17,2023-03-13,401522153,ncaa,1,0,2306,Kansas State Wildcats,Big 12,power,3,77,147,Montana State Bobcats,Big Sky,mid,14,65,Men's Basketball Championship - East Region - 1st Round
+2023,2023-03-17,2023-03-13,401522154,ncaa,1,0,96,Kentucky Wildcats,SEC,power,6,61,2507,Providence Friars,Big East,high,11,53,Men's Basketball Championship - East Region - 1st Round
+2023,2023-03-17,2023-03-13,401522156,ncaa,1,0,2752,Xavier Musketeers,Big East,high,3,72,338,Kennesaw State Owls,ASUN,mid,14,67,Men's Basketball Championship - Midwest Region - 1st Round
+2023,2023-03-17,2023-03-13,401522157,ncaa,1,0,66,Iowa State Cyclones,Big 12,power,6,41,221,Pittsburgh Panthers,ACC,power,11,59,Men's Basketball Championship - Midwest Region - 1st Round
+2023,2023-03-18,2023-03-13,401522159,ncaa,1,0,333,Alabama Crimson Tide,SEC,power,1,73,120,Maryland Terrapins,Big Ten,power,8,51,Men's Basketball Championship - South Region - 2nd Round
+2023,2023-03-18,2023-03-13,401522161,ncaa,1,0,248,Houston Cougars,American,high,1,81,2,Auburn Tigers,SEC,power,9,64,Men's Basketball Championship - Midwest Region - 2nd Round
+2023,2023-03-18,2023-03-13,401522162,ncaa,1,0,2305,Kansas Jayhawks,Big 12,power,1,71,8,Arkansas Razorbacks,SEC,power,8,72,Men's Basketball Championship - West Region - 2nd Round
+2023,2023-03-18,2023-03-13,401522165,ncaa,1,0,251,Texas Longhorns,Big 12,power,2,71,213,Penn State Nittany Lions,Big Ten,power,10,66,Men's Basketball Championship - Midwest Region - 2nd Round
+2023,2023-03-18,2023-03-13,401522166,ncaa,1,0,2633,Tennessee Volunteers,SEC,power,4,65,150,Duke Blue Devils,ACC,power,5,52,Men's Basketball Championship - East Region - 2nd Round
+2023,2023-03-18,2023-03-13,401522167,ncaa,1,0,21,San Diego State Aztecs,Mountain West,high,5,75,231,Furman Paladins,SoCon,mid,13,52,Men's Basketball Championship - South Region - 2nd Round
+2023,2023-03-18,2023-03-13,401522169,ncaa,1,0,26,UCLA Bruins,Pac-12,power,2,68,77,Northwestern Wildcats,Big Ten,power,7,63,Men's Basketball Championship - West Region - 2nd Round
+2023,2023-03-18,2023-03-13,401522170,ncaa,1,0,142,Missouri Tigers,SEC,power,7,63,163,Princeton Tigers,Ivy,mid,15,78,Men's Basketball Championship - South Region - 2nd Round
+2023,2023-03-19,2023-03-13,401522172,ncaa,1,0,41,UConn Huskies,Big East,high,4,70,2608,Saint Mary's Gaels,WCC,high,5,55,Men's Basketball Championship - West Region - 2nd Round
+2023,2023-03-19,2023-03-13,401522173,ncaa,1,0,84,Indiana Hoosiers,Big Ten,power,4,69,2390,Miami Hurricanes,ACC,power,5,85,Men's Basketball Championship - Midwest Region - 2nd Round
+2023,2023-03-19,2023-03-13,401522174,ncaa,1,0,2226,Florida Atlantic Owls,CUSA,mid,9,78,161,Fairleigh Dickinson Knights,NEC,mid,16,70,Men's Basketball Championship - East Region - 2nd Round
+2023,2023-03-19,2023-03-13,401522175,ncaa,1,0,269,Marquette Golden Eagles,Big East,high,2,60,127,Michigan State Spartans,Big Ten,power,7,69,Men's Basketball Championship - East Region - 2nd Round
+2023,2023-03-19,2023-03-13,401522178,ncaa,1,0,2250,Gonzaga Bulldogs,WCC,high,3,84,2628,TCU Horned Frogs,Big 12,power,6,81,Men's Basketball Championship - West Region - 2nd Round
+2023,2023-03-19,2023-03-13,401522179,ncaa,1,0,239,Baylor Bears,Big 12,power,3,76,156,Creighton Bluejays,Big East,high,6,85,Men's Basketball Championship - South Region - 2nd Round
+2023,2023-03-19,2023-03-13,401522180,ncaa,1,0,2306,Kansas State Wildcats,Big 12,power,3,75,96,Kentucky Wildcats,SEC,power,6,69,Men's Basketball Championship - East Region - 2nd Round
+2023,2023-03-19,2023-03-13,401522183,ncaa,1,0,2752,Xavier Musketeers,Big East,high,3,84,221,Pittsburgh Panthers,ACC,power,11,73,Men's Basketball Championship - Midwest Region - 2nd Round
+2023,2023-03-23,2023-03-20,401522186,ncaa,1,0,26,UCLA Bruins,Pac-12,power,2,76,2250,Gonzaga Bulldogs,WCC,high,3,79,Men's Basketball Championship - West Region - Sweet 16
+2023,2023-03-23,2023-03-20,401522188,ncaa,1,0,41,UConn Huskies,Big East,high,4,88,8,Arkansas Razorbacks,SEC,power,8,65,Men's Basketball Championship - West Region - Sweet 16
+2023,2023-03-23,2023-03-20,401522191,ncaa,1,0,2306,Kansas State Wildcats,Big 12,power,3,98,127,Michigan State Spartans,Big Ten,power,7,93,Men's Basketball Championship - East Region - Sweet 16
+2023,2023-03-23,2023-03-20,401522192,ncaa,1,0,2633,Tennessee Volunteers,SEC,power,4,55,2226,Florida Atlantic Owls,CUSA,mid,9,62,Men's Basketball Championship - East Region - Sweet 16
+2023,2023-03-24,2023-03-20,401522194,ncaa,1,0,251,Texas Longhorns,Big 12,power,2,83,2752,Xavier Musketeers,Big East,high,3,71,Men's Basketball Championship - Midwest Region - Sweet 16
+2023,2023-03-24,2023-03-20,401522195,ncaa,1,0,248,Houston Cougars,American,high,1,75,2390,Miami Hurricanes,ACC,power,5,89,Men's Basketball Championship - Midwest Region - Sweet 16
+2023,2023-03-24,2023-03-20,401522197,ncaa,1,0,333,Alabama Crimson Tide,SEC,power,1,64,21,San Diego State Aztecs,Mountain West,high,5,71,Men's Basketball Championship - South Region - Sweet 16
+2023,2023-03-24,2023-03-20,401522198,ncaa,1,0,156,Creighton Bluejays,Big East,high,6,86,163,Princeton Tigers,Ivy,mid,15,75,Men's Basketball Championship - South Region - Sweet 16
+2023,2023-03-25,2023-03-20,401522190,ncaa,1,0,2250,Gonzaga Bulldogs,WCC,high,3,54,41,UConn Huskies,Big East,high,4,82,Men's Basketball Championship - West Region - Elite 8
+2023,2023-03-25,2023-03-20,401522193,ncaa,1,0,2306,Kansas State Wildcats,Big 12,power,3,76,2226,Florida Atlantic Owls,CUSA,mid,9,79,Men's Basketball Championship - East Region - Elite 8
+2023,2023-03-26,2023-03-20,401522196,ncaa,1,0,251,Texas Longhorns,Big 12,power,2,81,2390,Miami Hurricanes,ACC,power,5,88,Men's Basketball Championship - Midwest Region - Elite 8
+2023,2023-03-26,2023-03-20,401522199,ncaa,1,0,21,San Diego State Aztecs,Mountain West,high,5,57,156,Creighton Bluejays,Big East,high,6,56,Men's Basketball Championship - South Region - Elite 8
+2023,2023-04-01,2023-03-27,401522200,ncaa,1,0,21,San Diego State Aztecs,Mountain West,high,5,72,2226,Florida Atlantic Owls,CUSA,mid,9,71,Men's Basketball Championship - Final Four
+2023,2023-04-01,2023-03-27,401522201,ncaa,1,0,41,UConn Huskies,Big East,high,4,72,2390,Miami Hurricanes,ACC,power,5,59,Men's Basketball Championship - Final Four
+2023,2023-04-03,2023-04-03,401522202,ncaa,1,0,41,UConn Huskies,Big East,high,4,76,21,San Diego State Aztecs,Mountain West,high,5,59,Men's Basketball Championship - National Championship

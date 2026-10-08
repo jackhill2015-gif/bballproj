@@ -6,6 +6,7 @@
 
 import { ge } from '../utils.js';
 import { G } from '../state.js';
+import { pollTeams, pollRank, pollPrevRank, receivingVotes, pollLabel } from '../poll.js';
 import { getUiPrefs, setUiPrefs } from './ui-prefs.js';
 
 // Team name link (same shape as the player pLink convention).
@@ -13,13 +14,12 @@ function tLink(tid, name) {
   return '<span class="tname-link" data-action="team" data-tid="' + tid + '" role="button" tabindex="0">' + name + '</span>';
 }
 
-function fmtRating(t) {
-  var r = typeof t.rating === 'number' ? t.rating : 0;
-  return (r > 0 ? '+' : '') + r.toFixed(1);
-}
-function moveCell(t, rank) {
-  if (!t.lastRank) return '<span style="color:var(--txt3);">–</span>';
-  var d = t.lastRank - rank;
+// Movement since the previous poll (poll.js keeps last poll's 25)
+function moveCell(tid, rank) {
+  if (!G.poll || G.poll.kind === 'pre') return '<span style="color:var(--txt3);">–</span>';
+  var prev = pollPrevRank(tid);
+  if (!prev) return '<span class="mv-new">New</span>';
+  var d = prev - rank;
   if (d > 0) return '<span class="mv-up">▲' + d + '</span>';
   if (d < 0) return '<span class="mv-dn">▼' + (-d) + '</span>';
   return '<span style="color:var(--txt3);">–</span>';
@@ -35,47 +35,43 @@ export function renderStandings() {
 
   var natSorted = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; });
   var h = '<div class="fbar" style="margin-bottom:12px;">'
-    + '<button class="fchip' + (_tab === 'nat' ? ' on' : '') + '" data-stab="nat">National top 25</button>'
+    + '<button class="fchip' + (_tab === 'nat' ? ' on' : '') + '" data-stab="nat">Top 25</button>'
     + '<button class="fchip' + (_tab === 'conf' ? ' on' : '') + '" data-stab="conf">Conference standings</button></div>';
   if (_tab === 'conf') { el.innerHTML = h + confHTML(natSorted); bindStandings(el); return; }
 
-  // ── National Top 25 — real table (no div-grid overflow traps) ──
+  // ── National Top 25: the voters' poll (poll.js). NET = efficiency rank,
+  // what the NCAA committee seeds on (ratings.js). ──
+  var netRank = {};
+  natSorted.forEach(function(t, i) { netRank[t.id] = i + 1; });
   h += '<div style="margin-bottom:16px;">'
-    + '<div class="sec-head">National rankings</div>'
-    + '<div class="sec-sub">Power rating adjusted for schedule strength. Arrows show movement since last week.</div>'
+    + '<div class="sec-head">Top 25</div>'
+    + '<div class="sec-sub">' + pollLabel() + '. Voted every other week; arrows show movement since the last poll. NET is the efficiency rank the NCAA committee seeds on.</div>'
     + '<div class="tbl-wrap"><table class="tbl stbl">'
-    + '<thead><tr><th>#</th><th>Team</th><th>Conf</th><th class="num">Record</th><th class="num">Rtg</th><th class="num">Chg</th></tr></thead><tbody>';
+    + '<thead><tr><th>#</th><th>Team</th><th>Conf</th><th class="num">Record</th><th class="num" title="Efficiency (NET-style) rank">NET</th><th class="num">Chg</th></tr></thead><tbody>';
 
-  natSorted.slice(0, 25).forEach(function(t, i) {
+  function row(t, rk, extra) {
     var isU = t.id === G.tid;
-    var total = t.wins + t.loss;
-    var winPct = total > 0 ? (t.wins / total * 100).toFixed(0) : '--';
-    h += '<tr' + (isU ? ' class="hl"' : '') + '>'
-      + '<td class="num rk">' + (i + 1) + '</td>'
+    return '<tr class="' + (isU ? 'hl' : '') + (extra ? ' user-extra' : '') + '">'
+      + '<td class="num rk">' + (rk || '–') + '</td>'
       + '<td class="tname' + (isU ? ' u' : '') + '">' + tLink(t.id, t.name) + '</td>'
       + '<td class="dim">' + t.conf + '</td>'
       + '<td class="num">' + t.wins + '-' + t.loss + '</td>'
-      + '<td class="num">' + fmtRating(t) + '</td>'
-      + '<td class="num">' + moveCell(t, i + 1) + '</td>'
-      + '</tr>';
-  });
-
-  // Show user's rank if not in top 25
-  var userRank = natSorted.findIndex(function(x) { return x.id === G.tid; }) + 1;
-  if (userRank > 25) {
-    var ut = G.teams[G.tid];
-    var utTotal = ut.wins + ut.loss;
-    var utPct = utTotal > 0 ? (ut.wins / utTotal * 100).toFixed(0) : '--';
-    h += '<tr class="hl user-extra">'
-      + '<td class="num rk">' + userRank + '</td>'
-      + '<td class="tname u">' + tLink(ut.id, ut.name) + '</td>'
-      + '<td class="dim">' + ut.conf + '</td>'
-      + '<td class="num">' + ut.wins + '-' + ut.loss + '</td>'
-      + '<td class="num">' + fmtRating(ut) + '</td>'
-      + '<td class="num">' + moveCell(ut, userRank) + '</td>'
+      + '<td class="num dim">' + netRank[t.id] + '</td>'
+      + '<td class="num">' + (rk ? moveCell(t.id, rk) : '') + '</td>'
       + '</tr>';
   }
-  h += '</tbody></table></div></div>';
+  pollTeams().forEach(function(t, i) { h += row(t, i + 1, false); });
+  // Your team below the poll when unranked
+  if (!pollRank(G.tid)) h += row(G.teams[G.tid], 0, true);
+  h += '</tbody></table></div>';
+  var rv = receivingVotes();
+  if (rv.length) {
+    h += '<div class="rv-line"><b>Others receiving votes:</b> ' + rv.map(function(t) {
+      return '<span class="' + (t.id === G.tid ? 'rv-u' : '') + '">' + tLink(t.id, t.name) + ' ' + t.wins + '-' + t.loss + '</span>';
+    }).join(', ') + '.</div>';
+  }
+  h += '</div>';
+
 
   el.innerHTML = h;
   bindStandings(el);
@@ -117,13 +113,13 @@ function confHTML(natSorted) {
   var confPct = function(t) { var g = t.cWins + t.cLoss; return g > 0 ? t.cWins / g : 0; };
   var teams = confs[_conf].slice().sort(function(a, b) { return confPct(b) - confPct(a) || b.cWins - a.cWins || b.pts - a.pts; });
   var lead = teams.length ? teams[0] : null;
-  h += '<div class="tbl-wrap"><table class="tbl stbl"><thead><tr><th>#</th><th>Team</th><th class="num">Conf</th><th class="num" title="Games behind">GB</th><th class="num">Overall</th><th class="num" title="National rank">Natl</th></tr></thead><tbody>';
+  h += '<div class="tbl-wrap"><table class="tbl stbl"><thead><tr><th>#</th><th>Team</th><th class="num">Conf</th><th class="num" title="Games behind">GB</th><th class="num">Overall</th><th class="num" title="Efficiency (NET-style) rank">NET</th></tr></thead><tbody>';
   teams.forEach(function(t, i) {
     var isU = t.id === G.tid;
     var gb = lead ? ((lead.cWins - t.cWins) + (t.cLoss - lead.cLoss)) / 2 : 0;
     h += '<tr' + (isU ? ' class="hl"' : '') + '>'
       + '<td class="num rk">' + (i + 1) + '</td>'
-      + '<td class="tname' + (isU ? ' u' : '') + '">' + tLink(t.id, t.name) + '</td>'
+      + '<td class="tname' + (isU ? ' u' : '') + '">' + (pollRank(t.id) ? '<span class="rk-tag">' + pollRank(t.id) + '</span>' : '') + tLink(t.id, t.name) + '</td>'
       + '<td class="num">' + t.cWins + '-' + t.cLoss + '</td>'
       + '<td class="num dim">' + (gb <= 0 ? '–' : (gb % 1 ? gb.toFixed(1) : gb)) + '</td>'
       + '<td class="num">' + t.wins + '-' + t.loss + '</td>'

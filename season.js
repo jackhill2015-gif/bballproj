@@ -5,6 +5,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { recomputeRatings, snapshotRanks } from './ratings.js';
+import { buildPreseasonPoll, maybeWeeklyPoll, finalPoll, pollRank } from './poll.js';
 import { ensureGoals, noteUserResult, settleGoals, checkAchievements } from './goals.js';
 import { practiceBonus, trainingChance, facilitiesFor } from './facilities.js';
 import { payGate, payTvShare, ledger as financeLedger } from './finance.js';
@@ -212,7 +213,8 @@ export function buildSchedules() {
   }
 
   G.gi = 0;
-  recomputeRatings(); // preseason rankings from roster strength
+  recomputeRatings(); // preseason efficiency prior from roster strength
+  buildPreseasonPoll(); // preseason Top 25 (talent, last finish, brand)
 }
 
 // ── Assign user's OOC picks into the master schedule as matched pairs ──
@@ -509,7 +511,8 @@ export function advanceWeek() {
   G.wk = G.gi;
   if (G.phase === 'reg') payTvShare(); // once a season, after week 1
   snapshotRanks();    // last week's poll, for movement arrows
-  recomputeRatings(); // rankings reflect every result through this week
+  recomputeRatings(); // efficiency reflects every result through this week
+  maybeWeeklyPoll();  // voters release a new Top 25 every other week
   checkAchievements();
 
   // Training room: injured players sometimes heal a week early
@@ -761,12 +764,13 @@ export function recordSeasonHistory(source) {
   // Don't duplicate
   if (G.history.find(function(h) { return h.year === G.yr; })) return;
   G.history.push({
-    year: G.yr, school: t.name, wins: t.wins, loss: t.loss, rank: rank,
+    year: G.yr, school: t.name, wins: t.wins, loss: t.loss, rank: rank, // rank = final efficiency (NET) rank
+    poll: pollRank(G.tid), // final Top 25 rank, 0 = unranked (seasons before the poll have none)
     // per-season flags (were the career counters, so every season after a
     // first title read as a title season)
     confTitle: !!sa.confTitleThisYear, championship: !!sa.natChamp,
     tourneyFinish: tf,
-    note: t.wins + '-' + t.loss + ' \u00b7 #' + rank + ' NET \u00b7 ' + tf
+    note: t.wins + '-' + t.loss + ' \u00b7 ' + (pollRank(G.tid) ? '#' + pollRank(G.tid) + ' in the final poll' : 'unranked in the final poll') + ' \u00b7 ' + tf
   });
 }
 
@@ -795,6 +799,7 @@ export function recordPlayerSeasons() {
 }
 
 export function endSeason() {
+  finalPoll(); // final Top 25 after the NCAA tournament
   wireSeasonAchievements();
   var still = G.bracket.filter(function(b) { return b.active; });
   if (still.length === 1) {

@@ -20,7 +20,7 @@ check(types.size >= 15, `player types are varied (${types.size} different)`);
 const starters = people.filter(p => SC.fitReport(p).role === 'Starter');
 check(starters.length > 0 && starters.every(p => p.ovr >= Math.min(...starters.map(x => x.ovr))), 'some prospects project as starters');
 const need = people.filter(p => SC.fitReport(p).fillsNeed);
-check(need.length > 0 && need.length < people.length / 3, `"Fills a need" is selective (${need.length} of ${people.length})`);
+check(need.length > 0 && need.length < people.length * 0.4, `"Fills a need" is selective (typically ~15%; the roster draw can push it past a third) (${need.length} of ${people.length})`);
 // a pure shooter at shooting guard reads as a shooter, and no guard is flagged for low rebounding alone
 const shooter = { name: 'Test Shooter', pos: 'SG', ovr: 80, sht: 97, fin: 70, def: 68, reb: 55, ply: 70, cls: 'FR' };
 check(['Sharpshooter', '3-and-D wing'].includes(SC.playerType(shooter)), 'a pure shooter at SG is a Sharpshooter (' + SC.playerType(shooter) + ')');

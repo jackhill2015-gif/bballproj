@@ -1,0 +1,777 @@
+season,date,week_monday,game_id,kind,neutral,conf_game,home_id,home,home_conf,home_tier,home_rank,home_score,away_id,away,away_conf,away_tier,away_rank,away_score,notes
+2026,2025-11-03,2025-11-03,401812260,reg,0,0,333,Alabama Crimson Tide,SEC,power,15,91,155,North Dakota Fighting Hawks,Summit,mid,0,62,
+2026,2025-11-03,2025-11-03,401812282,reg,0,0,66,Iowa State Cyclones,Big 12,power,16,88,161,Fairleigh Dickinson Knights,NEC,mid,0,50,
+2026,2025-11-03,2025-11-03,401812785,reg,0,0,41,UConn Huskies,Big East,high,4,79,2441,New Haven Chargers,NEC,mid,0,55,
+2026,2025-11-03,2025-11-03,401813756,reg,0,0,26,UCLA Bruins,Big Ten,power,12,80,331,Eastern Washington Eagles,Big Sky,mid,0,74,
+2026,2025-11-03,2025-11-03,401817239,reg,0,0,97,Louisville Cardinals,ACC,power,11,104,2569,South Carolina State Bulldogs,MEAC,mid,0,45,
+2026,2025-11-03,2025-11-03,401817262,reg,0,0,153,North Carolina Tar Heels,ACC,power,25,94,2110,Central Arkansas Bears,ASUN,mid,0,54,
+2026,2025-11-03,2025-11-03,401819834,reg,1,0,252,BYU Cougars,Big 12,power,8,71,222,Villanova Wildcats,Big East,high,0,66,Hall of Fame Series - Las Vegas
+2026,2025-11-03,2025-11-03,401819882,reg,0,0,2305,Kansas Jayhawks,Big 12,power,19,94,2739,Green Bay Phoenix,Horizon,mid,0,51,
+2026,2025-11-03,2025-11-03,401820577,reg,0,0,2599,St. John's Red Storm,Big East,high,5,108,2514,Quinnipiac Bobcats,MAAC,mid,0,74,
+2026,2025-11-03,2025-11-03,401823474,reg,0,0,2,Auburn Tigers,SEC,power,20,95,2065,Bethune-Cookman Wildcats,SWAC,mid,0,90,
+2026,2025-11-03,2025-11-03,401823483,reg,0,0,2633,Tennessee Volunteers,SEC,power,18,76,2382,Mercer Bears,SoCon,mid,0,61,
+2026,2025-11-03,2025-11-03,401824031,reg,0,0,2250,Gonzaga Bulldogs,WCC,high,21,98,2640,Texas Southern Tigers,SWAC,mid,0,43,
+2026,2025-11-03,2025-11-03,401824809,reg,0,0,248,Houston Cougars,Big 12,power,2,75,2329,Lehigh Mountain Hawks,Patriot,mid,0,57,
+2026,2025-11-03,2025-11-03,401826083,reg,0,0,130,Michigan Wolverines,Big Ten,power,7,121,2473,Oakland Golden Grizzlies,Horizon,mid,0,78,
+2026,2025-11-03,2025-11-03,401826784,reg,0,0,8,Arkansas Razorbacks,SEC,power,14,109,2582,Southern Jaguars,SWAC,mid,0,77,
+2026,2025-11-03,2025-11-03,401826885,reg,1,0,12,Arizona Wildcats,Big 12,power,13,93,57,Florida Gators,SEC,power,3,87,Hall of Fame Series - Las Vegas
+2026,2025-11-03,2025-11-03,401826911,reg,0,0,275,Wisconsin Badgers,Big Ten,power,24,96,2097,Campbell Fighting Camels,CAA,mid,0,64,
+2026,2025-11-03,2025-11-03,401827170,reg,0,0,356,Illinois Fighting Illini,Big Ten,power,17,113,2296,Jackson State Tigers,SWAC,mid,0,55,
+2026,2025-11-03,2025-11-03,401827219,reg,0,0,127,Michigan State Spartans,Big Ten,power,22,80,2142,Colgate Raiders,Patriot,mid,0,69,
+2026,2025-11-04,2025-11-03,401817228,reg,1,0,150,Duke Blue Devils,ACC,power,6,75,251,Texas Longhorns,SEC,power,0,60,Dick Vitale Invitational presented by Belk
+2026,2025-11-04,2025-11-03,401819898,reg,0,0,2641,Texas Tech Red Raiders,Big 12,power,10,98,2815,Lindenwood Lions,OVC,mid,0,60,
+2026,2025-11-04,2025-11-03,401826746,reg,0,0,96,Kentucky Wildcats,SEC,power,9,77,2447,Nicholls Colonels,Southland,mid,0,51,
+2026,2025-11-04,2025-11-03,401828553,reg,0,0,2509,Purdue Boilermakers,Big Ten,power,1,82,339,Evansville Purple Aces,MVC,mid,0,51,
+2026,2025-11-05,2025-11-03,401811102,reg,0,0,156,Creighton Bluejays,Big East,high,23,92,233,South Dakota Coyotes,Summit,mid,0,76,
+2026,2025-11-06,2025-11-03,401817240,reg,0,0,97,Louisville Cardinals,ACC,power,11,106,2296,Jackson State Tigers,SWAC,mid,0,70,
+2026,2025-11-06,2025-11-03,401819871,reg,0,0,66,Iowa State Cyclones,Big 12,power,16,102,2755,Grambling Tigers,SWAC,mid,0,62,
+2026,2025-11-06,2025-11-03,401823441,reg,0,0,57,Florida Gators,SEC,power,3,104,2454,North Florida Ospreys,ASUN,mid,0,64,
+2026,2025-11-06,2025-11-03,401823475,reg,0,0,2,Auburn Tigers,SEC,power,20,95,2771,Merrimack Warriors,MAAC,mid,0,57,
+2026,2025-11-07,2025-11-03,401812786,reg,0,0,41,UConn Huskies,Big East,high,4,110,2349,UMass Lowell River Hawks,Am. East,mid,0,47,
+2026,2025-11-07,2025-11-03,401813757,reg,0,0,26,UCLA Bruins,Big Ten,power,12,74,2492,Pepperdine Waves,WCC,high,0,63,
+2026,2025-11-07,2025-11-03,401817263,reg,0,0,153,North Carolina Tar Heels,ACC,power,25,87,2305,Kansas Jayhawks,Big 12,power,19,74,
+2026,2025-11-07,2025-11-03,401819899,reg,0,0,2641,Texas Tech Red Raiders,Big 12,power,10,98,2534,Sam Houston Bearkats,CUSA,mid,0,77,
+2026,2025-11-07,2025-11-03,401822330,reg,0,0,96,Kentucky Wildcats,SEC,power,9,107,2674,Valparaiso Beacons,MVC,mid,0,59,
+2026,2025-11-07,2025-11-03,401823225,reg,0,0,356,Illinois Fighting Illini,Big Ten,power,17,113,526,Florida Gulf Coast Eagles,ASUN,mid,0,70,
+2026,2025-11-07,2025-11-03,401823461,reg,0,0,275,Wisconsin Badgers,Big Ten,power,24,97,2459,Northern Illinois Huskies,MAC,mid,0,72,
+2026,2025-11-07,2025-11-03,401824023,reg,0,0,12,Arizona Wildcats,Big 12,power,13,93,3101,Utah Tech Trailblazers,UAC,mid,0,67,
+2026,2025-11-07,2025-11-03,401826869,reg,0,0,2509,Purdue Boilermakers,Big Ten,power,1,87,2473,Oakland Golden Grizzlies,Horizon,mid,0,77,
+2026,2025-11-08,2025-11-03,401812261,reg,0,0,2599,St. John's Red Storm,Big East,high,5,96,333,Alabama Crimson Tide,SEC,power,15,103,
+2026,2025-11-08,2025-11-03,401812660,reg,0,0,252,BYU Cougars,Big 12,power,8,98,107,Holy Cross Crusaders,Patriot,mid,0,53,
+2026,2025-11-08,2025-11-03,401817229,reg,0,0,150,Duke Blue Devils,ACC,power,6,95,2717,Western Carolina Catamounts,SoCon,mid,0,54,
+2026,2025-11-08,2025-11-03,401823382,reg,0,0,2633,Tennessee Volunteers,SEC,power,18,95,94,Northern Kentucky Norse,Horizon,mid,0,56,
+2026,2025-11-08,2025-11-03,401824032,reg,0,0,2250,Gonzaga Bulldogs,WCC,high,21,83,201,Oklahoma Sooners,SEC,power,0,68,The Bad Boy Mowers Series - Spokane
+2026,2025-11-08,2025-11-03,401824810,reg,0,0,248,Houston Cougars,Big 12,power,2,65,119,Towson Tigers,CAA,mid,0,48,
+2026,2025-11-08,2025-11-03,401826785,reg,0,0,127,Michigan State Spartans,Big Ten,power,22,69,8,Arkansas Razorbacks,SEC,power,14,66,
+2026,2025-11-10,2025-11-10,401812787,reg,0,0,41,UConn Huskies,Big East,high,3,89,171,Columbia Lions,Ivy,mid,0,62,
+2026,2025-11-10,2025-11-10,401813758,reg,0,0,26,UCLA Bruins,Big Ten,power,15,83,2698,West Georgia Wolves,ASUN,mid,0,62,
+2026,2025-11-10,2025-11-10,401819872,reg,1,0,66,Iowa State Cyclones,Big 12,power,16,96,344,Mississippi State Bulldogs,SEC,power,0,80,
+2026,2025-11-11,2025-11-10,401811097,reg,0,0,356,Illinois Fighting Illini,Big Ten,power,14,81,2641,Texas Tech Red Raiders,Big 12,power,11,77,
+2026,2025-11-11,2025-11-10,401817230,reg,0,0,349,Army Black Knights,Patriot,mid,0,59,150,Duke Blue Devils,ACC,power,4,114,
+2026,2025-11-11,2025-11-10,401817241,reg,0,0,97,Louisville Cardinals,ACC,power,12,96,96,Kentucky Wildcats,SEC,power,9,88,
+2026,2025-11-11,2025-11-10,401817264,reg,0,0,153,North Carolina Tar Heels,ACC,power,18,89,2515,Radford Highlanders,Big South,mid,0,74,
+2026,2025-11-11,2025-11-10,401817529,reg,1,0,130,Michigan Wolverines,Big Ten,power,6,85,154,Wake Forest Demon Deacons,ACC,power,0,84,
+2026,2025-11-11,2025-11-10,401819835,reg,0,0,252,BYU Cougars,Big 12,power,7,85,48,Delaware Blue Hens,CUSA,mid,0,68,
+2026,2025-11-11,2025-11-10,401819883,reg,0,0,2305,Kansas Jayhawks,Big 12,power,25,77,357,Texas A&M-Corpus Christi Islanders,Southland,mid,0,46,
+2026,2025-11-11,2025-11-10,401820831,reg,0,0,2250,Gonzaga Bulldogs,WCC,high,19,90,156,Creighton Bluejays,Big East,high,23,63,
+2026,2025-11-11,2025-11-10,401822319,reg,0,0,275,Wisconsin Badgers,Big Ten,power,24,86,2050,Ball State Cardinals,MAC,mid,0,55,
+2026,2025-11-11,2025-11-10,401823476,reg,0,0,2,Auburn Tigers,SEC,power,22,93,2747,Wofford Terriers,SoCon,mid,0,62,
+2026,2025-11-11,2025-11-10,401824935,reg,0,0,8,Arkansas Razorbacks,SEC,power,21,93,2110,Central Arkansas Bears,ASUN,mid,0,56,
+2026,2025-11-11,2025-11-10,401825588,reg,0,0,12,Arizona Wildcats,Big 12,power,5,84,2464,Northern Arizona Lumberjacks,Big Sky,mid,0,49,
+2026,2025-11-11,2025-11-10,401826707,reg,0,0,57,Florida Gators,SEC,power,10,78,52,Florida State Seminoles,ACC,power,0,76,
+2026,2025-11-12,2025-11-10,401823442,reg,0,0,2633,Tennessee Volunteers,SEC,power,20,99,2454,North Florida Ospreys,ASUN,mid,0,66,
+2026,2025-11-12,2025-11-10,401824811,reg,0,0,248,Houston Cougars,Big 12,power,1,78,2473,Oakland Golden Grizzlies,Horizon,mid,0,45,
+2026,2025-11-13,2025-11-10,401812262,reg,0,0,333,Alabama Crimson Tide,SEC,power,8,80,2509,Purdue Boilermakers,Big Ten,power,2,87,
+2026,2025-11-13,2025-11-10,401827220,reg,0,0,127,Michigan State Spartans,Big Ten,power,17,79,23,San José State Spartans,Mountain West,high,0,60,
+2026,2025-11-14,2025-11-10,401812252,reg,0,0,2628,TCU Horned Frogs,Big 12,power,0,63,130,Michigan Wolverines,Big Ten,power,6,67,
+2026,2025-11-14,2025-11-10,401813759,reg,1,0,26,UCLA Bruins,Big Ten,power,15,65,12,Arizona Wildcats,Big 12,power,5,69,Hall of Fame Series - Los Angeles
+2026,2025-11-14,2025-11-10,401817231,reg,0,0,150,Duke Blue Devils,ACC,power,4,100,282,Indiana State Sycamores,MVC,mid,0,62,
+2026,2025-11-14,2025-11-10,401817265,reg,0,0,153,North Carolina Tar Heels,ACC,power,18,97,2428,North Carolina Central Eagles,MEAC,mid,0,53,
+2026,2025-11-14,2025-11-10,401819815,reg,0,0,9,Arizona State Sun Devils,Big 12,power,0,65,2250,Gonzaga Bulldogs,WCC,high,19,77,
+2026,2025-11-14,2025-11-10,401819900,reg,0,0,2641,Texas Tech Red Raiders,Big 12,power,11,80,270,Milwaukee Panthers,Horizon,mid,0,63,
+2026,2025-11-14,2025-11-10,401820832,reg,0,0,156,Creighton Bluejays,Big East,high,23,84,2379,Maryland Eastern Shore Hawks,MEAC,mid,0,45,
+2026,2025-11-14,2025-11-10,401822356,reg,0,0,96,Kentucky Wildcats,SEC,power,9,99,2197,Eastern Illinois Panthers,OVC,mid,0,53,
+2026,2025-11-14,2025-11-10,401826786,reg,0,0,8,Arkansas Razorbacks,SEC,power,21,79,2535,Samford Bulldogs,SoCon,mid,0,75,
+2026,2025-11-14,2025-11-10,401827180,reg,0,0,356,Illinois Fighting Illini,Big Ten,power,14,84,2142,Colgate Raiders,Patriot,mid,0,65,
+2026,2025-11-15,2025-11-10,401812788,reg,1,0,41,UConn Huskies,Big East,high,3,86,252,BYU Cougars,Big 12,power,7,84,Hall of Fame Series - Boston
+2026,2025-11-15,2025-11-10,401817242,reg,0,0,97,Louisville Cardinals,ACC,power,12,106,195,Ohio Bobcats,MAC,mid,0,81,
+2026,2025-11-15,2025-11-10,401819884,reg,0,0,2305,Kansas Jayhawks,Big 12,power,25,76,163,Princeton Tigers,Ivy,mid,0,57,
+2026,2025-11-15,2025-11-10,401826915,reg,0,0,2599,St. John's Red Storm,Big East,high,13,93,2729,William & Mary Tribe,CAA,mid,0,60,
+2026,2025-11-16,2025-11-10,401809305,reg,1,0,2,Auburn Tigers,SEC,power,22,72,248,Houston Cougars,Big 12,power,1,73,RxBenefits Battleground 2k25
+2026,2025-11-16,2025-11-10,401809416,reg,1,0,57,Florida Gators,SEC,power,10,82,2390,Miami Hurricanes,ACC,power,0,68,GEICO Jacksonville Hoops Showdown
+2026,2025-11-16,2025-11-10,401820598,reg,0,0,2509,Purdue Boilermakers,Big Ten,power,2,97,2006,Akron Zips,MAC,mid,0,79,
+2026,2025-11-17,2025-11-17,401817255,reg,0,0,152,NC State Wolfpack,ACC,power,25,85,2670,VCU Rams,A-10,high,0,79,
+2026,2025-11-17,2025-11-17,401819873,reg,0,0,66,Iowa State Cyclones,Big 12,power,16,96,284,Stonehill Skyhawks,NEC,mid,0,57,
+2026,2025-11-17,2025-11-17,401823542,reg,0,0,2250,Gonzaga Bulldogs,WCC,high,13,122,253,Southern Utah Thunderbirds,UAC,mid,0,50,
+2026,2025-11-17,2025-11-17,401826807,reg,0,0,2633,Tennessee Volunteers,SEC,power,20,91,242,Rice Owls,American,high,0,66,
+2026,2025-11-17,2025-11-17,401826912,reg,0,0,275,Wisconsin Badgers,Big Ten,power,23,94,2565,SIU Edwardsville Cougars,OVC,mid,0,69,
+2026,2025-11-18,2025-11-17,401813760,reg,0,0,26,UCLA Bruins,Big Ten,power,19,79,16,Sacramento State Hornets,Big Sky,mid,0,48,Empire Classic - Campus Game
+2026,2025-11-18,2025-11-17,401817232,reg,1,0,150,Duke Blue Devils,ACC,power,5,78,2305,Kansas Jayhawks,Big 12,power,24,66,State Farm Champions Classic
+2026,2025-11-18,2025-11-17,401817266,reg,0,0,153,North Carolina Tar Heels,ACC,power,18,73,2426,Navy Midshipmen,Patriot,mid,0,61,
+2026,2025-11-18,2025-11-17,401826787,reg,0,0,8,Arkansas Razorbacks,SEC,power,21,84,2737,Winthrop Eagles,Big South,mid,0,83,
+2026,2025-11-18,2025-11-17,401827221,reg,1,0,96,Kentucky Wildcats,SEC,power,12,66,127,Michigan State Spartans,Big Ten,power,17,83,State Farm Champions Classic
+2026,2025-11-19,2025-11-17,401811098,reg,1,0,356,Illinois Fighting Illini,Big Ten,power,8,86,333,Alabama Crimson Tide,SEC,power,11,90,
+2026,2025-11-19,2025-11-17,401812789,reg,0,0,41,UConn Huskies,Big East,high,3,67,12,Arizona Wildcats,Big 12,power,4,71,
+2026,2025-11-19,2025-11-17,401822996,reg,0,0,130,Michigan Wolverines,Big Ten,power,7,86,2393,Middle Tennessee Blue Raiders,CUSA,mid,0,61,
+2026,2025-11-19,2025-11-17,401823477,reg,0,0,2,Auburn Tigers,SEC,power,22,112,2296,Jackson State Tigers,SWAC,mid,0,66,
+2026,2025-11-20,2025-11-17,401809078,reg,0,0,2599,St. John's Red Storm,Big East,high,14,97,2083,Bucknell Bison,Patriot,mid,0,49,
+2026,2025-11-20,2025-11-17,401812629,reg,0,0,248,Houston Cougars,Big 12,power,2,91,2520,Rider Broncs,MAAC,mid,0,45,
+2026,2025-11-20,2025-11-17,401817531,reg,1,0,2641,Texas Tech Red Raiders,Big 12,power,15,84,154,Wake Forest Demon Deacons,ACC,power,0,83,Baha Mar Championship
+2026,2025-11-20,2025-11-17,401823636,reg,1,0,2509,Purdue Boilermakers,Big Ten,power,1,80,235,Memphis Tigers,American,high,0,71,Baha Mar Championship
+2026,2025-11-20,2025-11-17,401829386,reg,0,0,2633,Tennessee Volunteers,SEC,power,20,89,2634,Tennessee State Tigers,OVC,mid,0,60,
+2026,2025-11-21,2025-11-17,401813377,reg,0,0,150,Duke Blue Devils,ACC,power,5,100,315,Niagara Purple Eagles,MAAC,mid,0,42,Brotherhood Run
+2026,2025-11-21,2025-11-17,401813761,reg,0,0,26,UCLA Bruins,Big Ten,power,19,86,2506,Presbyterian Blue Hose,Big South,mid,0,46,Empire Classic - Campus Game
+2026,2025-11-21,2025-11-17,401817243,reg,1,0,2132,Cincinnati Bearcats,Big 12,power,0,64,97,Louisville Cardinals,ACC,power,6,74,Hoops Classic
+2026,2025-11-21,2025-11-17,401819836,reg,0,0,252,BYU Cougars,Big 12,power,9,98,275,Wisconsin Badgers,Big Ten,power,23,70,The Bad Boy Mowers Series - Salt Lake City
+2026,2025-11-21,2025-11-17,401820187,reg,0,0,96,Kentucky Wildcats,SEC,power,12,88,2352,Loyola Maryland Greyhounds,Patriot,mid,0,46,
+2026,2025-11-21,2025-11-17,401823371,reg,0,0,127,Michigan State Spartans,Big Ten,power,17,84,2174,Detroit Mercy Titans,Horizon,mid,0,56,
+2026,2025-11-21,2025-11-17,401823637,reg,1,0,2509,Purdue Boilermakers,Big Ten,power,1,86,2641,Texas Tech Red Raiders,Big 12,power,15,56,Baha Mar Championship - Championship
+2026,2025-11-21,2025-11-17,401826788,reg,0,0,8,Arkansas Razorbacks,SEC,power,21,115,2296,Jackson State Tigers,SWAC,mid,0,61,
+2026,2025-11-21,2025-11-17,401827489,reg,0,0,57,Florida Gators,SEC,power,10,80,2771,Merrimack Warriors,MAAC,mid,0,45,
+2026,2025-11-22,2025-11-17,401812356,reg,0,0,356,Illinois Fighting Illini,Big Ten,power,8,98,112358,Long Island University Sharks,NEC,mid,0,58,
+2026,2025-11-23,2025-11-17,401812790,reg,0,0,41,UConn Huskies,Big East,high,3,72,2803,Bryant Bulldogs,Am. East,mid,0,49,
+2026,2025-11-23,2025-11-17,401817233,reg,0,0,150,Duke Blue Devils,ACC,power,5,93,47,Howard Bison,MEAC,mid,0,56,Brotherhood Run
+2026,2025-11-24,2025-11-24,401812263,reg,1,0,333,Alabama Crimson Tide,SEC,power,8,85,2250,Gonzaga Bulldogs,WCC,high,12,95,Players Era Festival
+2026,2025-11-24,2025-11-24,401817244,reg,0,0,97,Louisville Cardinals,ACC,power,6,87,2199,Eastern Michigan Eagles,MAC,mid,0,46,
+2026,2025-11-24,2025-11-24,401817256,reg,1,0,152,NC State Wolfpack,ACC,power,23,74,2550,Seton Hall Pirates,Big East,high,0,85,Southwest Maui Invitational
+2026,2025-11-24,2025-11-24,401817481,reg,1,0,248,Houston Cougars,Big 12,power,3,78,183,Syracuse Orange,ACC,power,0,74,Players Era Festival
+2026,2025-11-24,2025-11-24,401819874,reg,1,0,2599,St. John's Red Storm,Big East,high,14,82,66,Iowa State Cyclones,Big 12,power,15,83,Players Era Festival
+2026,2025-11-24,2025-11-24,401823478,reg,1,0,2483,Oregon Ducks,Big Ten,power,0,73,2,Auburn Tigers,SEC,power,21,84,Players Era Festival
+2026,2025-11-24,2025-11-24,401823764,reg,1,0,130,Michigan Wolverines,Big Ten,power,7,94,21,San Diego State Aztecs,Mountain West,high,0,54,Players Era Festival
+2026,2025-11-24,2025-11-24,401826740,reg,0,0,12,Arizona Wildcats,Big 12,power,2,103,2172,Denver Pioneers,Summit,mid,0,73,Wildcat Classic
+2026,2025-11-24,2025-11-24,401827181,reg,0,0,356,Illinois Fighting Illini,Big Ten,power,13,87,292,UT Rio Grande Valley Vaqueros,Southland,mid,0,73,
+2026,2025-11-24,2025-11-24,401827435,reg,1,0,2633,Tennessee Volunteers,SEC,power,17,85,164,Rutgers Scarlet Knights,Big Ten,power,0,60,Players Era Festival
+2026,2025-11-25,2025-11-24,401812264,reg,1,0,333,Alabama Crimson Tide,SEC,power,8,115,2439,UNLV Rebels,Mountain West,high,0,76,Players Era Festival
+2026,2025-11-25,2025-11-24,401813762,reg,1,0,25,California Golden Bears,ACC,power,0,80,26,UCLA Bruins,Big Ten,power,18,72,Mizzen+Main Empire Classic
+2026,2025-11-25,2025-11-24,401817198,reg,1,0,153,North Carolina Tar Heels,ACC,power,16,85,179,St. Bonaventure Bonnies,A-10,high,0,70,Fort Myers Tip-Off - Beach Division
+2026,2025-11-25,2025-11-24,401819827,reg,1,0,239,Baylor Bears,Big 12,power,0,81,2599,St. John's Red Storm,Big East,high,14,96,Players Era Festival
+2026,2025-11-25,2025-11-24,401819875,reg,1,0,66,Iowa State Cyclones,Big 12,power,15,78,156,Creighton Bluejays,Big East,high,0,60,Players Era Festival
+2026,2025-11-25,2025-11-24,401819892,reg,0,0,84,Indiana Hoosiers,Big Ten,power,25,86,2306,Kansas State Wildcats,Big 12,power,0,69,
+2026,2025-11-25,2025-11-24,401820810,reg,1,0,151,East Carolina Pirates,American,high,0,56,127,Michigan State Spartans,Big Ten,power,11,89,Fort Myers Tip-Off - Beach Division
+2026,2025-11-25,2025-11-24,401823479,reg,1,0,130,Michigan Wolverines,Big Ten,power,7,102,2,Auburn Tigers,SEC,power,21,72,Players Era Festival
+2026,2025-11-25,2025-11-24,401824033,reg,1,0,2250,Gonzaga Bulldogs,WCC,high,12,100,120,Maryland Terrapins,Big Ten,power,0,61,Players Era Festival
+2026,2025-11-25,2025-11-24,401824812,reg,1,0,248,Houston Cougars,Big 12,power,3,73,2633,Tennessee Volunteers,SEC,power,17,76,Players Era Festival
+2026,2025-11-25,2025-11-24,401831198,reg,1,0,68,Boise State Broncos,Mountain West,high,0,70,152,NC State Wolfpack,ACC,power,23,81,Southwest Maui Invitational
+2026,2025-11-26,2025-11-24,401808897,reg,0,0,2641,Texas Tech Red Raiders,Big 12,power,20,82,2443,New Orleans Privateers,Southland,mid,0,50,
+2026,2025-11-26,2025-11-24,401817245,reg,0,0,97,Louisville Cardinals,ACC,power,6,104,2885,NJIT Highlanders,Am. East,mid,0,47,
+2026,2025-11-26,2025-11-24,401823362,reg,1,0,98,Western Kentucky Hilltoppers,CUSA,mid,0,78,238,Vanderbilt Commodores,SEC,power,24,83,Marriott Bonvoy Battle 4 Atlantis
+2026,2025-11-26,2025-11-24,401826832,reg,0,0,96,Kentucky Wildcats,SEC,power,19,104,2635,Tennessee Tech Golden Eagles,OVC,mid,0,54,
+2026,2025-11-26,2025-11-24,401831202,reg,1,0,251,Texas Longhorns,SEC,power,0,102,152,NC State Wolfpack,ACC,power,23,97,Southwest Maui Invitational - 5th Place Game
+2026,2025-11-26,2025-11-24,401831214,reg,1,0,130,Michigan Wolverines,Big Ten,power,7,101,2250,Gonzaga Bulldogs,WCC,high,12,61,Players Era Festival - Championship
+2026,2025-11-26,2025-11-24,401831215,reg,1,0,2633,Tennessee Volunteers,SEC,power,17,76,2305,Kansas Jayhawks,Big 12,power,0,81,Players Era Festival - 3rd Place Game
+2026,2025-11-26,2025-11-24,401831216,reg,1,0,66,Iowa State Cyclones,Big 12,power,15,95,183,Syracuse Orange,ACC,power,0,64,Players Era Festival
+2026,2025-11-26,2025-11-24,401831217,reg,1,0,248,Houston Cougars,Big 12,power,3,66,87,Notre Dame Fighting Irish,ACC,power,0,56,Players Era Festival
+2026,2025-11-26,2025-11-24,401831218,reg,1,0,2,Auburn Tigers,SEC,power,21,85,2599,St. John's Red Storm,Big East,high,14,74,Players Era Festival
+2026,2025-11-26,2025-11-24,401831220,reg,1,0,333,Alabama Crimson Tide,SEC,power,8,105,120,Maryland Terrapins,Big Ten,power,0,72,Players Era Festival
+2026,2025-11-27,2025-11-24,401809047,reg,1,0,57,Florida Gators,SEC,power,10,80,2628,TCU Horned Frogs,Big 12,power,0,84,Rady Children's Invitational
+2026,2025-11-27,2025-11-24,401809419,reg,1,0,2390,Miami Hurricanes,ACC,power,0,62,252,BYU Cougars,Big 12,power,9,72,Terry's Chocolate ESPN Events Invitational - Magic Bracket
+2026,2025-11-27,2025-11-24,401817234,reg,1,0,8,Arkansas Razorbacks,SEC,power,22,71,150,Duke Blue Devils,ACC,power,4,80,CBS Sports Thanksgiving Classic
+2026,2025-11-27,2025-11-24,401817267,reg,1,0,153,North Carolina Tar Heels,ACC,power,16,58,127,Michigan State Spartans,Big Ten,power,11,74,Fort Myers Tip-Off - Beach Division
+2026,2025-11-27,2025-11-24,401830752,reg,1,0,238,Vanderbilt Commodores,SEC,power,24,89,2670,VCU Rams,A-10,high,0,74,Marriott Bonvoy Battle 4 Atlantis
+2026,2025-11-28,2025-11-24,401811096,reg,1,0,41,UConn Huskies,Big East,high,5,74,356,Illinois Fighting Illini,Big Ten,power,13,61,
+2026,2025-11-28,2025-11-24,401822359,reg,0,0,2509,Purdue Boilermakers,Big Ten,power,1,109,2197,Eastern Illinois Panthers,OVC,mid,0,62,
+2026,2025-11-28,2025-11-24,401830879,reg,1,0,238,Vanderbilt Commodores,SEC,power,24,96,2608,Saint Mary's Gaels,WCC,high,0,71,Marriott Bonvoy Battle 4 Atlantis - Championship
+2026,2025-11-28,2025-11-24,401830886,reg,1,0,2168,Dayton Flyers,A-10,high,0,79,252,BYU Cougars,Big 12,power,9,83,Terry's Chocolate ESPN Events Invitational - Magic Bracket - Championship
+2026,2025-11-28,2025-11-24,401831223,reg,1,0,57,Florida Gators,SEC,power,10,90,2507,Providence Friars,Big East,high,0,78,Rady Children's Invitational - Consolation Game
+2026,2025-11-29,2025-11-24,401826886,reg,0,0,12,Arizona Wildcats,Big 12,power,2,98,2450,Norfolk State Spartans,MEAC,mid,0,61,Wildcat Classic
+2026,2025-11-29,2025-11-24,401827111,reg,0,0,84,Indiana Hoosiers,Big Ten,power,25,100,2065,Bethune-Cookman Wildcats,SWAC,mid,0,56,
+2026,2025-11-30,2025-11-24,401819901,reg,0,0,2641,Texas Tech Red Raiders,Big 12,power,20,76,2751,Wyoming Cowboys,Mountain West,high,0,72,
+2026,2025-12-02,2025-12-01,401806364,reg,0,0,150,Duke Blue Devils,ACC,power,4,67,57,Florida Gators,SEC,power,15,66,ACC/SEC Men's Challenge
+2026,2025-12-02,2025-12-01,401806365,reg,0,0,96,Kentucky Wildcats,SEC,power,18,64,153,North Carolina Tar Heels,ACC,power,16,67,ACC/SEC Men's Challenge
+2026,2025-12-02,2025-12-01,401806366,reg,0,0,183,Syracuse Orange,ACC,power,0,62,2633,Tennessee Volunteers,SEC,power,13,60,ACC/SEC Men's Challenge
+2026,2025-12-02,2025-12-01,401812791,reg,0,0,2305,Kansas Jayhawks,Big 12,power,21,56,41,UConn Huskies,Big East,high,5,61,
+2026,2025-12-02,2025-12-01,401825392,reg,0,1,127,Michigan State Spartans,Big Ten,power,7,71,2294,Iowa Hawkeyes,Big Ten,power,0,52,
+2026,2025-12-02,2025-12-01,401825393,reg,0,1,164,Rutgers Scarlet Knights,Big Ten,power,0,65,2509,Purdue Boilermakers,Big Ten,power,1,81,
+2026,2025-12-02,2025-12-01,401825394,reg,0,1,2483,Oregon Ducks,Big Ten,power,0,77,30,USC Trojans,Big Ten,power,24,82,
+2026,2025-12-03,2025-12-01,401806373,reg,0,0,2,Auburn Tigers,SEC,power,20,83,152,NC State Wolfpack,ACC,power,0,73,ACC/SEC Men's Challenge
+2026,2025-12-03,2025-12-01,401806374,reg,0,0,8,Arkansas Razorbacks,SEC,power,25,89,97,Louisville Cardinals,ACC,power,6,80,ACC/SEC Men's Challenge
+2026,2025-12-03,2025-12-01,401806375,reg,0,0,238,Vanderbilt Commodores,SEC,power,17,88,2567,SMU Mustangs,ACC,power,0,69,ACC/SEC Men's Challenge
+2026,2025-12-03,2025-12-01,401806376,reg,0,0,333,Alabama Crimson Tide,SEC,power,12,90,228,Clemson Tigers,ACC,power,0,84,ACC/SEC Men's Challenge
+2026,2025-12-03,2025-12-01,401819837,reg,0,0,252,BYU Cougars,Big 12,power,9,91,2856,California Baptist Lancers,UAC,mid,0,60,
+2026,2025-12-03,2025-12-01,401819876,reg,0,0,66,Iowa State Cyclones,Big 12,power,10,132,2016,Alcorn State Braves,SWAC,mid,0,68,
+2026,2025-12-03,2025-12-01,401825395,reg,0,1,135,Minnesota Golden Gophers,Big Ten,power,0,73,84,Indiana Hoosiers,Big Ten,power,22,64,
+2026,2025-12-05,2025-12-01,401812792,reg,0,0,41,UConn Huskies,Big East,high,5,83,2837,East Texas A&M Lions,Southland,mid,0,59,
+2026,2025-12-05,2025-12-01,401824034,reg,1,0,96,Kentucky Wildcats,SEC,power,18,59,2250,Gonzaga Bulldogs,WCC,high,11,94,Music City Madness
+2026,2025-12-06,2025-12-01,401811099,reg,1,0,2633,Tennessee Volunteers,SEC,power,13,62,356,Illinois Fighting Illini,Big Ten,power,14,75,Music City Madness presented by Charity: Water
+2026,2025-12-06,2025-12-01,401817235,reg,0,0,127,Michigan State Spartans,Big Ten,power,7,60,150,Duke Blue Devils,ACC,power,4,66,
+2026,2025-12-06,2025-12-01,401817246,reg,1,0,97,Louisville Cardinals,ACC,power,6,87,84,Indiana Hoosiers,Big Ten,power,22,78,
+2026,2025-12-06,2025-12-01,401819877,reg,0,0,2509,Purdue Boilermakers,Big Ten,power,1,58,66,Iowa State Cyclones,Big 12,power,10,81,
+2026,2025-12-06,2025-12-01,401823480,reg,0,0,12,Arizona Wildcats,Big 12,power,2,97,2,Auburn Tigers,SEC,power,20,68,
+2026,2025-12-06,2025-12-01,401824813,reg,1,0,248,Houston Cougars,Big 12,power,8,82,52,Florida State Seminoles,ACC,power,0,67,Houston Hoops Showdown
+2026,2025-12-06,2025-12-01,401825400,reg,0,1,130,Michigan Wolverines,Big Ten,power,3,101,164,Rutgers Scarlet Knights,Big Ten,power,0,60,
+2026,2025-12-06,2025-12-01,401825402,reg,0,1,30,USC Trojans,Big Ten,power,24,76,264,Washington Huskies,Big Ten,power,0,84,
+2026,2025-12-06,2025-12-01,401826791,reg,0,0,8,Arkansas Razorbacks,SEC,power,25,82,278,Fresno State Bulldogs,Mountain West,high,0,58,
+2026,2025-12-06,2025-12-01,401826916,reg,0,0,2599,St. John's Red Storm,Big East,high,23,63,145,Ole Miss Rebels,SEC,power,0,58,
+2026,2025-12-07,2025-12-01,401812265,reg,0,0,333,Alabama Crimson Tide,SEC,power,12,97,2636,UTSA Roadrunners,American,high,0,55,
+2026,2025-12-07,2025-12-01,401817268,reg,0,0,153,North Carolina Tar Heels,ACC,power,16,81,46,Georgetown Hoyas,Big East,high,0,61,
+2026,2025-12-07,2025-12-01,401819885,reg,1,0,2305,Kansas Jayhawks,Big 12,power,21,80,142,Missouri Tigers,SEC,power,0,60,
+2026,2025-12-07,2025-12-01,401819902,reg,1,0,2641,Texas Tech Red Raiders,Big 12,power,19,82,99,LSU Tigers,SEC,power,0,58,US LBM Coast to Coast Challenge
+2026,2025-12-07,2025-12-01,401823448,reg,0,0,2250,Gonzaga Bulldogs,WCC,high,11,109,2454,North Florida Ospreys,ASUN,mid,0,58,
+2026,2025-12-09,2025-12-08,401812793,reg,1,0,41,UConn Huskies,Big East,high,5,77,57,Florida Gators,SEC,power,18,73,Jimmy V Classic presented by Modelo
+2026,2025-12-09,2025-12-08,401812923,reg,1,0,252,BYU Cougars,Big 12,power,10,67,228,Clemson Tigers,ACC,power,0,64,Jimmy V Classic presented by Modelo
+2026,2025-12-09,2025-12-08,401817513,reg,0,0,258,Virginia Cavaliers,ACC,power,24,84,2379,Maryland Eastern Shore Hawks,MEAC,mid,0,60,
+2026,2025-12-09,2025-12-08,401823566,reg,0,0,130,Michigan Wolverines,Big Ten,power,2,89,222,Villanova Wildcats,Big East,high,0,61,
+2026,2025-12-09,2025-12-08,401825404,reg,0,1,194,Ohio State Buckeyes,Big Ten,power,0,80,356,Illinois Fighting Illini,Big Ten,power,13,88,
+2026,2025-12-10,2025-12-08,401824814,reg,0,0,248,Houston Cougars,Big 12,power,7,80,2296,Jackson State Tigers,SWAC,mid,0,38,
+2026,2025-12-10,2025-12-08,401825405,reg,0,1,158,Nebraska Cornhuskers,Big Ten,power,23,90,275,Wisconsin Badgers,Big Ten,power,0,60,
+2026,2025-12-10,2025-12-08,401825406,reg,0,1,2509,Purdue Boilermakers,Big Ten,power,6,85,135,Minnesota Golden Gophers,Big Ten,power,0,57,
+2026,2025-12-11,2025-12-08,401819878,reg,0,0,66,Iowa State Cyclones,Big 12,power,4,66,2294,Iowa Hawkeyes,Big Ten,power,0,62,
+2026,2025-12-12,2025-12-08,401812794,reg,0,0,41,UConn Huskies,Big East,high,5,71,251,Texas Longhorns,SEC,power,0,63,
+2026,2025-12-13,2025-12-08,401808901,reg,0,0,248,Houston Cougars,Big 12,power,7,99,2443,New Orleans Privateers,Southland,mid,0,57,
+2026,2025-12-13,2025-12-08,401812266,reg,1,0,333,Alabama Crimson Tide,SEC,power,12,75,12,Arizona Wildcats,Big 12,power,1,96,C.M. Newton Classic
+2026,2025-12-13,2025-12-08,401813763,reg,1,0,2250,Gonzaga Bulldogs,WCC,high,8,82,26,UCLA Bruins,Big Ten,power,25,72,Seattle Hoops Showdown
+2026,2025-12-13,2025-12-08,401817151,reg,1,0,57,Florida Gators,SEC,power,18,80,45,George Washington Revolutionaries,A-10,high,0,70,AutoNation Orange Bowl Classic
+2026,2025-12-13,2025-12-08,401817247,reg,0,0,97,Louisville Cardinals,ACC,power,11,99,235,Memphis Tigers,American,high,0,73,
+2026,2025-12-13,2025-12-08,401817259,reg,0,0,152,NC State Wolfpack,ACC,power,0,76,2305,Kansas Jayhawks,Big 12,power,19,77,
+2026,2025-12-13,2025-12-08,401817269,reg,0,0,153,North Carolina Tar Heels,ACC,power,14,80,2908,South Carolina Upstate Spartans,Big South,mid,0,62,
+2026,2025-12-13,2025-12-08,401819838,reg,0,0,252,BYU Cougars,Big 12,power,10,100,27,UC Riverside Highlanders,Big West,mid,0,53,
+2026,2025-12-13,2025-12-08,401823028,reg,0,0,2509,Purdue Boilermakers,Big Ten,power,6,79,269,Marquette Golden Eagles,Big East,high,0,59,
+2026,2025-12-13,2025-12-08,401823481,reg,1,0,2,Auburn Tigers,SEC,power,21,92,236,Chattanooga Mocs,SoCon,mid,0,78,Holiday Hoopsgiving
+2026,2025-12-13,2025-12-08,401824309,reg,0,0,2599,St. John's Red Storm,Big East,high,22,91,314,Iona Gaels,MAAC,mid,0,64,
+2026,2025-12-13,2025-12-08,401824940,reg,0,0,238,Vanderbilt Commodores,SEC,power,15,83,2110,Central Arkansas Bears,ASUN,mid,0,72,
+2026,2025-12-13,2025-12-08,401825407,reg,0,1,356,Illinois Fighting Illini,Big Ten,power,13,80,158,Nebraska Cornhuskers,Big Ten,power,23,83,
+2026,2025-12-13,2025-12-08,401825408,reg,0,1,120,Maryland Terrapins,Big Ten,power,0,83,130,Michigan Wolverines,Big Ten,power,2,101,
+2026,2025-12-13,2025-12-08,401825409,reg,0,1,213,Penn State Nittany Lions,Big Ten,power,0,72,127,Michigan State Spartans,Big Ten,power,9,76,
+2026,2025-12-13,2025-12-08,401826789,reg,1,0,8,Arkansas Razorbacks,SEC,power,17,93,2641,Texas Tech Red Raiders,Big 12,power,16,86,
+2026,2025-12-14,2025-12-08,401819879,reg,0,0,66,Iowa State Cyclones,Big 12,power,4,78,2197,Eastern Illinois Panthers,OVC,mid,0,53,
+2026,2025-12-16,2025-12-15,401817236,reg,0,0,150,Duke Blue Devils,ACC,power,3,97,288,Lipscomb Bisons,ASUN,mid,0,73,
+2026,2025-12-16,2025-12-15,401817248,reg,0,0,2633,Tennessee Volunteers,SEC,power,20,83,97,Louisville Cardinals,ACC,power,11,62,
+2026,2025-12-16,2025-12-15,401817270,reg,0,0,153,North Carolina Tar Heels,ACC,power,12,77,2193,East Tennessee State Buccaneers,SoCon,mid,0,58,
+2026,2025-12-16,2025-12-15,401819839,reg,0,0,252,BYU Cougars,Big 12,power,10,93,279,Pacific Tigers,WCC,high,0,57,
+2026,2025-12-16,2025-12-15,401819886,reg,0,0,2305,Kansas Jayhawks,Big 12,power,17,73,119,Towson Tigers,CAA,mid,0,49,
+2026,2025-12-16,2025-12-15,401819903,reg,0,0,2641,Texas Tech Red Raiders,Big 12,power,19,101,2458,Northern Colorado Bears,Big Sky,mid,0,90,
+2026,2025-12-16,2025-12-15,401822868,reg,0,1,41,UConn Huskies,Big East,high,5,79,2086,Butler Bulldogs,Big East,high,0,60,
+2026,2025-12-16,2025-12-15,401822869,reg,0,1,2599,St. John's Red Storm,Big East,high,22,79,305,DePaul Blue Demons,Big East,high,0,66,
+2026,2025-12-16,2025-12-15,401823472,reg,0,0,127,Michigan State Spartans,Big Ten,power,9,92,2649,Toledo Rockets,MAC,mid,0,69,
+2026,2025-12-16,2025-12-15,401823497,reg,0,0,8,Arkansas Razorbacks,SEC,power,14,108,2511,Queens University Royals,ASUN,mid,0,80,
+2026,2025-12-16,2025-12-15,401823529,reg,0,0,12,Arizona Wildcats,Big 12,power,1,96,2000,Abilene Christian Wildcats,UAC,mid,0,62,
+2026,2025-12-17,2025-12-15,401812267,reg,0,0,333,Alabama Crimson Tide,SEC,power,16,104,58,South Florida Bulls,American,high,0,93,
+2026,2025-12-17,2025-12-15,401812387,reg,0,0,57,Florida Gators,SEC,power,23,102,2598,Saint Francis Red Wolves,NEC,mid,0,61,
+2026,2025-12-17,2025-12-15,401824035,reg,0,0,2250,Gonzaga Bulldogs,WCC,high,7,98,2097,Campbell Fighting Camels,CAA,mid,0,70,
+2026,2025-12-17,2025-12-15,401826799,reg,0,0,235,Memphis Tigers,American,high,0,70,238,Vanderbilt Commodores,SEC,power,13,77,
+2026,2025-12-18,2025-12-15,401826775,reg,0,0,61,Georgia Bulldogs,SEC,power,25,112,2717,Western Carolina Catamounts,SoCon,mid,0,82,
+2026,2025-12-19,2025-12-15,401819840,reg,0,0,252,BYU Cougars,Big 12,power,10,85,2000,Abilene Christian Wildcats,UAC,mid,0,67,
+2026,2025-12-20,2025-12-15,401809306,reg,1,0,96,Kentucky Wildcats,SEC,power,0,78,2599,St. John's Red Storm,Big East,high,22,66,CBS Sports Classic
+2026,2025-12-20,2025-12-15,401809307,reg,1,0,194,Ohio State Buckeyes,Big Ten,power,0,70,153,North Carolina Tar Heels,ACC,power,12,71,CBS Sports Classic
+2026,2025-12-20,2025-12-15,401817237,reg,1,0,150,Duke Blue Devils,ACC,power,3,81,2641,Texas Tech Red Raiders,Big 12,power,19,82,
+2026,2025-12-20,2025-12-15,401817249,reg,0,0,97,Louisville Cardinals,ACC,power,11,94,149,Montana Grizzlies,Big Sky,mid,0,54,
+2026,2025-12-20,2025-12-15,401817514,reg,0,0,258,Virginia Cavaliers,ACC,power,23,80,120,Maryland Terrapins,Big Ten,power,0,72,
+2026,2025-12-20,2025-12-15,401820294,reg,1,0,8,Arkansas Razorbacks,SEC,power,14,85,248,Houston Cougars,Big 12,power,8,94,Never Forget Tribute Classic
+2026,2025-12-20,2025-12-15,401823482,reg,1,0,2509,Purdue Boilermakers,Big Ten,power,6,88,2,Auburn Tigers,SEC,power,21,60,Indy Classic
+2026,2025-12-20,2025-12-15,401823768,reg,1,0,12,Arizona Wildcats,Big 12,power,1,68,21,San Diego State Aztecs,Mountain West,high,0,45,Hall of Fame Series - Phoenix
+2026,2025-12-20,2025-12-15,401826874,reg,1,0,127,Michigan State Spartans,Big Ten,power,9,79,2473,Oakland Golden Grizzlies,Horizon,mid,0,70,
+2026,2025-12-21,2025-12-15,401812268,reg,1,0,333,Alabama Crimson Tide,SEC,power,16,92,338,Kennesaw State Owls,CUSA,mid,0,81,Rocket City Classic
+2026,2025-12-21,2025-12-15,401817537,reg,0,0,154,Wake Forest Demon Deacons,ACC,power,0,67,238,Vanderbilt Commodores,SEC,power,13,98,
+2026,2025-12-21,2025-12-15,401819880,reg,0,0,66,Iowa State Cyclones,Big 12,power,4,91,299,Long Beach State Beach,Big West,mid,0,60,
+2026,2025-12-21,2025-12-15,401822185,reg,0,0,130,Michigan Wolverines,Big Ten,power,2,102,2325,La Salle Explorers,A-10,high,0,50,
+2026,2025-12-21,2025-12-15,401822875,reg,0,1,305,DePaul Blue Demons,Big East,high,0,54,41,UConn Huskies,Big East,high,5,72,
+2026,2025-12-21,2025-12-15,401824036,reg,1,0,2483,Oregon Ducks,Big Ten,power,0,82,2250,Gonzaga Bulldogs,WCC,high,7,91,Northwest Elite Showdown
+2026,2025-12-21,2025-12-15,401826974,reg,0,0,2633,Tennessee Volunteers,SEC,power,20,94,2241,Gardner-Webb Runnin' Bulldogs,Big South,mid,0,52,
+2026,2025-12-21,2025-12-15,401827239,reg,0,0,158,Nebraska Cornhuskers,Big Ten,power,15,78,155,North Dakota Fighting Hawks,Summit,mid,0,55,
+2026,2025-12-21,2025-12-15,401829406,reg,0,0,57,Florida Gators,SEC,power,23,90,2142,Colgate Raiders,Patriot,mid,0,60,
+2026,2025-12-22,2025-12-22,401811100,reg,1,0,356,Illinois Fighting Illini,Big Ten,power,20,91,142,Missouri Tigers,SEC,power,0,48,
+2026,2025-12-22,2025-12-22,401817271,reg,0,0,153,North Carolina Tar Heels,ACC,power,12,99,151,East Carolina Pirates,American,high,0,51,
+2026,2025-12-22,2025-12-22,401817515,reg,0,0,258,Virginia Cavaliers,ACC,power,21,95,44,American University Eagles,Patriot,mid,0,51,
+2026,2025-12-22,2025-12-22,401819841,reg,0,0,252,BYU Cougars,Big 12,power,10,109,331,Eastern Washington Eagles,Big Sky,mid,0,81,
+2026,2025-12-22,2025-12-22,401819887,reg,0,0,2305,Kansas Jayhawks,Big 12,power,17,90,2166,Davidson Wildcats,A-10,high,0,61,
+2026,2025-12-22,2025-12-22,401825391,reg,0,0,61,Georgia Bulldogs,SEC,power,23,103,2698,West Georgia Wolves,ASUN,mid,0,74,
+2026,2025-12-22,2025-12-22,401826887,reg,0,0,12,Arizona Wildcats,Big 12,power,1,107,2065,Bethune-Cookman Wildcats,SWAC,mid,0,71,
+2026,2025-12-28,2025-12-22,401819904,reg,0,0,2641,Texas Tech Red Raiders,Big 12,power,15,87,2737,Winthrop Eagles,Big South,mid,0,57,
+2026,2025-12-28,2025-12-22,401829163,reg,0,1,2492,Pepperdine Waves,WCC,high,0,56,2250,Gonzaga Bulldogs,WCC,high,7,96,
+2026,2025-12-29,2025-12-29,401812269,reg,0,0,333,Alabama Crimson Tide,SEC,power,14,102,43,Yale Bulldogs,Ivy,mid,0,78,
+2026,2025-12-29,2025-12-29,401812364,reg,0,0,61,Georgia Bulldogs,SEC,power,23,89,112358,Long Island University Sharks,NEC,mid,0,74,
+2026,2025-12-29,2025-12-29,401819881,reg,0,0,66,Iowa State Cyclones,Big 12,power,3,89,2277,Houston Christian Huskies,Southland,mid,0,61,
+2026,2025-12-29,2025-12-29,401823001,reg,0,0,248,Houston Cougars,Big 12,power,8,69,2393,Middle Tennessee Blue Raiders,CUSA,mid,0,60,
+2026,2025-12-29,2025-12-29,401823019,reg,0,0,2509,Purdue Boilermakers,Big Ten,power,5,101,2309,Kent State Golden Flashes,MAC,mid,0,60,
+2026,2025-12-29,2025-12-29,401823651,reg,0,0,2294,Iowa Hawkeyes,Big Ten,power,25,90,2349,UMass Lowell River Hawks,Am. East,mid,0,62,
+2026,2025-12-29,2025-12-29,401826084,reg,0,0,130,Michigan Wolverines,Big Ten,power,2,112,2377,McNeese Cowboys,Southland,mid,0,71,
+2026,2025-12-29,2025-12-29,401826790,reg,0,0,8,Arkansas Razorbacks,SEC,power,18,103,256,James Madison Dukes,Sun Belt,mid,0,74,
+2026,2025-12-29,2025-12-29,401826888,reg,0,0,12,Arizona Wildcats,Big 12,power,1,99,2571,South Dakota State Jackrabbits,Summit,mid,0,71,
+2026,2025-12-29,2025-12-29,401827020,reg,0,0,356,Illinois Fighting Illini,Big Ten,power,20,90,2582,Southern Jaguars,SWAC,mid,0,55,
+2026,2025-12-29,2025-12-29,401827222,reg,0,0,127,Michigan State Spartans,Big Ten,power,9,114,172,Cornell Big Red,Ivy,mid,0,97,
+2026,2025-12-29,2025-12-29,401828686,reg,0,0,238,Vanderbilt Commodores,SEC,power,11,96,2441,New Haven Chargers,NEC,mid,0,53,
+2026,2025-12-29,2025-12-29,401829419,reg,0,0,57,Florida Gators,SEC,power,22,94,159,Dartmouth Big Green,Ivy,mid,0,72,
+2026,2025-12-30,2025-12-29,401820634,reg,0,1,25,California Golden Bears,ACC,power,0,70,97,Louisville Cardinals,ACC,power,16,90,
+2026,2025-12-30,2025-12-29,401820639,reg,0,1,153,North Carolina Tar Heels,ACC,power,12,79,52,Florida State Seminoles,ACC,power,0,66,
+2026,2025-12-30,2025-12-29,401826776,reg,0,0,158,Nebraska Cornhuskers,Big Ten,power,13,86,160,New Hampshire Wildcats,Am. East,mid,0,55,
+2026,2025-12-30,2025-12-29,401829169,reg,0,1,301,San Diego Toreros,WCC,high,0,93,2250,Gonzaga Bulldogs,WCC,high,7,99,
+2026,2025-12-30,2025-12-29,401829283,reg,0,0,2633,Tennessee Volunteers,SEC,power,19,105,2569,South Carolina State Bulldogs,MEAC,mid,0,54,
+2026,2025-12-31,2025-12-29,401820636,reg,0,1,150,Duke Blue Devils,ACC,power,6,85,59,Georgia Tech Yellow Jackets,ACC,power,0,79,
+2026,2025-12-31,2025-12-29,401820641,reg,0,1,259,Virginia Tech Hokies,ACC,power,0,95,258,Virginia Cavaliers,ACC,power,21,85,
+2026,2025-12-31,2025-12-29,401822880,reg,0,1,2752,Xavier Musketeers,Big East,high,0,67,41,UConn Huskies,Big East,high,4,90,
+2026,2026-01-02,2025-12-29,401820643,reg,0,1,24,Stanford Cardinal,ACC,power,0,80,97,Louisville Cardinals,ACC,power,16,76,
+2026,2026-01-02,2025-12-29,401825411,reg,0,1,130,Michigan Wolverines,Big Ten,power,2,96,30,USC Trojans,Big Ten,power,24,66,
+2026,2026-01-02,2025-12-29,401825412,reg,0,1,158,Nebraska Cornhuskers,Big Ten,power,13,58,127,Michigan State Spartans,Big Ten,power,9,56,
+2026,2026-01-02,2025-12-29,401827592,reg,0,1,66,Iowa State Cyclones,Big 12,power,3,80,277,West Virginia Mountaineers,Big 12,power,0,59,
+2026,2026-01-02,2025-12-29,401829180,reg,0,1,2250,Gonzaga Bulldogs,WCC,high,7,80,2547,Seattle U Redhawks,WCC,high,0,72,
+2026,2026-01-03,2025-12-29,401808145,reg,0,1,8,Arkansas Razorbacks,SEC,power,18,86,2633,Tennessee Volunteers,SEC,power,19,75,
+2026,2026-01-03,2025-12-29,401808146,reg,0,1,61,Georgia Bulldogs,SEC,power,23,104,2,Auburn Tigers,SEC,power,0,100,
+2026,2026-01-03,2025-12-29,401808147,reg,0,1,142,Missouri Tigers,SEC,power,0,76,57,Florida Gators,SEC,power,22,74,
+2026,2026-01-03,2025-12-29,401808148,reg,0,1,2579,South Carolina Gamecocks,SEC,power,0,71,238,Vanderbilt Commodores,SEC,power,11,83,
+2026,2026-01-03,2025-12-29,401808152,reg,0,1,333,Alabama Crimson Tide,SEC,power,14,89,96,Kentucky Wildcats,SEC,power,0,74,
+2026,2026-01-03,2025-12-29,401820644,reg,0,1,52,Florida State Seminoles,ACC,power,0,87,150,Duke Blue Devils,ACC,power,6,91,
+2026,2026-01-03,2025-12-29,401820646,reg,0,1,152,NC State Wolfpack,ACC,power,0,61,258,Virginia Cavaliers,ACC,power,21,76,
+2026,2026-01-03,2025-12-29,401820648,reg,0,1,2567,SMU Mustangs,ACC,power,0,97,153,North Carolina Tar Heels,ACC,power,12,83,
+2026,2026-01-03,2025-12-29,401825414,reg,0,1,2294,Iowa Hawkeyes,Big Ten,power,25,74,26,UCLA Bruins,Big Ten,power,0,61,
+2026,2026-01-03,2025-12-29,401825416,reg,0,1,213,Penn State Nittany Lions,Big Ten,power,0,65,356,Illinois Fighting Illini,Big Ten,power,20,73,
+2026,2026-01-03,2025-12-29,401825417,reg,0,1,275,Wisconsin Badgers,Big Ten,power,0,73,2509,Purdue Boilermakers,Big Ten,power,5,89,
+2026,2026-01-03,2025-12-29,401827594,reg,0,1,2116,UCF Knights,Big 12,power,0,81,2305,Kansas Jayhawks,Big 12,power,17,75,
+2026,2026-01-03,2025-12-29,401827595,reg,0,1,2132,Cincinnati Bearcats,Big 12,power,0,60,248,Houston Cougars,Big 12,power,8,67,
+2026,2026-01-03,2025-12-29,401827596,reg,0,1,2306,Kansas State Wildcats,Big 12,power,0,73,252,BYU Cougars,Big 12,power,10,83,
+2026,2026-01-03,2025-12-29,401827598,reg,0,1,2641,Texas Tech Red Raiders,Big 12,power,15,102,197,Oklahoma State Cowboys,Big 12,power,0,80,
+2026,2026-01-03,2025-12-29,401827599,reg,0,1,254,Utah Utes,Big 12,power,0,78,12,Arizona Wildcats,Big 12,power,1,97,
+2026,2026-01-04,2025-12-29,401822885,reg,0,1,41,UConn Huskies,Big East,high,4,73,269,Marquette Golden Eagles,Big East,high,0,57,
+2026,2026-01-04,2025-12-29,401829181,reg,0,1,2250,Gonzaga Bulldogs,WCC,high,7,82,2351,Loyola Marymount Lions,WCC,high,0,47,
+2026,2026-01-05,2026-01-05,401825419,reg,0,1,127,Michigan State Spartans,Big Ten,power,12,80,30,USC Trojans,Big Ten,power,0,51,
+2026,2026-01-05,2026-01-05,401825420,reg,0,1,194,Ohio State Buckeyes,Big Ten,power,0,69,158,Nebraska Cornhuskers,Big Ten,power,10,72,
+2026,2026-01-06,2026-01-05,401808153,reg,0,1,57,Florida Gators,SEC,power,0,92,61,Georgia Bulldogs,SEC,power,18,77,
+2026,2026-01-06,2026-01-05,401808160,reg,0,1,2633,Tennessee Volunteers,SEC,power,21,85,251,Texas Longhorns,SEC,power,0,71,
+2026,2026-01-06,2026-01-05,401820650,reg,0,1,97,Louisville Cardinals,ACC,power,20,73,150,Duke Blue Devils,ACC,power,6,84,
+2026,2026-01-06,2026-01-05,401825422,reg,0,1,135,Minnesota Golden Gophers,Big Ten,power,0,70,2294,Iowa Hawkeyes,Big Ten,power,19,67,
+2026,2026-01-06,2026-01-05,401825423,reg,0,1,213,Penn State Nittany Lions,Big Ten,power,0,72,130,Michigan Wolverines,Big Ten,power,2,74,
+2026,2026-01-06,2026-01-05,401827600,reg,0,1,248,Houston Cougars,Big 12,power,7,69,2641,Texas Tech Red Raiders,Big 12,power,14,65,
+2026,2026-01-06,2026-01-05,401827601,reg,0,1,2305,Kansas Jayhawks,Big 12,power,22,104,2628,TCU Horned Frogs,Big 12,power,0,100,
+2026,2026-01-06,2026-01-05,401827602,reg,0,1,197,Oklahoma State Cowboys,Big 12,power,0,87,2116,UCF Knights,Big 12,power,25,76,
+2026,2026-01-07,2026-01-05,401808155,reg,0,1,238,Vanderbilt Commodores,SEC,power,11,96,333,Alabama Crimson Tide,SEC,power,13,90,
+2026,2026-01-07,2026-01-05,401808159,reg,0,1,145,Ole Miss Rebels,SEC,power,0,87,8,Arkansas Razorbacks,SEC,power,15,94,
+2026,2026-01-07,2026-01-05,401820652,reg,0,1,228,Clemson Tigers,ACC,power,0,74,2567,SMU Mustangs,ACC,power,24,70,
+2026,2026-01-07,2026-01-05,401820654,reg,0,1,258,Virginia Cavaliers,ACC,power,23,84,25,California Golden Bears,ACC,power,0,60,
+2026,2026-01-07,2026-01-05,401822889,reg,0,1,2507,Providence Friars,Big East,high,0,98,41,UConn Huskies,Big East,high,4,103,
+2026,2026-01-07,2026-01-05,401825426,reg,0,1,2509,Purdue Boilermakers,Big Ten,power,5,81,264,Washington Huskies,Big Ten,power,0,73,
+2026,2026-01-07,2026-01-05,401827604,reg,0,1,12,Arizona Wildcats,Big 12,power,1,101,2306,Kansas State Wildcats,Big 12,power,0,76,
+2026,2026-01-07,2026-01-05,401827605,reg,0,1,239,Baylor Bears,Big 12,power,0,60,66,Iowa State Cyclones,Big 12,power,3,70,
+2026,2026-01-07,2026-01-05,401827606,reg,0,1,252,BYU Cougars,Big 12,power,9,104,9,Arizona State Sun Devils,Big 12,power,0,76,
+2026,2026-01-08,2026-01-05,401825427,reg,0,1,356,Illinois Fighting Illini,Big Ten,power,16,81,164,Rutgers Scarlet Knights,Big Ten,power,0,55,
+2026,2026-01-08,2026-01-05,401825428,reg,0,1,127,Michigan State Spartans,Big Ten,power,12,76,77,Northwestern Wildcats,Big Ten,power,0,66,
+2026,2026-01-08,2026-01-05,401829190,reg,0,1,2250,Gonzaga Bulldogs,WCC,high,8,89,2541,Santa Clara Broncos,WCC,high,0,77,
+2026,2026-01-10,2026-01-05,401808161,reg,0,1,2,Auburn Tigers,SEC,power,0,95,8,Arkansas Razorbacks,SEC,power,15,73,
+2026,2026-01-10,2026-01-05,401808162,reg,0,1,57,Florida Gators,SEC,power,0,91,2633,Tennessee Volunteers,SEC,power,21,67,
+2026,2026-01-10,2026-01-05,401808165,reg,0,1,2579,South Carolina Gamecocks,SEC,power,0,70,61,Georgia Bulldogs,SEC,power,18,75,
+2026,2026-01-10,2026-01-05,401808167,reg,0,1,238,Vanderbilt Commodores,SEC,power,11,84,99,LSU Tigers,SEC,power,0,73,
+2026,2026-01-10,2026-01-05,401808168,reg,0,1,333,Alabama Crimson Tide,SEC,power,13,88,251,Texas Longhorns,SEC,power,0,92,
+2026,2026-01-10,2026-01-05,401820657,reg,0,1,150,Duke Blue Devils,ACC,power,6,82,2567,SMU Mustangs,ACC,power,24,75,
+2026,2026-01-10,2026-01-05,401820659,reg,0,1,97,Louisville Cardinals,ACC,power,20,75,103,Boston College Eagles,ACC,power,0,62,
+2026,2026-01-10,2026-01-05,401820661,reg,0,1,153,North Carolina Tar Heels,ACC,power,17,87,154,Wake Forest Demon Deacons,ACC,power,0,84,
+2026,2026-01-10,2026-01-05,401820664,reg,0,1,258,Virginia Cavaliers,ACC,power,23,70,24,Stanford Cardinal,ACC,power,0,55,
+2026,2026-01-10,2026-01-05,401822893,reg,0,1,41,UConn Huskies,Big East,high,4,72,305,DePaul Blue Demons,Big East,high,0,60,
+2026,2026-01-10,2026-01-05,401825431,reg,0,1,84,Indiana Hoosiers,Big Ten,power,0,77,158,Nebraska Cornhuskers,Big Ten,power,10,83,
+2026,2026-01-10,2026-01-05,401825432,reg,0,1,130,Michigan Wolverines,Big Ten,power,2,88,275,Wisconsin Badgers,Big Ten,power,0,91,
+2026,2026-01-10,2026-01-05,401825433,reg,0,1,2509,Purdue Boilermakers,Big Ten,power,5,93,213,Penn State Nittany Lions,Big Ten,power,0,85,
+2026,2026-01-10,2026-01-05,401827609,reg,0,1,239,Baylor Bears,Big 12,power,0,55,248,Houston Cougars,Big 12,power,7,77,
+2026,2026-01-10,2026-01-05,401827610,reg,0,1,38,Colorado Buffaloes,Big 12,power,0,71,2641,Texas Tech Red Raiders,Big 12,power,14,73,
+2026,2026-01-10,2026-01-05,401827611,reg,0,1,66,Iowa State Cyclones,Big 12,power,3,83,197,Oklahoma State Cowboys,Big 12,power,0,71,
+2026,2026-01-10,2026-01-05,401827612,reg,0,1,2628,TCU Horned Frogs,Big 12,power,0,73,12,Arizona Wildcats,Big 12,power,1,86,
+2026,2026-01-10,2026-01-05,401827613,reg,0,1,254,Utah Utes,Big 12,power,0,84,252,BYU Cougars,Big 12,power,9,89,
+2026,2026-01-10,2026-01-05,401827614,reg,0,1,277,West Virginia Mountaineers,Big 12,power,0,86,2305,Kansas Jayhawks,Big 12,power,22,75,
+2026,2026-01-11,2026-01-05,401825435,reg,0,1,2294,Iowa Hawkeyes,Big Ten,power,19,69,356,Illinois Fighting Illini,Big Ten,power,16,75,
+2026,2026-01-11,2026-01-05,401827615,reg,0,1,2116,UCF Knights,Big 12,power,25,73,2132,Cincinnati Bearcats,Big 12,power,0,72,
+2026,2026-01-13,2026-01-12,401808170,reg,0,1,344,Mississippi State Bulldogs,SEC,power,0,82,333,Alabama Crimson Tide,SEC,power,18,97,
+2026,2026-01-13,2026-01-12,401808172,reg,0,1,201,Oklahoma Sooners,SEC,power,0,79,57,Florida Gators,SEC,power,19,96,
+2026,2026-01-13,2026-01-12,401808175,reg,0,1,2633,Tennessee Volunteers,SEC,power,24,87,245,Texas A&M Aggies,SEC,power,0,82,
+2026,2026-01-13,2026-01-12,401820667,reg,0,1,228,Clemson Tigers,ACC,power,22,74,103,Boston College Eagles,ACC,power,0,50,
+2026,2026-01-13,2026-01-12,401820669,reg,0,1,97,Louisville Cardinals,ACC,power,20,70,258,Virginia Cavaliers,ACC,power,16,79,
+2026,2026-01-13,2026-01-12,401822900,reg,0,1,2550,Seton Hall Pirates,Big East,high,25,64,41,UConn Huskies,Big East,high,3,69,
+2026,2026-01-13,2026-01-12,401825438,reg,0,1,127,Michigan State Spartans,Big Ten,power,12,81,84,Indiana Hoosiers,Big Ten,power,0,60,
+2026,2026-01-13,2026-01-12,401825440,reg,0,1,158,Nebraska Cornhuskers,Big Ten,power,8,90,2483,Oregon Ducks,Big Ten,power,0,55,
+2026,2026-01-13,2026-01-12,401827616,reg,0,1,248,Houston Cougars,Big 12,power,7,77,277,West Virginia Mountaineers,Big 12,power,0,48,
+2026,2026-01-13,2026-01-12,401827617,reg,0,1,2305,Kansas Jayhawks,Big 12,power,0,84,66,Iowa State Cyclones,Big 12,power,2,63,
+2026,2026-01-14,2026-01-12,401808173,reg,0,1,8,Arkansas Razorbacks,SEC,power,17,108,2579,South Carolina Gamecocks,SEC,power,0,74,
+2026,2026-01-14,2026-01-12,401808174,reg,0,1,61,Georgia Bulldogs,SEC,power,21,95,145,Ole Miss Rebels,SEC,power,0,97,
+2026,2026-01-14,2026-01-12,401808176,reg,0,1,251,Texas Longhorns,SEC,power,0,80,238,Vanderbilt Commodores,SEC,power,10,64,
+2026,2026-01-14,2026-01-12,401820666,reg,0,1,25,California Golden Bears,ACC,power,0,56,150,Duke Blue Devils,ACC,power,6,71,
+2026,2026-01-14,2026-01-12,401820672,reg,0,1,24,Stanford Cardinal,ACC,power,0,95,153,North Carolina Tar Heels,ACC,power,14,90,
+2026,2026-01-14,2026-01-12,401825442,reg,0,1,77,Northwestern Wildcats,Big Ten,power,0,68,356,Illinois Fighting Illini,Big Ten,power,13,79,
+2026,2026-01-14,2026-01-12,401825444,reg,0,1,2509,Purdue Boilermakers,Big Ten,power,5,79,2294,Iowa Hawkeyes,Big Ten,power,0,72,
+2026,2026-01-14,2026-01-12,401825445,reg,0,1,264,Washington Huskies,Big Ten,power,0,72,130,Michigan Wolverines,Big Ten,power,4,82,
+2026,2026-01-14,2026-01-12,401827619,reg,0,1,12,Arizona Wildcats,Big 12,power,1,89,9,Arizona State Sun Devils,Big 12,power,0,82,
+2026,2026-01-14,2026-01-12,401827620,reg,0,1,252,BYU Cougars,Big 12,power,11,76,2628,TCU Horned Frogs,Big 12,power,0,70,
+2026,2026-01-14,2026-01-12,401827623,reg,0,1,2641,Texas Tech Red Raiders,Big 12,power,15,88,254,Utah Utes,Big 12,power,0,74,
+2026,2026-01-14,2026-01-12,401829294,reg,0,1,328,Utah State Aggies,Mountain West,high,23,71,2440,Nevada Wolf Pack,Mountain West,high,0,62,
+2026,2026-01-15,2026-01-12,401829197,reg,0,1,265,Washington State Cougars,WCC,high,0,65,2250,Gonzaga Bulldogs,WCC,high,9,86,
+2026,2026-01-17,2026-01-12,401808178,reg,0,1,61,Georgia Bulldogs,SEC,power,21,90,8,Arkansas Razorbacks,SEC,power,17,76,
+2026,2026-01-17,2026-01-12,401808181,reg,0,1,2633,Tennessee Volunteers,SEC,power,24,78,96,Kentucky Wildcats,SEC,power,0,80,
+2026,2026-01-17,2026-01-12,401808182,reg,0,1,238,Vanderbilt Commodores,SEC,power,10,94,57,Florida Gators,SEC,power,19,98,
+2026,2026-01-17,2026-01-12,401808184,reg,0,1,201,Oklahoma Sooners,SEC,power,0,81,333,Alabama Crimson Tide,SEC,power,18,83,
+2026,2026-01-17,2026-01-12,401820675,reg,0,1,25,California Golden Bears,ACC,power,0,84,153,North Carolina Tar Heels,ACC,power,14,78,
+2026,2026-01-17,2026-01-12,401820676,reg,0,1,228,Clemson Tigers,ACC,power,22,69,2390,Miami Hurricanes,ACC,power,0,59,
+2026,2026-01-17,2026-01-12,401820679,reg,0,1,221,Pittsburgh Panthers,ACC,power,0,59,97,Louisville Cardinals,ACC,power,20,100,
+2026,2026-01-17,2026-01-12,401820680,reg,0,1,2567,SMU Mustangs,ACC,power,0,68,258,Virginia Cavaliers,ACC,power,16,72,
+2026,2026-01-17,2026-01-12,401820681,reg,0,1,24,Stanford Cardinal,ACC,power,0,50,150,Duke Blue Devils,ACC,power,6,80,
+2026,2026-01-17,2026-01-12,401822904,reg,0,1,46,Georgetown Hoyas,Big East,high,0,62,41,UConn Huskies,Big East,high,3,64,
+2026,2026-01-17,2026-01-12,401822906,reg,0,1,2550,Seton Hall Pirates,Big East,high,25,66,2086,Butler Bulldogs,Big East,high,0,77,
+2026,2026-01-17,2026-01-12,401823796,reg,0,1,2253,Grand Canyon Lopes,Mountain West,high,0,84,328,Utah State Aggies,Mountain West,high,23,74,
+2026,2026-01-17,2026-01-12,401825446,reg,0,1,356,Illinois Fighting Illini,Big Ten,power,13,77,135,Minnesota Golden Gophers,Big Ten,power,0,67,
+2026,2026-01-17,2026-01-12,401825448,reg,0,1,77,Northwestern Wildcats,Big Ten,power,0,58,158,Nebraska Cornhuskers,Big Ten,power,8,77,
+2026,2026-01-17,2026-01-12,401825450,reg,0,1,2483,Oregon Ducks,Big Ten,power,0,71,130,Michigan Wolverines,Big Ten,power,4,81,
+2026,2026-01-17,2026-01-12,401825451,reg,0,1,30,USC Trojans,Big Ten,power,0,64,2509,Purdue Boilermakers,Big Ten,power,5,69,
+2026,2026-01-17,2026-01-12,401825452,reg,0,1,264,Washington Huskies,Big Ten,power,0,63,127,Michigan State Spartans,Big Ten,power,12,80,
+2026,2026-01-17,2026-01-12,401827625,reg,0,1,2116,UCF Knights,Big 12,power,0,77,12,Arizona Wildcats,Big 12,power,1,84,
+2026,2026-01-17,2026-01-12,401827626,reg,0,1,2132,Cincinnati Bearcats,Big 12,power,0,79,66,Iowa State Cyclones,Big 12,power,2,70,
+2026,2026-01-17,2026-01-12,401827628,reg,0,1,2641,Texas Tech Red Raiders,Big 12,power,15,84,252,BYU Cougars,Big 12,power,11,71,
+2026,2026-01-17,2026-01-12,401829203,reg,0,1,2547,Seattle U Redhawks,WCC,high,0,50,2250,Gonzaga Bulldogs,WCC,high,9,71,
+2026,2026-01-18,2026-01-12,401827631,reg,0,1,248,Houston Cougars,Big 12,power,7,103,9,Arizona State Sun Devils,Big 12,power,0,73,
+2026,2026-01-20,2026-01-19,401808188,reg,0,1,8,Arkansas Razorbacks,SEC,power,20,93,238,Vanderbilt Commodores,SEC,power,15,68,
+2026,2026-01-20,2026-01-19,401808189,reg,0,1,57,Florida Gators,SEC,power,16,79,99,LSU Tigers,SEC,power,0,61,
+2026,2026-01-20,2026-01-19,401808190,reg,0,1,142,Missouri Tigers,SEC,power,0,72,61,Georgia Bulldogs,SEC,power,21,74,
+2026,2026-01-20,2026-01-19,401814531,reg,0,1,2309,Kent State Golden Flashes,MAC,mid,0,101,193,Miami (OH) RedHawks,MAC,mid,25,107,
+2026,2026-01-20,2026-01-19,401820685,reg,0,1,228,Clemson Tigers,ACC,power,18,76,152,NC State Wolfpack,ACC,power,0,80,
+2026,2026-01-20,2026-01-19,401825456,reg,0,1,130,Michigan Wolverines,Big Ten,power,3,86,84,Indiana Hoosiers,Big Ten,power,0,72,
+2026,2026-01-20,2026-01-19,401825458,reg,0,1,2483,Oregon Ducks,Big Ten,power,0,52,127,Michigan State Spartans,Big Ten,power,10,68,
+2026,2026-01-20,2026-01-19,401825459,reg,0,1,26,UCLA Bruins,Big Ten,power,0,69,2509,Purdue Boilermakers,Big Ten,power,4,67,
+2026,2026-01-20,2026-01-19,401827632,reg,0,1,239,Baylor Bears,Big 12,power,0,73,2641,Texas Tech Red Raiders,Big 12,power,12,92,
+2026,2026-01-20,2026-01-19,401827633,reg,0,1,38,Colorado Buffaloes,Big 12,power,0,69,2305,Kansas Jayhawks,Big 12,power,19,75,
+2026,2026-01-20,2026-01-19,401827634,reg,0,1,66,Iowa State Cyclones,Big 12,power,9,87,2116,UCF Knights,Big 12,power,0,57,
+2026,2026-01-20,2026-01-19,401828382,reg,0,1,2184,Duquesne Dukes,A-10,high,0,77,139,Saint Louis Billikens,A-10,high,24,81,
+2026,2026-01-21,2026-01-19,401820687,reg,0,1,153,North Carolina Tar Heels,ACC,power,22,91,87,Notre Dame Fighting Irish,ACC,power,0,69,
+2026,2026-01-21,2026-01-19,401825460,reg,0,1,356,Illinois Fighting Illini,Big Ten,power,11,89,120,Maryland Terrapins,Big Ten,power,0,70,
+2026,2026-01-21,2026-01-19,401825461,reg,0,1,158,Nebraska Cornhuskers,Big Ten,power,7,76,264,Washington Huskies,Big Ten,power,0,66,
+2026,2026-01-21,2026-01-19,401827637,reg,0,1,12,Arizona Wildcats,Big 12,power,1,77,2132,Cincinnati Bearcats,Big 12,power,0,51,
+2026,2026-01-21,2026-01-19,401829210,reg,0,1,2250,Gonzaga Bulldogs,WCC,high,8,84,2492,Pepperdine Waves,WCC,high,0,60,
+2026,2026-01-23,2026-01-19,401825464,reg,0,1,130,Michigan Wolverines,Big Ten,power,3,74,194,Ohio State Buckeyes,Big Ten,power,0,62,
+2026,2026-01-23,2026-01-19,401828387,reg,0,1,179,St. Bonaventure Bonnies,A-10,high,0,62,139,Saint Louis Billikens,A-10,high,24,97,
+2026,2026-01-24,2026-01-19,401808192,reg,0,1,8,Arkansas Razorbacks,SEC,power,20,85,99,LSU Tigers,SEC,power,0,81,
+2026,2026-01-24,2026-01-19,401808193,reg,0,1,57,Florida Gators,SEC,power,16,67,2,Auburn Tigers,SEC,power,0,76,
+2026,2026-01-24,2026-01-19,401808195,reg,0,1,344,Mississippi State Bulldogs,SEC,power,0,56,238,Vanderbilt Commodores,SEC,power,15,88,
+2026,2026-01-24,2026-01-19,401808198,reg,0,1,251,Texas Longhorns,SEC,power,0,87,61,Georgia Bulldogs,SEC,power,21,67,
+2026,2026-01-24,2026-01-19,401808199,reg,0,1,333,Alabama Crimson Tide,SEC,power,17,73,2633,Tennessee Volunteers,SEC,power,0,79,
+2026,2026-01-24,2026-01-19,401820689,reg,0,1,150,Duke Blue Devils,ACC,power,5,90,154,Wake Forest Demon Deacons,ACC,power,0,69,
+2026,2026-01-24,2026-01-19,401820690,reg,0,1,59,Georgia Tech Yellow Jackets,ACC,power,0,63,228,Clemson Tigers,ACC,power,18,77,
+2026,2026-01-24,2026-01-19,401820691,reg,0,1,97,Louisville Cardinals,ACC,power,23,85,259,Virginia Tech Hokies,ACC,power,0,71,
+2026,2026-01-24,2026-01-19,401820697,reg,0,1,258,Virginia Cavaliers,ACC,power,14,80,153,North Carolina Tar Heels,ACC,power,22,85,
+2026,2026-01-24,2026-01-19,401822913,reg,0,1,41,UConn Huskies,Big East,high,2,75,222,Villanova Wildcats,Big East,high,0,67,
+2026,2026-01-24,2026-01-19,401825466,reg,0,1,127,Michigan State Spartans,Big Ten,power,10,91,120,Maryland Terrapins,Big Ten,power,0,48,
+2026,2026-01-24,2026-01-19,401825467,reg,0,1,135,Minnesota Golden Gophers,Big Ten,power,0,57,158,Nebraska Cornhuskers,Big Ten,power,7,76,
+2026,2026-01-24,2026-01-19,401825468,reg,0,1,2509,Purdue Boilermakers,Big Ten,power,4,82,356,Illinois Fighting Illini,Big Ten,power,11,88,
+2026,2026-01-24,2026-01-19,401827639,reg,0,1,12,Arizona Wildcats,Big 12,power,1,88,277,West Virginia Mountaineers,Big 12,power,0,53,
+2026,2026-01-24,2026-01-19,401827642,reg,0,1,252,BYU Cougars,Big 12,power,13,91,254,Utah Utes,Big 12,power,0,78,
+2026,2026-01-24,2026-01-19,401827644,reg,0,1,2306,Kansas State Wildcats,Big 12,power,0,62,2305,Kansas Jayhawks,Big 12,power,19,86,
+2026,2026-01-24,2026-01-19,401827645,reg,0,1,197,Oklahoma State Cowboys,Big 12,power,0,71,66,Iowa State Cyclones,Big 12,power,9,84,
+2026,2026-01-24,2026-01-19,401827646,reg,0,1,2641,Texas Tech Red Raiders,Big 12,power,12,90,248,Houston Cougars,Big 12,power,6,86,
+2026,2026-01-24,2026-01-19,401829214,reg,0,1,2250,Gonzaga Bulldogs,WCC,high,8,68,2539,San Francisco Dons,WCC,high,0,66,
+2026,2026-01-26,2026-01-26,401820698,reg,0,1,150,Duke Blue Devils,ACC,power,4,83,97,Louisville Cardinals,ACC,power,20,52,
+2026,2026-01-26,2026-01-26,401820816,reg,0,1,252,BYU Cougars,Big 12,power,13,83,12,Arizona Wildcats,Big 12,power,1,86,
+2026,2026-01-27,2026-01-26,401808204,reg,0,1,333,Alabama Crimson Tide,SEC,power,23,90,142,Missouri Tigers,SEC,power,0,64,
+2026,2026-01-27,2026-01-26,401808205,reg,0,1,238,Vanderbilt Commodores,SEC,power,18,80,96,Kentucky Wildcats,SEC,power,0,55,
+2026,2026-01-27,2026-01-26,401808206,reg,0,1,201,Oklahoma Sooners,SEC,power,0,79,8,Arkansas Razorbacks,SEC,power,15,83,
+2026,2026-01-27,2026-01-26,401814543,reg,0,1,193,Miami (OH) RedHawks,MAC,mid,24,86,113,Massachusetts Minutemen,MAC,mid,0,84,
+2026,2026-01-27,2026-01-26,401820703,reg,0,1,87,Notre Dame Fighting Irish,ACC,power,0,97,258,Virginia Cavaliers,ACC,power,17,100,
+2026,2026-01-27,2026-01-26,401822918,reg,0,1,41,UConn Huskies,Big East,high,2,87,2507,Providence Friars,Big East,high,0,81,
+2026,2026-01-27,2026-01-26,401825473,reg,0,1,84,Indiana Hoosiers,Big Ten,power,0,72,2509,Purdue Boilermakers,Big Ten,power,12,67,
+2026,2026-01-27,2026-01-26,401825474,reg,0,1,130,Michigan Wolverines,Big Ten,power,3,75,158,Nebraska Cornhuskers,Big Ten,power,5,72,
+2026,2026-01-27,2026-01-26,401825475,reg,0,1,164,Rutgers Scarlet Knights,Big Ten,power,0,79,127,Michigan State Spartans,Big Ten,power,7,88,
+2026,2026-01-27,2026-01-26,401828394,reg,0,1,139,Saint Louis Billikens,A-10,high,21,79,45,George Washington Revolutionaries,A-10,high,0,76,
+2026,2026-01-28,2026-01-26,401808203,reg,0,1,2579,South Carolina Gamecocks,SEC,power,0,48,57,Florida Gators,SEC,power,19,95,
+2026,2026-01-28,2026-01-26,401822919,reg,0,1,2599,St. John's Red Storm,Big East,high,25,92,2086,Butler Bulldogs,Big East,high,0,70,
+2026,2026-01-28,2026-01-26,401827650,reg,0,1,2628,TCU Horned Frogs,Big 12,power,0,70,248,Houston Cougars,Big 12,power,10,79,
+2026,2026-01-29,2026-01-26,401825479,reg,0,1,356,Illinois Fighting Illini,Big Ten,power,9,75,264,Washington Huskies,Big Ten,power,0,66,
+2026,2026-01-29,2026-01-26,401827651,reg,0,1,66,Iowa State Cyclones,Big 12,power,8,97,38,Colorado Buffaloes,Big 12,power,0,67,
+2026,2026-01-30,2026-01-26,401825481,reg,0,1,127,Michigan State Spartans,Big Ten,power,7,71,130,Michigan Wolverines,Big Ten,power,3,83,
+2026,2026-01-30,2026-01-26,401828400,reg,0,1,139,Saint Louis Billikens,A-10,high,21,102,2168,Dayton Flyers,A-10,high,0,71,
+2026,2026-01-31,2026-01-26,401808207,reg,0,1,8,Arkansas Razorbacks,SEC,power,15,77,96,Kentucky Wildcats,SEC,power,0,85,
+2026,2026-01-31,2026-01-26,401808210,reg,0,1,238,Vanderbilt Commodores,SEC,power,18,71,145,Ole Miss Rebels,SEC,power,0,68,
+2026,2026-01-31,2026-01-26,401814550,reg,0,1,193,Miami (OH) RedHawks,MAC,mid,24,85,2459,Northern Illinois Huskies,MAC,mid,0,61,
+2026,2026-01-31,2026-01-26,401820705,reg,0,1,103,Boston College Eagles,ACC,power,0,66,258,Virginia Cavaliers,ACC,power,17,73,
+2026,2026-01-31,2026-01-26,401820707,reg,0,1,228,Clemson Tigers,ACC,power,22,63,221,Pittsburgh Panthers,ACC,power,0,52,
+2026,2026-01-31,2026-01-26,401820709,reg,0,1,59,Georgia Tech Yellow Jackets,ACC,power,0,75,153,North Carolina Tar Heels,ACC,power,16,91,
+2026,2026-01-31,2026-01-26,401820710,reg,0,1,97,Louisville Cardinals,ACC,power,20,88,2567,SMU Mustangs,ACC,power,0,74,
+2026,2026-01-31,2026-01-26,401820712,reg,0,1,259,Virginia Tech Hokies,ACC,power,0,58,150,Duke Blue Devils,ACC,power,4,72,
+2026,2026-01-31,2026-01-26,401822923,reg,0,1,156,Creighton Bluejays,Big East,high,0,58,41,UConn Huskies,Big East,high,2,85,
+2026,2026-01-31,2026-01-26,401827652,reg,0,1,9,Arizona State Sun Devils,Big 12,power,0,74,12,Arizona Wildcats,Big 12,power,1,87,
+2026,2026-01-31,2026-01-26,401827653,reg,0,1,2116,UCF Knights,Big 12,power,0,88,2641,Texas Tech Red Raiders,Big 12,power,11,80,
+2026,2026-01-31,2026-01-26,401827654,reg,0,1,248,Houston Cougars,Big 12,power,10,76,2132,Cincinnati Bearcats,Big 12,power,0,54,
+2026,2026-01-31,2026-01-26,401827655,reg,0,1,2305,Kansas Jayhawks,Big 12,power,14,90,252,BYU Cougars,Big 12,power,13,82,
+2026,2026-01-31,2026-01-26,401829225,reg,0,1,2250,Gonzaga Bulldogs,WCC,high,6,73,2608,Saint Mary's Gaels,WCC,high,0,65,
+2026,2026-02-01,2026-01-26,401808208,reg,0,1,57,Florida Gators,SEC,power,19,100,333,Alabama Crimson Tide,SEC,power,23,77,
+2026,2026-02-01,2026-01-26,401825486,reg,0,1,120,Maryland Terrapins,Big Ten,power,0,63,2509,Purdue Boilermakers,Big Ten,power,12,93,
+2026,2026-02-01,2026-01-26,401825487,reg,0,1,158,Nebraska Cornhuskers,Big Ten,power,5,69,356,Illinois Fighting Illini,Big Ten,power,9,78,
+2026,2026-02-01,2026-01-26,401827659,reg,0,1,2306,Kansas State Wildcats,Big 12,power,0,61,66,Iowa State Cyclones,Big 12,power,8,95,
+2026,2026-02-02,2026-02-02,401820714,reg,0,1,153,North Carolina Tar Heels,ACC,power,14,87,183,Syracuse Orange,ACC,power,0,77,
+2026,2026-02-02,2026-02-02,401820817,reg,0,1,2641,Texas Tech Red Raiders,Big 12,power,13,61,2305,Kansas Jayhawks,Big 12,power,11,64,
+2026,2026-02-03,2026-02-02,401808218,reg,0,1,2633,Tennessee Volunteers,SEC,power,25,84,145,Ole Miss Rebels,SEC,power,0,66,
+2026,2026-02-03,2026-02-02,401814556,reg,0,1,2084,Buffalo Bulls,MAC,mid,0,71,193,Miami (OH) RedHawks,MAC,mid,23,73,
+2026,2026-02-03,2026-02-02,401820715,reg,0,1,150,Duke Blue Devils,ACC,power,4,67,103,Boston College Eagles,ACC,power,0,49,
+2026,2026-02-03,2026-02-02,401820716,reg,0,1,258,Virginia Cavaliers,ACC,power,18,67,221,Pittsburgh Panthers,ACC,power,0,47,
+2026,2026-02-03,2026-02-02,401822927,reg,0,1,41,UConn Huskies,Big East,high,3,92,2752,Xavier Musketeers,Big East,high,0,60,
+2026,2026-02-03,2026-02-02,401822928,reg,0,1,305,DePaul Blue Demons,Big East,high,0,56,2599,St. John's Red Storm,Big East,high,22,68,
+2026,2026-02-03,2026-02-02,401828407,reg,0,1,2166,Davidson Wildcats,A-10,high,0,82,139,Saint Louis Billikens,A-10,high,19,91,
+2026,2026-02-04,2026-02-02,401820718,reg,0,1,97,Louisville Cardinals,ACC,power,24,76,87,Notre Dame Fighting Irish,ACC,power,0,65,
+2026,2026-02-04,2026-02-02,401820720,reg,0,1,24,Stanford Cardinal,ACC,power,0,64,228,Clemson Tigers,ACC,power,20,66,
+2026,2026-02-04,2026-02-02,401825492,reg,0,1,356,Illinois Fighting Illini,Big Ten,power,5,84,77,Northwestern Wildcats,Big Ten,power,0,44,
+2026,2026-02-04,2026-02-02,401825493,reg,0,1,135,Minnesota Golden Gophers,Big Ten,power,0,76,127,Michigan State Spartans,Big Ten,power,10,73,
+2026,2026-02-04,2026-02-02,401827661,reg,0,1,248,Houston Cougars,Big 12,power,8,79,2116,UCF Knights,Big 12,power,0,55,
+2026,2026-02-04,2026-02-02,401827662,reg,0,1,197,Oklahoma State Cowboys,Big 12,power,0,99,252,BYU Cougars,Big 12,power,16,92,
+2026,2026-02-04,2026-02-02,401829227,reg,0,1,2501,Portland Pilots,WCC,high,0,87,2250,Gonzaga Bulldogs,WCC,high,6,80,
+2026,2026-02-05,2026-02-02,401825496,reg,0,1,130,Michigan Wolverines,Big Ten,power,2,110,213,Penn State Nittany Lions,Big Ten,power,0,69,
+2026,2026-02-06,2026-02-02,401822932,reg,0,1,2599,St. John's Red Storm,Big East,high,22,81,41,UConn Huskies,Big East,high,3,72,
+2026,2026-02-07,2026-02-02,401808220,reg,0,1,96,Kentucky Wildcats,SEC,power,0,74,2633,Tennessee Volunteers,SEC,power,25,71,
+2026,2026-02-07,2026-02-02,401808222,reg,0,1,344,Mississippi State Bulldogs,SEC,power,0,68,8,Arkansas Razorbacks,SEC,power,21,88,
+2026,2026-02-07,2026-02-02,401808224,reg,0,1,245,Texas A&M Aggies,SEC,power,0,67,57,Florida Gators,SEC,power,17,86,
+2026,2026-02-07,2026-02-02,401808225,reg,0,1,238,Vanderbilt Commodores,SEC,power,15,91,201,Oklahoma Sooners,SEC,power,0,92,
+2026,2026-02-07,2026-02-02,401820722,reg,0,1,25,California Golden Bears,ACC,power,0,55,228,Clemson Tigers,ACC,power,20,77,
+2026,2026-02-07,2026-02-02,401820724,reg,0,1,153,North Carolina Tar Heels,ACC,power,14,71,150,Duke Blue Devils,ACC,power,4,68,
+2026,2026-02-07,2026-02-02,401820728,reg,0,1,258,Virginia Cavaliers,ACC,power,18,72,183,Syracuse Orange,ACC,power,0,59,
+2026,2026-02-07,2026-02-02,401820729,reg,0,1,154,Wake Forest Demon Deacons,ACC,power,0,80,97,Louisville Cardinals,ACC,power,24,88,
+2026,2026-02-07,2026-02-02,401825498,reg,0,1,2509,Purdue Boilermakers,Big Ten,power,12,68,2483,Oregon Ducks,Big Ten,power,0,64,
+2026,2026-02-07,2026-02-02,401825499,reg,0,1,164,Rutgers Scarlet Knights,Big Ten,power,0,68,158,Nebraska Cornhuskers,Big Ten,power,9,80,
+2026,2026-02-07,2026-02-02,401827665,reg,0,1,12,Arizona Wildcats,Big 12,power,1,84,197,Oklahoma State Cowboys,Big 12,power,0,47,
+2026,2026-02-07,2026-02-02,401827666,reg,0,1,252,BYU Cougars,Big 12,power,16,66,248,Houston Cougars,Big 12,power,8,77,
+2026,2026-02-07,2026-02-02,401827668,reg,0,1,66,Iowa State Cyclones,Big 12,power,7,72,239,Baylor Bears,Big 12,power,0,69,
+2026,2026-02-07,2026-02-02,401827669,reg,0,1,2305,Kansas Jayhawks,Big 12,power,11,71,254,Utah Utes,Big 12,power,0,59,
+2026,2026-02-07,2026-02-02,401828418,reg,0,1,139,Saint Louis Billikens,A-10,high,19,82,2325,La Salle Explorers,A-10,high,0,58,
+2026,2026-02-07,2026-02-02,401829233,reg,0,1,204,Oregon State Beavers,WCC,high,0,61,2250,Gonzaga Bulldogs,WCC,high,6,81,
+2026,2026-02-07,2026-02-02,401830778,reg,0,1,127,Michigan State Spartans,Big Ten,power,10,85,356,Illinois Fighting Illini,Big Ten,power,5,82,
+2026,2026-02-07,2026-02-02,401845843,reg,0,0,276,Marshall Thundering Herd,Sun Belt,mid,0,74,193,Miami (OH) RedHawks,MAC,mid,23,90,MAC-SBC Challenge
+2026,2026-02-08,2026-02-02,401825503,reg,0,1,194,Ohio State Buckeyes,Big Ten,power,0,61,130,Michigan Wolverines,Big Ten,power,2,82,
+2026,2026-02-08,2026-02-02,401827672,reg,0,1,277,West Virginia Mountaineers,Big 12,power,0,63,2641,Texas Tech Red Raiders,Big 12,power,13,70,
+2026,2026-02-09,2026-02-09,401820730,reg,0,1,97,Louisville Cardinals,ACC,power,24,118,152,NC State Wolfpack,ACC,power,0,77,
+2026,2026-02-09,2026-02-09,401820818,reg,0,1,2305,Kansas Jayhawks,Big 12,power,9,82,12,Arizona Wildcats,Big 12,power,1,78,
+2026,2026-02-09,2026-02-09,401822937,reg,0,1,2599,St. John's Red Storm,Big East,high,17,87,2752,Xavier Musketeers,Big East,high,0,82,
+2026,2026-02-10,2026-02-09,401808229,reg,0,1,2,Auburn Tigers,SEC,power,0,76,238,Vanderbilt Commodores,SEC,power,19,84,
+2026,2026-02-10,2026-02-09,401808231,reg,0,1,99,LSU Tigers,SEC,power,0,62,8,Arkansas Razorbacks,SEC,power,21,91,
+2026,2026-02-10,2026-02-09,401820731,reg,0,1,2390,Miami Hurricanes,ACC,power,0,75,153,North Carolina Tar Heels,ACC,power,11,66,
+2026,2026-02-10,2026-02-09,401820734,reg,0,1,52,Florida State Seminoles,ACC,power,0,58,258,Virginia Cavaliers,ACC,power,15,61,
+2026,2026-02-10,2026-02-09,401820736,reg,0,1,221,Pittsburgh Panthers,ACC,power,0,54,150,Duke Blue Devils,ACC,power,4,70,
+2026,2026-02-10,2026-02-09,401825506,reg,0,1,356,Illinois Fighting Illini,Big Ten,power,8,90,275,Wisconsin Badgers,Big Ten,power,0,92,
+2026,2026-02-10,2026-02-09,401825507,reg,0,1,158,Nebraska Cornhuskers,Big Ten,power,7,77,2509,Purdue Boilermakers,Big Ten,power,13,80,
+2026,2026-02-10,2026-02-09,401827674,reg,0,1,239,Baylor Bears,Big 12,power,0,94,252,BYU Cougars,Big 12,power,22,99,
+2026,2026-02-10,2026-02-09,401827675,reg,0,1,2628,TCU Horned Frogs,Big 12,power,0,62,66,Iowa State Cyclones,Big 12,power,5,55,
+2026,2026-02-10,2026-02-09,401827676,reg,0,1,254,Utah Utes,Big 12,power,0,52,248,Houston Cougars,Big 12,power,3,66,
+2026,2026-02-10,2026-02-09,401829244,reg,0,1,2250,Gonzaga Bulldogs,WCC,high,12,83,265,Washington State Cougars,WCC,high,0,53,
+2026,2026-02-11,2026-02-09,401808230,reg,0,1,61,Georgia Bulldogs,SEC,power,0,66,57,Florida Gators,SEC,power,14,86,
+2026,2026-02-11,2026-02-09,401820733,reg,0,1,228,Clemson Tigers,ACC,power,20,66,259,Virginia Tech Hokies,ACC,power,0,76,
+2026,2026-02-11,2026-02-09,401822940,reg,0,1,2086,Butler Bulldogs,Big East,high,0,70,41,UConn Huskies,Big East,high,6,80,
+2026,2026-02-11,2026-02-09,401825509,reg,0,1,77,Northwestern Wildcats,Big Ten,power,0,75,130,Michigan Wolverines,Big Ten,power,2,87,
+2026,2026-02-11,2026-02-09,401827678,reg,0,1,2641,Texas Tech Red Raiders,Big 12,power,16,78,38,Colorado Buffaloes,Big 12,power,0,44,
+2026,2026-02-13,2026-02-09,401814565,reg,0,1,193,Miami (OH) RedHawks,MAC,mid,23,90,195,Ohio Bobcats,MAC,mid,0,74,
+2026,2026-02-13,2026-02-09,401825512,reg,0,1,275,Wisconsin Badgers,Big Ten,power,0,92,127,Michigan State Spartans,Big Ten,power,10,71,
+2026,2026-02-13,2026-02-09,401828425,reg,0,1,2350,Loyola Chicago Ramblers,A-10,high,0,59,139,Saint Louis Billikens,A-10,high,18,86,
+2026,2026-02-14,2026-02-09,401808233,reg,0,1,8,Arkansas Razorbacks,SEC,power,21,88,2,Auburn Tigers,SEC,power,0,75,
+2026,2026-02-14,2026-02-09,401808234,reg,0,1,57,Florida Gators,SEC,power,14,92,96,Kentucky Wildcats,SEC,power,25,83,
+2026,2026-02-14,2026-02-09,401808238,reg,0,1,238,Vanderbilt Commodores,SEC,power,19,82,245,Texas A&M Aggies,SEC,power,0,69,
+2026,2026-02-14,2026-02-09,401817250,reg,1,0,239,Baylor Bears,Big 12,power,0,71,97,Louisville Cardinals,ACC,power,24,82,
+2026,2026-02-14,2026-02-09,401817516,reg,1,0,194,Ohio State Buckeyes,Big Ten,power,0,66,258,Virginia Cavaliers,ACC,power,15,70,Nashville Hoops Showdown
+2026,2026-02-14,2026-02-09,401820740,reg,0,1,150,Duke Blue Devils,ACC,power,4,67,228,Clemson Tigers,ACC,power,20,54,
+2026,2026-02-14,2026-02-09,401820742,reg,0,1,153,North Carolina Tar Heels,ACC,power,11,79,221,Pittsburgh Panthers,ACC,power,0,65,
+2026,2026-02-14,2026-02-09,401822942,reg,0,1,41,UConn Huskies,Big East,high,6,79,46,Georgetown Hoyas,Big East,high,0,75,
+2026,2026-02-14,2026-02-09,401822943,reg,0,1,2507,Providence Friars,Big East,high,0,69,2599,St. John's Red Storm,Big East,high,17,79,
+2026,2026-02-14,2026-02-09,401825513,reg,0,1,2294,Iowa Hawkeyes,Big Ten,power,0,57,2509,Purdue Boilermakers,Big Ten,power,13,78,
+2026,2026-02-14,2026-02-09,401825514,reg,0,1,130,Michigan Wolverines,Big Ten,power,2,86,26,UCLA Bruins,Big Ten,power,0,56,
+2026,2026-02-14,2026-02-09,401825515,reg,0,1,158,Nebraska Cornhuskers,Big Ten,power,7,68,77,Northwestern Wildcats,Big Ten,power,0,49,
+2026,2026-02-14,2026-02-09,401827679,reg,0,1,12,Arizona Wildcats,Big 12,power,1,75,2641,Texas Tech Red Raiders,Big 12,power,16,78,
+2026,2026-02-14,2026-02-09,401827680,reg,0,1,252,BYU Cougars,Big 12,power,22,90,38,Colorado Buffaloes,Big 12,power,0,86,
+2026,2026-02-14,2026-02-09,401827681,reg,0,1,248,Houston Cougars,Big 12,power,3,78,2306,Kansas State Wildcats,Big 12,power,0,64,
+2026,2026-02-14,2026-02-09,401827682,reg,0,1,66,Iowa State Cyclones,Big 12,power,5,74,2305,Kansas Jayhawks,Big 12,power,9,56,
+2026,2026-02-14,2026-02-09,401829245,reg,0,1,2541,Santa Clara Broncos,WCC,high,0,86,2250,Gonzaga Bulldogs,WCC,high,12,94,
+2026,2026-02-15,2026-02-09,401825518,reg,0,1,356,Illinois Fighting Illini,Big Ten,power,8,71,84,Indiana Hoosiers,Big Ten,power,0,51,
+2026,2026-02-16,2026-02-16,401820747,reg,0,1,150,Duke Blue Devils,ACC,power,3,101,183,Syracuse Orange,ACC,power,0,64,
+2026,2026-02-16,2026-02-16,401820819,reg,0,1,66,Iowa State Cyclones,Big 12,power,6,70,248,Houston Cougars,Big 12,power,2,67,
+2026,2026-02-17,2026-02-16,401808241,reg,0,1,57,Florida Gators,SEC,power,12,76,2579,South Carolina Gamecocks,SEC,power,0,62,
+2026,2026-02-17,2026-02-16,401814572,reg,0,1,113,Massachusetts Minutemen,MAC,mid,0,77,193,Miami (OH) RedHawks,MAC,mid,22,86,
+2026,2026-02-17,2026-02-16,401820749,reg,0,1,2567,SMU Mustangs,ACC,power,0,95,97,Louisville Cardinals,ACC,power,21,85,
+2026,2026-02-17,2026-02-16,401820752,reg,0,1,152,NC State Wolfpack,ACC,power,0,82,153,North Carolina Tar Heels,ACC,power,16,58,
+2026,2026-02-17,2026-02-16,401825520,reg,0,1,2294,Iowa Hawkeyes,Big Ten,power,0,57,158,Nebraska Cornhuskers,Big Ten,power,9,52,
+2026,2026-02-17,2026-02-16,401825521,reg,0,1,127,Michigan State Spartans,Big Ten,power,15,82,26,UCLA Bruins,Big Ten,power,0,59,
+2026,2026-02-17,2026-02-16,401825522,reg,0,1,194,Ohio State Buckeyes,Big Ten,power,0,86,275,Wisconsin Badgers,Big Ten,power,24,69,
+2026,2026-02-17,2026-02-16,401825524,reg,0,1,2509,Purdue Boilermakers,Big Ten,power,7,80,130,Michigan Wolverines,Big Ten,power,1,91,
+2026,2026-02-17,2026-02-16,401827686,reg,0,1,9,Arizona State Sun Devils,Big 12,power,0,72,2641,Texas Tech Red Raiders,Big 12,power,13,67,
+2026,2026-02-17,2026-02-16,401828431,reg,0,1,227,Rhode Island Rams,A-10,high,0,81,139,Saint Louis Billikens,A-10,high,18,76,
+2026,2026-02-18,2026-02-16,401808244,reg,0,1,333,Alabama Crimson Tide,SEC,power,25,117,8,Arkansas Razorbacks,SEC,power,20,115,
+2026,2026-02-18,2026-02-16,401808246,reg,0,1,142,Missouri Tigers,SEC,power,0,81,238,Vanderbilt Commodores,SEC,power,19,80,
+2026,2026-02-18,2026-02-16,401820750,reg,0,1,59,Georgia Tech Yellow Jackets,ACC,power,0,68,258,Virginia Cavaliers,ACC,power,14,94,
+2026,2026-02-18,2026-02-16,401822948,reg,0,1,41,UConn Huskies,Big East,high,5,84,156,Creighton Bluejays,Big East,high,0,91,
+2026,2026-02-18,2026-02-16,401822949,reg,0,1,269,Marquette Golden Eagles,Big East,high,0,70,2599,St. John's Red Storm,Big East,high,17,76,
+2026,2026-02-18,2026-02-16,401825527,reg,0,1,30,USC Trojans,Big Ten,power,0,65,356,Illinois Fighting Illini,Big Ten,power,10,101,
+2026,2026-02-18,2026-02-16,401827689,reg,0,1,12,Arizona Wildcats,Big 12,power,4,75,252,BYU Cougars,Big 12,power,23,68,
+2026,2026-02-18,2026-02-16,401827690,reg,0,1,197,Oklahoma State Cowboys,Big 12,power,0,69,2305,Kansas Jayhawks,Big 12,power,8,81,
+2026,2026-02-18,2026-02-16,401829250,reg,0,1,2539,San Francisco Dons,WCC,high,0,59,2250,Gonzaga Bulldogs,WCC,high,11,80,
+2026,2026-02-20,2026-02-16,401814575,reg,0,1,193,Miami (OH) RedHawks,MAC,mid,22,91,189,Bowling Green Falcons,MAC,mid,0,77,
+2026,2026-02-20,2026-02-16,401825528,reg,0,1,2509,Purdue Boilermakers,Big Ten,power,7,93,84,Indiana Hoosiers,Big Ten,power,0,64,
+2026,2026-02-20,2026-02-16,401828437,reg,0,1,139,Saint Louis Billikens,A-10,high,18,88,2670,VCU Rams,A-10,high,0,75,
+2026,2026-02-21,2026-02-16,401808249,reg,0,1,8,Arkansas Razorbacks,SEC,power,20,94,142,Missouri Tigers,SEC,power,0,86,
+2026,2026-02-21,2026-02-16,401808252,reg,0,1,99,LSU Tigers,SEC,power,0,83,333,Alabama Crimson Tide,SEC,power,25,90,
+2026,2026-02-21,2026-02-16,401808253,reg,0,1,145,Ole Miss Rebels,SEC,power,0,75,57,Florida Gators,SEC,power,12,94,
+2026,2026-02-21,2026-02-16,401808255,reg,0,1,238,Vanderbilt Commodores,SEC,power,19,65,2633,Tennessee Volunteers,SEC,power,0,69,
+2026,2026-02-21,2026-02-16,401817238,reg,1,0,150,Duke Blue Devils,ACC,power,3,68,130,Michigan Wolverines,Big Ten,power,1,63,Edward Jones Capital Showcase
+2026,2026-02-21,2026-02-16,401820756,reg,0,1,97,Louisville Cardinals,ACC,power,21,87,59,Georgia Tech Yellow Jackets,ACC,power,0,70,
+2026,2026-02-21,2026-02-16,401820759,reg,0,1,183,Syracuse Orange,ACC,power,0,64,153,North Carolina Tar Heels,ACC,power,16,77,
+2026,2026-02-21,2026-02-16,401820760,reg,0,1,258,Virginia Cavaliers,ACC,power,14,86,2390,Miami Hurricanes,ACC,power,0,83,
+2026,2026-02-21,2026-02-16,401822952,reg,0,1,2599,St. John's Red Storm,Big East,high,17,81,156,Creighton Bluejays,Big East,high,0,52,
+2026,2026-02-21,2026-02-16,401822953,reg,0,1,222,Villanova Wildcats,Big East,high,0,63,41,UConn Huskies,Big East,high,5,73,
+2026,2026-02-21,2026-02-16,401825531,reg,0,1,158,Nebraska Cornhuskers,Big Ten,power,9,87,213,Penn State Nittany Lions,Big Ten,power,0,64,
+2026,2026-02-21,2026-02-16,401825532,reg,0,1,26,UCLA Bruins,Big Ten,power,0,95,356,Illinois Fighting Illini,Big Ten,power,10,94,
+2026,2026-02-21,2026-02-16,401827693,reg,0,1,252,BYU Cougars,Big 12,power,23,79,66,Iowa State Cyclones,Big 12,power,6,69,
+2026,2026-02-21,2026-02-16,401827695,reg,0,1,248,Houston Cougars,Big 12,power,2,66,12,Arizona Wildcats,Big 12,power,4,73,
+2026,2026-02-21,2026-02-16,401827696,reg,0,1,2305,Kansas Jayhawks,Big 12,power,8,68,2132,Cincinnati Bearcats,Big 12,power,0,84,
+2026,2026-02-21,2026-02-16,401827698,reg,0,1,2641,Texas Tech Red Raiders,Big 12,power,13,100,2306,Kansas State Wildcats,Big 12,power,0,72,
+2026,2026-02-21,2026-02-16,401829255,reg,0,1,2250,Gonzaga Bulldogs,WCC,high,11,71,279,Pacific Tigers,WCC,high,0,62,
+2026,2026-02-22,2026-02-16,401825534,reg,0,1,127,Michigan State Spartans,Big Ten,power,15,66,194,Ohio State Buckeyes,Big Ten,power,0,60,
+2026,2026-02-22,2026-02-16,401825535,reg,0,1,275,Wisconsin Badgers,Big Ten,power,24,84,2294,Iowa Hawkeyes,Big Ten,power,0,71,
+2026,2026-02-23,2026-02-23,401820762,reg,0,1,153,North Carolina Tar Heels,ACC,power,18,77,97,Louisville Cardinals,ACC,power,24,74,
+2026,2026-02-23,2026-02-23,401820820,reg,0,1,2305,Kansas Jayhawks,Big 12,power,14,69,248,Houston Cougars,Big 12,power,5,56,
+2026,2026-02-24,2026-02-23,401808257,reg,0,1,142,Missouri Tigers,SEC,power,0,73,2633,Tennessee Volunteers,SEC,power,22,69,
+2026,2026-02-24,2026-02-23,401814583,reg,0,1,2199,Eastern Michigan Eagles,MAC,mid,0,64,193,Miami (OH) RedHawks,MAC,mid,21,74,
+2026,2026-02-24,2026-02-23,401820763,reg,0,1,258,Virginia Cavaliers,ACC,power,11,90,152,NC State Wolfpack,ACC,power,0,61,
+2026,2026-02-24,2026-02-23,401820767,reg,0,1,87,Notre Dame Fighting Irish,ACC,power,0,56,150,Duke Blue Devils,ACC,power,1,100,
+2026,2026-02-24,2026-02-23,401825537,reg,0,1,130,Michigan Wolverines,Big Ten,power,3,77,135,Minnesota Golden Gophers,Big Ten,power,0,67,
+2026,2026-02-24,2026-02-23,401827700,reg,0,1,239,Baylor Bears,Big 12,power,0,80,12,Arizona Wildcats,Big 12,power,2,87,
+2026,2026-02-24,2026-02-23,401827701,reg,0,1,252,BYU Cougars,Big 12,power,19,84,2116,UCF Knights,Big 12,power,0,97,
+2026,2026-02-24,2026-02-23,401827704,reg,0,1,2641,Texas Tech Red Raiders,Big 12,power,16,80,2132,Cincinnati Bearcats,Big 12,power,0,68,
+2026,2026-02-24,2026-02-23,401827705,reg,0,1,254,Utah Utes,Big 12,power,0,59,66,Iowa State Cyclones,Big 12,power,4,75,
+2026,2026-02-24,2026-02-23,401828443,reg,0,1,2168,Dayton Flyers,A-10,high,0,77,139,Saint Louis Billikens,A-10,high,23,62,
+2026,2026-02-25,2026-02-23,401808259,reg,0,1,8,Arkansas Razorbacks,SEC,power,20,99,245,Texas A&M Aggies,SEC,power,0,84,
+2026,2026-02-25,2026-02-23,401808261,reg,0,1,238,Vanderbilt Commodores,SEC,power,25,88,61,Georgia Bulldogs,SEC,power,0,80,
+2026,2026-02-25,2026-02-23,401808263,reg,0,1,333,Alabama Crimson Tide,SEC,power,17,100,344,Mississippi State Bulldogs,SEC,power,0,75,
+2026,2026-02-25,2026-02-23,401808264,reg,0,1,251,Texas Longhorns,SEC,power,0,71,57,Florida Gators,SEC,power,7,84,
+2026,2026-02-25,2026-02-23,401822959,reg,0,1,41,UConn Huskies,Big East,high,6,72,2599,St. John's Red Storm,Big East,high,15,40,
+2026,2026-02-25,2026-02-23,401825541,reg,0,1,158,Nebraska Cornhuskers,Big Ten,power,12,74,120,Maryland Terrapins,Big Ten,power,0,61,
+2026,2026-02-25,2026-02-23,401829260,reg,0,1,2250,Gonzaga Bulldogs,WCC,high,9,89,2501,Portland Pilots,WCC,high,0,48,
+2026,2026-02-26,2026-02-23,401825543,reg,0,1,2509,Purdue Boilermakers,Big Ten,power,8,74,127,Michigan State Spartans,Big Ten,power,13,76,
+2026,2026-02-27,2026-02-23,401814590,reg,0,1,2711,Western Michigan Broncos,MAC,mid,0,67,193,Miami (OH) RedHawks,MAC,mid,21,69,
+2026,2026-02-27,2026-02-23,401825544,reg,0,1,356,Illinois Fighting Illini,Big Ten,power,10,70,130,Michigan Wolverines,Big Ten,power,3,84,
+2026,2026-02-28,2026-02-23,401808266,reg,0,1,57,Florida Gators,SEC,power,7,111,8,Arkansas Razorbacks,SEC,power,20,77,
+2026,2026-02-28,2026-02-23,401808268,reg,0,1,96,Kentucky Wildcats,SEC,power,0,91,238,Vanderbilt Commodores,SEC,power,25,77,
+2026,2026-02-28,2026-02-23,401808271,reg,0,1,2633,Tennessee Volunteers,SEC,power,22,69,333,Alabama Crimson Tide,SEC,power,17,71,
+2026,2026-02-28,2026-02-23,401820770,reg,0,1,228,Clemson Tigers,ACC,power,0,80,97,Louisville Cardinals,ACC,power,24,75,
+2026,2026-02-28,2026-02-23,401820771,reg,0,1,150,Duke Blue Devils,ACC,power,1,77,258,Virginia Cavaliers,ACC,power,11,51,
+2026,2026-02-28,2026-02-23,401820774,reg,0,1,153,North Carolina Tar Heels,ACC,power,18,89,259,Virginia Tech Hokies,ACC,power,0,82,
+2026,2026-02-28,2026-02-23,401822962,reg,0,1,2599,St. John's Red Storm,Big East,high,15,89,222,Villanova Wildcats,Big East,high,0,57,
+2026,2026-02-28,2026-02-23,401822963,reg,0,1,41,UConn Huskies,Big East,high,6,71,2550,Seton Hall Pirates,Big East,high,0,67,
+2026,2026-02-28,2026-02-23,401825548,reg,0,1,30,USC Trojans,Big Ten,power,0,67,158,Nebraska Cornhuskers,Big Ten,power,12,82,
+2026,2026-02-28,2026-02-23,401827707,reg,0,1,12,Arizona Wildcats,Big 12,power,2,84,2305,Kansas Jayhawks,Big 12,power,14,61,
+2026,2026-02-28,2026-02-23,401827711,reg,0,1,248,Houston Cougars,Big 12,power,5,102,38,Colorado Buffaloes,Big 12,power,0,62,
+2026,2026-02-28,2026-02-23,401827712,reg,0,1,66,Iowa State Cyclones,Big 12,power,4,73,2641,Texas Tech Red Raiders,Big 12,power,16,82,
+2026,2026-02-28,2026-02-23,401827714,reg,0,1,277,West Virginia Mountaineers,Big 12,power,0,79,252,BYU Cougars,Big 12,power,19,71,
+2026,2026-02-28,2026-02-23,401828449,reg,0,1,139,Saint Louis Billikens,A-10,high,23,91,2184,Duquesne Dukes,A-10,high,0,76,
+2026,2026-02-28,2026-02-23,401829265,reg,0,1,2608,Saint Mary's Gaels,WCC,high,0,70,2250,Gonzaga Bulldogs,WCC,high,9,59,
+2026,2026-03-01,2026-02-23,401825550,reg,0,1,84,Indiana Hoosiers,Big Ten,power,0,64,127,Michigan State Spartans,Big Ten,power,13,77,
+2026,2026-03-01,2026-02-23,401825552,reg,0,1,194,Ohio State Buckeyes,Big Ten,power,0,82,2509,Purdue Boilermakers,Big Ten,power,8,74,
+2026,2026-03-02,2026-03-02,401820778,reg,0,1,152,NC State Wolfpack,ACC,power,0,64,150,Duke Blue Devils,ACC,power,1,93,
+2026,2026-03-02,2026-03-02,401820821,reg,0,1,12,Arizona Wildcats,Big 12,power,2,73,66,Iowa State Cyclones,Big 12,power,6,57,
+2026,2026-03-03,2026-03-02,401808274,reg,0,1,57,Florida Gators,SEC,power,5,108,344,Mississippi State Bulldogs,SEC,power,0,74,
+2026,2026-03-03,2026-03-02,401808277,reg,0,1,61,Georgia Bulldogs,SEC,power,0,98,333,Alabama Crimson Tide,SEC,power,16,88,
+2026,2026-03-03,2026-03-02,401808278,reg,0,1,2579,South Carolina Gamecocks,SEC,power,0,59,2633,Tennessee Volunteers,SEC,power,23,78,
+2026,2026-03-03,2026-03-02,401808279,reg,0,1,145,Ole Miss Rebels,SEC,power,0,86,238,Vanderbilt Commodores,SEC,power,24,89,
+2026,2026-03-03,2026-03-02,401814597,reg,0,1,193,Miami (OH) RedHawks,MAC,mid,19,74,2649,Toledo Rockets,MAC,mid,0,72,
+2026,2026-03-03,2026-03-02,401820779,reg,0,1,153,North Carolina Tar Heels,ACC,power,17,67,228,Clemson Tigers,ACC,power,0,63,
+2026,2026-03-03,2026-03-02,401820785,reg,0,1,258,Virginia Cavaliers,ACC,power,13,75,154,Wake Forest Demon Deacons,ACC,power,0,70,
+2026,2026-03-03,2026-03-02,401822967,reg,0,1,2599,St. John's Red Storm,Big East,high,18,72,46,Georgetown Hoyas,Big East,high,0,69,
+2026,2026-03-03,2026-03-02,401825553,reg,0,1,356,Illinois Fighting Illini,Big Ten,power,11,80,2483,Oregon Ducks,Big Ten,power,0,54,
+2026,2026-03-03,2026-03-02,401825554,reg,0,1,26,UCLA Bruins,Big Ten,power,0,72,158,Nebraska Cornhuskers,Big Ten,power,9,52,
+2026,2026-03-03,2026-03-02,401827715,reg,0,1,9,Arizona State Sun Devils,Big 12,power,0,70,2305,Kansas Jayhawks,Big 12,power,14,60,
+2026,2026-03-03,2026-03-02,401827719,reg,0,1,2641,Texas Tech Red Raiders,Big 12,power,10,65,2628,TCU Horned Frogs,Big 12,power,0,73,
+2026,2026-03-04,2026-03-02,401808273,reg,0,1,8,Arkansas Razorbacks,SEC,power,20,105,251,Texas Longhorns,SEC,power,0,85,
+2026,2026-03-04,2026-03-02,401820784,reg,0,1,2567,SMU Mustangs,ACC,power,0,69,2390,Miami Hurricanes,ACC,power,22,77,
+2026,2026-03-04,2026-03-02,401825556,reg,0,1,77,Northwestern Wildcats,Big Ten,power,0,66,2509,Purdue Boilermakers,Big Ten,power,15,70,
+2026,2026-03-04,2026-03-02,401827721,reg,0,1,248,Houston Cougars,Big 12,power,7,77,239,Baylor Bears,Big 12,power,0,64,
+2026,2026-03-04,2026-03-02,401828461,reg,0,1,139,Saint Louis Billikens,A-10,high,25,79,2350,Loyola Chicago Ramblers,A-10,high,0,65,
+2026,2026-03-05,2026-03-02,401825560,reg,0,1,2294,Iowa Hawkeyes,Big Ten,power,0,68,130,Michigan Wolverines,Big Ten,power,3,71,
+2026,2026-03-05,2026-03-02,401825561,reg,0,1,127,Michigan State Spartans,Big Ten,power,8,91,164,Rutgers Scarlet Knights,Big Ten,power,0,87,
+2026,2026-03-06,2026-03-02,401814601,reg,0,1,195,Ohio Bobcats,MAC,mid,0,108,193,Miami (OH) RedHawks,MAC,mid,19,110,
+2026,2026-03-06,2026-03-02,401822972,reg,0,1,2550,Seton Hall Pirates,Big East,high,0,65,2599,St. John's Red Storm,Big East,high,18,72,
+2026,2026-03-07,2026-03-02,401808281,reg,0,1,96,Kentucky Wildcats,SEC,power,0,77,57,Florida Gators,SEC,power,5,84,
+2026,2026-03-07,2026-03-02,401808285,reg,0,1,142,Missouri Tigers,SEC,power,0,84,8,Arkansas Razorbacks,SEC,power,20,88,
+2026,2026-03-07,2026-03-02,401808286,reg,0,1,2633,Tennessee Volunteers,SEC,power,23,82,238,Vanderbilt Commodores,SEC,power,24,86,
+2026,2026-03-07,2026-03-02,401808288,reg,0,1,333,Alabama Crimson Tide,SEC,power,16,96,2,Auburn Tigers,SEC,power,0,84,
+2026,2026-03-07,2026-03-02,401820788,reg,0,1,150,Duke Blue Devils,ACC,power,1,76,153,North Carolina Tar Heels,ACC,power,17,61,
+2026,2026-03-07,2026-03-02,401820790,reg,0,1,2390,Miami Hurricanes,ACC,power,22,89,97,Louisville Cardinals,ACC,power,0,92,
+2026,2026-03-07,2026-03-02,401820794,reg,0,1,258,Virginia Cavaliers,ACC,power,13,76,259,Virginia Tech Hokies,ACC,power,0,72,
+2026,2026-03-07,2026-03-02,401822973,reg,0,1,269,Marquette Golden Eagles,Big East,high,0,68,41,UConn Huskies,Big East,high,4,62,
+2026,2026-03-07,2026-03-02,401825565,reg,0,1,2509,Purdue Boilermakers,Big Ten,power,15,93,275,Wisconsin Badgers,Big Ten,power,0,97,
+2026,2026-03-07,2026-03-02,401827724,reg,0,1,252,BYU Cougars,Big 12,power,0,82,2641,Texas Tech Red Raiders,Big 12,power,10,76,
+2026,2026-03-07,2026-03-02,401827725,reg,0,1,38,Colorado Buffaloes,Big 12,power,0,79,12,Arizona Wildcats,Big 12,power,2,89,
+2026,2026-03-07,2026-03-02,401827726,reg,0,1,66,Iowa State Cyclones,Big 12,power,6,86,9,Arizona State Sun Devils,Big 12,power,0,65,
+2026,2026-03-07,2026-03-02,401827727,reg,0,1,2305,Kansas Jayhawks,Big 12,power,14,104,2306,Kansas State Wildcats,Big 12,power,0,85,
+2026,2026-03-07,2026-03-02,401827728,reg,0,1,197,Oklahoma State Cowboys,Big 12,power,0,75,248,Houston Cougars,Big 12,power,7,82,
+2026,2026-03-07,2026-03-02,401828466,reg,0,1,2244,George Mason Patriots,A-10,high,0,86,139,Saint Louis Billikens,A-10,high,25,57,
+2026,2026-03-08,2026-03-02,401825567,reg,0,1,120,Maryland Terrapins,Big Ten,power,0,72,356,Illinois Fighting Illini,Big Ten,power,11,78,
+2026,2026-03-08,2026-03-02,401825568,reg,0,1,130,Michigan Wolverines,Big Ten,power,3,90,127,Michigan State Spartans,Big Ten,power,8,80,
+2026,2026-03-08,2026-03-02,401825569,reg,0,1,158,Nebraska Cornhuskers,Big Ten,power,9,84,2294,Iowa Hawkeyes,Big Ten,power,0,75,
+2026,2026-03-09,2026-03-09,401851759,reg,1,1,2250,Gonzaga Bulldogs,WCC,high,12,65,204,Oregon State Beavers,WCC,high,0,56,West Coast Conference Tournament - Semifinal
+2026,2026-03-09,2026-03-09,401851760,reg,1,1,2608,Saint Mary's Gaels,WCC,high,21,71,2541,Santa Clara Broncos,WCC,high,0,76,West Coast Conference Tournament - Semifinal
+2026,2026-03-10,2026-03-09,401851762,reg,1,1,2250,Gonzaga Bulldogs,WCC,high,12,79,2541,Santa Clara Broncos,WCC,high,0,68,West Coast Conference Tournament - Final
+2026,2026-03-11,2026-03-09,401851174,reg,1,1,97,Louisville Cardinals,ACC,power,24,62,2567,SMU Mustangs,ACC,power,0,58,T. Rowe Price ACC Tournament - 2nd Round
+2026,2026-03-11,2026-03-09,401851289,reg,1,1,66,Iowa State Cyclones,Big 12,power,7,91,9,Arizona State Sun Devils,Big 12,power,0,42,Phillips 66 Big 12 Tournament - 2nd Round
+2026,2026-03-12,2026-03-09,401851177,reg,1,1,258,Virginia Cavaliers,ACC,power,10,81,152,NC State Wolfpack,ACC,power,0,74,T. Rowe Price ACC Tournament - Quarterfinal
+2026,2026-03-12,2026-03-09,401851178,reg,1,1,2390,Miami Hurricanes,ACC,power,0,78,97,Louisville Cardinals,ACC,power,24,73,T. Rowe Price ACC Tournament - Quarterfinal
+2026,2026-03-12,2026-03-09,401851179,reg,1,1,150,Duke Blue Devils,ACC,power,1,80,52,Florida State Seminoles,ACC,power,0,79,T. Rowe Price ACC Tournament - Quarterfinal
+2026,2026-03-12,2026-03-09,401851180,reg,1,1,153,North Carolina Tar Heels,ACC,power,19,79,228,Clemson Tigers,ACC,power,0,80,T. Rowe Price ACC Tournament - Quarterfinal
+2026,2026-03-12,2026-03-09,401851296,reg,1,1,2641,Texas Tech Red Raiders,Big 12,power,16,53,66,Iowa State Cyclones,Big 12,power,7,75,Phillips 66 Big 12 Tournament - Quarterfinal
+2026,2026-03-12,2026-03-09,401851299,reg,1,1,12,Arizona Wildcats,Big 12,power,2,81,2116,UCF Knights,Big 12,power,0,59,Phillips 66 Big 12 Tournament - Quarterfinal
+2026,2026-03-12,2026-03-09,401851300,reg,1,1,248,Houston Cougars,Big 12,power,5,73,252,BYU Cougars,Big 12,power,0,66,Phillips 66 Big 12 Tournament - Quarterfinal
+2026,2026-03-12,2026-03-09,401851302,reg,1,1,2305,Kansas Jayhawks,Big 12,power,14,78,2628,TCU Horned Frogs,Big 12,power,0,73,Phillips 66 Big 12 Tournament - Quarterfinal
+2026,2026-03-12,2026-03-09,401851311,reg,0,1,2599,St. John's Red Storm,Big East,high,13,85,2507,Providence Friars,Big East,high,0,72,Big East Tournament - Quarterfinal
+2026,2026-03-12,2026-03-09,401851313,reg,1,1,41,UConn Huskies,Big East,high,6,93,2752,Xavier Musketeers,Big East,high,0,68,Big East Tournament - Quarterfinal
+2026,2026-03-12,2026-03-09,401851376,reg,1,1,275,Wisconsin Badgers,Big Ten,power,23,85,264,Washington Huskies,Big Ten,power,0,82,Big Ten Tournament - 3rd Round
+2026,2026-03-12,2026-03-09,401851377,reg,1,1,2509,Purdue Boilermakers,Big Ten,power,18,81,77,Northwestern Wildcats,Big Ten,power,0,68,Big Ten Tournament - 3rd Round
+2026,2026-03-12,2026-03-09,401851562,reg,1,1,2633,Tennessee Volunteers,SEC,power,25,72,2,Auburn Tigers,SEC,power,0,62,SEC Tournament - 2nd Round
+2026,2026-03-12,2026-03-09,401858186,reg,1,1,193,Miami (OH) RedHawks,MAC,mid,20,83,113,Massachusetts Minutemen,MAC,mid,0,87,MAC Championship - Quarterfinal
+2026,2026-03-13,2026-03-09,401851181,reg,1,1,258,Virginia Cavaliers,ACC,power,10,84,2390,Miami Hurricanes,ACC,power,0,62,T. Rowe Price ACC Tournament - Semifinal
+2026,2026-03-13,2026-03-09,401851182,reg,1,1,150,Duke Blue Devils,ACC,power,1,73,228,Clemson Tigers,ACC,power,0,61,T. Rowe Price ACC Tournament - Semifinal
+2026,2026-03-13,2026-03-09,401851304,reg,1,1,12,Arizona Wildcats,Big 12,power,2,82,66,Iowa State Cyclones,Big 12,power,7,80,Phillips 66 Big 12 Tournament - Semifinal
+2026,2026-03-13,2026-03-09,401851305,reg,1,1,248,Houston Cougars,Big 12,power,5,69,2305,Kansas Jayhawks,Big 12,power,14,47,Phillips 66 Big 12 Tournament - Semifinal
+2026,2026-03-13,2026-03-09,401851315,reg,0,1,2599,St. John's Red Storm,Big East,high,13,78,2550,Seton Hall Pirates,Big East,high,0,68,Big East Tournament - Semifinal
+2026,2026-03-13,2026-03-09,401851316,reg,1,1,41,UConn Huskies,Big East,high,6,67,46,Georgetown Hoyas,Big East,high,0,51,Big East Tournament - Semifinal
+2026,2026-03-13,2026-03-09,401851380,reg,1,1,130,Michigan Wolverines,Big Ten,power,3,71,194,Ohio State Buckeyes,Big Ten,power,0,67,Big Ten Tournament - Quarterfinal
+2026,2026-03-13,2026-03-09,401851381,reg,1,1,356,Illinois Fighting Illini,Big Ten,power,9,88,275,Wisconsin Badgers,Big Ten,power,23,91,Big Ten Tournament - Quarterfinal
+2026,2026-03-13,2026-03-09,401851382,reg,1,1,158,Nebraska Cornhuskers,Big Ten,power,11,58,2509,Purdue Boilermakers,Big Ten,power,18,74,Big Ten Tournament - Quarterfinal
+2026,2026-03-13,2026-03-09,401851383,reg,1,1,127,Michigan State Spartans,Big Ten,power,8,84,26,UCLA Bruins,Big Ten,power,0,88,Big Ten Tournament - Quarterfinal
+2026,2026-03-13,2026-03-09,401851565,reg,1,1,57,Florida Gators,SEC,power,4,71,96,Kentucky Wildcats,SEC,power,0,63,SEC Tournament - Quarterfinal
+2026,2026-03-13,2026-03-09,401851566,reg,1,1,238,Vanderbilt Commodores,SEC,power,22,75,2633,Tennessee Volunteers,SEC,power,25,68,SEC Tournament - Quarterfinal
+2026,2026-03-13,2026-03-09,401851567,reg,1,1,333,Alabama Crimson Tide,SEC,power,15,79,145,Ole Miss Rebels,SEC,power,0,80,SEC Tournament - Quarterfinal
+2026,2026-03-13,2026-03-09,401851568,reg,1,1,8,Arkansas Razorbacks,SEC,power,17,82,201,Oklahoma Sooners,SEC,power,0,79,SEC Tournament - Quarterfinal
+2026,2026-03-14,2026-03-09,401851183,reg,1,1,150,Duke Blue Devils,ACC,power,1,74,258,Virginia Cavaliers,ACC,power,10,70,T. Rowe Price ACC Tournament - Final
+2026,2026-03-14,2026-03-09,401851306,reg,1,1,12,Arizona Wildcats,Big 12,power,2,79,248,Houston Cougars,Big 12,power,5,74,Phillips 66 Big 12 Tournament - Final
+2026,2026-03-14,2026-03-09,401851317,reg,0,1,2599,St. John's Red Storm,Big East,high,13,72,41,UConn Huskies,Big East,high,6,52,Big East Tournament - Final
+2026,2026-03-14,2026-03-09,401851384,reg,1,1,130,Michigan Wolverines,Big Ten,power,3,68,275,Wisconsin Badgers,Big Ten,power,23,65,Big Ten Tournament - Semifinal
+2026,2026-03-14,2026-03-09,401851386,reg,1,1,26,UCLA Bruins,Big Ten,power,0,66,2509,Purdue Boilermakers,Big Ten,power,18,73,Big Ten Tournament - Semifinal
+2026,2026-03-14,2026-03-09,401851569,reg,1,1,57,Florida Gators,SEC,power,4,74,238,Vanderbilt Commodores,SEC,power,22,91,SEC Tournament - Semifinal
+2026,2026-03-14,2026-03-09,401851570,reg,1,1,8,Arkansas Razorbacks,SEC,power,17,93,145,Ole Miss Rebels,SEC,power,0,90,SEC Tournament - Semifinal
+2026,2026-03-15,2026-03-09,401851388,reg,1,1,130,Michigan Wolverines,Big Ten,power,3,72,2509,Purdue Boilermakers,Big Ten,power,18,80,Big Ten Tournament - Final
+2026,2026-03-15,2026-03-09,401851571,reg,1,1,8,Arkansas Razorbacks,SEC,power,17,86,238,Vanderbilt Commodores,SEC,power,22,75,SEC Tournament - Final
+2026,2026-03-17,2026-03-16,401856434,ncaa,1,0,152,NC State Wolfpack,ACC,power,11,66,251,Texas Longhorns,SEC,power,11,68,NCAA Men's Basketball Championship - West Region - First Four
+2026,2026-03-17,2026-03-16,401856435,ncaa,1,0,47,Howard Bison,MEAC,mid,16,86,2378,UMBC Retrievers,Am. East,mid,16,83,NCAA Men's Basketball Championship - Midwest Region - First Four
+2026,2026-03-18,2026-03-16,401856436,ncaa,1,0,2567,SMU Mustangs,ACC,power,11,79,193,Miami (OH) RedHawks,MAC,mid,11,89,NCAA Men's Basketball Championship - Midwest Region - First Four
+2026,2026-03-18,2026-03-16,401856437,ncaa,1,0,2329,Lehigh Mountain Hawks,Patriot,mid,16,55,2504,Prairie View A&M Panthers,SWAC,mid,16,67,NCAA Men's Basketball Championship - South Region - First Four
+2026,2026-03-19,2026-03-16,401856478,ncaa,1,0,150,Duke Blue Devils,ACC,power,1,71,2561,Siena Saints,MAAC,mid,16,65,NCAA Men's Basketball Championship - East Region - 1st Round
+2026,2026-03-19,2026-03-16,401856479,ncaa,1,0,194,Ohio State Buckeyes,Big Ten,power,8,64,2628,TCU Horned Frogs,Big 12,power,9,66,NCAA Men's Basketball Championship - East Region - 1st Round
+2026,2026-03-19,2026-03-16,401856480,ncaa,1,0,275,Wisconsin Badgers,Big Ten,power,5,82,2272,High Point Panthers,Big South,mid,12,83,NCAA Men's Basketball Championship - West Region - 1st Round
+2026,2026-03-19,2026-03-16,401856481,ncaa,1,0,8,Arkansas Razorbacks,SEC,power,4,97,62,Hawai'i Rainbow Warriors,Big West,mid,13,78,NCAA Men's Basketball Championship - West Region - 1st Round
+2026,2026-03-19,2026-03-16,401856482,ncaa,1,0,97,Louisville Cardinals,ACC,power,6,83,58,South Florida Bulls,American,high,11,79,NCAA Men's Basketball Championship - East Region - 1st Round
+2026,2026-03-19,2026-03-16,401856483,ncaa,1,0,127,Michigan State Spartans,Big Ten,power,3,92,2449,North Dakota State Bison,Summit,mid,14,67,NCAA Men's Basketball Championship - East Region - 1st Round
+2026,2026-03-19,2026-03-16,401856484,ncaa,1,0,252,BYU Cougars,Big 12,power,6,71,251,Texas Longhorns,SEC,power,11,79,NCAA Men's Basketball Championship - West Region - 1st Round
+2026,2026-03-19,2026-03-16,401856485,ncaa,1,0,2250,Gonzaga Bulldogs,WCC,high,3,73,338,Kennesaw State Owls,CUSA,mid,14,64,NCAA Men's Basketball Championship - West Region - 1st Round
+2026,2026-03-19,2026-03-16,401856486,ncaa,1,0,130,Michigan Wolverines,Big Ten,power,1,101,47,Howard Bison,MEAC,mid,16,80,NCAA Men's Basketball Championship - Midwest Region - 1st Round
+2026,2026-03-19,2026-03-16,401856487,ncaa,1,0,61,Georgia Bulldogs,SEC,power,8,77,139,Saint Louis Billikens,A-10,high,9,102,NCAA Men's Basketball Championship - Midwest Region - 1st Round
+2026,2026-03-19,2026-03-16,401856488,ncaa,1,0,238,Vanderbilt Commodores,SEC,power,5,78,2377,McNeese Cowboys,Southland,mid,12,68,NCAA Men's Basketball Championship - South Region - 1st Round
+2026,2026-03-19,2026-03-16,401856489,ncaa,1,0,158,Nebraska Cornhuskers,Big Ten,power,4,76,2653,Troy Trojans,Sun Belt,mid,13,47,NCAA Men's Basketball Championship - South Region - 1st Round
+2026,2026-03-19,2026-03-16,401856490,ncaa,1,0,153,North Carolina Tar Heels,ACC,power,6,78,2670,VCU Rams,A-10,high,11,82,NCAA Men's Basketball Championship - South Region - 1st Round
+2026,2026-03-19,2026-03-16,401856491,ncaa,1,0,356,Illinois Fighting Illini,Big Ten,power,3,105,219,Pennsylvania Quakers,Ivy,mid,14,70,NCAA Men's Basketball Championship - South Region - 1st Round
+2026,2026-03-19,2026-03-16,401856492,ncaa,1,0,2608,Saint Mary's Gaels,WCC,high,7,50,245,Texas A&M Aggies,SEC,power,10,63,NCAA Men's Basketball Championship - South Region - 1st Round
+2026,2026-03-19,2026-03-16,401856493,ncaa,1,0,248,Houston Cougars,Big 12,power,2,78,70,Idaho Vandals,Big Sky,mid,15,47,NCAA Men's Basketball Championship - South Region - 1st Round
+2026,2026-03-20,2026-03-16,401856494,ncaa,1,0,2599,St. John's Red Storm,Big East,high,5,79,2460,Northern Iowa Panthers,MVC,mid,12,53,NCAA Men's Basketball Championship - East Region - 1st Round
+2026,2026-03-20,2026-03-16,401856495,ncaa,1,0,2305,Kansas Jayhawks,Big 12,power,4,68,2856,California Baptist Lancers,UAC,mid,13,60,NCAA Men's Basketball Championship - East Region - 1st Round
+2026,2026-03-20,2026-03-16,401856496,ncaa,1,0,26,UCLA Bruins,Big Ten,power,7,75,2116,UCF Knights,Big 12,power,10,71,NCAA Men's Basketball Championship - East Region - 1st Round
+2026,2026-03-20,2026-03-16,401856497,ncaa,1,0,41,UConn Huskies,Big East,high,2,82,231,Furman Paladins,SoCon,mid,15,71,NCAA Men's Basketball Championship - East Region - 1st Round
+2026,2026-03-20,2026-03-16,401856518,ncaa,1,0,2390,Miami Hurricanes,ACC,power,7,80,142,Missouri Tigers,SEC,power,10,66,NCAA Men's Basketball Championship - West Region - 1st Round
+2026,2026-03-20,2026-03-16,401856519,ncaa,1,0,2509,Purdue Boilermakers,Big Ten,power,2,104,2511,Queens University Royals,ASUN,mid,15,71,NCAA Men's Basketball Championship - West Region - 1st Round
+2026,2026-03-20,2026-03-16,401856520,ncaa,1,0,2641,Texas Tech Red Raiders,Big 12,power,5,91,2006,Akron Zips,MAC,mid,12,71,NCAA Men's Basketball Championship - Midwest Region - 1st Round
+2026,2026-03-20,2026-03-16,401856521,ncaa,1,0,333,Alabama Crimson Tide,SEC,power,4,90,2275,Hofstra Pride,CAA,mid,13,70,NCAA Men's Basketball Championship - Midwest Region - 1st Round
+2026,2026-03-20,2026-03-16,401856522,ncaa,1,0,228,Clemson Tigers,ACC,power,8,61,2294,Iowa Hawkeyes,Big Ten,power,9,67,NCAA Men's Basketball Championship - South Region - 1st Round
+2026,2026-03-20,2026-03-16,401856523,ncaa,1,0,57,Florida Gators,SEC,power,1,114,2504,Prairie View A&M Panthers,SWAC,mid,16,55,NCAA Men's Basketball Championship - South Region - 1st Round
+2026,2026-03-20,2026-03-16,401856524,ncaa,1,0,66,Iowa State Cyclones,Big 12,power,2,108,2634,Tennessee State Tigers,OVC,mid,15,74,NCAA Men's Basketball Championship - Midwest Region - 1st Round
+2026,2026-03-20,2026-03-16,401856525,ncaa,1,0,96,Kentucky Wildcats,SEC,power,7,89,2541,Santa Clara Broncos,WCC,high,10,84,NCAA Men's Basketball Championship - Midwest Region - 1st Round
+2026,2026-03-20,2026-03-16,401856526,ncaa,1,0,258,Virginia Cavaliers,ACC,power,3,82,2750,Wright State Raiders,Horizon,mid,14,73,NCAA Men's Basketball Championship - Midwest Region - 1st Round
+2026,2026-03-20,2026-03-16,401856527,ncaa,1,0,2633,Tennessee Volunteers,SEC,power,6,78,193,Miami (OH) RedHawks,MAC,mid,11,56,NCAA Men's Basketball Championship - Midwest Region - 1st Round
+2026,2026-03-20,2026-03-16,401856528,ncaa,1,0,222,Villanova Wildcats,Big East,high,8,76,328,Utah State Aggies,Mountain West,high,9,86,NCAA Men's Basketball Championship - West Region - 1st Round
+2026,2026-03-20,2026-03-16,401856529,ncaa,1,0,12,Arizona Wildcats,Big 12,power,1,92,112358,Long Island University Sharks,NEC,mid,16,58,NCAA Men's Basketball Championship - West Region - 1st Round
+2026,2026-03-21,2026-03-16,401856530,ncaa,1,0,150,Duke Blue Devils,ACC,power,1,81,2628,TCU Horned Frogs,Big 12,power,9,58,NCAA Men's Basketball Championship - East Region - 2nd Round
+2026,2026-03-21,2026-03-16,401856531,ncaa,1,0,127,Michigan State Spartans,Big Ten,power,3,77,97,Louisville Cardinals,ACC,power,6,69,NCAA Men's Basketball Championship - East Region - 2nd Round
+2026,2026-03-21,2026-03-16,401856532,ncaa,1,0,130,Michigan Wolverines,Big Ten,power,1,95,139,Saint Louis Billikens,A-10,high,9,72,NCAA Men's Basketball Championship - Midwest Region - 2nd Round
+2026,2026-03-21,2026-03-16,401856533,ncaa,1,0,356,Illinois Fighting Illini,Big Ten,power,3,76,2670,VCU Rams,A-10,high,11,55,NCAA Men's Basketball Championship - South Region - 2nd Round
+2026,2026-03-21,2026-03-16,401856534,ncaa,1,0,158,Nebraska Cornhuskers,Big Ten,power,4,74,238,Vanderbilt Commodores,SEC,power,5,72,NCAA Men's Basketball Championship - South Region - 2nd Round
+2026,2026-03-21,2026-03-16,401856535,ncaa,1,0,248,Houston Cougars,Big 12,power,2,88,245,Texas A&M Aggies,SEC,power,10,57,NCAA Men's Basketball Championship - South Region - 2nd Round
+2026,2026-03-21,2026-03-16,401856536,ncaa,1,0,8,Arkansas Razorbacks,SEC,power,4,94,2272,High Point Panthers,Big South,mid,12,88,NCAA Men's Basketball Championship - West Region - 2nd Round
+2026,2026-03-21,2026-03-16,401856537,ncaa,1,0,2250,Gonzaga Bulldogs,WCC,high,3,68,251,Texas Longhorns,SEC,power,11,74,NCAA Men's Basketball Championship - West Region - 2nd Round
+2026,2026-03-22,2026-03-16,401856558,ncaa,1,0,2305,Kansas Jayhawks,Big 12,power,4,65,2599,St. John's Red Storm,Big East,high,5,67,NCAA Men's Basketball Championship - East Region - 2nd Round
+2026,2026-03-22,2026-03-16,401856559,ncaa,1,0,41,UConn Huskies,Big East,high,2,73,26,UCLA Bruins,Big Ten,power,7,57,NCAA Men's Basketball Championship - East Region - 2nd Round
+2026,2026-03-22,2026-03-16,401856560,ncaa,1,0,333,Alabama Crimson Tide,SEC,power,4,90,2641,Texas Tech Red Raiders,Big 12,power,5,65,NCAA Men's Basketball Championship - Midwest Region - 2nd Round
+2026,2026-03-22,2026-03-16,401856561,ncaa,1,0,66,Iowa State Cyclones,Big 12,power,2,82,96,Kentucky Wildcats,SEC,power,7,63,NCAA Men's Basketball Championship - Midwest Region - 2nd Round
+2026,2026-03-22,2026-03-16,401856562,ncaa,1,0,258,Virginia Cavaliers,ACC,power,3,72,2633,Tennessee Volunteers,SEC,power,6,79,NCAA Men's Basketball Championship - Midwest Region - 2nd Round
+2026,2026-03-22,2026-03-16,401856563,ncaa,1,0,57,Florida Gators,SEC,power,1,72,2294,Iowa Hawkeyes,Big Ten,power,9,73,NCAA Men's Basketball Championship - South Region - 2nd Round
+2026,2026-03-22,2026-03-16,401856564,ncaa,1,0,2509,Purdue Boilermakers,Big Ten,power,2,79,2390,Miami Hurricanes,ACC,power,7,69,NCAA Men's Basketball Championship - West Region - 2nd Round
+2026,2026-03-22,2026-03-16,401856565,ncaa,1,0,12,Arizona Wildcats,Big 12,power,1,78,328,Utah State Aggies,Mountain West,high,9,66,NCAA Men's Basketball Championship - West Region - 2nd Round
+2026,2026-03-26,2026-03-23,401856566,ncaa,1,0,248,Houston Cougars,Big 12,power,2,55,356,Illinois Fighting Illini,Big Ten,power,3,65,NCAA Men's Basketball Championship - South Region - Sweet 16
+2026,2026-03-26,2026-03-23,401856567,ncaa,1,0,158,Nebraska Cornhuskers,Big Ten,power,4,71,2294,Iowa Hawkeyes,Big Ten,power,9,77,NCAA Men's Basketball Championship - South Region - Sweet 16
+2026,2026-03-26,2026-03-23,401856568,ncaa,1,0,2509,Purdue Boilermakers,Big Ten,power,2,79,251,Texas Longhorns,SEC,power,11,77,NCAA Men's Basketball Championship - West Region - Sweet 16
+2026,2026-03-26,2026-03-23,401856569,ncaa,1,0,12,Arizona Wildcats,Big 12,power,1,109,8,Arkansas Razorbacks,SEC,power,4,88,NCAA Men's Basketball Championship - West Region - Sweet 16
+2026,2026-03-27,2026-03-23,401856570,ncaa,1,0,150,Duke Blue Devils,ACC,power,1,80,2599,St. John's Red Storm,Big East,high,5,75,NCAA Men's Basketball Championship - East Region - Sweet 16
+2026,2026-03-27,2026-03-23,401856571,ncaa,1,0,41,UConn Huskies,Big East,high,2,67,127,Michigan State Spartans,Big Ten,power,3,63,NCAA Men's Basketball Championship - East Region - Sweet 16
+2026,2026-03-27,2026-03-23,401856572,ncaa,1,0,130,Michigan Wolverines,Big Ten,power,1,90,333,Alabama Crimson Tide,SEC,power,4,77,NCAA Men's Basketball Championship - Midwest Region - Sweet 16
+2026,2026-03-27,2026-03-23,401856573,ncaa,1,0,66,Iowa State Cyclones,Big 12,power,2,62,2633,Tennessee Volunteers,SEC,power,6,76,NCAA Men's Basketball Championship - Midwest Region - Sweet 16
+2026,2026-03-28,2026-03-23,401856574,ncaa,1,0,356,Illinois Fighting Illini,Big Ten,power,3,71,2294,Iowa Hawkeyes,Big Ten,power,9,59,NCAA Men's Basketball Championship - South Region - Elite 8
+2026,2026-03-28,2026-03-23,401856575,ncaa,1,0,12,Arizona Wildcats,Big 12,power,1,79,2509,Purdue Boilermakers,Big Ten,power,2,64,NCAA Men's Basketball Championship - West Region - Elite 8
+2026,2026-03-29,2026-03-23,401856576,ncaa,1,0,130,Michigan Wolverines,Big Ten,power,1,95,2633,Tennessee Volunteers,SEC,power,6,62,NCAA Men's Basketball Championship - Midwest Region - Elite 8
+2026,2026-03-29,2026-03-23,401856577,ncaa,1,0,150,Duke Blue Devils,ACC,power,1,72,41,UConn Huskies,Big East,high,2,73,NCAA Men's Basketball Championship - East Region - Elite 8
+2026,2026-04-04,2026-03-30,401856598,ncaa,1,0,41,UConn Huskies,Big East,high,2,71,356,Illinois Fighting Illini,Big Ten,power,3,62,NCAA Men's Basketball Championship - Final Four
+2026,2026-04-04,2026-03-30,401856599,ncaa,1,0,12,Arizona Wildcats,Big 12,power,1,73,130,Michigan Wolverines,Big Ten,power,1,91,NCAA Men's Basketball Championship - Final Four
+2026,2026-04-06,2026-04-06,401856600,ncaa,1,0,130,Michigan Wolverines,Big Ten,power,1,69,41,UConn Huskies,Big East,high,2,63,NCAA Men's Basketball Championship - National Championship

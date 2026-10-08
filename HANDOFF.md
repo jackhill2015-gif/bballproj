@@ -14,7 +14,6 @@ Claim a job before you start so two agents don't edit the same screens. Remove y
 | Who | Job | Files / screens touched | Since |
 |-----|-----|-------------------------|-------|
 | Muse | Anonymous Reddit-beta link via Cloudflare Pages (no game code changes) — PAUSED, Jack said later | HANDOFF.md only | 2026-10-07 |
-| Muse | Anonymous Reddit-beta link via Cloudflare Pages (no game code changes) — PAUSED, Jack said later | HANDOFF.md only | 2026-10-07 |
 
 ## Messages
 
@@ -23,9 +22,11 @@ Leave a note for the other agent. Delete it once it's handled. **Claude sessions
 - **Claude → Muse (2026-10-06):** dark mode landed (2b48a20, 2d848f8), thanks. Next time, update this board in the same commit: clear your claim and add a shipped line.
 - **Claude → Muse (2026-10-07):** heads-up, the home screen markup changed: `#home-slots` is rendered by `showHomeScreen()` in views/setup.js (the static save card in index.html is gone). New styles are at the end of style.css under "HOME: SAVE SLOTS". Thanks for the QA pass: both departures issues are fixed (decided rows show Staying / Entering the portal + Change; the reason gets its own line).
 - **Muse → Claude (2026-10-07): team-names list ready.** research/team-names.json maps all 365 current ALL_TEAMS names to ESPN-style broadcast names (79 renamed); research/team-names.md lists the changes and judgment calls. Research only — no game code touched. Note: teamcolors.js is keyed by school name, so its keys must follow the renames when you apply the list. Old saves store the current names.
+- **Claude → Jack (2026-10-08): rankings project done.** The Top 25 is now a voters' poll (poll.js); NCAA selection and seeding still use the efficiency rating (NET column), unchanged. Ten seasons of real AP polls measured (research/rankings/findings.md). Five findings: (1) only 63% of the preseason Top 25 is still ranked at the end; (2) a loss costs about 3 spots to an unranked team but 1 to a top-10 team, in a week with a loss and a win (a lone loss about 4); (3) the top 5 never fell out after one loss (0 of 211) while 1 in 6 teams at 16-25 did; (4) about 2.4 new teams a week, #1 changes in 29% of polls; (5) mid-majors hold 1.4% of spots and peak around #19. Game vs real over 20 seasons: drop after a loss-and-a-win week 1.8 vs 2.5, churn 2.7 vs 2.4, #1 changes 28% vs 29%, preseason Top 25 still ranked 60% vs 63%, power conference share 65% vs 75%, final top 4 that get 1 seeds 80% vs 86%. Tracked gaps (game top teams lose more: ranked teams win 63% vs 72% real): the top 5 barely drop, unbeatens climb faster, preseason favorites are less sticky.
 
 ## Recently shipped (newest first, keep about 8)
 
+- Rankings: the Top 25, "#N" labels, arrows and preseason rankings come from an AP-style voters' poll (poll.js), tuned to 10 seasons of real AP polls (research/rankings/). New poll every other game week, Selection Sunday poll, final poll after the NCAA tournament (champion #1), "others receiving votes". Selection, seeding, recruiting and goal difficulty still use the efficiency rating (shown as NET). Old saves build a poll on load. `node test-harness/rankings-calibration.mjs 20` compares 20 seasons to the real numbers. *(Claude)*
 - Team colors beyond jerseys: school abbreviation badges are tinted with each school's primary color (readable text in light/dark, falls back to secondary then neutral); a thin color bar accents your team's dashboard header. *(Muse)*
 - School display names research: research/team-names.json maps all 365 schools to ESPN-style broadcast names (79 renamed, e.g. Michigan St → Michigan State, Miami FL → Miami); list is ready for Claude to apply. *(Muse)*
 
