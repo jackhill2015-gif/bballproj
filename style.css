@@ -391,7 +391,8 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
     border-top: none; min-height: 48px; font-size: 14px; text-transform: none; letter-spacing: 0;
     padding: 0 14px;
   }
-  .more-handle { display: block; width: 36px; height: 4px; border-radius: 2px; background: var(--bdr2); background-clip: content-box; margin: 4px auto 8px; padding: 16px 24px; cursor: pointer; }
+  .more-handle { display: block; padding: 16px 0 12px; cursor: pointer; }
+  .more-handle::after { content: ""; display: block; width: 36px; height: 4px; border-radius: 2px; background: var(--bdr2); margin: 0 auto; }
 }
 
 /* ═══ DASHBOARD ═══ */
