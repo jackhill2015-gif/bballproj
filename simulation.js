@@ -244,17 +244,17 @@ function blkW(p) { return p.mins * Math.pow(Math.max(40, (p.reb + p.def) / 2) / 
 
 // Primary-playmaker assist: 55% of assists go to the highest-ply player on
 // the floor (not the scorer), the rest are weighted by playmaking.
-function pickAssister(offTeam, off) {
+function pickAssister(offTeam, off, out) {
   var asst = null;
   if (ri(1, 100) <= 48) {
     var bestPly = -1;
     offTeam.rost.forEach(function(p) {
-      if (p !== off && p.mins > 0 && p.ply > bestPly) { bestPly = p.ply; asst = p; }
+      if (p !== off && p.mins > 0 && !(out && out.has(p)) && p.ply > bestPly) { bestPly = p.ply; asst = p; }
     });
   } else {
     var tries = 0;
-    asst = getFloor(offTeam, astW);
-    while (asst === off && tries < 5) { asst = getFloor(offTeam, astW); tries++; }
+    asst = getFloor(offTeam, out ? function(p) { return out.has(p) ? 0 : astW(p); } : astW);
+    while (asst === off && tries < 5) { asst = getFloor(offTeam, out ? function(p) { return out.has(p) ? 0 : astW(p); } : astW); tries++; }
   }
   if (asst && asst !== off) asst.s.ast++;
 }
@@ -281,180 +281,58 @@ export function updateMomentum(scoringTeamId, pts) {
 }
 
 // ── Single Possession (Live Sim) ─────────────────────────
-// Play types, defensive schemes, clutch, fouls, steals, blocks.
-// Returns: { pts, time, pbp, big, type, run }
+// Watched games run on the same engine as quick sims (createGame below):
+// one call plays one possession and describes it for the play-by-play.
+// The engine for the game in progress lives on LS.eng (made on the first
+// possession, cleared when the game ends).
+// Returns: { pts, defPts, hs, as, time, pbp, big, type, run }
 export function simPoss(offT, defT) {
   // NOTE: live game is watch-only by design — no mid-game coaching
   // controls. Schemes/rotation/usage are pre-game decisions only.
-  var time = ri(12, 22);
-  var pts = 0;
-  var pbp = '';
-  var big = false;
-  var type = 'miss';
-  var run = null;
-
-  var possCount = (typeof LS.possCount === 'number') ? LS.possCount : 0;
-  if (possCount <= 1) { _best.delete(offT); _best.delete(defT); }
-  var tiredness = Math.min(possCount / 160, 0.12);
-  var isClutch = (LS.clock <= 120 && LS.half === 2);
-
-  var defScheme = (defT.strat && defT.strat.def) ? defT.strat.def : 'man';
-  var oScheme = (offT.strat && offT.strat.off) || 'balanced';
-  var offStarS = (defScheme === 'box1') ? teamStar(offT) : null;
-  var swS = function(p) {
-    var w = shooterWeight(p, offT);
-    if (offStarS && p === offStarS) w *= 0.35;
-    return w;
-  };
-  var off = getFloor(offT, swS);
-  var def = getFloor(defT);
-
-  // Play type
-  var playRoll = ri(1, 100);
-  var playType = 'standard';
-  var isoTs = (oScheme === 'drive') ? 22 : 15;
-  var pnrTs = isoTs + 25;
-  if (playRoll <= isoTs) playType = 'iso';
-  else if (playRoll <= pnrTs) playType = 'pnr';
-  else if (playRoll <= 50) playType = 'fastbreak';
-  else if (playRoll <= 60) playType = 'post';
-  if (isClutch && playType === 'fastbreak') playType = 'standard';
-
-  var isThree = false, isRim = false, makePct = 0, assistPct = 58, foulExtra = 0;
-
-  if (playType === 'iso') {
-    var bestOvr = 0;
-    offT.rost.forEach(function(p) { if (p.mins > 0 && p.ovr > bestOvr) bestOvr = p.ovr; });
-    var tr = 0;
-    do { off = getFloor(offT, swS); tr++; } while (off.ovr < bestOvr - 5 && tr < 3);
-    isRim = off.fin > off.sht + 8; isThree = !isRim && ri(1, 100) <= 55;
-    makePct = isRim ? 60 : 45; assistPct = 25;
-  } else if (playType === 'pnr') {
-    var tg = 0;
-    do { off = getFloor(offT, swS); tg++; } while ((off.pos !== 'PG' && off.pos !== 'SG') && tg < 3);
-    var scr = getFloor(offT, swS); var tb = 0;
-    while ((scr.pos !== 'PF' && scr.pos !== 'C') && tb < 3) { scr = getFloor(offT, swS); tb++; }
-    var pr = ri(1, 100);
-    if (pr <= 60) { isThree = ri(1, 100) <= 65; isRim = !isThree; }
-    else if (pr <= 80) { off = scr; isRim = true; }
-    else { off = getFloor(offT, swS); isThree = true; makePct += 5; }
-    assistPct = 78;
-  } else if (playType === 'fastbreak') {
-    isRim = true; makePct += 9; assistPct = 68;
-  } else if (playType === 'post') {
-    var tp = 0;
-    do { off = getFloor(offT, swS); tp++; } while ((off.pos !== 'PF' && off.pos !== 'C') && tp < 3);
-    isRim = true; foulExtra = 4;
-  } else {
-    var sB = schemeThreeMod(offT);
-    isThree = ri(1, 100) <= (40 + sB); isRim = !isThree && ri(1, 100) <= 26;
+  var eng = LS.eng;
+  if (!eng || !((eng.home === offT && eng.away === defT) || (eng.home === defT && eng.away === offT))) {
+    var h = (LS.tH === offT || LS.tH === defT) ? LS.tH : defT;
+    eng = LS.eng = createGame(h, h === offT ? defT : offT, { campus: !!(LS.game && LS.game._campus) });
   }
-
-  // Foul
-  var foulChance = 8 + foulExtra;
-  if (def.def < 60) foulChance += 3;
-  if (isRim) foulChance += 5;
-  if (oScheme === 'drive' && isRim && (playType === 'iso' || playType === 'pnr')) foulChance += 3;
-  if (isClutch) foulChance += 5;
-  foulChance = clamp(foulChance, 6, 24);
-  if (ri(1, 100) <= foulChance) {
-    var ftPct = clamp(55 + Math.round(off.sht * 0.22), 65, 88);
-    ftPct = Math.round(ftPct * (1 - tiredness * 0.6));
-    var made = 0;
-    for (var f = 0; f < 2; f++) { if (ri(1, 100) <= ftPct) made++; }
-    off.s.pts += made;
-    off.s.fta = (off.s.fta || 0) + 2; off.s.ftm = (off.s.ftm || 0) + made;
-    return { pts: made, time: time, pbp: '<span class="p-foul">Foul on ' + def.name + '. ' + off.name + ' to the line \u2014 ' + made + ' of 2.</span>', big: made === 2, type: 'foul', run: null };
-  }
-
-  // Turnover
-  var toChance = clamp(17 + Math.round((def.def - off.ply) * 0.13 * TUNE.skill), 8, 28);
-  if (defScheme === 'press') toChance += TUNE.pressTO;
-  if (defScheme === '2-3' || defScheme === 'zone') toChance -= 2;
-  if (defScheme === '3-2') toChance -= 1;
-  if (defScheme === '1-3-1') toChance += 2;
-  if (isClutch) toChance += 3;
-  if (ri(1, 100) <= toChance) {
-    off.s.to = (off.s.to || 0) + 1;
-    if (ri(1, 100) <= 62) {
-      if (typeof def.s.stl !== 'number') def.s.stl = 0;
-      def.s.stl++;
-      return { pts: 0, time: time, pbp: '<span class="p-to">' + pick(COM.steal, off.name, def.name) + '</span>', big: false, type: 'turn', run: null };
-    }
-    return { pts: 0, time: time, pbp: '<span class="p-to">' + pick(COM.turn, off.name, def.name) + '</span>', big: false, type: 'turn', run: null };
-  }
-
-  // Block
-  if (playType !== 'fastbreak') {
-    var bc = isThree ? 1 : (isRim ? 8 : 5);
-    bc = clamp(bc + Math.round((def.reb - 50) * 0.09), 1, 19);
-    if (ri(1, 100) <= bc) {
-      var blocker = getFloor(defT, blkW);
-      if (typeof blocker.s.blk !== 'number') blocker.s.blk = 0;
-      blocker.s.blk++; blocker.s.reb++;
-      return { pts: 0, time: time, pbp: '<span class="p-bl">' + pick(COM.block, off.name, blocker.name) + '</span>', big: true, type: 'block', run: null };
-    }
-  }
-
-  // Shot make %
-  if (makePct === 0) {
-    if (isThree) {
-      makePct = clamp(40 + Math.round((off.sht - def.def) * 0.22 * TUNE.skill), 28, 48);
-      if (defScheme === '2-3' || defScheme === 'zone') makePct += 4;
-      else if (defScheme === '3-2') makePct -= 5;
-      else if (defScheme === '1-3-1') makePct += 2;
-      if (defScheme === 'press') makePct += 3;
-    } else if (isRim) {
-      makePct = clamp(64 + Math.round((off.fin - def.def) * 0.32 * TUNE.skill), 48, 80);
-      if (defScheme === '2-3' || defScheme === 'zone') makePct -= 6;
-      else if (defScheme === '3-2') makePct += 4;
-      if (defScheme === 'press') makePct += 3;
-    } else {
-      makePct = clamp(48 + Math.round((off.sht - def.def) * 0.26 * TUNE.skill), 36, 58);
-      if (defScheme === '3-2') makePct -= 2;
-      if (defScheme === 'press') makePct += 3;
-    }
-    if (oScheme === 'motion' && !isRim) makePct += 2;
-    if (offStarS && off === offStarS) makePct -= 6;
-  }
-  if (isClutch) makePct -= 4;
-  // Home court + score effects, matching simGame so watched games play like
-  // simmed ones. Tournament games are neutral-site.
-  var liveHome = (G.phase === 'reg' || !!(LS.game && LS.game._campus)) && offT === LS.tH;
-  if (liveHome) makePct += HOME_BONUS + (offT.id === G.tid ? arenaBonus(G.tid) : 0);
-  if (LS.half >= 2) {
-    var liveLead = (offT === LS.tH) ? (LS.hs - LS.as) : (LS.as - LS.hs);
-    var liveOver = Math.abs(liveLead) - SCORE_EFFECT_START;
-    if (liveOver > 0) makePct += (liveLead > 0 ? -1 : 1) * Math.min(TUNE.scoreMax, liveOver * TUNE.scoreRate);
-  }
-  makePct = Math.round(makePct * (1 - tiredness));
-  makePct = clamp(makePct, 26, 78);
-
-  off.s.fga++;
-  if (isThree) off.s.tpa = (off.s.tpa || 0) + 1;
-  if (ri(1, 100) <= makePct) {
-    pts = isThree ? 3 : 2;
-    off.s.fgm++; off.s.pts += pts;
-    if (isThree) off.s.tpm = (off.s.tpm || 0) + 1;
-    if (ri(1, 100) <= assistPct) { pickAssister(offT, off); }
-    if (!isThree && ri(1, 100) <= 9) { pts += 1; off.s.pts++; off.s.fta = (off.s.fta || 0) + 1; off.s.ftm = (off.s.ftm || 0) + 1; big = true; }
+  var isHomeOff = offT === eng.home;
+  // Seconds per possession from the game's pace; how many trips each team
+  // has left decides clutch and late-game play, like the quick sim
+  var T = 1200 / eng.gamePoss;
+  var rem = Math.max(0, LS.clock || 0) / (2 * T);
+  var clutch = false, late = false;
+  if (LS.half === 2) { clutch = rem <= 8; late = rem <= TUNE.lateTrips; }
+  else if (LS.half >= 3) { clutch = late = rem <= 2; }
+  var e = eng.poss(isHomeOff, clutch, late, LS.half >= 2);
+  var sc = eng.score();
+  var time = Math.max(4, Math.round(T * (0.58 + Math.random() * 0.8))) + (e.oreb ? 4 : 0); // averages T with second chances
+  var off = e.off || getFloor(offT), def = e.def || getFloor(defT);
+  var pbp = '', big = false, type = 'miss', run = null;
+  if (e.type === 'turn') {
+    type = 'turn';
+    pbp = '<span class="p-to">' + pick(e.stl ? COM.steal : COM.turn, off.name, def.name)
+      + (e.runout ? ' ' + def.name + ' takes it the other way for two.' : '') + '</span>';
+  } else if (e.type === 'foul') {
+    type = 'foul'; big = e.ftm === 2;
+    pbp = '<span class="p-foul">Foul on ' + def.name + '. ' + off.name + ' to the line \u2014 ' + e.ftm + ' of 2.</span>';
+  } else if (e.type === 'block') {
+    type = 'block'; big = true;
+    pbp = '<span class="p-bl">' + pick(COM.block, off.name, def.name) + '</span>';
+  } else if (e.type === 'putback') {
+    type = 'make';
+    pbp = '<span class="p-mk">' + pick(COM.putback, off.name) + '</span>';
+  } else if (e.type === 'make') {
+    type = 'make'; big = !!(e.and1 || e.fast);
     var txt;
-    if (isClutch && ri(1, 100) <= 40) txt = pick(COM.clutch, off.name);
-    else if (playType === 'fastbreak' || (isRim && off.fin > 84)) txt = pick(COM.dunk, off.name, def.name);
-    else if (isThree) txt = pick(COM.make3, off.name, def.name);
+    if (clutch && ri(1, 100) <= 40) txt = pick(COM.clutch, off.name);
+    else if (e.fast || (e.rim && off.fin > 84)) txt = pick(COM.dunk, off.name, def.name);
+    else if (e.three) txt = pick(COM.make3, off.name, def.name);
     else txt = pick(COM.make2, off.name, def.name);
-    run = updateMomentum(offT.id !== undefined ? offT.id : -1, pts);
-    return { pts: pts, time: time, pbp: '<span class="p-mk">' + txt + '</span>', big: big || playType === 'fastbreak', type: 'make', run: run };
+    pbp = '<span class="p-mk">' + txt + (e.and1 ? ' And one.' : '') + '</span>';
   } else {
-    if (ri(1, 100) <= 23) {
-      // M5 FIX: putback credits the FGA with the FGM (was inflating FG%).
-      off.s.reb++; off.s.oreb = (off.s.oreb || 0) + 1; off.s.pts += 2; off.s.fgm++; off.s.fga++;
-      run = updateMomentum(offT.id !== undefined ? offT.id : -1, 2);
-      return { pts: 2, time: time + 4, pbp: '<span class="p-mk">' + pick(COM.putback, off.name) + '</span>', big: false, type: 'make', run: run };
-    }
-    var dRebS = getFloor(defT, rebW); dRebS.s.reb = (dRebS.s.reb || 0) + 1;
-    return { pts: 0, time: time, pbp: '<span class="p-ms">' + pick(isThree ? COM.miss3 : COM.miss2, off.name, def.name) + '</span>', big: false, type: 'miss', run: null };
+    pbp = '<span class="p-ms">' + pick(e.three ? COM.miss3 : COM.miss2, off.name, def.name) + '</span>';
   }
+  if (e.pts > 0) run = updateMomentum(offT.id !== undefined ? offT.id : -1, e.pts);
+  return { pts: e.pts, defPts: e.defPts, hs: sc.h, as: sc.a, time: time, pbp: pbp, big: big, type: type, run: run };
 }
 
 
@@ -478,7 +356,7 @@ var SCORE_EFFECT_MAX = 10;
 //   usageExp: league-wide extra shots for higher-rated players (off)
 //   star1 / star2: shot-share boost for a team's best and second-best player
 //   volFree / volPen: past volFree shots in a game, each is volPen % harder
-export var TUNE = { skill: 2.5, lateTrips: 6, lateSqueeze: 14, oreb: 34, pressTO: 1.5, usageExp: 0, star1: 1.5, star2: 1.15, volFree: 12, volPen: 1.5, scoreRate: SCORE_EFFECT_RATE, scoreMax: SCORE_EFFECT_MAX };
+export var TUNE = { skill: 2.4, lateTrips: 6, lateSqueeze: 14, oreb: 34, pressTO: 1.5, usageExp: 0, star1: 1.45, star2: 1.15, volFree: 12, volPen: 1.5, scoreRate: SCORE_EFFECT_RATE, scoreMax: SCORE_EFFECT_MAX };
 
 // ── Full Game Simulation (Final Engine) ──────────────────
 // Possession-based with play types, clutch, momentum, fouls, fatigue, schemes.
@@ -486,93 +364,103 @@ export var TUNE = { skill: 2.5, lateTrips: 6, lateSqueeze: 14, oreb: 34, pressTO
 // Tournament site override: conference games on campus (higher seed hosts)
 export var SITE = { campus: false };
 
-export function simGame(home, away, userIsHome) {
-  var hScore = 0, aScore = 0;
-  var hOrig = [], aOrig = [];
-  // M2 FIX: difficulty modifiers apply ONLY when the user's team is in the game.
-  // userIsHome is unreliable (tournament CPU-vs-CPU games pass true), so derive
-  // involvement from team ids vs G.tid.
+// ── One game, possession by possession ───────────────────
+// createGame holds everything about a game in progress (score, fatigue,
+// fouls, shot counts, momentum) and plays one possession at a time. Quick
+// sims loop it (simGame); watched games call it once per play (simPoss),
+// so both play exactly the same basketball.
+// Nothing on the players is changed while a game is on (a save can happen
+// mid-game): difficulty and morale are offsets, fouled-out players a set.
+//   opts.countGP: add a game played for everyone with minutes (quick sims;
+//     watched games count it at tipoff). opts.campus: home court applies in
+//     a tournament game on campus.
+export function createGame(home, away, opts) {
+  opts = opts || {};
+  var hScore = 0, aScore = 0, ev = null;
   _best.delete(home); _best.delete(away);
+  // M2 FIX: difficulty modifiers apply ONLY when the user's team is in the game.
   var userInvolved = (home.id === G.tid) || (away.id === G.tid);
   var userIsHomeActual = userInvolved && (home.id === G.tid);
-  // Records: snapshot the user's team's per-player stats before the sim so
-  // single-game record checks can diff afterwards. CPU-only games skip it.
-  var _recSnap = userInvolved
-    ? { h: snapRoster(home), a: snapRoster(away), hid: home.id, aid: away.id }
-    : null;
   var dm = userInvolved ? (DIFF_MOD[G.difficulty] || 0) : 0;
   var userT = userIsHomeActual ? home : away;
   var cpuBoost = Math.round(-dm * 0.5);
-  home.rost.forEach(function(p, i) {
-    hOrig[i] = { sht: p.sht, fin: p.fin, def: p.def };
-    var mod = (userT === home) ? dm : cpuBoost;
-    var mm = moraleAttrMod(p); // morale: -2..+2, subtle team-wide drift
-    p.sht = clamp(p.sht + mod + mm, 30, 99); p.fin = clamp(p.fin + mod + mm, 30, 99); p.def = clamp(p.def + mod + mm, 30, 99);
+  var adj = new Map();
+  [home, away].forEach(function(t) {
+    t.rost.forEach(function(p) {
+      // difficulty edge plus morale (-2..+2, a subtle team-wide drift)
+      adj.set(p, ((userInvolved && userT === t) ? dm : (userInvolved ? cpuBoost : 0)) + moraleAttrMod(p));
+    });
   });
-  away.rost.forEach(function(p, i) {
-    aOrig[i] = { sht: p.sht, fin: p.fin, def: p.def };
-    var mod = (userT === away) ? dm : cpuBoost;
-    var mm = moraleAttrMod(p); // morale: -2..+2, subtle team-wide drift
-    p.sht = clamp(p.sht + mod + mm, 30, 99); p.fin = clamp(p.fin + mod + mm, 30, 99); p.def = clamp(p.def + mod + mm, 30, 99);
-  });
-  // M8 FIX: wire the sellout-crowd event (events.js sets G.nextHomeBonus=3).
-  // Applies to the user's next home game only, consumed once.
-  // Conference and NCAA tournament games are neutral-site: no home court.
-  var neutralSite = (G.phase === 'conf_tourn' || G.phase === 'ncaa') && !SITE.campus;
+  function S(p) { return clamp(p.sht + (adj.get(p) || 0), 30, 99); }
+  function F(p) { return clamp(p.fin + (adj.get(p) || 0), 30, 99); }
+  function D(p) { return clamp(p.def + (adj.get(p) || 0), 30, 99); }
+  // M8 FIX: the sellout-crowd event (G.nextHomeBonus) applies to the user's
+  // next home game only, consumed once. Tournament games are neutral-site.
+  var neutralSite = (G.phase === 'conf_tourn' || G.phase === 'ncaa') && !(SITE.campus || opts.campus);
   var homeBonus = neutralSite ? 0 : HOME_BONUS + (home.id === G.tid ? arenaBonus(G.tid) : 0);
   if (!neutralSite && userIsHomeActual && (G.nextHomeBonus || 0) > 0) {
     homeBonus += G.nextHomeBonus;
     G.nextHomeBonus = 0;
   }
+  // M3 FIX: your coach's offense and defense count only in your games, as a
+  // small shooting edge (about 1.3 points a game per shooting point)
+  var coachEdgeH = 0, coachEdgeA = 0, coachDefH = 0, coachDefA = 0;
+  if (G.coach && userInvolved) {
+    var ce = (G.coach.off - 70) * 0.15 / 1.3, cd = (G.coach.def - 70) * 0.15 / 1.3;
+    if (userIsHomeActual) { coachEdgeH = ce; coachDefH = cd; } else { coachEdgeA = ce; coachDefA = cd; }
+  }
   // Pace is a GAME-level trait (both teams alternate possessions, so both get
-  // the same count — real basketball). Averaging the two schemes' tendencies:
-  // early-vs-early runs, set-vs-set grinds. Per-team pace created possession
-  // inequality (up to ~14 extra trips) which blew up margin variance.
+  // the same count). Averaging the two schemes' tendencies: early-vs-early
+  // runs, set-vs-set grinds.
   var gamePoss = clamp(68 + Math.round((schemePaceMod(home.strat) + schemePaceMod(away.strat)) / 2) + ri(-3, 3), 56, 88);
   // M1 NOTE: simGame owns the single per-game GP increment for both teams.
-  // Callers must NOT increment GP again for the same game (season.js
-  // recordResult currently does for user games — that half is the S-team fix).
-  home.rost.forEach(function(p) { if (p.mins > 0) p.s.gp++; });
-  away.rost.forEach(function(p) { if (p.mins > 0) p.s.gp++; });
-
-  // M7 FIX: key fatigue/fouls/minutes by player identity (Map on the player
-  // object), not by name — duplicate names used to scramble these.
-  var fatigue = new Map(), playerFouls = new Map(), origMins = new Map(), shots = new Map();
-  home.rost.forEach(function(p) {
-    if (p.mins > 0) {
-      fatigue.set(p, 0); playerFouls.set(p, 0); origMins.set(p, p.mins);
-      if (typeof p.s.stl !== 'number') p.s.stl = 0;
-      if (typeof p.s.blk !== 'number') p.s.blk = 0;
-    }
+  if (opts.countGP) {
+    home.rost.forEach(function(p) { if (p.mins > 0) p.s.gp++; });
+    away.rost.forEach(function(p) { if (p.mins > 0) p.s.gp++; });
+  }
+  // M7 FIX: fatigue/fouls keyed by player identity, not by name.
+  var fatigue = new Map(), playerFouls = new Map(), shots = new Map(), out = new Set();
+  [home, away].forEach(function(t) {
+    t.rost.forEach(function(p) {
+      if (p.mins > 0) {
+        fatigue.set(p, 0); playerFouls.set(p, 0);
+        if (typeof p.s.stl !== 'number') p.s.stl = 0;
+        if (typeof p.s.blk !== 'number') p.s.blk = 0;
+      }
+    });
   });
-  away.rost.forEach(function(p) {
-    if (p.mins > 0) {
-      fatigue.set(p, 0); playerFouls.set(p, 0); origMins.set(p, p.mins);
-      if (typeof p.s.stl !== 'number') p.s.stl = 0;
-      if (typeof p.s.blk !== 'number') p.s.blk = 0;
-    }
-  });
+  // Floor picks skip fouled-out players
+  function onW(p) { return out.has(p) ? 0 : p.mins; }
+  function rW(p) { return out.has(p) ? 0 : rebW(p); }
+  function bW(p) { return out.has(p) ? 0 : blkW(p); }
 
   var hMomentum = 0, aMomentum = 0;
   var lastTransition = false;
+  // Box-and-one targets, computed once per game.
+  var homeStar = teamStar(home), awayStar = teamStar(away);
 
-  // INTERLEAVE FIX: possessions alternate home/away like a real game. Running all
-  // of one team's possessions first gave the first offense a ~+4pt edge because
-  // fatigue accumulates across the whole game (the second offense shot tired).
-  // Interleaving removes the bias and makes momentum a real tug-of-war.
-  function runOnePoss(offTeam, defTeam, isHomeOff, isClutch, lateGame) {
+  // INTERLEAVE FIX: possessions alternate home/away like a real game.
+  function runOnePoss(offTeam, defTeam, isHomeOff, isClutch, lateGame, secondHalf) {
+    ev = { type: 'miss', pts: 0, defPts: 0 };
+    var sc0 = isHomeOff ? hScore : aScore, dsc0 = isHomeOff ? aScore : hScore;
+    runInner(offTeam, defTeam, isHomeOff, isClutch, lateGame, secondHalf);
+    ev.pts = (isHomeOff ? hScore : aScore) - sc0; ev.defPts = (isHomeOff ? aScore : hScore) - dsc0;
+    return ev;
+  }
+  function runInner(offTeam, defTeam, isHomeOff, isClutch, lateGame, secondHalf) {
     var shotBonus = isHomeOff ? homeBonus : 0;
     var defScheme = (defTeam.strat && defTeam.strat.def) ? defTeam.strat.def : 'man';
     var oScheme = (offTeam.strat && offTeam.strat.off) || 'balanced';
     // Box-and-one: the defense's answer to the opponent's star — freeze him out.
     var offStar = (defScheme === 'box1') ? (isHomeOff ? homeStar : awayStar) : null;
     var sw = function(p) {
+      if (out.has(p)) return 0;
       var w = shooterWeight(p, offTeam);
       if (offStar && p === offStar) w *= 0.35;
       return w;
     };
       var off = getFloor(offTeam, sw);
-      var def = getFloor(defTeam);
+      var def = getFloor(defTeam, onW);
       fatigue.set(off, (fatigue.get(off) || 0) + 1);
       fatigue.set(def, (fatigue.get(def) || 0) + 1);
       if (defScheme === 'press') fatigue.set(def, (fatigue.get(def) || 0) + 1);
@@ -583,7 +471,7 @@ export function simGame(home, away, userIsHome) {
       else if (offMom >= 4) { momMakeBonus = 1; momTOBonus = 0; }
       momMakeBonus = clamp(momMakeBonus, 0, 5);
 
-      var toChance = clamp(16 + Math.round((def.def - off.ply) * 0.12 * TUNE.skill), 8, 26);
+      var toChance = clamp(16 + Math.round((D(def) - off.ply) * 0.12 * TUNE.skill), 8, 26);
       if (defScheme === 'press') toChance += TUNE.pressTO;
       if (defScheme === '2-3' || defScheme === 'zone') toChance -= 2;
       if (defScheme === '3-2') toChance -= 1;
@@ -595,13 +483,14 @@ export function simGame(home, away, userIsHome) {
         off.s.to = (off.s.to || 0) + 1;
         if (ri(1, 100) <= 60) {
           if (typeof def.s.stl !== 'number') def.s.stl = 0;
-          def.s.stl++;
+          def.s.stl++; ev.stl = true;
         }
+        ev.type = 'turn'; ev.off = off; ev.def = def;
         // M6 FIX: press-forced fastbreak points are credited to the defender who
         // forced the turnover (FGA+FGM+PTS) — no more phantom points.
         if (defScheme === 'press' && ri(1, 100) <= 10) {
           if (isHomeOff) aScore += 2; else hScore += 2;
-          def.s.pts += 2; def.s.fgm++; def.s.fga++;
+          def.s.pts += 2; def.s.fgm++; def.s.fga++; ev.runout = true;
         }
         lastTransition = true;
         if (isHomeOff) { aMomentum++; hMomentum = 0; } else { hMomentum++; aMomentum = 0; }
@@ -624,10 +513,10 @@ export function simGame(home, away, userIsHome) {
 
       if (playType === 'iso') {
         var bestOvr = 0;
-        offTeam.rost.forEach(function(p) { if (p.mins > 0 && p.ovr > bestOvr) bestOvr = p.ovr; });
+        offTeam.rost.forEach(function(p) { if (p.mins > 0 && !out.has(p) && p.ovr > bestOvr) bestOvr = p.ovr; });
         var tries = 0;
         do { off = getFloor(offTeam, sw); tries++; } while (off.ovr < bestOvr - 5 && tries < 3);
-        isRim = off.fin > off.sht;
+        isRim = F(off) > S(off);
         isThree = !isRim && ri(1, 100) <= 55;
         makePct = isRim ? 58 : 42;
         assistPct = 20;
@@ -662,7 +551,7 @@ export function simGame(home, away, userIsHome) {
       }
 
       var foulChance = 10 + foulExtra;
-      if (def.def < 60) foulChance += 3;
+      if (D(def) < 60) foulChance += 3;
       if (isRim) foulChance += 4;
       if (oScheme === 'drive' && isRim && (playType === 'iso' || playType === 'pnr')) foulChance += 3;
       if (isClutch) foulChance += 4;
@@ -670,15 +559,16 @@ export function simGame(home, away, userIsHome) {
       if (ri(1, 100) <= foulChance) {
         var dFouls = (playerFouls.get(def) || 0) + 1;
         playerFouls.set(def, dFouls);
-        if (dFouls >= 5) def.mins = 0;
-        var ftPct = clamp(55 + Math.round(off.sht * 0.2), 65, 85);
+        if (dFouls >= 5) out.add(def);
+        ev.type = 'foul'; ev.off = off; ev.def = def; ev.ftm = 0;
+        var ftPct = clamp(55 + Math.round(S(off) * 0.2), 65, 85);
         var tiredness = Math.min((fatigue.get(off) || 0) / 80, 0.15);
         ftPct = Math.round(ftPct * (1 - tiredness * 0.5));
         ftPct = clamp(ftPct, 60, 90);
         var lastFtMade = false;
         for (var ft = 0; ft < 2; ft++) {
           lastFtMade = ri(1, 100) <= ftPct;
-          if (lastFtMade) { if (isHomeOff) hScore++; else aScore++; off.s.pts++; off.s.ftm = (off.s.ftm || 0) + 1; }
+          if (lastFtMade) { if (isHomeOff) hScore++; else aScore++; off.s.pts++; off.s.ftm = (off.s.ftm || 0) + 1; ev.ftm++; }
         }
         off.s.fta = (off.s.fta || 0) + 2;
         if (!lastFtMade) ftRebound(offTeam, defTeam);
@@ -687,13 +577,14 @@ export function simGame(home, away, userIsHome) {
       }
 
       if (ri(1, 100) <= 5) {
-        var ftPct2 = clamp(55 + Math.round(off.sht * 0.2), 65, 85);
+        ev.type = 'foul'; ev.off = off; ev.def = def; ev.ftm = 0;
+        var ftPct2 = clamp(55 + Math.round(S(off) * 0.2), 65, 85);
         var tiredness2 = Math.min((fatigue.get(off) || 0) / 80, 0.15);
         ftPct2 = Math.round(ftPct2 * (1 - tiredness2 * 0.5));
         var lastFt2 = false;
         for (var ft2 = 0; ft2 < 2; ft2++) {
           lastFt2 = ri(1, 100) <= ftPct2;
-          if (lastFt2) { if (isHomeOff) hScore++; else aScore++; off.s.pts++; off.s.ftm = (off.s.ftm || 0) + 1; }
+          if (lastFt2) { if (isHomeOff) hScore++; else aScore++; off.s.pts++; off.s.ftm = (off.s.ftm || 0) + 1; ev.ftm++; }
         }
         off.s.fta = (off.s.fta || 0) + 2;
         if (!lastFt2) ftRebound(offTeam, defTeam);
@@ -705,7 +596,8 @@ export function simGame(home, away, userIsHome) {
         var blkChance = isThree ? 1 : (isRim ? 8 : 6);
         blkChance = clamp(blkChance + Math.round((def.reb - 50) * 0.08), 1, 18);
         if (ri(1, 100) <= blkChance) {
-          var blocker = getFloor(defTeam, blkW);
+          var blocker = getFloor(defTeam, bW);
+          ev.type = 'block'; ev.off = off; ev.def = blocker;
           if (typeof blocker.s.blk !== 'number') blocker.s.blk = 0;
           blocker.s.blk++; blocker.s.reb++; off.s.fga++;
           if (isThree) off.s.tpa = (off.s.tpa || 0) + 1;
@@ -716,18 +608,18 @@ export function simGame(home, away, userIsHome) {
 
       if (makePct === 0) {
         if (isThree) {
-          makePct = clamp(37 + Math.round((off.sht - def.def) * 0.2 * TUNE.skill), 28, 48) + shotBonus / 2;
+          makePct = clamp(37 + Math.round((S(off) - D(def)) * 0.2 * TUNE.skill), 28, 48) + shotBonus / 2;
           if (defScheme === '2-3' || defScheme === 'zone') makePct += 2;
           else if (defScheme === '3-2') makePct -= 5;
           else if (defScheme === '1-3-1') makePct += 2;
           if (defScheme === 'press') makePct += 2;
         } else if (isRim) {
-          makePct = clamp(65 + Math.round((off.fin - def.def) * 0.3 * TUNE.skill), 48, 80) + shotBonus;
+          makePct = clamp(65 + Math.round((F(off) - D(def)) * 0.3 * TUNE.skill), 48, 80) + shotBonus;
           if (defScheme === '2-3' || defScheme === 'zone') makePct -= 8;
           else if (defScheme === '3-2') makePct += 4;
           if (defScheme === 'press') makePct += 2;
         } else {
-          makePct = clamp(51 + Math.round((off.sht - def.def) * 0.25 * TUNE.skill), 36, 60) + shotBonus;
+          makePct = clamp(51 + Math.round((S(off) - D(def)) * 0.25 * TUNE.skill), 36, 60) + shotBonus;
           if (defScheme === '3-2') makePct -= 2;
           if (defScheme === 'press') makePct += 2;
         }
@@ -735,13 +627,15 @@ export function simGame(home, away, userIsHome) {
         if (offStar && off === offStar) makePct -= 6;
       }
       if (isClutch) makePct -= 3;
+      // Your coach's offense and defense (your games only)
+      makePct += isHomeOff ? (coachEdgeH - coachDefA) : (coachEdgeA - coachDefH);
       // Volume: past a normal night's shots, each extra attempt is a little
       // harder (the defense keys on him, tired legs)
       var vol = shots.get(off) || 0;
       if (vol > TUNE.volFree) makePct -= (vol - TUNE.volFree) * TUNE.volPen;
       shots.set(off, vol + 1);
       makePct += momMakeBonus;
-      makePct += scoreEffect(isHomeOff);
+      makePct += scoreEffect(isHomeOff, secondHalf);
       // Late and close, the leader milks the clock for a tougher shot and the
       // trailer gets all-out effort
       if (lateGame) {
@@ -755,64 +649,69 @@ export function simGame(home, away, userIsHome) {
 
       off.s.fga++;
       if (isThree) off.s.tpa = (off.s.tpa || 0) + 1;
+      ev.off = off; ev.def = def; ev.three = isThree; ev.rim = isRim; ev.fast = playType === 'fastbreak';
       if (ri(1, 100) <= makePct) {
+        ev.type = 'make';
         var pts = isThree ? 3 : 2;
         if (isHomeOff) hScore += pts; else aScore += pts;
         off.s.pts += pts; off.s.fgm++;
         if (isThree) off.s.tpm = (off.s.tpm || 0) + 1;
-        if (ri(1, 100) <= assistPct) { pickAssister(offTeam, off); }
-        if (!isThree && ri(1, 100) <= 8) { if (isHomeOff) hScore++; else aScore++; off.s.pts++; off.s.fta = (off.s.fta || 0) + 1; off.s.ftm = (off.s.ftm || 0) + 1; }
+        if (ri(1, 100) <= assistPct) { pickAssister(offTeam, off, out); }
+        if (!isThree && ri(1, 100) <= 8) { ev.and1 = true; if (isHomeOff) hScore++; else aScore++; off.s.pts++; off.s.fta = (off.s.fta || 0) + 1; off.s.ftm = (off.s.ftm || 0) + 1; }
         if (isHomeOff) { hMomentum++; aMomentum = 0; } else { aMomentum++; hMomentum = 0; }
       } else {
         var oRebChance = TUNE.oreb;
         if (defScheme === '2-3' || defScheme === 'zone') oRebChance += 3;
         else if (defScheme === '3-2') oRebChance += 2;
         if (ri(1, 100) <= oRebChance) {
-          var oReb = getFloor(offTeam, rebW); oReb.s.reb++; oReb.s.oreb = (oReb.s.oreb || 0) + 1;
+          var oReb = getFloor(offTeam, rW); oReb.s.reb++; ev.oreb = oReb; oReb.s.oreb = (oReb.s.oreb || 0) + 1;
           // Second-chance putback: the rebounder goes right back up (rim attempt).
           // This is what makes FGA/rebound volume match real D1 (OREB extends
           // the possession instead of ending it).
           if (ri(1, 100) > PUTBACK_PCT) {
             // Kick-out: the possession resets and the offense runs its normal
             // shot selection (perimeter-weighted) instead of a big's putback.
-            var ko = getFloor(offTeam, sw), koDef = getFloor(defTeam);
+            var ko = getFloor(offTeam, sw), koDef = getFloor(defTeam, onW);
             var ko3 = ri(1, 100) <= 45;
-            var koPct = ko3 ? clamp(38 + Math.round((ko.sht - koDef.def) * 0.2 * TUNE.skill), 28, 48) + shotBonus / 2
-                            : clamp(50 + Math.round((ko.sht - koDef.def) * 0.25 * TUNE.skill), 36, 60) + shotBonus;
-            koPct += scoreEffect(isHomeOff);
+            var koPct = ko3 ? clamp(38 + Math.round((S(ko) - D(koDef)) * 0.2 * TUNE.skill), 28, 48) + shotBonus / 2
+                            : clamp(50 + Math.round((S(ko) - D(koDef)) * 0.25 * TUNE.skill), 36, 60) + shotBonus;
+            koPct += scoreEffect(isHomeOff, secondHalf) + (isHomeOff ? (coachEdgeH - coachDefA) : (coachEdgeA - coachDefH));
             koPct = Math.round(koPct * (1 - Math.min((fatigue.get(ko) || 0) / 80, 0.15)));
             ko.s.fga++; if (ko3) ko.s.tpa = (ko.s.tpa || 0) + 1;
             if (ri(1, 100) <= koPct) {
               var kp = ko3 ? 3 : 2;
               if (isHomeOff) hScore += kp; else aScore += kp;
               ko.s.pts += kp; ko.s.fgm++; if (ko3) ko.s.tpm = (ko.s.tpm || 0) + 1;
-              if (ri(1, 100) <= 70) pickAssister(offTeam, ko);
+              ev.type = 'make'; ev.off = ko; ev.def = koDef; ev.three = ko3; ev.kick = true;
+              if (ri(1, 100) <= 70) pickAssister(offTeam, ko, out);
               if (isHomeOff) { hMomentum++; aMomentum = 0; } else { aMomentum++; hMomentum = 0; }
             } else {
-              var koReb = getFloor(defTeam, rebW); koReb.s.reb++;
+              var koReb = getFloor(defTeam, rW); koReb.s.reb++;
+              ev.type = 'miss'; ev.off = ko; ev.def = koDef; ev.three = ko3; ev.kick = true;
               if (isHomeOff) { aMomentum++; hMomentum = 0; } else { hMomentum++; aMomentum = 0; }
             }
             return;
           }
-          var pbDef = getFloor(defTeam);
-          var pbPct = clamp(52 + Math.round((oReb.fin - pbDef.def) * 0.3 * TUNE.skill), 38, 72) + shotBonus;
+          var pbDef = getFloor(defTeam, onW);
+          var pbPct = clamp(52 + Math.round((F(oReb) - D(pbDef)) * 0.3 * TUNE.skill), 38, 72) + shotBonus;
           var pbTired = Math.min((fatigue.get(oReb) || 0) / 80, 0.15);
           pbPct = Math.round(pbPct * (1 - pbTired));
           oReb.s.fga++;
           if (ri(1, 100) <= pbPct) {
             if (isHomeOff) hScore += 2; else aScore += 2;
             oReb.s.pts += 2; oReb.s.fgm++;
-            if (ri(1, 100) <= 30) { pickAssister(offTeam, oReb); }
+            ev.type = 'putback'; ev.off = oReb;
+            if (ri(1, 100) <= 30) { pickAssister(offTeam, oReb, out); }
             if (isHomeOff) { hMomentum++; aMomentum = 0; } else { aMomentum++; hMomentum = 0; }
           } else if (ri(1, 100) <= 30) {
-            var oReb2 = getFloor(offTeam, rebW); oReb2.s.reb++; oReb2.s.oreb = (oReb2.s.oreb || 0) + 1;
+            var oReb2 = getFloor(offTeam, rW); oReb2.s.reb++; oReb2.s.oreb = (oReb2.s.oreb || 0) + 1;
           } else {
-            var dReb2 = getFloor(defTeam, rebW); dReb2.s.reb++;
+            var dReb2 = getFloor(defTeam, rW); dReb2.s.reb++;
             if (isHomeOff) { aMomentum++; hMomentum = 0; } else { hMomentum++; aMomentum = 0; }
           }
         }
         else {
-          var dReb = getFloor(defTeam, rebW); dReb.s.reb++; lastTransition = true;
+          var dReb = getFloor(defTeam, rW); dReb.s.reb++; lastTransition = true;
           if (isHomeOff) { aMomentum++; hMomentum = 0; } else { hMomentum++; aMomentum = 0; }
         }
       }
@@ -820,62 +719,67 @@ export function simGame(home, away, userIsHome) {
 
   // Score effects (garbage time / comeback pressure): once a lead gets big in
   // the second half, the leader empties the bench and coasts while the trailer
-  // gambles and presses. Real games compress this way, which is why college
-  // blowouts rarely snowball to 40+. Close games are untouched.
-  var curPoss = 0;
-  function scoreEffect(isHomeOff) {
-    if (curPoss < gamePoss * 0.45) return 0;
+  // gambles and presses. Close games are untouched.
+  function scoreEffect(isHomeOff, secondHalf) {
+    if (!secondHalf) return 0;
     var lead = isHomeOff ? (hScore - aScore) : (aScore - hScore);
     var over = Math.abs(lead) - SCORE_EFFECT_START;
     if (over <= 0) return 0;
-    var adj = Math.min(TUNE.scoreMax, over * TUNE.scoreRate);
-    return lead > 0 ? -adj : adj;
+    var a = Math.min(TUNE.scoreMax, over * TUNE.scoreRate);
+    return lead > 0 ? -a : a;
   }
 
   // A missed final free throw is a live ball: the defense usually secures it.
   function ftRebound(offTeam, defTeam) {
-    if (ri(1, 100) <= 14) { var o = getFloor(offTeam, rebW); o.s.reb++; o.s.oreb = (o.s.oreb || 0) + 1; }
-    else { var d = getFloor(defTeam, rebW); d.s.reb++; }
+    if (ri(1, 100) <= 14) { var o = getFloor(offTeam, rW); o.s.reb++; o.s.oreb = (o.s.oreb || 0) + 1; }
+    else { var d = getFloor(defTeam, rW); d.s.reb++; }
   }
 
-  // Box-and-one targets, computed once per game.
-  var homeStar = teamStar(home), awayStar = teamStar(away);
+  return {
+    home: home, away: away, gamePoss: gamePoss,
+    // one possession: isHomeOff, clutch (last minutes), late (last few
+    // trips of a close game), secondHalf (score effects). Returns what
+    // happened: { type, pts, defPts, off, def, three, rim, fast, and1, ... }
+    poss: function(isHomeOff, clutch, late, secondHalf) {
+      return isHomeOff ? runOnePoss(home, away, true, clutch, late, secondHalf)
+                       : runOnePoss(away, home, false, clutch, late, secondHalf);
+    },
+    score: function() { return { h: hScore, a: aScore }; },
+    // last resort if overtimes can't break a tie: a free throw to a player
+    breakTie: function() { if (hScore === aScore) { hScore++; getFloor(home).s.pts++; } }
+  };
+}
+
+export function simGame(home, away, userIsHome) {
+  var userInvolved = (home.id === G.tid) || (away.id === G.tid);
+  // Records: snapshot the user's team's per-player stats before the sim so
+  // single-game record checks can diff afterwards. CPU-only games skip it.
+  var _recSnap = userInvolved
+    ? { h: snapRoster(home), a: snapRoster(away), hid: home.id, aid: away.id }
+    : null;
+  var g = createGame(home, away, { countGP: true });
+  var gamePoss = g.gamePoss;
   for (var pi = 0; pi < gamePoss; pi++) {
-    curPoss = pi;
-    var pClutch = (pi >= gamePoss - 8), pLate = (pi >= gamePoss - TUNE.lateTrips);
-    runOnePoss(home, away, true, pClutch, pLate);
-    runOnePoss(away, home, false, pClutch, pLate);
-  }
-  // M3 FIX: user coach bonuses apply ONLY when the user's team is playing —
-  // never in CPU-vs-CPU games.
-  if (G.coach && userInvolved) {
-    var offBonus = Math.round((G.coach.off - 70) * 0.15);
-    var defBonus = Math.round((G.coach.def - 70) * 0.15);
-    if (userIsHomeActual) { hScore += offBonus; aScore -= defBonus; } else { aScore += offBonus; hScore -= defBonus; }
+    var pClutch = (pi >= gamePoss - 8), pLate = (pi >= gamePoss - TUNE.lateTrips), p2 = pi >= gamePoss * 0.45;
+    g.poss(true, pClutch, pLate, p2);
+    g.poss(false, pClutch, pLate, p2);
   }
   // Overtime: real 5-minute periods (an eighth of the game's possessions
   // each), as many as it takes. The crowd-noise and score rules carry over.
   var ot = 0, otPoss = Math.max(6, Math.round(gamePoss / 8));
-  while (hScore === aScore && ot < 6) {
+  while (g.score().h === g.score().a && ot < 6) {
     ot++;
     for (var oti = 0; oti < otPoss; oti++) {
       var otClutch = oti >= otPoss - 2;
-      runOnePoss(home, away, true, otClutch, otClutch); runOnePoss(away, home, false, otClutch, otClutch);
+      g.poss(true, otClutch, otClutch, true); g.poss(false, otClutch, otClutch, true);
     }
   }
   // Safety net after six overtimes (never seen in testing): one more trip
   // each until it breaks, then credit a free throw to a player
-  var otx = 0;
-  while (hScore === aScore && otx < 10) {
-    otx++;
-    runOnePoss(home, away, true, true); runOnePoss(away, home, false, true);
-  }
-  if (hScore === aScore) { hScore++; getFloor(home).s.pts++; }
-  home.rost.forEach(function(p, i) { p.sht = hOrig[i].sht; p.fin = hOrig[i].fin; p.def = hOrig[i].def; });
-  away.rost.forEach(function(p, i) { p.sht = aOrig[i].sht; p.fin = aOrig[i].fin; p.def = aOrig[i].def; });
-  home.rost.forEach(function(p) { if (origMins.has(p)) p.mins = origMins.get(p); });
-  away.rost.forEach(function(p) { if (origMins.has(p)) p.mins = origMins.get(p); });
-  var res = { homeScore: hScore, awayScore: aScore };
+  for (var otx = 0; otx < 10 && g.score().h === g.score().a; otx++) { g.poss(true, true, true, true); g.poss(false, true, true, true); }
+  g.breakTie();
+  var sc = g.score();
+  var res = { homeScore: sc.h, awayScore: sc.a };
   if (ot) res.ot = ot;
   if (_recSnap) {
     res.plines = {

@@ -26,7 +26,8 @@ var RV_SIZE = 10;
 export var VOTE = {
   lossUnranked: 8.5, loss1125: 6.5, lossTop10: 4.5, // per loss, by opponent's rank
   siteHome: 1.19, siteNeutral: 1.05, siteRoad: 0.77,  // where the loss happened
-  topBandScale: 0.12,  // ranks 1-5 fall far less than everyone else (see findings: parity)
+  topBandScale: 0.45,  // ranks 2-5 fall less than everyone else after a loss
+  numberOneScale: 0.2, // ... and #1 least of all (voters keep a #1 after a close loss)
   winTop10: 1, win1125: 0.6, winUnranked: 0,          // per win
   roadWin: 0.1,        // extra for a road win
   unbeaten: 0,         // unbeaten after the week, with a win
@@ -43,7 +44,7 @@ export var VOTE = {
 };
 
 // Preseason weights (z-scores): roster talent, last season's finish, brand
-export var PRESEASON = { talent: 1.0, lastFinal: 0.55, brand: 1.25, noise: 0.2 };
+export var PRESEASON = { talent: 1.2, lastFinal: 0.55, brand: 1.25, noise: 0.2 };
 
 var _hooks = [];
 // Calibration and tests watch every poll (ids before/after and each team's games)
@@ -187,7 +188,8 @@ function voterUpdate(res, kind) {
       } else {
         var L = or && or <= 10 ? VOTE.lossTop10 : or ? VOTE.loss1125 : VOTE.lossUnranked;
         L *= g.site === 'H' ? VOTE.siteHome : g.site === 'A' ? VOTE.siteRoad : VOTE.siteNeutral;
-        if (rankNow[t.id] && rankNow[t.id] <= 5) L *= VOTE.topBandScale;
+        if (rankNow[t.id] === 1) L *= VOTE.numberOneScale;
+        else if (rankNow[t.id] && rankNow[t.id] <= 5) L *= VOTE.topBandScale;
         if (lost++) L *= VOTE.secondLoss;
         s += L;
       }

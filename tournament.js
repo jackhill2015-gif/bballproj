@@ -402,8 +402,9 @@ export function bracketEntryAt(pos) {
   for (var i = 0; i < (G.bracket || []).length; i++) if (G.bracket[i].region === region && G.bracket[i].seed === seed) return G.bracket[i];
   return null;
 }
-function scoreOpening(g, s1, s2) {
+function scoreOpening(g, s1, s2, ot) {
   g.s1 = s1; g.s2 = s2;
+  if (ot) g.ot = ot;
   g.winner = s1 > s2 ? g.t1 : g.t2;
   tallyPostseason(g.winner, g.winner === g.t1 ? g.t2 : g.t1);
 }
@@ -426,7 +427,7 @@ export function simOpeningRound(skipUser) {
     if (g.winner) return;
     if (skipUser && (g.t1.id === G.tid || g.t2.id === G.tid)) return;
     var res = simGame(g.t1, g.t2, true);
-    scoreOpening(g, res.homeScore, res.awayScore);
+    scoreOpening(g, res.homeScore, res.awayScore, res.ot);
   });
   finishOpening();
 }
@@ -746,10 +747,12 @@ export function closeBracketReveal() {
 
 // Resolve one NCAA game. Each entry keeps its score from every round in
 // b.sc (round 0 = round of 64), so the bracket view can draw the full tree.
-function scoreNCAAgame(b1, b2, s1, s2) {
+function scoreNCAAgame(b1, b2, s1, s2, ot) {
   if (!b1.sc) b1.sc = [];
   if (!b2.sc) b2.sc = [];
   b1.sc.push(s1); b2.sc.push(s2);
+  // overtime periods by round, only kept when a game went to OT
+  if (ot) [b1, b2].forEach(function(b) { b.ot = b.ot || []; b.ot[b.sc.length - 1] = ot; });
   b1.score = s1; b2.score = s2;
   if (s1 > s2) { b1.won = true; b2.won = false; b2.active = false; }
   else { b2.won = true; b1.won = false; b1.active = false; }
@@ -768,7 +771,7 @@ export function simNCAAround() {
   for (var i = 0; i < active.length - 1; i += 2) {
     var b1 = active[i], b2 = active[i + 1];
     var res = simGame(b1.team, b2.team, true);
-    scoreNCAAgame(b1, b2, res.homeScore, res.awayScore);
+    scoreNCAAgame(b1, b2, res.homeScore, res.awayScore, res.ot);
   }
   recomputeRatings(); // rankings keep moving through March
   checkNCAAdone();
@@ -786,7 +789,7 @@ function simNCAArimExceptUser() {
     var b1 = active[i], b2 = active[i + 1];
     if (b1.team.id === G.tid || b2.team.id === G.tid) continue;
     var res = simGame(b1.team, b2.team, true);
-    scoreNCAAgame(b1, b2, res.homeScore, res.awayScore);
+    scoreNCAAgame(b1, b2, res.homeScore, res.awayScore, res.ot);
   }
 }
 
@@ -970,7 +973,7 @@ export function resolveTournamentGame() {
     if (allConfDone() && !G.bracket.length) buildNCAA();
   } else if (game._type === 'opening') {
     var og2 = game._og;
-    scoreOpening(og2, LS.hs, LS.as);
+    scoreOpening(og2, LS.hs, LS.as, LS.ot);
     var wonO = og2.winner.id === G.tid;
     var oppO = og2.t1.id === G.tid ? og2.t2 : og2.t1;
     G.lastResult = { yr: G.yr, oppId: oppO.id, home: null, u: uScore, o: oScore, won: wonO, wk: G.gi, label: 'NCAA Opening Round', ot: LS.ot || 0 };
@@ -994,7 +997,7 @@ export function resolveTournamentGame() {
     // drop its loser from the list, shifting every later pairing and even
     // leaving one team with no game at all (T1).
     simNCAArimExceptUser();
-    scoreNCAAgame(b1, b2, LS.hs, LS.as);
+    scoreNCAAgame(b1, b2, LS.hs, LS.as, LS.ot);
     recomputeRatings(); // rankings keep moving through March
     var userWon2 = (b1.team.id === G.tid) ? (LS.hs > LS.as) : (LS.as > LS.hs);
     var oppName2 = (b1.team.id === G.tid ? b2 : b1).team.name;

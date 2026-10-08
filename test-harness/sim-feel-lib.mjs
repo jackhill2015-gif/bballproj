@@ -7,7 +7,10 @@ import { G, S, SIM, U, newDynasty, runRegSeason, runConfTourneys } from './seaso
 // Real targets (see research/sim-feel.md)
 export const REAL = {
   // neutral-floor win % of the better team by team-overall gap
-  winCurve: { 3: 60, 6: 75, 9: 85, 12: 93 },
+  // The brief's 75/85/93 at +6/+9/+12 is a normal margin model with about
+  // 1.35 points per overall point and sd 11; the same model gives 64 at +3
+  // (the brief's 60 doesn't fit its own curve; research/sim-feel.md)
+  winCurve: { 3: 64, 6: 75, 9: 85, 12: 93 },
   // lower seed's first-round win %, NCAA.com seed records 1985-2025
   upsets: { '1v16': 1.2, '2v15': 6.9, '3v14': 14.4, '4v13': 20.6, '5v12': 35.6, '6v11': 38.8, '7v10': 39.0, '8v9': 51.9 },
 };
@@ -179,4 +182,27 @@ export function printReport(o, rows) {
   console.log('Scheme effects vs balanced/man (pts/game): ' + Object.entries(o.schemes).map(([k, v]) => k + ' ' + (v >= 0 ? '+' : '') + v.toFixed(1)).join(', '));
   console.log('Team top scorer ppg p50/p90/p97/max: ' + [0.5, 0.9, 0.97, 0.999].map(q => pct(o.bestPpg, q).toFixed(1)).join(' / '));
   console.log('Overtime: ' + o.ot + ' of ' + o.games + ' games, ' + o.ot2 + ' with 2+ OT. Regular season, every game: margin sd ' + sd(o.margins).toFixed(1) + ', mean |margin| ' + mean(o.margins.map(Math.abs)).toFixed(1) + ', home margin ' + mean(o.margins).toFixed(1));
+}
+
+// A watched game, played the way the game screen does (ui.js stepSim): one
+// simPoss per tick, 20-minute halves, 5-minute overtimes until someone leads
+export function playWatched(LS, home, away) {
+  Object.assign(LS, { tH: home, tA: away, game: null, eng: null, clock: 1200, half: 1, hs: 0, as: 0, ot: 0, poss: 'A', possCount: 0 });
+  home.rost.forEach(p => { if (p.mins > 0) p.s.gp++; });
+  away.rost.forEach(p => { if (p.mins > 0) p.s.gp++; });
+  for (let guard = 0; guard < 5000; guard++) {
+    if (LS.clock <= 0) {
+      if (LS.half === 1) { LS.half = 2; LS.clock = 1200; continue; }
+      if (LS.hs === LS.as) { LS.half = 3; LS.ot++; LS.clock = 300; continue; }
+      break;
+    }
+    const off = LS.poss === 'H' ? home : away, def = LS.poss === 'H' ? away : home;
+    LS.possCount++;
+    const r = SIM.simPoss(off, def);
+    LS.clock -= Math.max(1, r.time);
+    LS.hs = r.hs; LS.as = r.as;
+    LS.poss = LS.poss === 'H' ? 'A' : 'H';
+  }
+  LS.eng = null;
+  return { homeScore: LS.hs, awayScore: LS.as, ot: LS.ot };
 }

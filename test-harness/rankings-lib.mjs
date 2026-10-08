@@ -10,7 +10,7 @@ export const REAL = JSON.parse(readFileSync(REPO + '/research/rankings/real-stat
 const POWER = new Set(['ACC', 'Big Ten', 'Big 12', 'SEC']);
 const HIGH = new Set(['Big East', 'MW', 'A-10', 'WCC', 'American', 'Pac-12']);
 const tierOf = t => POWER.has(t.conf) ? 'power' : HIGH.has(t.conf) ? 'high' : 'mid';
-const BLUE = ['Duke', 'Kansas', 'Kentucky', 'UNC', 'UCLA', 'Indiana'];
+const BLUE = ['Duke', 'Kansas', 'Kentucky', 'North Carolina', 'UCLA', 'Indiana'];
 const mean = a => a.length ? a.reduce((x, y) => x + y, 0) / a.length : NaN;
 const sd = a => { const m = mean(a); return Math.sqrt(mean(a.map(x => (x - m) ** 2))); };
 function spearman(pairs) {

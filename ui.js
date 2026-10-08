@@ -905,7 +905,7 @@ export function openModal(tH, tA, isTournament, roundName) {
     var overlays = panel.querySelectorAll('div[style*="position:absolute"], div[style*="position: absolute"]');
     for (var oi = 0; oi < overlays.length; oi++) panel.removeChild(overlays[oi]);
   }
-  LS.clock = 1200; LS.half = 1; LS.hs = 0; LS.as = 0; LS.ot = 0;
+  LS.clock = 1200; LS.half = 1; LS.hs = 0; LS.as = 0; LS.ot = 0; LS.eng = null;
   LS.h1 = null; LS.a1 = null; LS.poss = 'A';
   if (typeof LS.possCount !== 'undefined') LS.possCount = 0;
 
@@ -1085,7 +1085,9 @@ export function stepSim() {
   var res = simPoss(offT, defT);
   LS.clock -= Math.max(1, res.time);
   var prevLead = LS.hs > LS.as ? 'H' : LS.as > LS.hs ? 'A' : 'T';
-  if (LS.poss === 'H') LS.hs += res.pts; else LS.as += res.pts;
+  // the engine keeps the score (a press steal can score for the defense)
+  if (typeof res.hs === 'number') { LS.hs = res.hs; LS.as = res.as; }
+  else if (LS.poss === 'H') LS.hs += res.pts; else LS.as += res.pts;
   LS.poss = LS.poss === 'H' ? 'A' : 'H';
   var newLead = LS.hs > LS.as ? 'H' : LS.as > LS.hs ? 'A' : 'T';
   var m = Math.max(0, Math.floor(LS.clock / 60));
@@ -1146,6 +1148,7 @@ export function skipGame() {
     });
   }
   var hSnap = snapStats(LS.tH), aSnap = snapStats(LS.tA);
+  LS.eng = null;
   var res = simGame(LS.tH, LS.tA, LS.game.home);
   restoreStats(LS.tH, hSnap);
   restoreStats(LS.tA, aSnap);
@@ -1156,6 +1159,7 @@ export function skipGame() {
 // ── Finalize Modal ───────────────────────────────────────
 export function finalizeModal() {
   if (G.simInterval) { clearInterval(G.simInterval); G.simInterval = null; }
+  LS.eng = null;
   txt('sb-clk', LS.ot ? 'Final/' + otLabel(LS.ot) : 'Final');
   renderGcastTeam();
   renderGcastBox();

@@ -14,8 +14,8 @@ const by = sizes();
 const want = { 'Pac-12': 9, MW: 10, WCC: 10, 'Big West': 12, UAC: 9, 'Big Sky': 11, ASUN: 8, OVC: 9, SoCon: 11, CUSA: 10, 'Sun Belt': 14, MAC: 12, Horizon: 12, Summit: 8, NEC: 9, Metro: 13, 'Big Ten': 18, SEC: 16 };
 check(Object.keys(want).every(c => by[c] === want[c]), 'conference sizes match 2026-27 (' + Object.keys(want).filter(c => by[c] !== want[c]).map(c => c + ' ' + by[c]).join(', ') + ')');
 check(!by.WAC && !by.MAAC, 'WAC is now the UAC and the MAAC is the Metro');
-check(confOf('Gonzaga') === 'Pac-12' && confOf('Texas St') === 'Pac-12' && confOf('Hawaii') === 'MW' && confOf('Denver') === 'WCC' && confOf('N Illinois') === 'Horizon' && confOf('Little Rock') === 'UAC' && confOf('Tennessee Tech') === 'SoCon', 'sample moves');
-check(!G.teams.some(t => t.name === 'St Francis PA') && confOf('West Florida') === 'ASUN' && G.teams.length === 365, 'St Francis PA leaves D1, West Florida joins (365 teams, ids unchanged)');
+check(confOf('Gonzaga') === 'Pac-12' && confOf('Texas State') === 'Pac-12' && confOf('Hawaii') === 'MW' && confOf('Denver') === 'WCC' && confOf('Northern Illinois') === 'Horizon' && confOf('Little Rock') === 'UAC' && confOf('Tennessee Tech') === 'SoCon', 'sample moves');
+check(!G.teams.some(t => t.name === 'Saint Francis') && confOf('West Florida') === 'ASUN' && G.teams.length === 365, 'St Francis PA leaves D1, West Florida joins (365 teams, ids unchanged)');
 check(Object.keys(by).every(c => [F.CONF_FORMATS[c], F.CONF_FORMATS_2026[c]].some(x => x && x.size === by[c])), 'every conference has a listed 2027 format');
 check(F.formatFor('Pac-12', 9).enter.length === 4 && F.formatFor('MW', 10).enter[0].join() === '7,10', 'Pac-12 and MW 2027 brackets');
 
@@ -26,7 +26,7 @@ check(raw.align === 2026, 'new saves record their alignment');
 delete raw.align; delete raw.alignYr0;
 localStorage.setItem('hoops_os_v3', JSON.stringify(raw));
 S.buildUniverse(); ST.loadState();
-check(G.align === 2025 && confOf('Gonzaga') === 'WCC' && confOf('St Francis PA') === 'NEC' && sizes()['Pac-12'] === 2 && sizes().WAC === 7, 'a save from before keeps the 2025-26 alignment');
+check(G.align === 2025 && confOf('Gonzaga') === 'WCC' && confOf('Saint Francis') === 'NEC' && sizes()['Pac-12'] === 2 && sizes().WAC === 7, 'a save from before keeps the 2025-26 alignment');
 const homeSum = (await import('../views/setup.js')).slotSummary(raw);
 check(homeSum && homeSum.team === C.ALL_TEAMS[raw.tid].n, 'home card names the team from the save\'s alignment');
 

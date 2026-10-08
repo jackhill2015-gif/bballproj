@@ -35,24 +35,32 @@ function tLink(tid, name) {
 
 // ── Cached POY race (recomputed when week/phase changes) ──
 var _raceCache = { key: '', rows: [] };
-export function poyRace(n) {
+function raceRows() {
   var key = G.yr + '-' + G.gi + '-' + G.phase;
-  if (_raceCache.key === key) return _raceCache.rows.slice(0, n || 3);
+  if (_raceCache.key === key) return _raceCache.rows;
   var rows = [];
   G.teams.forEach(function(tm) {
-    tm.rost.forEach(function(p) {
+    tm.rost.forEach(function(p, pi) {
       var gp = p.s.gp || 0;
       if (gp < 3) return;
       rows.push({
-        name: p.name, pos: p.pos, cls: p.cls, team: tm.name, tid: tm.id,
-        ppg: p.s.pts / gp,
+        name: p.name, pos: p.pos, cls: p.cls, team: tm.name, tid: tm.id, idx: pi,
+        rec: tm.wins + '-' + tm.loss,
+        ppg: p.s.pts / gp, rpg: p.s.reb / gp, apg: p.s.ast / gp,
         per: awardScore(p, tm)
       });
     });
   });
   rows.sort(function(a, b) { return b.per - a.per; });
-  _raceCache = { key: key, rows: rows.slice(0, 10) };
-  return _raceCache.rows.slice(0, n || 3);
+  _raceCache = { key: key, rows: rows };
+  return rows;
+}
+export function poyRace(n) { return raceRows().slice(0, n || 3); }
+// Your best player in the race: { row, rank } or null
+export function poyUserBest() {
+  var rows = raceRows();
+  for (var i = 0; i < rows.length; i++) if (rows[i].tid === G.tid) return { row: rows[i], rank: i + 1 };
+  return null;
 }
 
 // ── Rivalry hooks: top conf threats + teams that beat you ──

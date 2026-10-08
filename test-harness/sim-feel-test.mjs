@@ -1,7 +1,7 @@
 // Sim realism, fast version for run-all: one season, loose bands.
 // Full run (4+ seasons, real bands): node test-harness/sim-feel.mjs
-import { measure, report, printReport, REAL } from './sim-feel-lib.mjs';
-import { G, SIM, U } from './season-lib.mjs';
+import { measure, report, printReport, REAL, playWatched } from './sim-feel-lib.mjs';
+import { G, SIM, U, ST } from './season-lib.mjs';
 let fails = 0; const check = (c, m) => { console.log((c ? '  ok  ' : '  FAIL ') + m); if (!c) fails++; };
 
 const o = measure({ seasons: 1, curveGames: 1600, r64Reps: 40, schemeGames: 700 });
@@ -33,6 +33,28 @@ check(tiedFinal === 0 && badOt === 0, 'no tied finals; ot is 1-6 when present');
 check(otN / games > 0.02 && otN / games < 0.12, 'evenly matched teams go to overtime ' + (100 * otN / games).toFixed(1) + '% of the time');
 const add = avg(tot[1]) - avg(tot[0]);
 check(tot[1].length >= 5 && add > 8 && add < 26, 'one overtime adds ' + add.toFixed(1) + ' points (a 5-minute period, regulation ' + avg(tot[0]).toFixed(0) + ')');
+// Watched games play like quick sims (same engine): same teams, same mix
+const pairs = [];
+const byO = G.teams.map(t => [t, U.getTOvr(t)]);
+for (let n = 0; n < 400; n++) {
+  const [a, oa] = byO[Math.floor(Math.random() * byO.length)];
+  const c = byO.filter(([, o]) => o === oa - 6); if (!c.length) continue;
+  pairs.push([a, c[Math.floor(Math.random() * c.length)][0]]);
+}
+const cmp = { quick: { w: 0, pts: 0, ot: 0, n: 0 }, watched: { w: 0, pts: 0, ot: 0, n: 0 } };
+pairs.forEach(([a, b], i) => {
+  const q = i % 2 ? SIM.simGame(a, b, false) : SIM.simGame(b, a, false);
+  const w = i % 2 ? playWatched(ST.LS, a, b) : playWatched(ST.LS, b, a);
+  [['quick', q], ['watched', w]].forEach(([k, r]) => {
+    const fav = i % 2 ? r.homeScore - r.awayScore : r.awayScore - r.homeScore;
+    cmp[k].n++; if (fav > 0) cmp[k].w++; cmp[k].pts += r.homeScore + r.awayScore; if (r.ot) cmp[k].ot++;
+  });
+});
+const pc = (k, f) => (100 * cmp[k][f] / Math.max(1, cmp[k].n));
+console.log('  quick vs watched, +6 favorite win %: ' + pc('quick', 'w').toFixed(1) + ' / ' + pc('watched', 'w').toFixed(1)
+  + ', total points ' + (cmp.quick.pts / cmp.quick.n).toFixed(1) + ' / ' + (cmp.watched.pts / cmp.watched.n).toFixed(1));
+check(Math.abs(pc('quick', 'w') - pc('watched', 'w')) <= 10, 'watched games: the better team wins about as often as in quick sims');
+check(Math.abs(cmp.quick.pts / cmp.quick.n - cmp.watched.pts / cmp.watched.n) <= 6, 'watched games: about the same scoring as quick sims');
 // One season's scoring leader and 20-point scorers swing a lot: wider here
 const wide = { 'Scoring leader (ppg)': [20, 30], 'Players at 20+ ppg': [3, 28] };
 Object.keys(wide).forEach(k => { const r = rows.find(x => x[0] === k), v = +r[1]; check(v >= wide[k][0] && v <= wide[k][1], k + ' ' + r[1] + ' (fast-test band ' + wide[k].join('-') + ')'); });

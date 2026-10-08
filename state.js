@@ -287,7 +287,7 @@ function _slimBracket(bracket) {
     return {
       team: (t === null || t === undefined) ? null : (typeof t === 'number' ? t : t.id),
       seed: b.seed, region: b.region, active: !!b.active, score: b.score, won: !!b.won, sc: b.sc || [],
-      pending: b.pending
+      pending: b.pending, ot: b.ot && b.ot.length ? b.ot.map(function(x) { return x || 0; }) : undefined
     };
   });
 }
@@ -297,7 +297,7 @@ function _slimOpening(o) {
   if (!o) return null;
   var idOf = function(t) { return (t === null || t === undefined) ? null : (typeof t === 'number' ? t : t.id); };
   return { done: !!o.done, games: (o.games || []).map(function(g) {
-    return { t1: idOf(g.t1), t2: idOf(g.t2), s1: g.s1, s2: g.s2, winner: idOf(g.winner), pos: g.pos, kind: g.kind };
+    return { t1: idOf(g.t1), t2: idOf(g.t2), s1: g.s1, s2: g.s2, winner: idOf(g.winner), pos: g.pos, kind: g.kind, ot: g.ot || undefined };
   }) };
 }
 
@@ -310,7 +310,7 @@ function _slimConfTourneys(cts) {
       seeds: (ct.seeds || []).map(idOf),
       rounds: (ct.rounds || []).map(function(rd) {
         return rd.map(function(m) {
-          return { t1: idOf(m.t1), t2: idOf(m.t2), s1: m.s1, s2: m.s2, winner: idOf(m.winner), campus: !!m.campus };
+          return { t1: idOf(m.t1), t2: idOf(m.t2), s1: m.s1, s2: m.s2, winner: idOf(m.winner), campus: !!m.campus, ot: m.ot || undefined };
         });
       }),
       carry: (ct.carry || []).map(idOf), // T3: teams holding a bye into the next round
@@ -456,6 +456,7 @@ function _fattenBracket(slim) {
   return (slim || []).map(function(b) {
     var e = { team: _teamRef(b.team), seed: b.seed, region: b.region, active: !!b.active, score: b.score, won: !!b.won, sc: b.sc || [] };
     if (b.pending !== undefined && b.pending !== null) e.pending = b.pending;
+    if (b.ot) e.ot = b.ot;
     return e;
   });
 }
@@ -463,7 +464,7 @@ function _fattenBracket(slim) {
 function _fattenOpening(o) {
   if (!o) return null;
   return { done: !!o.done, games: (o.games || []).map(function(g) {
-    return { t1: _teamRef(g.t1), t2: _teamRef(g.t2), s1: g.s1, s2: g.s2, winner: g.winner === null || g.winner === undefined ? null : _teamRef(g.winner), pos: g.pos, kind: g.kind };
+    return { t1: _teamRef(g.t1), t2: _teamRef(g.t2), s1: g.s1, s2: g.s2, winner: g.winner === null || g.winner === undefined ? null : _teamRef(g.winner), pos: g.pos, kind: g.kind, ot: g.ot || undefined };
   }) };
 }
 
@@ -475,7 +476,7 @@ function _fattenConfTourneys(slim) {
       seeds: (ct.seeds || []).map(_teamRef),
       rounds: (ct.rounds || []).map(function(rd) {
         return rd.map(function(m) {
-          return { t1: _teamRef(m.t1), t2: _teamRef(m.t2), s1: m.s1, s2: m.s2, winner: _teamRef(m.winner), campus: !!m.campus };
+          return { t1: _teamRef(m.t1), t2: _teamRef(m.t2), s1: m.s1, s2: m.s2, winner: _teamRef(m.winner), campus: !!m.campus, ot: m.ot || undefined };
         });
       }),
       carry: (ct.carry || []).map(_teamRef), // T3: restore bye teams

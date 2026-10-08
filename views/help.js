@@ -40,7 +40,8 @@ export function renderHelp() {
     + 'points; conference and NCAA tournament games are on a neutral floor. '
     + 'Your best player takes the most shots, and the second option the next most, so stars put up '
     + 'big lines, but a player who shoots a lot in one game gets a little less efficient. '
-    + 'Tied games go to overtime: a full 5-minute period, as many as it takes. Scores show OT or 2OT.');
+    + 'Tied games go to overtime: a full 5-minute period, as many as it takes. Scores show OT or 2OT. '
+    + 'Watching a game and simming it play exactly the same basketball.');
 
   h += sec('Depth chart and minutes',
     'The top five players on the roster screen start; the next four are the rotation. '

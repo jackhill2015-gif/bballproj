@@ -5,7 +5,7 @@
 //  Delegated actions, no inline onclick.
 // ═══════════════════════════════════════════════════════════
 
-import { ge, clamp, getTOvr, fmtScore, winProb } from '../utils.js';
+import { ge, clamp, getTOvr, fmtScore, winProb, otLabel } from '../utils.js';
 import { G } from '../state.js';
 import { allConfDone, getUserNCAAmatchup, getUserConfMatchup, getConfRoundName, confRoundLabel, openingPending, getUserOpeningGame, bracketEntryAt } from '../tournament.js';
 import { getUiPrefs, setUiPrefs } from './ui-prefs.js';
@@ -84,7 +84,10 @@ function renderConfHub() {
   return h;
 }
 
-function matchupMini(t1, t2, s1, s2, winner, seeds) {
+// Small OT tag after the winner's score in bracket boxes
+function otTag(ot) { return ot ? ' <span class="bx-ot">' + otLabel(ot) + '</span>' : ''; }
+
+function matchupMini(t1, t2, s1, s2, winner, seeds, ot) {
   var played = winner !== null && winner !== undefined;
   var h = '<div class="br-mini">';
   [{ t: t1, s: s1 }, { t: t2, s: s2 }].forEach(function(e) {
@@ -96,7 +99,7 @@ function matchupMini(t1, t2, s1, s2, winner, seeds) {
     h += '<div class="br-team' + cls + '">'
       + '<span class="br-seed">' + seedNum + '</span>'
       + '<span class="br-tname">' + tLink(e.t.id, e.t.name) + '</span>'
-      + (played ? '<span class="br-score">' + e.s + '</span>' : '') + '</div>';
+      + (played ? '<span class="br-score">' + e.s + (isWin ? otTag(ot) : '') + '</span>' : '') + '</div>';
   });
   return h + '</div>';
 }
@@ -116,7 +119,7 @@ function renderConfBracketCard(conf, ct, expanded) {
     ct.rounds.forEach(function(round, ri) {
       h += '<div class="br-round-col">'
         + '<div class="br-round-name" title="' + confRoundLabel(ct, ri, false) + '">' + confRoundLabel(ct, ri, true) + '</div>';
-      round.forEach(function(m) { h += matchupMini(m.t1, m.t2, m.s1, m.s2, m.winner, ct.seeds); });
+      round.forEach(function(m) { h += matchupMini(m.t1, m.t2, m.s1, m.s2, m.winner, ct.seeds, m.ot); });
       h += '</div>';
     });
     h += '</div>';
@@ -129,7 +132,7 @@ function renderConfBracketCard(conf, ct, expanded) {
         h += '<div class="br-result">'
           + '<span><b>' + m.winner.name + '</b> def. '
           + (m.winner.id === m.t1.id ? m.t2.name : m.t1.name) + '</span>'
-          + '<span class="br-score" style="color:var(--txt3);">' + fmtScore(m.s1, m.s2, '-') + '</span></div>';
+          + '<span class="br-score" style="color:var(--txt3);">' + fmtScore(m.s1, m.s2, '-', m.ot) + '</span></div>';
       }
     });
   }
@@ -143,7 +146,7 @@ function confStatusRow(conf, ct) {
   var nm = function(t) { return t ? seedOf(t) + ' ' + t.name : 'TBD'; };
   if (ct.done && ct.champ) {
     var fin = ct.rounds[ct.rounds.length - 1] && ct.rounds[ct.rounds.length - 1][0];
-    var score = fin && fin.winner ? ' ' + fmtScore(fin.s1, fin.s2, '-') : '';
+    var score = fin && fin.winner ? ' ' + fmtScore(fin.s1, fin.s2, '-', fin.ot) : '';
     return '<tr><td><b>' + conf + '</b></td><td>Champion</td><td><b>' + ct.champ.name + '</b><span class="dim">' + score + '</span></td></tr>';
   }
   var rIdx = ct.rounds.length - 1, round = ct.rounds[rIdx] || [];
@@ -159,7 +162,7 @@ function confStatusRow(conf, ct) {
   var latest = '';
   if (last) {
     var lo = last.winner.id === last.t1.id ? last.t2 : last.t1;
-    latest += nm(last.winner) + ' def. ' + nm(lo) + ' <span class="dim">' + fmtScore(last.s1, last.s2, '-') + '</span>';
+    latest += nm(last.winner) + ' def. ' + nm(lo) + ' <span class="dim">' + fmtScore(last.s1, last.s2, '-', last.ot) + '</span>';
   }
   var next = round.filter(function(m) { return !m.winner; })[0];
   if (next) latest += (latest ? '<br>' : '') + '<span class="dim">Next: ' + nm(next.t1) + ' vs ' + nm(next.t2) + '</span>';
@@ -209,7 +212,7 @@ function openRow(t, g, sc) {
   var cls = (t.id === G.tid ? ' me' : '') + (played ? (g.winner === t ? ' w' : ' l') : '');
   return '<div class="bx-team' + cls + '"><span class="bx-name">' + tLink(t.id, t.name) + '</span>'
     + '<span class="bx-m2">' + t.wins + '-' + t.loss + '</span>'
-    + '<span class="bx-sc">' + (played ? sc : '') + '</span></div>';
+    + '<span class="bx-sc">' + (played ? sc + (g.winner === t ? otTag(g.ot) : '') : '') + '</span></div>';
 }
 function openingView() {
   var O = G.ncaaOpening;
@@ -287,7 +290,7 @@ function slotRow(b, k, mt) {
   var cls = (b.team.id === G.tid && b.pending === undefined ? ' me' : '') + (won ? ' w' : '') + (lost ? ' l' : '');
   return '<div class="bx-team' + cls + '"><span class="bx-seed">' + b.seed + '</span>'
     + '<span class="bx-name">' + tLink(b.team.id, b.team.name) + '</span>'
-    + '<span class="bx-sc">' + (played ? b.sc[k] : '') + '</span></div>';
+    + '<span class="bx-sc">' + (played ? b.sc[k] + (won ? otTag(b.ot && b.ot[k]) : '') : '') + '</span></div>';
 }
 function matchBox(mt, k) {
   var isMe = function(e) { return e && e.pending === undefined && e.team.id === G.tid; };
@@ -423,7 +426,7 @@ function userCard(cr) {
     if (rr) rr.forEach(function(mt) { if (mt.a === me) opp2 = mt.b; else if (mt.b === me) opp2 = mt.a; });
     if (k >= 4) { var ff = finalFour(); var m2 = k === 4 ? (ff.semis[0].a === me || ff.semis[0].b === me ? ff.semis[0] : ff.semis[1]) : ff.title; opp2 = m2.a === me ? m2.b : m2.a; }
     line = 'Your run ended in the ' + (k >= 0 ? ROUND_NAMES[k].toLowerCase() : 'first round')
-      + (opp2 && opp2.sc ? ', ' + me.sc[k] + '-' + opp2.sc[k] + ' to #' + opp2.seed + ' ' + opp2.team.name : '') + '.';
+      + (opp2 && opp2.sc ? ', ' + me.sc[k] + '-' + opp2.sc[k] + (me.ot && me.ot[k] ? ' ' + otLabel(me.ot[k]) : '') + ' to #' + opp2.seed + ' ' + opp2.team.name : '') + '.';
   }
   return simRowHTML(line, 'Sim the ' + (cr < 2 ? ROUND_NAMES[cr].toLowerCase() : ROUND_NAMES[cr]));
 }
@@ -434,7 +437,7 @@ function champCard() {
   if (!c) return '';
   var isu = c.team.id === G.tid;
   var t = ff.title, ru = t && (t.a === c ? t.b : t.a);
-  var score = ru && c.sc && ru.sc ? c.sc[5] + '-' + ru.sc[5] + ' over #' + ru.seed + ' ' + ru.team.name : '';
+  var score = ru && c.sc && ru.sc ? c.sc[5] + '-' + ru.sc[5] + (c.ot && c.ot[5] ? ' ' + otLabel(c.ot[5]) : '') + ' over #' + ru.seed + ' ' + ru.team.name : '';
   var h = '<div class="panel"><div class="panel-b champ-card">'
     + '<div class="champ-k">' + G.yr + ' national champion</div>'
     + '<div class="champ-n' + (isu ? ' me' : '') + '"><span class="mu-seed">' + c.seed + '</span>' + c.team.name + '</div>'
@@ -464,7 +467,7 @@ function upsetsPanel() {
     h += '<tr' + (mine ? ' class="hl"' : '') + '>'
       + '<td><b>' + u.w.seed + ' ' + u.w.team.name + '</b> def. ' + u.l.seed + ' ' + u.l.team.name
       + '<div class="ups-r">' + ROUND_NAMES[u.k] + '</div></td>'
-      + '<td class="num" style="white-space:nowrap;">' + u.w.sc[u.k] + '-' + u.l.sc[u.k] + '</td></tr>';
+      + '<td class="num" style="white-space:nowrap;">' + u.w.sc[u.k] + '-' + u.l.sc[u.k] + (u.w.ot && u.w.ot[u.k] ? ' ' + otLabel(u.w.ot[u.k]) : '') + '</td></tr>';
   });
   if (!ups.length) h = '<div class="panel"><div class="panel-h"><span>Upsets</span><small>None yet</small></div><div class="panel-b flush">';
   else h += '</tbody></table></div>';

@@ -328,3 +328,45 @@ harder; nothing else in the voter model changed. 20 seasons:
 
 Tracked gaps left: top-5 teams drop less after a loss, the preseason-to-final correlation is a
 little low, and mid-majors are almost never ranked (game mid-majors are rarely strong enough).
+
+## Update 2 (2026-10-08): top-5 losses and #1
+
+Game top teams now win about as often as real ones (ranked 74% vs 72%, top 5 80% vs 81%), so the
+old workaround (top-5 losses cost 12% of a normal drop) was removed: ranks 2-5 lose 0.45 of a normal
+drop and #1 0.2 (voters keep a #1 after a close loss; without it #1 changed in 41% of polls, real
+29%). Preseason talent weight 1.2 (was 1.0). 20 seasons:
+
+| Stat | Game | Real | Band | |
+|---|---|---|---|---|
+| Drop after a 1-loss-1-win week (all) | 2.42 | 2.5 | ±1 | ok |
+| ... loss to an unranked team | 2.84 | 3.23 | ±1.5 | ok |
+| ... loss to #11-25 | 2.13 | 2.11 | ±1.5 | ok |
+| ... loss to a top-10 team | 0.79 | 1.15 | ±1.5 | ok |
+| ... home loss | 3.73 | 2.8 | ±1.5 | ok |
+| ... road loss | 1.88 | 2.25 | ±1.5 | ok |
+| ... ranked 1-5 | 1.94 | 2.82 | ±1.5 | ok |
+| ... ranked 6-15 | 3.35 | 2.87 | ±1.5 | ok |
+| ... ranked 16-25 | 1.78 | 1.84 | ±1.5 | ok |
+| Spread (sd) of that drop | 2.87 | 2.65 | ±1 | ok |
+| Drop after an 0-2 week | 6.2 | 6.54 | ±2 | ok |
+| Out of the poll after 1L-1W, ranked 16-25 (%) | 24.66 | 16.1 | ±12 | ok |
+| Out of the poll after 1L-1W, ranked 6-15 (%) | 0.44 | 0.5 | ±5 | ok |
+| Unbeaten climb per winning week, 1-5 | 0.25 | 0.35 | ±1 | ok |
+| Unbeaten climb per winning week, 6-15 | 1.67 | 1.54 | ±1 | ok |
+| Unbeaten climb per winning week, 16-25 | 3.44 | 2.69 | ±1.5 | ok |
+| New teams per poll (churn) | 1.91 | 2.43 | ±1 | ok |
+| #1 changes (% of polls) | 30 | 29.4 | ±10 | ok |
+| Preseason Top 25 still ranked at the end (%) | 65.4 | 62.6 | ±10 | ok |
+| Preseason top 5 that finish top 10 (%) | 47 | 60.8 | ±15 | ok |
+| Preseason-to-final rank correlation | 0.23 | 0.43 | ±0.15 | tracked gap |
+| Avg rank change preseason to final | 10.2 | 9.25 | ±2 | ok |
+| Top 25 spots: power conferences (%) | 72.95 | 74.5 | ±10 | ok |
+| Top 25 spots: mid-majors (%) | 0 | 1.4 | ±4 | ok |
+| Bluebloods in the preseason poll (%) | 73.33 | 85 | ±15 | ok |
+| Seasons with a ranked mid-major (%) | 0 | 80 | ±30 | tracked gap |
+| Final top 4 that get 1 seeds (%) | 88.75 | 86.11 | ±20 | ok |
+| Seed line minus poll line (avg) | 0.08 | 0.15 | ±1 | ok |
+
+Tracked gaps left: the preseason-to-final correlation is a little low, and mid-majors are almost never
+ranked (see research/program-strength/README.md: even on real results the best true mid-majors rate
+well below Top 25 talent; real ranked mid-majors come from veteran peak seasons).

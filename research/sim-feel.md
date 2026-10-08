@@ -132,3 +132,22 @@ climbs in band, power conferences 75% of Top 25 spots (real 74.5%). The poll's u
 was respaced (1.8) so teams at 16-25 don't fall out too easily now that strong unranked teams push
 harder. Remaining tracked gaps: top-5 teams drop less after a loss, preseason favorites are a little
 less sticky, and mid-majors are almost never ranked.
+
+## Update: one engine for watched games
+
+Watched games used a separate, older copy of the possession logic (no star usage, volume dip or
+late-game play; bigger scheme effects; no difficulty edge). Now `createGame()` in simulation.js runs
+every game and `simPoss()` plays it one possession at a time for the game screen, with the clock
+deciding clutch and late-game play. Nothing on the players changes during a game (difficulty and
+morale are offsets, fouled-out players a set), so a save in the middle of a watched game is safe.
+The coach's offense and defense now work as a small shooting edge (about the same points as before)
+instead of points added at the horn, so the score always equals the players' points.
+`sim-feel-test.mjs` plays 400 watched games against quick sims of the same matchups: same win rate
+and scoring.
+
+**Win-curve target at +3.** The brief's 75 / 85 / 93% at +6 / +9 / +12 is a normal margin model with
+about 1.35 points of margin per overall point and an 11-point spread; that same model gives 64% at +3,
+not 60%. The target is now 64 (59-69). With the shared engine and a slightly smaller matchup effect
+(skill 2.4) and top-option boost (1.45), 16 seasons: +3 64.7, +6 77.4, +9 86.4, +12 93.3; spread 11.1;
+upsets 1v16 2.1, 2v15 6.1, 3v14 11.7, 4v13 17.7, 5v12 31.5, 6v11 40.1, 7v10 41.6, 8v9 47.7; leader
+24.2 ppg, 11 players at 20+; overtime 4.3%; home 66.3%; biggest scheme effect 1.9.

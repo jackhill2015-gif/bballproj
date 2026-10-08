@@ -2,7 +2,7 @@
 // Source: ESPN's public team data (site.api.espn.com, mens-college-basketball/teams).
 // If the game ever moves to fictional schools, replace this file.
 export const TEAM_COLORS = {
-  "Abilene Chr": [
+  "Abilene Christian": [
     "#592d82",
     "#b1b3b3"
   ],
@@ -22,15 +22,15 @@ export const TEAM_COLORS = {
     "#790000",
     "#ffffff"
   ],
-  "Alabama St": [
+  "Alabama State": [
     "#e9a900",
     "#0a0a0a"
   ],
-  "Albany": [
+  "UAlbany": [
     "#3d2777",
     "#ffffff"
   ],
-  "Alcorn St": [
+  "Alcorn State": [
     "#4b0058",
     "#46166a"
   ],
@@ -46,7 +46,7 @@ export const TEAM_COLORS = {
     "#cc0033",
     "#003366"
   ],
-  "Arizona St": [
+  "Arizona State": [
     "#ffc627",
     "#8c1d40"
   ],
@@ -54,11 +54,11 @@ export const TEAM_COLORS = {
     "#a32136",
     "#ffffff"
   ],
-  "Arkansas St": [
+  "Arkansas State": [
     "#cc092f",
     "#000000"
   ],
-  "Arkansas-Pine Bluff": [
+  "UAPB": [
     "#e0aa0f",
     "#eaaa00"
   ],
@@ -102,15 +102,15 @@ export const TEAM_COLORS = {
     "#00614a",
     "#f0f0f0"
   ],
-  "Boise St": [
+  "Boise State": [
     "#0033a0",
     "#d64309"
   ],
-  "Boston Coll": [
+  "Boston College": [
     "#8c2232",
     "#dbcca6"
   ],
-  "Boston U": [
+  "Boston University": [
     "#cc0000",
     "#ffffff"
   ],
@@ -150,15 +150,15 @@ export const TEAM_COLORS = {
     "#003bab",
     "#5c6571"
   ],
-  "CSU Fullerton": [
+  "Cal State Fullerton": [
     "#003767",
     "#ff8300"
   ],
-  "CSU Northridge": [
+  "Cal State Northridge": [
     "#b50000",
     "#5c6571"
   ],
-  "Cal": [
+  "California": [
     "#041e42",
     "#ffc72c"
   ],
@@ -178,7 +178,7 @@ export const TEAM_COLORS = {
     "#004a81",
     "#dda50f"
   ],
-  "Cent Michigan": [
+  "Central Michigan": [
     "#4c0027",
     "#fbab18"
   ],
@@ -190,7 +190,7 @@ export const TEAM_COLORS = {
     "#7a2531",
     "#9e8959"
   ],
-  "Charleston So": [
+  "Charleston Southern": [
     "#2e3192",
     "#ded090"
   ],
@@ -202,7 +202,7 @@ export const TEAM_COLORS = {
     "#00386b",
     "#dca71d"
   ],
-  "Chicago St": [
+  "Chicago State": [
     "#006700",
     "#5c6571"
   ],
@@ -214,7 +214,7 @@ export const TEAM_COLORS = {
     "#f56600",
     "#ffffff"
   ],
-  "Cleveland St": [
+  "Cleveland State": [
     "#006633",
     "#231f20"
   ],
@@ -230,7 +230,7 @@ export const TEAM_COLORS = {
     "#cfb87c",
     "#000000"
   ],
-  "Colorado St": [
+  "Colorado State": [
     "#004c23",
     "#c8c372"
   ],
@@ -238,7 +238,7 @@ export const TEAM_COLORS = {
     "#7ba4db",
     "#183863"
   ],
-  "Coppin St": [
+  "Coppin State": [
     "#2e3192",
     "#ffd204"
   ],
@@ -270,7 +270,7 @@ export const TEAM_COLORS = {
     "#00539f",
     "#ffd200"
   ],
-  "Delaware St": [
+  "Delaware State": [
     "#009cdb",
     "#d51c28"
   ],
@@ -298,7 +298,7 @@ export const TEAM_COLORS = {
     "#002d62",
     "#b90b2e"
   ],
-  "E Michigan": [
+  "Eastern Michigan": [
     "#006938",
     "#ffffff"
   ],
@@ -318,7 +318,7 @@ export const TEAM_COLORS = {
     "#000000",
     "#bebab9"
   ],
-  "Eastern Ky": [
+  "Eastern Kentucky": [
     "#660819",
     "#f0f0f0"
   ],
@@ -342,7 +342,7 @@ export const TEAM_COLORS = {
     "#000000",
     "#ebebeb"
   ],
-  "Fairleigh Dick": [
+  "FDU": [
     "#72293c",
     "#28334a"
   ],
@@ -354,7 +354,7 @@ export const TEAM_COLORS = {
     "#f89728",
     "#00843d"
   ],
-  "Florida Atl": [
+  "Florida Atlantic": [
     "#003366",
     "#cc0000"
   ],
@@ -362,7 +362,7 @@ export const TEAM_COLORS = {
     "#00885a",
     "#076c3b"
   ],
-  "Florida St": [
+  "Florida State": [
     "#782f40",
     "#ceb888"
   ],
@@ -370,7 +370,7 @@ export const TEAM_COLORS = {
     "#830032",
     "#909090"
   ],
-  "Fresno St": [
+  "Fresno State": [
     "#b1102b",
     "#13284c"
   ],
@@ -402,7 +402,7 @@ export const TEAM_COLORS = {
     "#041e42",
     "#a3aaae"
   ],
-  "Georgia St": [
+  "Georgia State": [
     "#0039a6",
     "#ffffff"
   ],
@@ -462,7 +462,7 @@ export const TEAM_COLORS = {
     "#003a63",
     "#e51937"
   ],
-  "IU Indy": [
+  "IU Indianapolis": [
     "#a81f30",
     "#d59f0f"
   ],
@@ -478,7 +478,7 @@ export const TEAM_COLORS = {
     "#ff5f05",
     "#13294b"
   ],
-  "Illinois St": [
+  "Illinois State": [
     "#ce1126",
     "#ffe716"
   ],
@@ -490,7 +490,7 @@ export const TEAM_COLORS = {
     "#970310",
     "#ffffff"
   ],
-  "Indiana St": [
+  "Indiana State": [
     "#00669a",
     "#f0f0f0"
   ],
@@ -506,7 +506,7 @@ export const TEAM_COLORS = {
     "#ae192d",
     "#ffc72a"
   ],
-  "Jackson St": [
+  "Jackson State": [
     "#123297",
     "#b5b7ba"
   ],
@@ -514,7 +514,7 @@ export const TEAM_COLORS = {
     "#00523e",
     "#5c6571"
   ],
-  "Jacksonville St": [
+  "Jacksonville State": [
     "#cc0000",
     "#000000"
   ],
@@ -522,7 +522,7 @@ export const TEAM_COLORS = {
     "#450084",
     "#cbb677"
   ],
-  "K-State": [
+  "Kansas State": [
     "#330a57",
     "#e2e3e4"
   ],
@@ -534,7 +534,7 @@ export const TEAM_COLORS = {
     "#004b87",
     "#ffc72c"
   ],
-  "Kennesaw St": [
+  "Kennesaw State": [
     "#fdbb30",
     "#0b1315"
   ],
@@ -590,7 +590,7 @@ export const TEAM_COLORS = {
     "#ad0000",
     "#898d8f"
   ],
-  "Long Beach St": [
+  "Long Beach State": [
     "#000000",
     "#f1f2f3"
   ],
@@ -610,7 +610,7 @@ export const TEAM_COLORS = {
     "#c9001f",
     "#ffffff"
   ],
-  "Loyola Chi": [
+  "Loyola Chicago": [
     "#9d1244",
     "#5c6571"
   ],
@@ -650,7 +650,7 @@ export const TEAM_COLORS = {
     "#00529c",
     "#ffd204"
   ],
-  "Md Eastern Shore": [
+  "Maryland Eastern Shore": [
     "#5c2301",
     "#b5b7ba"
   ],
@@ -670,11 +670,11 @@ export const TEAM_COLORS = {
     "#2f4f93",
     "#e8c535"
   ],
-  "Miami FL": [
+  "Miami": [
     "#f47423",
     "#035131"
   ],
-  "Miami OH": [
+  "Miami (OH)": [
     "#c41230",
     "#ffffff"
   ],
@@ -682,11 +682,11 @@ export const TEAM_COLORS = {
     "#00274c",
     "#ffcb05"
   ],
-  "Michigan St": [
+  "Michigan State": [
     "#173f35",
     "#ffffff"
   ],
-  "Middle Tenn": [
+  "Middle Tennessee": [
     "#036eb7",
     "#ffffff"
   ],
@@ -698,11 +698,11 @@ export const TEAM_COLORS = {
     "#5e0a2f",
     "#fab41c"
   ],
-  "Miss State": [
+  "Mississippi State": [
     "#5d1725",
     "#c1c6c8"
   ],
-  "Mississippi Valley State": [
+  "MVSU": [
     "#005328",
     "#cf2d34"
   ],
@@ -710,7 +710,7 @@ export const TEAM_COLORS = {
     "#f1b82d",
     "#000000"
   ],
-  "Missouri St": [
+  "Missouri State": [
     "#5e0009",
     "#ffffff"
   ],
@@ -726,11 +726,11 @@ export const TEAM_COLORS = {
     "#00205c",
     "#bc955c"
   ],
-  "Morehead St": [
+  "Morehead State": [
     "#094fa3",
     "#fed91a"
   ],
-  "Morgan St": [
+  "Morgan State": [
     "#014786",
     "#f47937"
   ],
@@ -742,11 +742,11 @@ export const TEAM_COLORS = {
     "#002148",
     "#000e00"
   ],
-  "N Illinois": [
+  "Northern Illinois": [
     "#c8102e",
     "#000000"
   ],
-  "N Kentucky": [
+  "Northern Kentucky": [
     "#ffc82e",
     "#000000"
   ],
@@ -786,7 +786,7 @@ export const TEAM_COLORS = {
     "#ba0c2f",
     "#a7a8aa"
   ],
-  "New Mexico St": [
+  "New Mexico State": [
     "#7e141b",
     "#231f20"
   ],
@@ -802,7 +802,7 @@ export const TEAM_COLORS = {
     "#c41230",
     "#f0f0f0"
   ],
-  "Norfolk St": [
+  "Norfolk State": [
     "#0c8968",
     "#fdb813"
   ],
@@ -810,7 +810,7 @@ export const TEAM_COLORS = {
     "#663399",
     "#5c6571"
   ],
-  "North Carolina Central": [
+  "NC Central": [
     "#880023",
     "#c2c3c0"
   ],
@@ -818,7 +818,7 @@ export const TEAM_COLORS = {
     "#00a26b",
     "#c2c3c0"
   ],
-  "North Dakota St": [
+  "North Dakota State": [
     "#01402a",
     "#ffffff"
   ],
@@ -846,7 +846,7 @@ export const TEAM_COLORS = {
     "#492f92",
     "#ffffff"
   ],
-  "Northwestern St": [
+  "Northwestern State": [
     "#492f91",
     "#ed6118"
   ],
@@ -870,7 +870,7 @@ export const TEAM_COLORS = {
     "#990000",
     "#ffffff"
   ],
-  "Oklahoma St": [
+  "Oklahoma State": [
     "#fe5c00",
     "#000000"
   ],
@@ -926,7 +926,7 @@ export const TEAM_COLORS = {
     "#00311e",
     "#ebebeb"
   ],
-  "Prairie View": [
+  "Prairie View A&M": [
     "#582c83",
     "#eaaa00"
   ],
@@ -982,7 +982,7 @@ export const TEAM_COLORS = {
     "#ce0e2d",
     "#ffffff"
   ],
-  "S Illinois": [
+  "Southern Illinois": [
     "#85283d",
     "#c2c3c0"
   ],
@@ -1034,7 +1034,7 @@ export const TEAM_COLORS = {
     "#2f99d4",
     "#5c6571"
   ],
-  "San Diego St": [
+  "San Diego State": [
     "#a6192e",
     "#000000"
   ],
@@ -1070,7 +1070,7 @@ export const TEAM_COLORS = {
     "#cd1241",
     "#f0f0f0"
   ],
-  "South Dakota St": [
+  "South Dakota State": [
     "#0033a0",
     "#ffd100"
   ],
@@ -1078,7 +1078,7 @@ export const TEAM_COLORS = {
     "#006747",
     "#cfc493"
   ],
-  "Southeast Missouri State": [
+  "Southeast Missouri": [
     "#c8102e",
     "#000000"
   ],
@@ -1086,7 +1086,7 @@ export const TEAM_COLORS = {
     "#ffc72c",
     "#231f20"
   ],
-  "Southern U": [
+  "Southern": [
     "#004b97",
     "#ffc82d"
   ],
@@ -1094,19 +1094,19 @@ export const TEAM_COLORS = {
     "#c72026",
     "#000000"
   ],
-  "St Bonaventure": [
+  "St. Bonaventure": [
     "#70261d",
     "#5c6571"
   ],
-  "St John's": [
+  "St. John's": [
     "#d10000",
     "#101010"
   ],
-  "St Peter's": [
+  "Saint Peter's": [
     "#004cc2",
     "#5c6571"
   ],
-  "St. Thomas (MN)": [
+  "St. Thomas": [
     "#000000",
     "#5c6571"
   ],
@@ -1114,7 +1114,7 @@ export const TEAM_COLORS = {
     "#8c1515",
     "#ffffff"
   ],
-  "Stephen F Austin": [
+  "Stephen F. Austin": [
     "#393996",
     "#bec0c2"
   ],
@@ -1138,7 +1138,7 @@ export const TEAM_COLORS = {
     "#4d1979",
     "#ffffff"
   ],
-  "Tarleton St": [
+  "Tarleton State": [
     "#000000",
     "#5c6571"
   ],
@@ -1150,7 +1150,7 @@ export const TEAM_COLORS = {
     "#ff8200",
     "#ffffff"
   ],
-  "Tennessee Martin": [
+  "UT Martin": [
     "#ff6700",
     "#102a5c"
   ],
@@ -1170,7 +1170,7 @@ export const TEAM_COLORS = {
     "#500000",
     "#ffffff"
   ],
-  "Texas A&M-Corpus Christi": [
+  "Texas A&M-CC": [
     "#0067c5",
     "#007f3e"
   ],
@@ -1178,7 +1178,7 @@ export const TEAM_COLORS = {
     "#860038",
     "#ffffff"
   ],
-  "Texas St": [
+  "Texas State": [
     "#501214",
     "#6a5638"
   ],
@@ -1262,7 +1262,7 @@ export const TEAM_COLORS = {
     "#00529c",
     "#cf1f2f"
   ],
-  "UNC": [
+  "North Carolina": [
     "#7bafd4",
     "#13294b"
   ],
@@ -1274,7 +1274,7 @@ export const TEAM_COLORS = {
     "#003559",
     "#ffd90a"
   ],
-  "UNCW": [
+  "UNC Wilmington": [
     "#00665e",
     "#ffda00"
   ],
@@ -1314,7 +1314,7 @@ export const TEAM_COLORS = {
     "#be0000",
     "#ffffff"
   ],
-  "Utah St": [
+  "Utah State": [
     "#0f2439",
     "#ffffff"
   ],
@@ -1358,11 +1358,11 @@ export const TEAM_COLORS = {
     "#6a2c3e",
     "#cf4520"
   ],
-  "W Illinois": [
+  "Western Illinois": [
     "#4e1e8a",
     "#ffc90a"
   ],
-  "W Michigan": [
+  "Western Michigan": [
     "#532e1f",
     "#f1c500"
   ],
@@ -1398,11 +1398,11 @@ export const TEAM_COLORS = {
     "#492f91",
     "#bf9e70"
   ],
-  "Western Ky": [
+  "Western Kentucky": [
     "#e13a3e",
     "#ffffff"
   ],
-  "Wichita St": [
+  "Wichita State": [
     "#ffcd00",
     "#27251f"
   ],
@@ -1438,15 +1438,15 @@ export const TEAM_COLORS = {
     "#004a81",
     "#286dc0"
   ],
-  "Youngstown St": [
+  "Youngstown State": [
     "#e51935",
     "#690717"
   ],
-  "San Jose St": [
+  "San Jose State": [
     "#5c6571",
     "#5c6571"
   ],
-  "St Francis PA": [
+  "Saint Francis": [
     "#5c6571",
     "#5c6571"
   ],
