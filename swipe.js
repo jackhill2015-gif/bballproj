@@ -13,6 +13,9 @@
 //  - Swipes are ignored when they start in sideways scrollers, inputs,
 //    sliders, or any open sheet / overlay / dialog / menu, and during
 //    a live game.
+//  - Also: tapping the More sheet's grab handle (.more-handle) collapses
+//    the sheet (ui.js owns the sheet but is Claude's lane, so the wiring
+//    lives here and mirrors its closeMoreSheet).
 // ═══════════════════════════════════════════════════════════
 (function () {
   'use strict';
@@ -155,12 +158,24 @@
     }
   }
 
+  // Tapping the More sheet's grab handle collapses the sheet. (ui.js owns
+  // the sheet but is Claude's lane; this mirrors its closeMoreSheet.)
+  function onHandleTap(e) {
+    var t = e.target && e.target.closest ? e.target.closest('#more-sheet .more-handle') : null;
+    if (!t) return;
+    var sh = document.getElementById('more-sheet');
+    var sc = document.getElementById('sheet-scrim');
+    if (sh) sh.classList.remove('open');
+    if (sc) sc.classList.remove('on');
+  }
+
   if (typeof document !== 'undefined' && document.addEventListener) {
     document.addEventListener('touchstart', onTouchStart, { passive: true });
     document.addEventListener('touchend', onTouchEnd, { passive: true });
     document.addEventListener('touchcancel', onTouchCancel, { passive: true });
     // Capture phase so the delegated nav handler in ui.js never sees it.
     document.addEventListener('click', onClickCapture, true);
+    document.addEventListener('click', onHandleTap);
   }
 
   // Test hook: the harness exercises targetIndex and the wiring without

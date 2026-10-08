@@ -29,6 +29,7 @@ Leave a note for the other agent. Delete it once it's handled. **Claude sessions
 
 ## Recently shipped (newest first, keep about 8)
 
+- More sheet: tapping the grab handle at the top of the menu collapses it, and the handle has a taller tap target. *(Muse)*
 - Swipe between main tabs on phones: a clearly horizontal swipe moves to the next/previous tab in bottom-nav order (read from the DOM), via the same path as a nav tap; ignores sideways scrollers, inputs, sheets, dialogs and the live game; subtle slide, reduced-motion safe, desktop unchanged. *(Muse)*
 
 - Sim realism: better teams win about as often as in real college basketball (a 6-point overall edge wins about 77% on a neutral floor), first-round NCAA upsets at the real seed-by-seed rates, star scorers (leader about 25 ppg, 10-15 players at 20+), real 5-minute overtime periods with OT/2OT on scores (results carry `ot`), home court about 3.5 points, schemes worth a point or two. Non-conference opponents now random (power teams play mid-majors), committee record weight 60. Pre-game win % matches the engine. `node test-harness/sim-feel.mjs` (16 seasons) measures it all; fast version in run-all. *(Claude)*

@@ -39,10 +39,15 @@ function makeEnv(opts) {
   });
 
   function elById(id) {
-    if (id === 'sheet-scrim') return { classList: cls(openIds[id] ? ['on'] : []) };
-    if (id === 'mo-ov') return openIds[id] ? { classList: cls([]) } : null;
-    if (/^v-/.test(id)) return { classList: cls([]), offsetWidth: 0 };
-    return { classList: cls(openIds[id] ? ['open'] : []) };
+    elById.cache = elById.cache || {};
+    if (elById.cache[id]) return elById.cache[id];
+    var el;
+    if (id === 'sheet-scrim') el = { classList: cls(openIds[id] ? ['on'] : []) };
+    else if (id === 'mo-ov') el = openIds[id] ? { classList: cls([]) } : null;
+    else if (/^v-/.test(id)) el = { classList: cls([]), offsetWidth: 0 };
+    else el = { classList: cls(openIds[id] ? ['open'] : []) };
+    elById.cache[id] = el;
+    return el;
   }
 
   const document = {
@@ -65,6 +70,7 @@ function makeEnv(opts) {
       parentNode: bodyEl,
       closest(sel) {
         if (o.input && /input|select|textarea/.test(sel)) return {};
+        if (o.handle && /more-handle/.test(sel)) return {};
         return null;
       },
     };
@@ -151,6 +157,22 @@ noClick('swipe starting in a sideways scroller is ignored', { on: 'schedule', fi
   load(env);
   touch(env, 200, 300, 120, 305);
   check(env.clicks.join() === 'dashboard', 'reduced motion still switches tabs');
+}
+
+// ── 6. tapping the More sheet handle collapses it ───────────
+{
+  const env = makeEnv({ openIds: { 'more-sheet': true, 'sheet-scrim': true } });
+  load(env);
+  const handle = env.target({ handle: true });
+  env.listeners.click.forEach(l => l.f({ target: handle }));
+  check(!env.document.getElementById('more-sheet').classList.contains('open'), 'handle tap removes open from more-sheet');
+  check(!env.document.getElementById('sheet-scrim').classList.contains('on'), 'handle tap removes on from scrim');
+}
+{
+  const env = makeEnv({ openIds: { 'more-sheet': true, 'sheet-scrim': true } });
+  load(env);
+  env.listeners.click.forEach(l => l.f({ target: env.target() }));
+  check(env.document.getElementById('more-sheet').classList.contains('open'), 'tap outside the handle leaves the sheet open');
 }
 
 if (fails) { console.log(fails + ' FAILURES'); process.exit(1); }
