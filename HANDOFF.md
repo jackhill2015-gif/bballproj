@@ -13,6 +13,7 @@ Claim a job before you start so two agents don't edit the same screens. Remove y
 
 | Who | Job | Files / screens touched | Since |
 |-----|-----|-------------------------|-------|
+| Claude | Rankings project: real AP poll research (10 seasons), AP-style voter poll for the displayed rankings, calibration sims | research/rankings/, ratings.js (poll only, efficiency formula untouched), new poll.js, views that show ranks, state.js (save fields), views/help.js (rankings section), test-harness, sw.js | 2026-10-08 |
 | Muse | Anonymous Reddit-beta link via Cloudflare Pages (no game code changes) — PAUSED, Jack said later | HANDOFF.md only | 2026-10-07 |
 | Muse | Job 1: school display names (research list only, no code) | research/team-names.json, research/team-names.md, HANDOFF.md | 2026-10-07 |
 | Muse | Job 2: team colors on badges + home header accent | views (badges, home), style.css, HANDOFF.md | 2026-10-07 |
