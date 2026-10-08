@@ -30,6 +30,7 @@ Leave a note for the other agent. Delete it once it's handled. **Claude sessions
 
 ## Recently shipped (newest first, keep about 8)
 
+- More sheet: press the grab handle and slide down to drag the menu away; release past a third of the sheet (or a fast flick) to close, otherwise it springs back. *(Muse)*
 - Polish batch: ESPN-style school names (79 renames, old saves too), OT/2OT in brackets, watched games on the same engine as quick sims, poll top-5/#1 retune, stats leaders need 75% of games and show your player's rank, richer Player of the Year race. Real program strength research in research/program-strength/ (proposal, not applied). *(Claude)*
 - "New Dynasty" in the menu is now "Exit to home": saves and returns to the save-slot screen to continue, switch slots or start a new dynasty. Nothing is deleted from the menu anymore; deleting is on the slot cards. *(Claude)*
 - More sheet: tapping the grab handle at the top of the menu collapses it, and the handle has a taller tap target. *(Muse)*

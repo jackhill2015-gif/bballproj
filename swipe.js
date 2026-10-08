@@ -15,7 +15,8 @@
 //    a live game.
 //  - Also: tapping the More sheet's grab handle (.more-handle) collapses
 //    the sheet (ui.js owns the sheet but is Claude's lane, so the wiring
-//    lives here and mirrors its closeMoreSheet).
+//    lives here and mirrors its closeMoreSheet), and pressing the handle
+//    and sliding down drags the sheet away with the finger.
 // ═══════════════════════════════════════════════════════════
 (function () {
   'use strict';
@@ -161,12 +162,100 @@
   // Tapping the More sheet's grab handle collapses the sheet. (ui.js owns
   // the sheet but is Claude's lane; this mirrors its closeMoreSheet.)
   function onHandleTap(e) {
+    if (Date.now() < suppressHandleClickUntil) return;
     var t = e.target && e.target.closest ? e.target.closest('#more-sheet .more-handle') : null;
     if (!t) return;
     var sh = document.getElementById('more-sheet');
     var sc = document.getElementById('sheet-scrim');
     if (sh) sh.classList.remove('open');
     if (sc) sc.classList.remove('on');
+  }
+
+  // ── More sheet drag-to-dismiss ──
+  // Press the grab handle and slide down: the sheet follows the finger and
+  // the scrim fades. Release past the threshold (or a fast downward flick)
+  // and it finishes closing; otherwise it springs back open. Touch only;
+  // the handle is mobile-only. Only the handle starts a drag, so scrolling
+  // the menu itself can never dismiss it by accident.
+  var dragSt = null;
+  var suppressHandleClickUntil = 0;
+
+  function dragThreshold(sh) {
+    return Math.max(80, (sh.offsetHeight || 300) / 3);
+  }
+
+  function onDragStart(e) {
+    if (!e.touches || e.touches.length !== 1) return;
+    var t = e.target && e.target.closest ? e.target.closest('#more-sheet .more-handle') : null;
+    var sh = document.getElementById('more-sheet');
+    if (!t || !sh || !sh.classList.contains('open')) return;
+    dragSt = { y0: e.touches[0].clientY, t0: Date.now(), dy: 0, moved: false };
+  }
+
+  function onDragMove(e) {
+    if (!dragSt) return;
+    var sh = document.getElementById('more-sheet');
+    if (!sh || !sh.classList.contains('open')) { dragSt = null; return; }
+    var dy = e.touches[0].clientY - dragSt.y0;
+    if (dy < 0) dy = 0; // upward does nothing
+    dragSt.dy = dy;
+    if (dy > 8) dragSt.moved = true;
+    if (!dragSt.moved) return;
+    if (e.cancelable) e.preventDefault();
+    sh.style.transform = 'translateY(' + dy + 'px)';
+    var sc = document.getElementById('sheet-scrim');
+    if (sc) sc.style.opacity = String(Math.max(0, 1 - dy / 320));
+  }
+
+  function onDragEnd() {
+    if (!dragSt) return;
+    var st = dragSt; dragSt = null;
+    // Never moved: this was a plain tap, let the click handler do its thing.
+    if (!st.moved) return;
+    var sh = document.getElementById('more-sheet');
+    if (!sh) return;
+    var sc = document.getElementById('sheet-scrim');
+    var dt = Math.max(1, Date.now() - st.t0);
+    var flick = (st.dy / dt) > 0.6 && st.dy > 40;
+    if (st.moved && (st.dy > dragThreshold(sh) || flick)) {
+      closeSheetDrag(sh, sc);
+    } else {
+      // Spring back open.
+      if (!reduceMotion()) {
+        sh.style.transition = 'transform 160ms ease-out';
+        sh.style.transform = 'translateY(0px)';
+        if (sc) { sc.style.transition = 'opacity 160ms ease-out'; sc.style.opacity = ''; }
+        window.setTimeout(function () {
+          sh.style.transition = ''; sh.style.transform = '';
+          if (sc) sc.style.transition = '';
+        }, 180);
+      } else {
+        sh.style.transform = '';
+        if (sc) sc.style.opacity = '';
+      }
+      // A tap-click can follow the touch; the user left the sheet open,
+      // so don't let it collapse now.
+      suppressHandleClickUntil = Date.now() + CLICK_SUPPRESS_MS;
+    }
+    // Note: the tab-swipe touchend handler ran first on this same event
+    // and bailed via overlayOpen(), so no tab change can leak through.
+  }
+
+  function closeSheetDrag(sh, sc) {
+    if (reduceMotion()) {
+      sh.classList.remove('open');
+      if (sc) sc.classList.remove('on');
+      return;
+    }
+    var h = sh.offsetHeight || 320;
+    sh.style.transition = 'transform 180ms ease-out';
+    sh.style.transform = 'translateY(' + h + 'px)';
+    if (sc) { sc.style.transition = 'opacity 180ms ease-out'; sc.style.opacity = '0'; }
+    window.setTimeout(function () {
+      sh.classList.remove('open');
+      sh.style.transition = ''; sh.style.transform = '';
+      if (sc) { sc.classList.remove('on'); sc.style.transition = ''; sc.style.opacity = ''; }
+    }, 200);
   }
 
   if (typeof document !== 'undefined' && document.addEventListener) {
@@ -176,6 +265,10 @@
     // Capture phase so the delegated nav handler in ui.js never sees it.
     document.addEventListener('click', onClickCapture, true);
     document.addEventListener('click', onHandleTap);
+    document.addEventListener('touchstart', onDragStart, { passive: true });
+    document.addEventListener('touchmove', onDragMove, { passive: false });
+    document.addEventListener('touchend', onDragEnd, { passive: true });
+    document.addEventListener('touchcancel', function () { dragSt = null; }, { passive: true });
   }
 
   // Test hook: the harness exercises targetIndex and the wiring without

@@ -42,10 +42,10 @@ function makeEnv(opts) {
     elById.cache = elById.cache || {};
     if (elById.cache[id]) return elById.cache[id];
     var el;
-    if (id === 'sheet-scrim') el = { classList: cls(openIds[id] ? ['on'] : []) };
+    if (id === 'sheet-scrim') el = { classList: cls(openIds[id] ? ['on'] : []), style: {} };
     else if (id === 'mo-ov') el = openIds[id] ? { classList: cls([]) } : null;
     else if (/^v-/.test(id)) el = { classList: cls([]), offsetWidth: 0 };
-    else el = { classList: cls(openIds[id] ? ['open'] : []) };
+    else el = { classList: cls(openIds[id] ? ['open'] : []), style: {}, offsetHeight: 360 };
     elById.cache[id] = el;
     return el;
   }
@@ -59,8 +59,9 @@ function makeEnv(opts) {
   const window = {
     matchMedia() { return { matches: !!opts.reduceMotion }; },
     getComputedStyle() { return { overflowX: 'visible' }; },
-    setTimeout(fn) { return 0; },
+    setTimeout(fn) { timers.push(fn); return timers.length; },
   };
+  const timers = [];
   // default touch target: plain content, no scroller, no fields
   function target(o) {
     o = o || {};
@@ -75,7 +76,8 @@ function makeEnv(opts) {
       },
     };
   }
-  return { document, window, listeners, clicks, tabs, target, cls };
+  return { document, window, listeners, clicks, tabs, target, cls, timers,
+    runTimers() { const t = timers.splice(0); t.forEach(fn => fn()); } };
 }
 
 function load(env) {
@@ -173,6 +175,76 @@ noClick('swipe starting in a sideways scroller is ignored', { on: 'schedule', fi
   load(env);
   env.listeners.click.forEach(l => l.f({ target: env.target() }));
   check(env.document.getElementById('more-sheet').classList.contains('open'), 'tap outside the handle leaves the sheet open');
+}
+
+// ── 7. drag the handle down to dismiss ──────────────────────
+function dragSeq(env, y0, yMove, yEnd) {
+  const handle = env.target({ handle: true });
+  const mk = (type, y) => type === 'touchmove'
+    ? { touches: [{ clientX: 195, clientY: y }], cancelable: true, preventDefault() {} }
+    : type === 'touchstart'
+      ? { touches: [{ clientX: 195, clientY: y }], target: handle }
+      : { changedTouches: [{ clientX: 195, clientY: y }] };
+  const fire = (type, y) => env.listeners[type].forEach(l => l.f(mk(type, y)));
+  fire('touchstart', y0);
+  if (yMove !== null) fire('touchmove', yMove);
+  const sh = env.document.getElementById('more-sheet');
+  const scrim = env.document.getElementById('sheet-scrim');
+  fire('touchend', yEnd);
+  return { sh, scrim };
+}
+{
+  // long drag: sheet follows the finger, then closes
+  const env = makeEnv({ openIds: { 'more-sheet': true, 'sheet-scrim': true } });
+  load(env);
+  const handle = env.target({ handle: true });
+  env.listeners.touchstart.forEach(l => l.f({ touches: [{ clientX: 195, clientY: 300 }], target: handle }));
+  env.listeners.touchmove.forEach(l => l.f({ touches: [{ clientX: 195, clientY: 500 }], cancelable: true, preventDefault() {} }));
+  const sh = env.document.getElementById('more-sheet');
+  const scrim = env.document.getElementById('sheet-scrim');
+  check(sh.style.transform === 'translateY(200px)', 'sheet follows the finger while dragging');
+  check(parseFloat(scrim.style.opacity) < 1, 'scrim fades while dragging');
+  env.listeners.touchend.forEach(l => l.f({ changedTouches: [{ clientX: 195, clientY: 500 }] }));
+  check(sh.classList.contains('open'), 'sheet still open until the close animation finishes');
+  env.runTimers();
+  check(!sh.classList.contains('open'), 'drag past threshold closes the sheet');
+  check(!scrim.classList.contains('on'), 'drag past threshold hides the scrim');
+  check(sh.style.transform === '', 'inline styles cleaned up after close');
+  check(env.clicks.length === 0, 'drag never triggers a tab change');
+}
+{
+  // short drag: springs back open
+  const env = makeEnv({ openIds: { 'more-sheet': true, 'sheet-scrim': true } });
+  load(env);
+  const { sh, scrim } = dragSeq(env, 300, 330, 330); // dy=30: under threshold, too short to flick
+  check(sh.classList.contains('open'), 'short drag leaves the sheet open');
+  check(scrim.classList.contains('on'), 'short drag leaves the scrim on');
+  env.runTimers();
+  check(sh.style.transform === '', 'sheet snaps back (transform cleared)');
+}
+{
+  // upward drag: nothing
+  const env = makeEnv({ openIds: { 'more-sheet': true, 'sheet-scrim': true } });
+  load(env);
+  const { sh } = dragSeq(env, 300, 200, 200);
+  check(!sh.style.transform, 'upward drag does not move the sheet');
+  check(sh.classList.contains('open'), 'sheet stays open after upward drag');
+}
+{
+  // drag with the sheet closed: nothing
+  const env = makeEnv({});
+  load(env);
+  const { sh } = dragSeq(env, 300, 500, 500);
+  check(!sh.classList.contains('open'), 'drag with closed sheet does nothing');
+  check(!sh.style.transform, 'no transform applied when sheet is closed');
+}
+{
+  // reduced motion: closes immediately, no animation
+  const env = makeEnv({ openIds: { 'more-sheet': true, 'sheet-scrim': true }, reduceMotion: true });
+  load(env);
+  const { sh, scrim } = dragSeq(env, 300, 500, 500);
+  check(!sh.classList.contains('open'), 'reduced motion drag closes the sheet');
+  check(!scrim.classList.contains('on'), 'reduced motion drag hides the scrim');
 }
 
 if (fails) { console.log(fails + ' FAILURES'); process.exit(1); }
