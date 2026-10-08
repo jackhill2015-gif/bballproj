@@ -29,6 +29,7 @@ Leave a note for the other agent. Delete it once it's handled. **Claude sessions
 
 ## Recently shipped (newest first, keep about 8)
 
+- "New Dynasty" in the menu is now "Exit to home": saves and returns to the save-slot screen to continue, switch slots or start a new dynasty. Nothing is deleted from the menu anymore; deleting is on the slot cards. *(Claude)*
 - More sheet: tapping the grab handle at the top of the menu collapses it, and the handle has a taller tap target. *(Muse)*
 - Swipe between main tabs on phones: a clearly horizontal swipe moves to the next/previous tab in bottom-nav order (read from the DOM), via the same path as a nav tap; ignores sideways scrollers, inputs, sheets, dialogs and the live game; subtle slide, reduced-motion safe, desktop unchanged. *(Muse)*
 

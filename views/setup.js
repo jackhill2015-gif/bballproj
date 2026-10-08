@@ -10,7 +10,7 @@
 
 import { DIFF_DESC, calcSchoolPrestige, calcExpectations, ALL_TEAMS, teamsFor } from '../constants.js';
 import { ri, ge, txt, getTier, getTOvr, fR } from '../utils.js';
-import { G, SetupState, loadState, deleteSave, saveState } from '../state.js';
+import { G, SetupState, loadState, saveState, saveStateNow } from '../state.js';
 import { SLOTS, readSlot, removeSlot, activeSlot, setActiveSlot, storageMode, flushWrites } from '../storage.js';
 import { buildSchedules, genRecruits, buildUniverse, setupUserOOC, pickBalancedOOC } from '../season.js';
 import * as Acq from './acq.js';
@@ -165,11 +165,13 @@ export function deleteFromHome(slot) {
   }
 }
 
-export function newDynasty() {
-  if (confirm('Delete your entire dynasty? This cannot be undone.')) {
-    deleteSave();
-    flushWrites().then(function() { location.reload(); });
-  }
+// Exit to home: save this dynasty, then reload into the save-slot screen
+// (boot always opens there), where the player can continue, switch to another
+// slot or start a new dynasty. Nothing is deleted here; deleting lives on the
+// home screen's slot cards.
+export function exitToHome() {
+  try { if (G.teams && G.teams.length && typeof G.tid === 'number') saveStateNow(); } catch (e) { console.error('Exit save failed', e); }
+  flushWrites().then(function() { location.reload(); }, function() { location.reload(); });
 }
 
 // ═══════════════════════════════════════════════════════════

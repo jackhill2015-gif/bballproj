@@ -768,8 +768,8 @@ function handleAction(el) {
     case 'restore':
       restoreDynasty(toast);
       break;
-    case 'new-dynasty':
-      if (window.newDynasty) window.newDynasty();
+    case 'exit-home':
+      if (window.exitToHome) window.exitToHome();
       break;
     case 'build-ncaa':
       if (window.buildNCAA) window.buildNCAA();

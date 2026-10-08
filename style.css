@@ -349,7 +349,7 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
   margin-top: auto; background: none; border: none; color: var(--txt3);
   font-size: 12px; padding: 10px; min-height: 44px; cursor: pointer; text-align: left;
 }
-.nav-new:hover { color: var(--red); }
+.nav-new:hover { color: var(--txt); }
 #game-log-panel { margin-top: 10px; border-top: 1px solid var(--bdr); padding-top: 8px; }
 .log-head { font-size: 10px; font-weight: 700; color: var(--txt3); padding: 0 6px 6px; }
 #game-log { display: flex; flex-direction: column; gap: 4px; }
