@@ -22,25 +22,25 @@ var RV_SIZE = 10;
 
 // Voter behavior (spots in the poll); see findings.md "Rules"
 export var VOTE = {
-  lossUnranked: 7.0, loss1125: 5.5, lossTop10: 4.0,   // per loss, by opponent's rank
-  siteHome: 1.12, siteNeutral: 1.05, siteRoad: 0.8,    // where the loss happened
-  topBandScale: 0.35,                                 // ranks 1-5 fall about a third as far
-  winTop10: 1.5, win1125: 0.8, winUnranked: 0,         // per win
-  roadWin: 0.1,                                       // extra for a road win
-  unbeaten: 0,                                        // unbeaten after the week, with a win
-  meritPull: 0.15,                                    // share of the gap to the strength order closed each poll
-  noise: 1.0,                                         // voter spread (spots, sd)
-  topNoise: 0.3,                                      // the top 5 are much steadier
-  entrySpacing: 0.55,                                 // spots between unranked teams in line
-  brand: 2,                                           // efficiency points per prestige point in the voters' strength order
-  record: 0,                                          // efficiency points per 1.000 of win pct in that order
-  secondLoss: 1.0,                                    // a second loss in the same week costs this much more
-  meritRamp: 2,                                       // the strength pull is (1 + ramp) times stronger by the last week
-  brandBar: 60                                        // programs below this prestige get less benefit of the doubt
+  lossUnranked: 8.5, loss1125: 6.5, lossTop10: 4.5, // per loss, by opponent's rank
+  siteHome: 1.19, siteNeutral: 1.05, siteRoad: 0.77,  // where the loss happened
+  topBandScale: 0.12,  // ranks 1-5 fall far less than everyone else (see findings: parity)
+  winTop10: 1, win1125: 0.6, winUnranked: 0,          // per win
+  roadWin: 0.1,        // extra for a road win
+  unbeaten: 0,         // unbeaten after the week, with a win
+  meritPull: 0.12,     // share of the gap to the strength order closed each poll
+  meritRamp: 3,        // ... and (1 + ramp) times that by the last week
+  noise: 1,            // voter spread (spots, sd)
+  topNoise: 0.2,       // the top 5 are steadier
+  entrySpacing: 0.9,   // spots between unranked teams waiting in line
+  brand: 3.5,          // efficiency points per prestige point below brandBar
+  brandBar: 68,        // programs below this prestige get less benefit of the doubt
+  record: 100,         // efficiency points per 1.000 of win pct in the strength order
+  secondLoss: 0.9      // a second loss in the same week costs 0.9 of the first
 };
 
 // Preseason weights (z-scores): roster talent, last season's finish, brand
-export var PRESEASON = { talent: 1.0, lastFinal: 0.55, brand: 0.45, noise: 0.35 };
+export var PRESEASON = { talent: 1.0, lastFinal: 0.55, brand: 1.1, noise: 0.2 };
 
 var _hooks = [];
 // Calibration and tests watch every poll (ids before/after and each team's games)

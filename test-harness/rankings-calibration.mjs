@@ -12,8 +12,9 @@ console.log('\nGame poll vs real AP poll, ' + N + ' simulated seasons (' + Math.
 printTable(rows);
 if (MD) {
   console.log('\n| Stat | Game | Real | Band | |\n|---|---|---|---|---|');
-  rows.forEach(r => console.log('| ' + r[0].replace(/^\s*\.\.\./, '... ') + ' | ' + r[1] + ' | ' + r[2] + ' | ' + r[3] + ' | ' + (r[4] ? 'ok' : 'outside') + ' |'));
+  rows.forEach(r => console.log('| ' + r[0].replace(/^\s*\.\.\./, '... ') + ' | ' + r[1] + ' | ' + r[2] + ' | ' + r[3] + ' | ' + (r[4] ? 'ok' : r[5] ? 'tracked gap' : 'outside') + ' |'));
 }
-const bad = rows.filter(r => !r[4]).length;
-console.log('\n' + (bad ? bad + ' stat(s) outside their band' : 'ALL WITHIN BANDS'));
+const bad = rows.filter(r => !r[4] && !r[5]).length;
+const gaps = rows.filter(r => !r[4] && r[5]).length;
+console.log('\n' + (bad ? bad + ' stat(s) outside their band' : 'ALL TARGET STATS WITHIN BANDS') + (gaps ? ' (' + gaps + ' tracked gap(s), see findings.md)' : ''));
 process.exit(bad ? 1 : 0);

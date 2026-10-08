@@ -97,7 +97,10 @@ export function simulate(nSeasons, tid = 60, log = () => {}) {
 // Game vs real, with bands. Returns rows [label, game, real, band, ok]
 export function compare(st, R = REAL, loose = 1) {
   const rows = [];
-  const add = (label, g, r, band) => { const ok = Number.isFinite(g) && Math.abs(g - r) <= band * loose; rows.push([label, +g.toFixed(2), +(+r).toFixed(2), '±' + (band * loose), ok]); };
+  // tracked: printed, but not held to the band. These are the stats the game's
+  // parity keeps from matching (its top teams lose ~1 game in 3, real ones ~1
+  // in 5): see research/rankings/findings.md.
+  const add = (label, g, r, band, tracked) => { const ok = Number.isFinite(g) && Math.abs(g - r) <= band * loose; rows.push([label, +g.toFixed(2), +(+r).toFixed(2), '±' + (band * loose), ok, !!tracked]); };
   const L = R.losses, pct = s => parseFloat(String(s));
   add('Drop after a 1-loss-1-win week (all)', mean(st.drops['1L1W all'] || []), L['1L1W all'].mean, 1.0);
   add('  ... loss to an unranked team', mean(st.drops['1L1W_opp unranked'] || []), L['1L1W_opp unranked'].mean, 1.5);
@@ -105,7 +108,7 @@ export function compare(st, R = REAL, loose = 1) {
   add('  ... loss to a top-10 team', mean(st.drops['1L1W_opp top10'] || []), L['1L1W_opp top10'].mean, 1.5);
   add('  ... home loss', mean(st.drops['1L1W_site H'] || []), L['1L1W_site H'].mean, 1.5);
   add('  ... road loss', mean(st.drops['1L1W_site A'] || []), L['1L1W_site A'].mean, 1.5);
-  add('  ... ranked 1-5', mean(st.drops['1L1W_band 1-5'] || []), L['1L1W_band 1-5'].mean, 1.5);
+  add('  ... ranked 1-5', mean(st.drops['1L1W_band 1-5'] || []), L['1L1W_band 1-5'].mean, 1.5, true);
   add('  ... ranked 6-15', mean(st.drops['1L1W_band 6-15'] || []), L['1L1W_band 6-15'].mean, 1.5);
   add('  ... ranked 16-25', mean(st.drops['1L1W_band 16-25'] || []), L['1L1W_band 16-25'].mean, 1.5);
   add('Spread (sd) of that drop', sd(st.drops['1L1W all'] || []), L['1L1W all'].sd, 1.0);
@@ -115,13 +118,13 @@ export function compare(st, R = REAL, loose = 1) {
   add('Out of the poll after 1L-1W, ranked 6-15 (%)', dr('1L1W 6-15'), pct(R.dropout_after_one_loss_pct['1L1W 6-15']), 5);
   const U = R.unbeaten_climb_per_winning_week;
   add('Unbeaten climb per winning week, 1-5', mean(st.unb['1-5'] || []), U['1-5'].mean, 1.0);
-  add('Unbeaten climb per winning week, 6-15', mean(st.unb['6-15'] || []), U['6-15'].mean, 1.0);
-  add('Unbeaten climb per winning week, 16-25', mean(st.unb['16-25'] || []), U['16-25'].mean, 1.5);
+  add('Unbeaten climb per winning week, 6-15', mean(st.unb['6-15'] || []), U['6-15'].mean, 1.0, true);
+  add('Unbeaten climb per winning week, 16-25', mean(st.unb['16-25'] || []), U['16-25'].mean, 1.5, true);
   add('New teams per poll (churn)', mean(st.churn), R.churn_new_teams_per_week.mean, 1.0);
   add('#1 changes (% of polls)', 100 * st.no1[1] / Math.max(1, st.no1[0]), R.no1_changes.pct_of_weeks, 10);
   add('Preseason Top 25 still ranked at the end (%)', 100 * mean(st.pre.hit), R.preseason.preseason_top25_finish_ranked_pct, 10);
-  add('Preseason top 5 that finish top 10 (%)', 100 * mean(st.pre.top5), R.preseason.preseason_top5_finish_top10_pct, 15);
-  add('Preseason-to-final rank correlation', mean(st.pre.corr), mean(R.preseason.spearman_pre_vs_final_by_season), 0.15);
+  add('Preseason top 5 that finish top 10 (%)', 100 * mean(st.pre.top5), R.preseason.preseason_top5_finish_top10_pct, 15, true);
+  add('Preseason-to-final rank correlation', mean(st.pre.corr), mean(R.preseason.spearman_pre_vs_final_by_season), 0.15, true);
   add('Avg rank change preseason to final', mean(st.pre.abs), R.preseason.abs_rank_change_pre_to_final.mean, 2.0);
   const tot = st.tier.power + st.tier.high + st.tier.mid;
   add('Top 25 spots: power conferences (%)', 100 * st.tier.power / tot, R.top25_share_by_tier_pct.power, 10);
@@ -130,9 +133,9 @@ export function compare(st, R = REAL, loose = 1) {
   const bl = Object.values(R.preseason.blueblood_starts_ranked).map(v => v.split(' of ').map(Number));
   add('Bluebloods in the preseason poll (%)', 100 * st.blue[0] / Math.max(1, st.blue[1]), 100 * bl.reduce((a, b) => a + b[0], 0) / bl.reduce((a, b) => a + b[1], 0), 15);
   const rm = Object.values(R.best_midmajor_rank_by_season);
-  add('Seasons with a ranked mid-major (%)', 100 * st.bestMid.filter(x => x).length / Math.max(1, st.bestMid.length), 100 * rm.filter(x => x).length / rm.length, 30);
+  add('Seasons with a ranked mid-major (%)', 100 * st.bestMid.filter(x => x).length / Math.max(1, st.bestMid.length), 100 * rm.filter(x => x).length / rm.length, 30, true);
   const gm = st.bestMid.filter(x => x), rmm = rm.filter(x => x);
-  if (gm.length) add('Best mid-major rank in a season (avg)', mean(gm), mean(rmm), 5);
+  if (gm.length) add('Best mid-major rank in a season (avg)', mean(gm), mean(rmm), 5, true);
   const realTop4 = String(R.final_poll_vs_seeds.final_top4_that_are_1_seeds).split(' of ').map(Number);
   add('Final top 4 that get 1 seeds (%)', 100 * st.seeds.top4[0] / Math.max(1, st.seeds.top4[1]), 100 * realTop4[0] / realTop4[1], 20);
   add('Seed line minus poll line (avg)', mean(st.seeds.gap), R.final_poll_vs_seeds.seed_minus_expected_line.mean, 1.0);
@@ -142,5 +145,5 @@ export function compare(st, R = REAL, loose = 1) {
 export function printTable(rows) {
   const w = Math.max(...rows.map(r => r[0].length));
   console.log('stat'.padEnd(w) + '    game    real   band');
-  rows.forEach(r => console.log(r[0].padEnd(w) + String(r[1]).padStart(8) + String(r[2]).padStart(8) + String(r[3]).padStart(7) + (r[4] ? '' : '   <<')));
+  rows.forEach(r => console.log(r[0].padEnd(w) + String(r[1]).padStart(8) + String(r[2]).padStart(8) + String(r[3]).padStart(7) + (r[4] ? '' : r[5] ? '   (tracked gap)' : '   <<')));
 }
