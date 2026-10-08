@@ -13,8 +13,13 @@ Claim a job before you start so two agents don't edit the same screens. Remove y
 
 | Who | Job | Files / screens touched | Since |
 |-----|-----|-------------------------|-------|
+<<<<<<< HEAD
 | Claude | Polish batch: school display names (Muse list), OT in brackets, one engine for watched games, poll top-5 retune, national leaders + Player of the Year race, real program strength research (proposal only) | constants.js (names), teamcolors.js keys, tournament.js + views/bracket.js, simulation.js + ui.js (live game), poll.js, new leaders view, views/help.js, research/, test-harness | 2026-10-08 |
 | Muse | Anonymous Reddit-beta link via Cloudflare Pages (no game code changes) — PAUSED, Jack said later | HANDOFF.md only | 2026-10-07 |
+=======
+| Muse | Anonymous Reddit-beta link via Cloudflare Pages (no game code changes) — PAUSED, Jack said later | HANDOFF.md only | 2026-10-07 |
+| Muse | Swipe between main tabs on phones | swipe.js (new), index.html, sw.js, style.css, HANDOFF.md | 2026-10-08 |
+>>>>>>> 299957f (HANDOFF: Muse claims swipe-between-tabs job; drop duplicate paused row)
 
 ## Messages
 
