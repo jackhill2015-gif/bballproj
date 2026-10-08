@@ -12,7 +12,7 @@ import { DIFF_DESC, calcSchoolPrestige, calcExpectations, ALL_TEAMS, teamsFor } 
 import { ri, ge, txt, getTier, getTOvr, fR } from '../utils.js';
 import { G, SetupState, loadState, saveState, saveStateNow } from '../state.js';
 import { SLOTS, readSlot, removeSlot, activeSlot, setActiveSlot, storageMode, flushWrites } from '../storage.js';
-import { buildSchedules, genRecruits, buildUniverse, setupUserOOC, pickBalancedOOC } from '../season.js';
+import { buildSchedules, buildUniverse, setupUserOOC, pickBalancedOOC } from '../season.js';
 import * as Acq from './acq.js';
 import { teamLogo } from '../ui.js';
 
@@ -442,7 +442,7 @@ window.swapNC = swapNC;
 export function startDynasty() {
   if (SetupState.NC_PICKS.length < 10) autoGenNC();
   setupUserOOC();
-  genRecruits();
+  G.recruits = []; // the first recruit pool opens in the offseason
 
   // Calculate season expectations
   var t = G.teams[G.tid];

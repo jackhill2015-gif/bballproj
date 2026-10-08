@@ -3,7 +3,7 @@
 //  Versioned save system with automatic migrations.
 // ═══════════════════════════════════════════════════════════
 
-import { getTOvr, getOvr, rawOvr, scaleOvr } from './utils.js';
+import { getTOvr, getOvr, rawOvr, scaleOvr, freshS } from './utils.js';
 import { RECRUIT_STATE_POOL, calcSchoolPrestige, COACH_FN, COACH_LN, teamsFor } from './constants.js';
 import { readSlot, writeSlot, removeSlot, activeSlot } from './storage.js';
 import { ensurePoll } from './poll.js';
@@ -323,27 +323,49 @@ function _slimConfTourneys(cts) {
   return out;
 }
 
-function _slimRecruits(recruits) {
-  return (recruits || []).map(function(r) {
+// The recruit pool (about 1,500 in the offseason, none in season) is packed
+// column-wise like rosters. Unsigned recruits keep their race (rivals as
+// team ids); signed ones drop it. Empty stat lines, minutes and morale are
+// rebuilt on load.
+var _RECRUIT_DROP = { _schools: 1, _schoolsPhase: 1, s: 1, mins: 1, morale: 1 };
+function _packRecruits(recruits) {
+  var pk = _packer();
+  var rows = (recruits || []).map(function(r) {
     var slim = {};
-    Object.keys(r).forEach(function(k) {
-      if (k === '_schools' || k === '_schoolsPhase') return; // transient UI cache
-      slim[k] = r[k];
-    });
+    Object.keys(r).forEach(function(k) { if (!_RECRUIT_DROP[k]) slim[k] = r[k]; });
     if (r.signed >= 0) {
       // Finalized recruit: recruiting is over, drop per-school bidding state.
       // (interest is kept — calcUserBid reads it unguarded.)
       delete slim.rivals;
       delete slim.points;
+    } else if (slim.rivals) {
+      slim.rivals = slim.rivals.map(function(rv) { return rv && typeof rv === 'object' ? rv.tid : rv; });
     }
-    return slim;
+    return pk.pack(slim);
+  });
+  return { schemas: pk.schemas, rows: rows };
+}
+function _unpackRecruits(packed) {
+  var un = _unpacker(packed.schemas || []);
+  return (packed.rows || []).map(un);
+}
+// After teams are labeled: rival ids back to { tid, name }, empty season line
+function _rehydrateRecruits() {
+  G.recruits.forEach(function(r) {
+    if (r.rivals) r.rivals = r.rivals.map(function(rv) {
+      if (rv && typeof rv === 'object') return rv;
+      return { tid: rv, name: G.teams[rv] ? G.teams[rv].name : '' };
+    });
+    if (!r.s) r.s = freshS();
+    if (typeof r.mins !== 'number') r.mins = 0;
+    if (typeof r.morale !== 'number') r.morale = 50;
   });
 }
 
 // ── v10: compact roster packing. Every team's roster is saved (the whole
 // league must survive Continue). Players are packed column-wise against a
 // shared key table so 365 x 13 players stays well inside localStorage limits.
-function _packRosters(teams) {
+function _packer() {
   var schemas = [], schemaIdx = {};
   function schemaFor(o) {
     var keys = Object.keys(o);
@@ -360,14 +382,9 @@ function _packRosters(teams) {
     }
     return row;
   }
-  return {
-    schemas: schemas,
-    rosters: teams.map(function(t) { return (t.rost || []).map(pack); })
-  };
+  return { schemas: schemas, pack: pack };
 }
-
-function _unpackRosters(packed) {
-  var schemas = packed.schemas || [];
+function _unpacker(schemas) {
   function unpack(row) {
     var keys = schemas[row[0]], o = {};
     for (var i = 0; i < keys.length; i++) {
@@ -376,6 +393,18 @@ function _unpackRosters(packed) {
     }
     return o;
   }
+  return unpack;
+}
+function _packRosters(teams) {
+  var pk = _packer();
+  return {
+    schemas: pk.schemas,
+    rosters: teams.map(function(t) { return (t.rost || []).map(pk.pack); })
+  };
+}
+
+function _unpackRosters(packed) {
+  var unpack = _unpacker(packed.schemas || []);
   return (packed.rosters || []).map(function(r) { return (r || []).map(unpack); });
 }
 
@@ -414,7 +443,7 @@ function _writeSave() {
       }),
       // v10: every roster in the league (user's included), packed
       rosters:_packRosters(G.teams),
-      recruits:_slimRecruits(G.recruits),
+      recruitsP:_packRecruits(G.recruits),
       bracket:_slimBracket(G.bracket),
       confTourneys:_slimConfTourneys(G.confTourneys),
       ncaaOpening:_slimOpening(G.ncaaOpening),
@@ -512,7 +541,7 @@ export function loadState() {
     G.confTitles=s.confTitles||0;G.championships=s.championships||0;
     G.logs=s.logs||[];G.history=s.history||[];G.leagueChamps=s.leagueChamps||[];
     G.records=s.records||null;
-    G.recruits=s.recruits||[];
+    G.recruits=s.recruitsP?_unpackRecruits(s.recruitsP):(s.recruits||[]);
     // S9: restore persisted prestige (v7+); older saves get the v7 migration,
     // and anything else falls back to the new-game derivation
     if (typeof s.prestige === 'number') {
@@ -560,6 +589,7 @@ export function loadState() {
       var td = _tbl[i]; if (!td) return;
       t.name = td.n; t.conf = td.c; t.baseOvr = td.o; t.ineligible = !!td.x;
     });
+    _rehydrateRecruits();
 
     // Teams
     var _rosters = s.rosters ? _unpackRosters(s.rosters) : null;

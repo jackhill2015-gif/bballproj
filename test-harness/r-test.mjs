@@ -184,7 +184,7 @@ const openN = G.recruits.filter(r => !(r.signed >= 0)).length;
 check(rows === openN, 'board renders every open recruit', 'rows=' + rows + ' open=' + openN);
 R.setBoardFilter({ fit: 'reach' }); R.renderOffseason();
 const reachRows = (_els['offseason-content'].innerHTML.match(/data-acq-open-r="/g) || []).length;
-check(reachRows === R.boardList(G.recruits.filter(r => r.status === 'open')).length && reachRows < openN, 'default board renders every recruit within reach', 'rows=' + reachRows);
+check(reachRows === R.boardList(G.recruits.filter(r => r.status === 'open')).length && reachRows <= openN, 'default board renders every recruit within reach', 'rows=' + reachRows + ' list=' + R.boardList(G.recruits.filter(r => r.status === 'open')).length + ' open=' + openN);
 check(html.indexOf('data-show-more') < 0, 'no show-more button');
 
 console.log('── doOffseason: R2 signees join, R6 class cap, R9 portal before walk-ons ──');

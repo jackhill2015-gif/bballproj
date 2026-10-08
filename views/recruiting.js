@@ -20,6 +20,7 @@ import { TEAM_STATES, STATE_TO_REGION, STATE_NAMES, SCHOOL_RECRUIT_GATES, COACH_
 import { G, LS, SetupState, saveState, calcRecruitingBudget } from '../state.js';
 import { renderPortal, genPortalEntrants, registerPortalCallbacks, adjustOffer, pivotOffer, advancePortalStage, advanceFromPortal, setPortalFilter, togglePortalDetail, PORTAL_OFFER_STEP, setPortalTab, openPortalPage, openPortalFilter, clearPortalFilter } from './portal.js';
 import { genPlayer } from '../simulation.js';
+import { cpuRoomMap, cpuLanding, rankedTeams } from '../recruitpool.js';
 import { buildRetentionAsks, renderRetention, decideRetention, applyRetention, retentionPending, rollNotReturning } from './retention.js';
 import { teamLogo } from '../ui.js';
 import * as Battle from './battle.js';
@@ -388,14 +389,32 @@ function refundRecruitPoints(r) {
   delete r._schools; delete r._schoolsPhase;
 }
 
+// CPU schools only sign while they have room (recruitpool.js). The room
+// map is built when a round starts and counts down as recruits sign.
+var _cpuRoom = null, _ranked = null, _rankOf = null;
+function startCpuRound() {
+  _cpuRoom = cpuRoomMap(); _ranked = rankedTeams(); _rankOf = {};
+  // bids use the ranking score, as the odds on the recruit page do
+  G.teams.slice().sort(function(a, b) { return b.pts - a.pts; }).forEach(function(t, i) { _rankOf[t.id] = i + 1; });
+}
+// His CPU suitors' signing-day bids (same rule as calcSchoolChances)
+function rivalBids(r) {
+  return (r.rivals || []).map(function(rv) {
+    var team = G.teams[rv.tid]; if (!team) return null;
+    var rk = _rankOf[rv.tid];
+    var pw = rk <= 10 ? 1.8 : rk <= 25 ? 1.4 : rk <= 64 ? 1.0 : 0.65;
+    var sb = r.stars >= 5 ? 1.6 : r.stars >= 4 ? 1.3 : r.stars >= 3 ? 1.0 : 0.7;
+    var seed = ((r.id * 7 + rv.tid * 13) % 100) / 100;
+    return { tid: rv.tid, name: rv.name, bid: (seed * 30 + 20) * pw * sb * PHASES[3].cpuAgg * (1 + getGeoBonus(getTeamState(team), r.homeState)) };
+  }).filter(Boolean);
+}
 function cpuWeightedSign(r) {
-  var schools = getSchoolChances(r).filter(function(s) { return !s.isUser; });
-  if (!schools.length) return null;
-  var tot = 0, i;
-  for (i = 0; i < schools.length; i++) tot += schools[i].bid;
-  var roll = Math.random() * tot, acc = 0, win = schools[0];
-  for (i = 0; i < schools.length; i++) { acc += schools[i].bid; if (roll <= acc) { win = schools[i]; break; } }
-  return win;
+  if (!_cpuRoom) startCpuRound();
+  return cpuLanding(r, getSchoolChances(r).filter(function(s) { return !s.isUser; }), _cpuRoom, 'weighted', _ranked);
+}
+function cpuBestSign(r, schools) {
+  if (!_cpuRoom) startCpuRound();
+  return cpuLanding(r, schools.filter(function(s) { return !s.isUser; }), _cpuRoom, 'best', _ranked);
 }
 
 // Late risers: if the user's class is thin on Signing Day, 2 unheralded
@@ -439,6 +458,7 @@ export function advanceRecruitPhase() {
     if (r.status === 'open') r._prevPct = userPctOf(r);
   });
   beginReport('recruit', 'Recruiting, ' + phase.name.toLowerCase());
+  startCpuRound();
   var res = Battle.runEarlyRound({
     targets: G.recruits,
     isOpen: function(r) { return r.status === 'open'; },
@@ -503,19 +523,23 @@ export function resolveRecruitingClass() {
   if (G.offseasonStep === 'signed' || !G.recruits.some(function(r) { return r.status === 'open'; })) return; // already resolved on signing day
   if (G.recruitPhase < 3) { while (G.recruitPhase < 3 && G.recruitPhase > 0) advanceRecruitPhase(); }
   beginReport('recruit', 'Signing day');
+  startCpuRound();
   G.recruits.forEach(function(r) {
     if (r.status !== 'open') return;
     var pursued = (r.points || 0) > 0 || G.recruitTargets.indexOf(r.id) >= 0;
-    var ub = calcUserBid(r); var schools = calcSchoolChances(r);
-    var best = schools.filter(function(s) { return !s.isUser; }).sort(function(a, b) { return b.bid - a.bid; })[0];
-    var bb = best ? best.bid : 0;
-    var win = r.points >= 5 && Math.random() < signChanceFromBids(ub, bb);
+    var ub = calcUserBid(r);
+    // Odds use his whole race; where he goes when you miss depends on who has room
+    var schools = (r.points || 0) > 0 ? calcSchoolChances(r) : null;
+    var top = schools ? schools.filter(function(s) { return !s.isUser; }).sort(function(a, b) { return b.bid - a.bid; })[0] : null;
+    var win = r.points >= 5 && Math.random() < signChanceFromBids(ub, top ? top.bid : 0);
+    var best = win && openSpots() > 0 ? null : cpuBestSign(r, schools || rivalBids(r));
     if (win && openSpots() <= 0) { noteSigning('recruit', r, 'full'); if (best) { r.signed = best.tid; r.status = 'gone'; r.goneTo = best.name; } else { r.status = 'gone'; r.signed = -1; } }
     else if (win) { r.signed = G.tid; r.status = 'committed'; noteSigning('recruit', r, 'you'); addLog('ev', G.gi, r.name + ' (' + r.stars + '\u2605) signs with you.'); }
     else if (best) { r.signed = best.tid; r.status = 'gone'; r.goneTo = best.name; if (pursued) noteSigning('recruit', r, 'other', best.name); }
     else { r.status = 'gone'; r.signed = -1; }
     r.points = 0;
   });
+  _cpuRoom = null;
   var tot = G.recruits.filter(function(r) { return r.signed === G.tid; });
   toast('Class finalized: ' + tot.length + ' signee' + (tot.length !== 1 ? 's' : ''), tot.length >= 3 ? 'var(--grn)' : 'var(--gld)');
   G.recruitPhase = 0; G.recruitingBudget = 0; G.recruitingSpent = 0; G.recruitTargets = [];
@@ -1490,6 +1514,11 @@ var RSHOW_LABEL = { reach: 'Within reach', all: 'Everyone', start: 'Would start'
 var RSORT_LABEL = { rank: 'National rank', ovr: 'Overall', pot: 'Potential', stars: 'Stars' };
 function recruitShow() { return _filter.targets ? 'targets' : _filter.near ? 'near' : (_filter.fit || 'reach'); }
 
+// Within reach lists at most REACH_ROWS + REACH_ROWS_PER_SPOT x open spots
+// (the pool has about 4 recruits per school, and most of it is within reach
+// of somebody); anyone you're pursuing is always listed.
+export var REACH_ROWS = 40, REACH_ROWS_PER_SPOT = 10;
+export function reachRows() { return REACH_ROWS + REACH_ROWS_PER_SPOT * openSpots(); }
 // The Board's recruits for the current filters, in display order. Within
 // reach (the default) also keeps anyone you're already pursuing, and with
 // the default sort shows the best players first.
@@ -1518,6 +1547,10 @@ export function boardList(open) {
     if (x < y) return -_filter.dir; if (x > y) return _filter.dir;
     return a.natRank - b.natRank;
   });
+  if (reach) {
+    var cap = reachRows(), n = 0;
+    filtered = filtered.filter(function(r) { return isPursuing(r) || n++ < cap; });
+  }
   return filtered;
 }
 // Test hooks: the odds the recruit page shows; set Board filters without the UI

@@ -226,9 +226,10 @@ export function rollEvents(weekNum) {
     var rId = targets[idx];
     var r = G.recruits.find(function(rec) { return rec.id === rId; });
     if (r && r.status === 'open' && r.rivals && r.rivals.length) {
-      var rivalTid = r.rivals[ri(0, r.rivals.length - 1)];
+      var rv = r.rivals[ri(0, r.rivals.length - 1)];
+      var rivalTid = typeof rv === 'object' ? rv.tid : rv;
       var rivalTeam = G.teams[rivalTid];
-      r.status = 'gone'; r.signed = rivalTid;
+      r.status = 'gone'; r.signed = rivalTid; if (rivalTeam) r.goneTo = rivalTeam.name;
       addLog('ev', weekNum, '<b>' + r.name + '</b> (' + r.stars + '\u2605) commits to <b>' + (rivalTeam ? rivalTeam.name : 'a rival') + '</b>. Tough loss on the trail.');
     }
   });

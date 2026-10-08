@@ -171,7 +171,10 @@ export function renderHelp() {
     + 'concentrate points on a few prospects or spread them, watch the odds move, and drop out after '
     + 'round one for a 75% refund. The odds shown are your real chance to sign him on signing day, '
     + 'not a flavor number. Signing day ends with class rankings for every school, for recruiting '
-    + 'classes and transfer classes alike.');
+    + 'classes and transfer classes alike. Each class has about four prospects for every school, so '
+    + 'every program can replace the players it loses, and other schools only sign as many as they '
+    + 'have room for (13 to 15 players). The Board opens on Within reach: the best prospects you can '
+    + 'land, up to 40 plus 10 per open spot; Show everyone lists the whole class.');
 
   h += sec('Job security',
     'Every season comes with a win expectation based on your roster. Finish below the danger line '

@@ -16,6 +16,7 @@ import {
 } from './utils.js';
 import { G, LS, SetupState, saveState } from './state.js';
 import { genPlayer, genWalkon, simGame, calcGrowth } from './simulation.js';
+import { genRecruitPool, recruitToPlayer, fillCpuClasses, cpuClassSize, balanceCpuClasses, CPU_MIN_ROSTER, CPU_CLASS_CAP } from './recruitpool.js';
 import { recordGameMorale } from './morale.js';
 import { rollEvents } from './events.js';
 import {
@@ -66,8 +67,10 @@ export function buildUniverse(align) {
   G.alignYr0 = G.yr; // first season of a new dynasty (home card season number)
   teamsFor(G.align).forEach(function(td, i) {
     var rost = [];
-    for (var j = 0; j < 13; j++) {
-      rost.push(genPlayer(td.o, POS[j % 5], CLS[ri(0, 3)]));
+    // 13-15 players, the size CPU programs keep (recruitpool.js cpuTarget);
+    // the 14th and 15th are end-of-bench players
+    for (var j = 0, nr = 13 + ((i * 7 + G.yr) % 3); j < nr; j++) {
+      rost.push(genPlayer(j < 13 ? td.o : td.o - 6, POS[j % 5], CLS[ri(0, 3)]));
     }
     fixMins(rost);
     var strat = getTeamStyle(td.c, td.o);
@@ -330,51 +333,11 @@ export function swapOOC(slot, newTeamId) {
 //  RECRUITING
 // ═══════════════════════════════════════════════════════════
 
+// The pool (recruitpool.js): about 4.2 recruits per team, stars by national
+// rank, rival schools near each recruit's level. Generated when recruiting
+// opens each offseason; there is no pool during the season.
 export function genRecruits() {
-  G.recruits = [];
-  // Star distribution: 10x5★, 40x4★, 100x3★, 150x2★, 100x1★ = 400 total
-  var starDist = [];
-  var i;
-  for (i = 0; i < 10; i++) starDist.push(5);
-  for (i = 0; i < 40; i++) starDist.push(4);
-  for (i = 0; i < 100; i++) starDist.push(3);
-  for (i = 0; i < 150; i++) starDist.push(2);
-  for (i = 0; i < 100; i++) starDist.push(1);
-
-  for (i = 0; i < starDist.length; i++) {
-    var star = starDist[i];
-    var base = star === 5 ? ri(82, 92) : star === 4 ? ri(74, 84) : star === 3 ? ri(66, 76) : star === 2 ? ri(58, 68) : ri(50, 60);
-    var r = genPlayer(base, POS[ri(0, 4)], 'FR');
-    r.id = i; r.stars = star; r.interest = ri(0, 25); r.signed = -1;
-    r.points = 0; r.status = 'open';
-    r.homeState = RECRUIT_STATE_POOL[ri(0, RECRUIT_STATE_POOL.length - 1)];
-    G.recruits.push(r);
-  }
-  // Sort by OVR descending, then assign national rank
-  G.recruits.sort(function(a, b) { return b.ovr - a.ovr; });
-  G.recruits.forEach(function(r, idx) { r.id = idx; r.natRank = idx + 1; });
-  // Assign positional rank
-  var posCount = {};
-  G.recruits.forEach(function(r) {
-    if (!posCount[r.pos]) posCount[r.pos] = 0;
-    posCount[r.pos]++;
-    r.posRank = posCount[r.pos];
-  });
-  // Assign persistent rival schools (3-5 CPU schools interested in each recruit)
-  var ranked = G.teams.slice().sort(function(a, b) { return b.pts - a.pts; });
-  G.recruits.forEach(function(r) {
-    var rivalCount = ri(3, 5);
-    // Higher-star recruits attract higher-ranked schools
-    var poolSize = r.stars >= 5 ? 25 : r.stars >= 4 ? 50 : r.stars >= 3 ? 100 : r.stars >= 2 ? 200 : G.teams.length;
-    var pool = ranked.slice(0, poolSize).filter(function(t) { return t.id !== G.tid; });
-    // Shuffle and pick
-    for (var j = pool.length - 1; j > 0; j--) {
-      var k = ri(0, j); var tmp = pool[j]; pool[j] = pool[k]; pool[k] = tmp;
-    }
-    r.rivals = pool.slice(0, rivalCount).map(function(t) {
-      return { tid: t.id, name: t.name };
-    });
-  });
+  genRecruitPool();
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -978,6 +941,8 @@ export function beginOffseason() {
   if (rs) rs.classList.remove('open');
   G.phase = 'offseason';
   runDraft();
+  // An old save's uneven classes even out (no-op in a normal league)
+  G.jucoAdds = balanceCpuClasses();
 
   // Calculate departing players
   var t = G.teams[G.tid];
@@ -1028,6 +993,11 @@ export function addWalkons(t) {
 export function doOffseason() {
   var t = G.teams[G.tid];
 
+  // No pool yet (an offseason that skipped recruiting): make this year's
+  if (!G.recruits || !G.recruits.length) genRecruits();
+  // Each CPU school's class size, planned before anyone leaves
+  var _plan = {};
+  G.teams.forEach(function(tm) { if (tm.id !== G.tid) _plan[tm.id] = cpuClassSize(tm); });
   // Resolve recruiting class from point allocations
   if (window.resolveRecruitingClass) window.resolveRecruitingClass();
 
@@ -1080,7 +1050,7 @@ export function doOffseason() {
   t.rost = t.rost.filter(function(p) { var keep = p.cls !== 'SR' || p._rsKeep; delete p._rsKeep; return keep; });
 
   // Add commits (R6: class-size cap enforced)
-  var CLASS_SIZE_CAP = 8;
+  var CLASS_SIZE_CAP = CPU_CLASS_CAP;
   commits.sort(function(a, b) { return b.ovr - a.ovr; });
   var _croom = Math.max(0, 15 - t.rost.length);
   // Your class is already limited to one signee per open spot, so only room applies
@@ -1136,37 +1106,37 @@ export function doOffseason() {
       _sig.sort(function(a, b) { return b.ovr - a.ovr; });
       var _sroom = Math.max(0, 15 - tm.rost.length);
       _sig.slice(0, Math.min(CLASS_SIZE_CAP, _sroom)).forEach(function(r) {
-        var _np = JSON.parse(JSON.stringify(r));
-        _np.s = freshS(); _np.cls = 'FR'; _np.mins = 0;
+        var _np = recruitToPlayer(r);
+        _np.s = freshS();
         tm.rost.push(_np);
+        _plan[tm.id]--;
       });
       // R9: portal pickups resolve globally AFTER all CPU rosters are rebuilt
     }
   });
+  // Late signings: schools still under their target sign recruits nobody took
+  fillCpuClasses(_plan, freshS);
   // Every remaining entrant resolves through its suitor field in one global
   // pass (user pitches resolved immediately at pitch time). Teams only take
   // transfers they need; unclaimed entrants stay on their old rosters.
   if (window._resolvePortalCPU && window._resolvePortalCPU()) _userTouchedByPortal = true;
+  // Schools the portal left short sign leftover recruits; a generated
+  // freshman at the school's level is the last resort (rare: the pool has
+  // a few hundred more recruits than schools need)
+  var _short = {};
+  G.teams.forEach(function(tm) { if (tm.id !== G.tid) _short[tm.id] = CPU_MIN_ROSTER - tm.rost.length; });
+  fillCpuClasses(_short, freshS);
+  G.topUps = 0;
   G.teams.forEach(function(tm) {
     if (tm.id === G.tid) return;
-    while (tm.rost.length < 10) {
+    while (tm.rost.length < CPU_MIN_ROSTER) {
       var np2 = genPlayer(tm.baseOvr, POS[ri(0, 4)], 'FR');
       np2.s = freshS();
-      tm.rost.push(np2);
+      tm.rost.push(np2); G.topUps++;
     }
     fixMins(tm.rost);
   });
   if (_userTouchedByPortal) fixMins(G.teams[G.tid].rost);
-  // R9 repair: portal poaching may have shrunk already-processed CPU rosters — refill them
-  G.teams.forEach(function(tm) {
-    if (tm.id === G.tid || tm.rost.length >= 10) return;
-    while (tm.rost.length < 10) {
-      var _w = genPlayer(tm.baseOvr, POS[ri(0, 4)], 'FR');
-      _w.s = freshS();
-      tm.rost.push(_w);
-    }
-    fixMins(tm.rost);
-  });
   if (window._clearPortalState) window._clearPortalState();
 
   buildSchedules();
@@ -1181,7 +1151,8 @@ export function doOffseason() {
   G.ncPicks = null;
   setupUserOOC();
 
-  genRecruits();
+  // The class is on rosters now; next year's pool opens with recruiting
+  G.recruits = [];
 
   // Calculate season expectations
   var confTeams = G.teams.filter(function(x) { return x.conf === G.teams[G.tid].conf; });

@@ -29,7 +29,11 @@ for (const [label, tid] of [['low-prestige', low], ['mid-major', mid], ['blueblo
   console.log(`  ${label} ${G.teams[tid].name} (prestige ${sp}, budget ${G.recruitingBudget}, open ${SG.openSpots()}): ${reach.length} of ${open.length} within reach, 5-stars ${reachFives}/${fives}, avg stars ${avgStars(reach)} vs ${avgStars(open)}`);
   check(reach.length > 0 && reach.length <= open.length, `${label}: default view is part of the board`);
   check(reach.every(r => R.withinReach(r)), `${label}: default view only has recruits within reach`);
-  check(open.filter(r => !reach.includes(r)).every(r => !R.withinReach(r)), `${label}: everyone within reach is shown`);
+  // the best within reach, up to 40 + 10 per open spot (the pool is ~4 per school)
+  const allReach = open.filter(r => R.withinReach(r));
+  check(reach.length === Math.min(allReach.length, R.reachRows()), `${label}: within reach is capped at ${R.reachRows()} rows (${reach.length} of ${allReach.length})`);
+  const worstShown = reach.length ? reach[reach.length - 1].ovr : 0;
+  check(allReach.filter(r => !reach.includes(r)).every(r => r.ovr <= worstShown), `${label}: the ones left off are no better than the ones shown`);
   check(reach.every((r, i) => i === 0 || reach[i - 1].ovr >= r.ovr), `${label}: best players first`);
   // a top target's worth of points: 2 x budget / open spots, at most the budget
   const share = Math.min(G.recruitingBudget, 2 * G.recruitingBudget / Math.max(1, SG.openSpots()));
