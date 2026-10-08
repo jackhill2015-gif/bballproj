@@ -17,6 +17,7 @@ import { closeSheet } from './views/sheet.js';
 import { openDevReport } from './views/devreport.js';
 import { getUiPrefs, setUiPrefs } from './views/ui-prefs.js';
 import { injectTips, dismissTip, resetTips } from './views/tips.js';
+import { TEAM_COLORS } from './teamcolors.js';
 
 // ── Late-Binding Registry ────────────────────────────────
 var _views = {
@@ -368,7 +369,7 @@ export function navTo(v) {
 
 export function refreshView() {
   var v = SetupState.ACTIVE_VIEW;
-  if (v === 'dashboard' && _views.renderDashboard) _views.renderDashboard();
+  if (v === 'dashboard' && _views.renderDashboard) { _views.renderDashboard(); accentDashHeader(); }
   else if (v === 'roster' && _views.renderRoster) _views.renderRoster();
   else if (v === 'stats' && _views.renderStats) _views.renderStats();
   else if (v === 'schedule' && _views.renderScheduleView) {
@@ -451,7 +452,55 @@ export function teamInitial(name) {
   return (String(name || '?').trim().charAt(0) || '?').toUpperCase();
 }
 export function teamLogo(name, cls) {
-  return '<span class="team-logo' + (cls ? ' ' + cls : '') + '" aria-hidden="true">' + teamAbbr(name) + '</span>';
+  var st = teamBadgeStyle(name);
+  return '<span class="team-logo' + (cls ? ' ' + cls : '') + '"' + (st ? ' style="' + st + '"' : '') + ' aria-hidden="true">' + teamAbbr(name) + '</span>';
+}
+// Team colors for the small school badges (teamcolors.js, ESPN data).
+// Tinted badge; text uses the primary when readable, else secondary, else the
+// neutral --txt2. Readability is checked against the current theme background.
+function teamColorsFor(name) {
+  var c = TEAM_COLORS && TEAM_COLORS[name];
+  return (c && c[0]) ? c : null;
+}
+function hexLum(hex) {
+  var h = String(hex || '').replace('#', '');
+  if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+  var r = parseInt(h.slice(0, 2), 16) / 255, g = parseInt(h.slice(2, 4), 16) / 255, b = parseInt(h.slice(4, 6), 16) / 255;
+  function ch(v) { return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }
+  return 0.2126 * ch(r) + 0.7152 * ch(g) + 0.0722 * ch(b);
+}
+function contrastOk(fg, bg) {
+  var l1 = hexLum(fg), l2 = hexLum(bg);
+  var hi = Math.max(l1, l2), lo = Math.min(l1, l2);
+  return (hi + 0.05) / (lo + 0.05) >= 4.5;
+}
+function teamBadgeStyle(name) {
+  var c = teamColorsFor(name);
+  if (!c) return '';
+  var bg = themeIsDark() ? '#14181d' : '#ffffff';
+  var fg = contrastOk(c[0], bg) ? c[0] : (c[1] && contrastOk(c[1], bg) ? c[1] : '');
+  var st = 'background:color-mix(in srgb,' + c[0] + ' 16%,transparent)';
+  if (fg) st += ';color:' + fg;
+  return st;
+}
+// Subtle accent on your own team's dashboard header: a thin bar in the
+// school's primary color. Injected at render time so views/setup.js
+// (Claude's lane) stays untouched.
+function accentDashHeader() {
+  if (typeof document === 'undefined' || !document.querySelector) return;
+  var el = document.querySelector('.dash-team');
+  if (!el) return;
+  var old = el.querySelector('.dash-accent');
+  if (old) old.remove();
+  var t = (typeof G !== 'undefined' && G && G.teams && G.teams[G.tid]) || null;
+  if (!t) return;
+  var c = teamColorsFor(t.name);
+  if (!c) return;
+  var bar = document.createElement('div');
+  bar.className = 'dash-accent';
+  bar.setAttribute('aria-hidden', 'true');
+  bar.style.background = c[0];
+  el.insertBefore(bar, el.firstChild);
 }
 export function teamAbbr(name) {
   return String(name || '???').replace(/[^A-Za-z]/g, '').slice(0, 4).toUpperCase() || '???';

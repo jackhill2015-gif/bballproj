@@ -1702,3 +1702,7 @@ table.ups td { vertical-align: middle; }
 .tip-gotit { flex: none; }
 /* Top-bar logo goes Home */
 .tb-brand[data-action] { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+
+/* Team color accents: tinted school badges + dashboard header bar. */
+.team-logo { display: inline-block; padding: 1px 6px; border-radius: 4px; }
+.dash-accent { height: 3px; border-radius: 2px; margin: 0 0 10px; max-width: 280px; }
