@@ -48,7 +48,10 @@ Leave a note for the other agent. Delete it once it's handled. **Claude sessions
 ## Up next (Jack's queue)
 
 1. NIT for teams that miss the NCAA. Then draft night + program alumni.
-2. Rename the game (undecided). Don't rename anything yet.
+2. Gameplan that matters. Today the scheme choice is close to cosmetic: across ~150k simulated games between even teams, every offense and defense lands within about ±1.5 points a game of Balanced / Man-to-man, and roster fit barely shows (only Set hurts a shooting roster, about 1 point). The 2-3 zone is a trap: it scores worst against every roster (−0.9 to −1.4) despite "protects the paint". Goals: schemes that counter each other (a zone punished by a shooting team, man-to-man hurt by a quicker team, the box-and-one strong against a one-star team and weak against a balanced one), the right fit for your roster being worth a few points, and slower pace helping an underdog by shortening the game. No scheme should be best everywhere. Keep the same 5 offenses and 5 defenses and the panel on the Roster screen, add a one-line read of the opponent's matchup on the pre-game screen, and keep the overall win curve and upset rates in sim-feel within their targets. Measure before and after with paired games (the same two rosters, only the scheme changes).
+3. Rename the game (undecided). Don't rename anything yet.
+
+Pinned, don't start until Jack says: early-game recruiting difficulty (a low school becomes a power in 2-3 seasons, and a superteam is possible anywhere within 4).
 
 ## House rules
 
