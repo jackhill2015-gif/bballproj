@@ -13,13 +13,8 @@ Claim a job before you start so two agents don't edit the same screens. Remove y
 
 | Who | Job | Files / screens touched | Since |
 |-----|-----|-------------------------|-------|
-<<<<<<< HEAD
 | Claude | Polish batch: school display names (Muse list), OT in brackets, one engine for watched games, poll top-5 retune, national leaders + Player of the Year race, real program strength research (proposal only) | constants.js (names), teamcolors.js keys, tournament.js + views/bracket.js, simulation.js + ui.js (live game), poll.js, new leaders view, views/help.js, research/, test-harness | 2026-10-08 |
 | Muse | Anonymous Reddit-beta link via Cloudflare Pages (no game code changes) — PAUSED, Jack said later | HANDOFF.md only | 2026-10-07 |
-=======
-| Muse | Anonymous Reddit-beta link via Cloudflare Pages (no game code changes) — PAUSED, Jack said later | HANDOFF.md only | 2026-10-07 |
-| Muse | Swipe between main tabs on phones | swipe.js (new), index.html, sw.js, style.css, HANDOFF.md | 2026-10-08 |
->>>>>>> 299957f (HANDOFF: Muse claims swipe-between-tabs job; drop duplicate paused row)
 
 ## Messages
 
@@ -33,6 +28,8 @@ Leave a note for the other agent. Delete it once it's handled. **Claude sessions
 - **Claude → Jack (2026-10-08): sim realism done** (details and sources: research/sim-feel.md; 16 seasons, before → after, real target in brackets). Win % by team-overall gap on a neutral floor: +3 59 → 65 (60), +6 66 → 77 (75), +9 74 → 87 (85), +12 80 → 93 (93); margin spread around the expected margin 11.4 → 11.1 (10.5-12). First-round upsets: 1v16 12.8 → 2.0 (1.2), 2v15 20.6 → 6.8 (6.9), 3v14 30.0 → 11.7 (14.4), 4v13 37.6 → 17.8 (20.6), 5v12 37.4 → 34.9 (35.6), 6v11 39.3 → 38.1 (38.8), 7v10 43.5 → 43.7 (39.0), 8v9 53.5 → 51.0 (51.9). Stars: scoring leader 21.5 → 25.1 (22-26), players at 20+ ppg 2 → 14 (5-15), best player's share of team points 18.5% → 20.5% median, 22.6 → 24.3% top tenth (the brief's 22-25 / 28-32 can't coexist with real 2024-25 scoring, where only about 10-15 players top 20 ppg; explained in the doc); high-volume nights 1.8 points less efficient. Overtime 0 visible → 4.1% of games (real about 5%), real 5-minute periods, "OT"/"2OT" on scores. Home win 64.6 → 66.1% (64-68), offensive rebound share 26.6 → 27.4%. Biggest scheme effect 4.3 (press) → 1.3 points. Two fixes outside the engine were needed: non-conference schedules were in list order, so power teams almost only played each other and the power ratings couldn't compare them with everyone else (now random opponents); and the committee's record weight drops 200 → 60 so 30-2 teams from weak leagues stop landing on the 4-6 lines. calib.mjs passes (it now measures the margin spread around the expected margin, as its source means, with a D1-sized league). The poll calibration improved too: 3 tracked gaps left (was 5).
 
 ## Recently shipped (newest first, keep about 8)
+
+- Swipe between main tabs on phones: a clearly horizontal swipe moves to the next/previous tab in bottom-nav order (read from the DOM), via the same path as a nav tap; ignores sideways scrollers, inputs, sheets, dialogs and the live game; subtle slide, reduced-motion safe, desktop unchanged. *(Muse)*
 
 - Sim realism: better teams win about as often as in real college basketball (a 6-point overall edge wins about 77% on a neutral floor), first-round NCAA upsets at the real seed-by-seed rates, star scorers (leader about 25 ppg, 10-15 players at 20+), real 5-minute overtime periods with OT/2OT on scores (results carry `ot`), home court about 3.5 points, schemes worth a point or two. Non-conference opponents now random (power teams play mid-majors), committee record weight 60. Pre-game win % matches the engine. `node test-harness/sim-feel.mjs` (16 seasons) measures it all; fast version in run-all. *(Claude)*
 - Rankings: the Top 25, "#N" labels, arrows and preseason rankings come from an AP-style voters' poll (poll.js), tuned to 10 seasons of real AP polls (research/rankings/). New poll every other game week, Selection Sunday poll, final poll after the NCAA tournament (champion #1), "others receiving votes". Selection, seeding, recruiting and goal difficulty still use the efficiency rating (shown as NET). Old saves build a poll on load. `node test-harness/rankings-calibration.mjs 20` compares 20 seasons to the real numbers. *(Claude)*

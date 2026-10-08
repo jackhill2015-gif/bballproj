@@ -1717,3 +1717,13 @@ table.ups td { vertical-align: middle; }
 /* Overtime: tag under the tournament result; keep "W 78-71 OT" on one line */
 .tres-ot { margin-top: 6px; font-size: 12px; color: var(--txt3); text-align: right; }
 .sched-score { white-space: nowrap; width: auto; min-width: 64px; }
+
+/* Swipe navigation (swipe.js): quick, subtle slide when a touch swipe
+   changes the main tab. Nothing flashy; off under reduced motion. */
+.view.swipe-in-r { animation: swipe-in-r 180ms ease-out; }
+.view.swipe-in-l { animation: swipe-in-l 180ms ease-out; }
+@keyframes swipe-in-r { from { transform: translateX(26px); opacity: 0.35; } to { transform: none; opacity: 1; } }
+@keyframes swipe-in-l { from { transform: translateX(-26px); opacity: 0.35; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .view.swipe-in-r, .view.swipe-in-l { animation: none; }
+}
