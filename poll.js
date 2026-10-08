@@ -7,15 +7,17 @@
 //  Voters update the poll every other game week (about the games a real
 //  poll week covers), moving teams by what they did, not re-sorting a
 //  formula: losses cost spots (more to unranked teams and at home, less
-//  for the very top), wins over ranked teams earn spots, unbeaten teams
-//  get a little extra, and a slow pull toward resume quality keeps the
-//  poll honest. Unranked teams enter from a "receiving votes" pool.
+//  for the very top), wins over ranked teams earn spots, and a pull toward
+//  resume quality that grows through the season keeps the poll honest (on
+//  Selection Sunday voters land close to the committee's order). Unranked
+//  teams enter from a "receiving votes" pool.
 //  Tuned to 10 seasons of real AP polls: research/rankings/findings.md.
 //
 //  Save: G.poll = { yr, n, kind, gi, ids[25], rv[<=10], prev[25] }.
 // ═══════════════════════════════════════════════════════════
 
 import { G } from './state.js';
+import { resumeScore } from './ratings.js';
 
 export var POLL_EVERY = 2;   // game weeks per poll
 var RV_SIZE = 10;
@@ -30,8 +32,9 @@ export var VOTE = {
   unbeaten: 0,         // unbeaten after the week, with a win
   meritPull: 0.12,     // share of the gap to the strength order closed each poll
   meritRamp: 3,        // ... and (1 + ramp) times that by the last week
+  selPull: 0.5,        // Selection Sunday: share of the gap to the committee's resume order closed
   noise: 1,            // voter spread (spots, sd)
-  topNoise: 0.2,       // the top 5 are steadier
+  topNoise: 0.1,       // the top 5 are steadier
   entrySpacing: 0.9,   // spots between unranked teams waiting in line
   brand: 3.5,          // efficiency points per prestige point below brandBar
   brandBar: 68,        // programs below this prestige get less benefit of the doubt
@@ -40,7 +43,7 @@ export var VOTE = {
 };
 
 // Preseason weights (z-scores): roster talent, last season's finish, brand
-export var PRESEASON = { talent: 1.0, lastFinal: 0.55, brand: 1.1, noise: 0.2 };
+export var PRESEASON = { talent: 1.0, lastFinal: 0.55, brand: 1.25, noise: 0.2 };
 
 var _hooks = [];
 // Calibration and tests watch every poll (ids before/after and each team's games)
@@ -87,8 +90,8 @@ function voterKey(t) {
   // brand only holds back lesser-known programs; among big names, results decide
   return (t.pts || 1000) + VOTE.brand * Math.min(0, (t.schoolPrestige || 50) - VOTE.brandBar) + VOTE.record * ((gp ? t.wins / gp : 0.5) - 0.5);
 }
-function meritOrder() {
-  var s = G.teams.slice().sort(function(a, b) { return voterKey(b) - voterKey(a); });
+function meritOrder(key) {
+  var s = G.teams.slice().sort(function(a, b) { return key(b) - key(a); });
   var m = {};
   s.forEach(function(t, i) { m[t.id] = i + 1; });
   return m;
@@ -157,7 +160,8 @@ function voterUpdate(res, kind) {
   var rv = G.poll && G.poll.rv ? G.poll.rv : [];
   var rankNow = {};
   cur.forEach(function(id, i) { rankNow[id] = i + 1; });
-  var merit = meritOrder();
+  // on Selection Sunday voters land close to the committee's own order
+  var merit = meritOrder(kind === 'sel' ? resumeScore : voterKey);
   // Unranked teams line up behind #25: last week's receiving-votes order
   // first, then by resume
   var line = {};
@@ -191,7 +195,8 @@ function voterUpdate(res, kind) {
     if (won && !lossesSoFar[t.id]) s -= VOTE.unbeaten;
     // drift toward the resume order (voters notice who's really good)
     // (the pull grows through the season: by March voters and the committee agree)
-    s += VOTE.meritPull * (1 + VOTE.meritRamp * Math.min(G.gi, 30) / 30) * (Math.min(merit[t.id], 40) - s);
+    var pull = kind === 'sel' ? VOTE.selPull : VOTE.meritPull * (1 + VOTE.meritRamp * Math.min(G.gi, 30) / 30);
+    s += pull * (Math.min(merit[t.id], 40) - s);
     if (games.length) s += (rankNow[t.id] && rankNow[t.id] <= 5 ? VOTE.topNoise : VOTE.noise) * gauss();
     standing[t.id] = s;
   });
@@ -235,7 +240,7 @@ export function finalPoll() {
   });
   var still = (G.bracket || []).filter(function(b) { return b.active; });
   if (still.length === 1) champ = typeof still[0].team === 'number' ? still[0].team : still[0].team.id;
-  var merit = meritOrder();
+  var merit = meritOrder(voterKey);
   var standing = {};
   var rank = {};
   cur.forEach(function(id, i) { rank[id] = i + 1; });
@@ -258,7 +263,7 @@ export function finalPoll() {
 // Old saves (no poll yet) or a missing poll: start from the efficiency order
 export function ensurePoll() {
   if (G.poll && G.poll.yr === G.yr && G.poll.ids && G.poll.ids.length) return;
-  var m = meritOrder();
+  var m = meritOrder(voterKey);
   var s = G.teams.map(function(t) { return t.id; }).sort(function(a, b) { return m[a] - m[b]; });
   G.poll = { yr: G.yr, n: 1, kind: G.gi > 0 ? 'reg' : 'pre', gi: G.gi - (G.gi % POLL_EVERY), ids: s.slice(0, 25), rv: s.slice(25, 25 + RV_SIZE), prev: [] };
 }

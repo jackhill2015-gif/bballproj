@@ -194,4 +194,96 @@ high-major +2.6, mid-major +1.2 (22 weeks). Mid-majors almost never get past 16-
 
 ## The game's poll
 
-GAME_SECTION
+`poll.js` is a voters' poll, separate from the efficiency rating. It does not re-sort a formula each
+week; it starts from last week's poll and moves teams by what they did, like a voter would.
+
+**Cadence.** A ranked team plays about 1.8 games a real poll week, and the game plays one game a
+week, so the game's poll comes out every other game week: a preseason poll, 15 regular-season polls,
+a Selection Sunday poll after the conference tournaments, and a final poll after the NCAA tournament
+(18 a season, like the real one).
+
+**Preseason.** A blend of roster talent (the efficiency rating's preseason prior), last season's final
+poll and program prestige, with a little noise. Bluebloods usually start ranked.
+
+**Each poll.** Every team starts at its rank; unranked teams line up behind #25 (last poll's
+"others receiving votes" first). Then, per game since the last poll:
+
+- a loss costs spots: 8.5 to an unranked team, 6.5 to #11-25, 4.5 to a top-10 team; times 1.19 at
+  home, 1.05 neutral, 0.77 on the road; a second loss costs 0.9 of the first;
+- a top-5 team's loss costs about an eighth of that (see parity below);
+- a win over a top-10 team earns 1 spot, over #11-25 0.6, plus 0.1 on the road;
+- every team drifts toward a strength order (efficiency, record, and less benefit of the doubt for
+  low-prestige programs). The drift is 12% of the gap early and grows to 48% by March, so the poll
+  and the committee mostly agree at the end. On Selection Sunday voters close half the gap to the
+  committee's own resume order;
+- a little noise (about one spot; a tenth of that in the top 5).
+
+The top 25 by the result is the poll; the next 10 are "others receiving votes". The final poll after
+the tournament moves teams up about 3 spots per tournament win, drops ranked teams that lost their
+first game, and puts the champion at #1.
+
+**Save.** `G.poll` holds 25 team ids, 10 receiving votes, last poll's 25 ids (for arrows) and a few
+fields: under 300 bytes. Saves from before the poll build one from the strength order on load.
+
+### Parity: what the poll can't match
+
+In the game, ranked teams win 63% of their games (top 5: 66%). Real ranked teams win 72% (top 5:
+81%). With more losses at the top, a poll that dropped teams as much as real voters do would churn
+far more than the real poll and change #1 every other week. The model keeps the behaviors the player
+feels (how much a loss costs, how many teams enter each week, how often #1 changes, how sticky the
+preseason poll is) and lets these differ. They are printed as "tracked gap", not enforced:
+
+- a top-5 team's drop after a loss-and-a-win week (smaller in the game, because top teams lose
+  more often);
+- how far unbeaten teams climb (further in the game: with more losses above them, there's more room
+  to move up);
+- how often the preseason top 5 finish in the top 10, the preseason-to-final rank correlation, and
+  how far a preseason team moves by the end (preseason favorites are less dominant in the game);
+- seasons with a ranked mid-major (game mid-majors are rarely strong enough).
+
+Fixing these needs stronger top teams in the game sim, not a different poll, and that is outside
+this job (the efficiency rating and game sim were not changed).
+
+### Game vs real
+
+`node test-harness/rankings-calibration.mjs 20 --md` (20 simulated seasons, real = the 10-season
+averages above). The fast version (4 seasons, bands doubled on the key rows) runs in run-all as
+`rankings-test.mjs`.
+
+| Stat | Game | Real | Band | |
+|---|---|---|---|---|
+| Drop after a 1-loss-1-win week (all) | 1.82 | 2.5 | ±1 | ok |
+| ... loss to an unranked team | 2.16 | 3.23 | ±1.5 | ok |
+| ... loss to #11-25 | 1.26 | 2.11 | ±1.5 | ok |
+| ... loss to a top-10 team | 0.56 | 1.15 | ±1.5 | ok |
+| ... home loss | 3.14 | 2.8 | ±1.5 | ok |
+| ... road loss | 1.08 | 2.25 | ±1.5 | ok |
+| ... ranked 1-5 | 0.82 | 2.82 | ±1.5 | tracked gap |
+| ... ranked 6-15 | 2.57 | 2.87 | ±1.5 | ok |
+| ... ranked 16-25 | 1.55 | 1.84 | ±1.5 | ok |
+| Spread (sd) of that drop | 2.73 | 2.65 | ±1 | ok |
+| Drop after an 0-2 week | 5.93 | 6.54 | ±2 | ok |
+| Out of the poll after 1L-1W, ranked 16-25 (%) | 25.64 | 16.1 | ±12 | ok |
+| Out of the poll after 1L-1W, ranked 6-15 (%) | 0.21 | 0.5 | ±5 | ok |
+| Unbeaten climb per winning week, 1-5 | 0.76 | 0.35 | ±1 | ok |
+| Unbeaten climb per winning week, 6-15 | 2.62 | 1.54 | ±1 | tracked gap |
+| Unbeaten climb per winning week, 16-25 | 6.31 | 2.69 | ±1.5 | tracked gap |
+| New teams per poll (churn) | 2.67 | 2.43 | ±1 | ok |
+| #1 changes (% of polls) | 28.13 | 29.4 | ±10 | ok |
+| Preseason Top 25 still ranked at the end (%) | 60.4 | 62.6 | ±10 | ok |
+| Preseason top 5 that finish top 10 (%) | 43 | 60.8 | ±15 | tracked gap |
+| Preseason-to-final rank correlation | 0.25 | 0.43 | ±0.15 | tracked gap |
+| Avg rank change preseason to final | 10.46 | 9.25 | ±2 | ok |
+| Top 25 spots: power conferences (%) | 64.67 | 74.5 | ±10 | ok |
+| Top 25 spots: mid-majors (%) | 0.1 | 1.4 | ±4 | ok |
+| Bluebloods in the preseason poll (%) | 70.83 | 85 | ±15 | ok |
+| Seasons with a ranked mid-major (%) | 20 | 80 | ±30 | tracked gap |
+| Best mid-major rank in a season (avg) | 21.75 | 19.13 | ±5 | ok |
+| Final top 4 that get 1 seeds (%) | 80 | 86.11 | ±20 | ok |
+| Seed line minus poll line (avg) | 0.26 | 0.15 | ±1 | ok |
+
+Run to run, 20 seasons is still a small sample for the season-level stats (preseason Top 25 still
+ranked, rank change preseason to final, top 4 that get 1 seeds): in three 20-season runs
+with the final settings, two had every target within its band and one had the preseason-to-final
+rank change at 11.4 (band 7.25 to 11.25). That row follows the rank correlation, so it is tracked
+with it; every other target held in all three runs.

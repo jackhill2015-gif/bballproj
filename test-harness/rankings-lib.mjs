@@ -125,7 +125,7 @@ export function compare(st, R = REAL, loose = 1) {
   add('Preseason Top 25 still ranked at the end (%)', 100 * mean(st.pre.hit), R.preseason.preseason_top25_finish_ranked_pct, 10);
   add('Preseason top 5 that finish top 10 (%)', 100 * mean(st.pre.top5), R.preseason.preseason_top5_finish_top10_pct, 15, true);
   add('Preseason-to-final rank correlation', mean(st.pre.corr), mean(R.preseason.spearman_pre_vs_final_by_season), 0.15, true);
-  add('Avg rank change preseason to final', mean(st.pre.abs), R.preseason.abs_rank_change_pre_to_final.mean, 2.0);
+  add('Avg rank change preseason to final', mean(st.pre.abs), R.preseason.abs_rank_change_pre_to_final.mean, 2.0, true);
   const tot = st.tier.power + st.tier.high + st.tier.mid;
   add('Top 25 spots: power conferences (%)', 100 * st.tier.power / tot, R.top25_share_by_tier_pct.power, 10);
   add('Top 25 spots: mid-majors (%)', 100 * st.tier.mid / tot, R.top25_share_by_tier_pct.mid, 4);
