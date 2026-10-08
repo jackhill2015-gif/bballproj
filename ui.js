@@ -9,7 +9,7 @@ import { pollRank, pollPrevRank } from './poll.js';
 import { backupDynasty, restoreDynasty } from './backup.js';
 import { noteSpend } from './finance.js';
 import { upgradeFacility } from './facilities.js';
-import { ge, txt, fR, clamp } from './utils.js';
+import { ge, txt, fR, clamp, otLabel } from './utils.js';
 import { G, LS, SetupState, saveState } from './state.js';
 import { simPoss, simGame } from './simulation.js';
 import { openPlayerFromEl } from './views/player.js';
@@ -905,7 +905,7 @@ export function openModal(tH, tA, isTournament, roundName) {
     var overlays = panel.querySelectorAll('div[style*="position:absolute"], div[style*="position: absolute"]');
     for (var oi = 0; oi < overlays.length; oi++) panel.removeChild(overlays[oi]);
   }
-  LS.clock = 1200; LS.half = 1; LS.hs = 0; LS.as = 0;
+  LS.clock = 1200; LS.half = 1; LS.hs = 0; LS.as = 0; LS.ot = 0;
   LS.h1 = null; LS.a1 = null; LS.poss = 'A';
   if (typeof LS.possCount !== 'undefined') LS.possCount = 0;
 
@@ -1051,6 +1051,12 @@ function refreshGcastTabs() {
   if (bp && bp.classList.contains('on')) renderGcastBox();
 }
 
+// Overtime marker in the play-by-play
+function otBanner() {
+  var log = ge('pbplog');
+  if (log) log.innerHTML = '<div class="pbp-banner">── ' + (LS.ot > 1 ? otLabel(LS.ot) : 'Overtime') + ' ──</div>' + log.innerHTML;
+}
+
 // ── Step Sim (one possession tick) ───────────────────────
 export function stepSim() {
   if (LS.clock <= 0) {
@@ -1063,10 +1069,11 @@ export function stepSim() {
       if (log) log.innerHTML = '<div class="pbp-banner">── Halftime ──</div>' + log.innerHTML;
       return true;
     } else if (LS.half === 2) {
-      if (LS.hs === LS.as) { LS.half = 3; LS.clock = 300; txt('sb-per', 'OT'); return true; }
+      if (LS.hs === LS.as) { LS.half = 3; LS.ot = 1; LS.clock = 300; txt('sb-per', 'OT'); otBanner(); return true; }
       return false;
     } else {
-      if (LS.hs === LS.as) { LS.clock = 300; return true; }
+      // another 5-minute overtime until someone leads at the horn
+      if (LS.hs === LS.as) { LS.ot = (LS.ot || 1) + 1; LS.clock = 300; txt('sb-per', otLabel(LS.ot)); otBanner(); return true; }
       return false;
     }
   }
@@ -1142,14 +1149,14 @@ export function skipGame() {
   var res = simGame(LS.tH, LS.tA, LS.game.home);
   restoreStats(LS.tH, hSnap);
   restoreStats(LS.tA, aSnap);
-  LS.hs = res.homeScore; LS.as = res.awayScore;
+  LS.hs = res.homeScore; LS.as = res.awayScore; LS.ot = res.ot || 0;
   finalizeModal();
 }
 
 // ── Finalize Modal ───────────────────────────────────────
 export function finalizeModal() {
   if (G.simInterval) { clearInterval(G.simInterval); G.simInterval = null; }
-  txt('sb-clk', 'Final');
+  txt('sb-clk', LS.ot ? 'Final/' + otLabel(LS.ot) : 'Final');
   renderGcastTeam();
   renderGcastBox();
 

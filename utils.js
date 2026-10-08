@@ -201,14 +201,25 @@ export function pickPositionalTeam(sorted, posOf) {
 }
 
 // Scores read winner-first, like a box score line: "W 78-71", "L 72-60".
-export function fmtScore(a, b, sep) {
+// ot: overtime periods, shown as "OT", "2OT" after the score.
+export function fmtScore(a, b, sep, ot) {
   sep = sep || '\u2013';
-  return Math.max(a, b) + sep + Math.min(a, b);
+  return Math.max(a, b) + sep + Math.min(a, b) + (ot ? ' ' + otLabel(ot) : '');
 }
+export function otLabel(ot) { return ot > 1 ? ot + 'OT' : 'OT'; }
 
 // Win probability shown before a game (percent). Team overalls on the
 // display scale; homeAdj: +4 home, -4 away, 0 neutral; dm: difficulty edge.
+// Matches the engine (test-harness/sim-feel.mjs): about 1.35 points of
+// margin per overall point, 3.7 for home court, game-to-game spread 11.2.
 export function winProb(myOvr, oppOvr, homeAdj, dm) {
-  var p = Math.round(50 + (oldOvr(myOvr) + (dm || 0) - oldOvr(oppOvr)) * 1.3 + (homeAdj || 0));
-  return Math.max(5, Math.min(95, p));
+  var margin = 1.35 * (myOvr - oppOvr) + (homeAdj > 0 ? 3.7 : homeAdj < 0 ? -3.7 : 0) + (dm || 0);
+  var p = Math.round(100 * normCdf(margin / 11.2));
+  return Math.max(2, Math.min(98, p));
+}
+function normCdf(z) {
+  // Abramowitz-Stegun 7.1.26
+  var t = 1 / (1 + 0.3275911 * Math.abs(z) / Math.SQRT2);
+  var e = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-z * z / 2);
+  return z >= 0 ? (1 + e) / 2 : (1 - e) / 2;
 }

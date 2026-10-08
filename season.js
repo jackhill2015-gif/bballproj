@@ -169,14 +169,20 @@ export function buildSchedules() {
   });
 
   // ── STEP 2: OOC games (weeks 0-9) ──
-  // For CPU teams, pair them across conferences
+  // For CPU teams, pair them across conferences, opponents in random order
+  // (in list order, power-conference teams only ever met each other, so the
+  // power ratings had almost no games linking them to everyone else)
+  var oocOrder = G.teams.map(function(t, i) { return i; });
   G.teams.forEach(function(tm) {
     if (tm.id === tid) return;
     for (var w = 0; w < 10; w++) {
       if (tm.sched[w]) continue;
+      for (var sh = oocOrder.length - 1; sh > 0; sh--) {
+        var sj = ri(0, sh), st = oocOrder[sh]; oocOrder[sh] = oocOrder[sj]; oocOrder[sj] = st;
+      }
       // Find a cross-conference opponent free this week
       for (var j = 0; j < G.teams.length; j++) {
-        var other = G.teams[j];
+        var other = G.teams[oocOrder[j]];
         if (other.id === tm.id || other.id === tid || other.conf === tm.conf) continue;
         if (other.sched[w]) continue;
         var tmHosts = oocHostIsFirst(tm, other);
@@ -409,11 +415,13 @@ export function simCPUWeek() {
     s.played = true;
     s.uScore = s.home ? hScore : aScore;
     s.oScore = s.home ? aScore : hScore;
+    if (res.ot) s.ot = res.ot;
     var oppSched = opp.sched[G.gi];
     if (oppSched && oppSched.opp === t.id) {
       oppSched.played = true;
       oppSched.uScore = oppSched.home ? hScore : aScore;
       oppSched.oScore = oppSched.home ? aScore : hScore;
+      if (res.ot) oppSched.ot = res.ot;
     }
 
     // Stats
@@ -444,6 +452,7 @@ export function recordResult() {
   var oScore = uHome ? LS.as : LS.hs;
   game.uScore = uScore;
   game.oScore = oScore;
+  if (LS.ot) game.ot = LS.ot;
   // Box score for your game (both teams), from the sim's per-game lines
   // (quick sim) or a before/after diff (watched game)
   try {
@@ -467,6 +476,7 @@ export function recordResult() {
     oppEntry.played = true;
     oppEntry.uScore = oScore;
     oppEntry.oScore = uScore;
+    if (LS.ot) oppEntry.ot = LS.ot;
   }
   if (won) {
     t.wins++; opp.loss++;
@@ -477,7 +487,7 @@ export function recordResult() {
   }
   // Rankings (t.pts) are recomputed from all results in advanceWeek — see ratings.js.
   // The final stays on the dashboard until the next game is played.
-  G.lastResult = { yr: G.yr, oppId: opp.id, home: !!uHome, u: uScore, o: oScore, won: won, wk: G.gi + 1, label: game.conf ? 'Conference' : 'Non-conference' };
+  G.lastResult = { yr: G.yr, oppId: opp.id, home: !!uHome, u: uScore, o: oScore, won: won, ot: LS.ot || 0, wk: G.gi + 1, label: game.conf ? 'Conference' : 'Non-conference' };
   noteUserResult(opp, won);
   // Ticket sales for home games
   if (uHome && G.phase === 'reg') payGate(facilitiesFor(G.tid).arena || 0);
@@ -486,8 +496,8 @@ export function recordResult() {
   // Morale: both teams' players react to the result.
   recordGameMorale(won ? t : opp, won ? opp : t);
   addLog(won ? 'w' : 'l', G.gi + 1,
-    '<b>' + (won ? 'W' : 'L') + '</b> vs <b>' + opp.name + '</b>  ' + fmtScore(uScore, oScore));
-  toast((won ? 'W ' : 'L ') + fmtScore(uScore, oScore, '-') + ' vs ' + opp.name,
+    '<b>' + (won ? 'W' : 'L') + '</b> vs <b>' + opp.name + '</b>  ' + fmtScore(uScore, oScore, '', LS.ot));
+  toast((won ? 'W ' : 'L ') + fmtScore(uScore, oScore, '-', LS.ot) + ' vs ' + opp.name,
     won ? 'var(--grn)' : 'var(--red)');
   // Records: surface any broken single-game school records (no-op if none).
   surfaceUserGameRecords();
@@ -556,7 +566,7 @@ export function launchSim(watch) {
   G.momentum = { tid: -1, pts: 0 };
   // Set up LS
   LS.tH = tH; LS.tA = tA; LS.game = game; LS.userTeam = t;
-  LS.clock = 1200; LS.half = 1; LS.hs = 0; LS.as = 0;
+  LS.clock = 1200; LS.half = 1; LS.hs = 0; LS.as = 0; LS.ot = 0;
   LS.h1 = null; LS.a1 = null; LS.poss = 'A';
   LS.streak_h = 0; LS.streak_a = 0;
   LS.possCount = 0;
@@ -570,7 +580,7 @@ export function launchSim(watch) {
     if (_ext.openModal) _ext.openModal(tH, tA);
   } else {
     var res = simGame(tH, tA, game.home);
-    LS.hs = res.homeScore; LS.as = res.awayScore;
+    LS.hs = res.homeScore; LS.as = res.awayScore; LS.ot = res.ot || 0;
     LS._recLines = userLinesFromRes(res);
     LS._boxPlines = res.plines || null;
     recordResult();

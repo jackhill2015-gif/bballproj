@@ -110,7 +110,7 @@ function teamHTML(t) {
       h += '<tr><td class="num">' + (x.w + 1) + '</td>'
         + '<td>' + (g.home ? 'vs ' : 'at ') + teamLink(opp.id, opp.name) + '</td>'
         + '<td><span class="badge ' + (win ? 'w' : 'l') + '">' + (win ? 'W' : 'L') + '</span></td>'
-        + '<td class="num">' + fmtScore(g.uScore, g.oScore) + '</td></tr>';
+        + '<td class="num">' + fmtScore(g.uScore, g.oScore, '', g.ot) + '</td></tr>';
     });
     h += '</tbody></table></div>';
   }
@@ -159,7 +159,7 @@ export function openGameDetail(week) {
     + '<div style="font-size:13px;color:var(--txt3);">Week ' + (week + 1) + ' · ' + (g.home ? 'Home' : 'Away')
     + (g.conf ? ' · ' + me.conf : '') + '</div>'
     + '<div style="font-size:26px;font-weight:800;margin:6px 0;font-family:var(--mono);">'
-    + fmtScore(g.uScore, g.oScore) + '</div>'
+    + fmtScore(g.uScore, g.oScore, '', g.ot) + '</div>'
     + '<div><span class="badge ' + (win ? 'w' : 'l') + '">' + (win ? 'W' : 'L') + '</span>'
     + ' <span style="font-weight:700;">' + me.name + '</span>'
     + ' <span style="color:var(--txt3);">vs</span> '

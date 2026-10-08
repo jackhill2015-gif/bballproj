@@ -41,7 +41,10 @@ const DEFS = ['man', '2-3', '3-2', '1-3-1', 'box1'];
 function buildTeams(n, baseLo, baseHi) {
   const teams = [];
   for (let i = 0; i < n; i++) {
-    const base = Math.round(baseLo + (baseHi - baseLo) * (i / (n - 1)));
+    // D1-like spread: most programs in the middle, a few elite and a few
+    // very weak (an even spread from 60 to 94 over-weights mismatches)
+    const q = (i + 0.5) / n, z = Math.sign(q - 0.5) * Math.sqrt(-2 * Math.log(1 - Math.abs(2 * q - 1)) * 0.6366);
+    const base = Math.round(Math.max(baseLo, Math.min(baseHi, (baseLo + baseHi) / 2 + 7 * z)));
     const rost = [];
     for (let j = 0; j < 13; j++) rost.push(SIM.genPlayer(base, POS[j % 5], CLS[j % 4]));
     U.fixMins(rost);
@@ -82,19 +85,24 @@ function check(name, val, lo, hi, fmt) {
   return ok;
 }
 
-console.log('── building 48-team universe (base 60–94), full scheme coverage ──');
+const NT = 365; // a full Division I: the leader bands are national
+console.log('── building ' + NT + '-team universe (base 60–94), full scheme coverage ──');
 resetG();
-const teams = buildTeams(48, 60, 94);
+const teams = buildTeams(NT, 60, 94);
 const aggs = teams.map(() => newAgg());
 
 let nGames = 0, homeWins = 0, margins = [], marginPairs = [], phantom = 0, nanFound = 0;
 let totH = 0, totA = 0;
 
-console.log('── simming round-robin (~1128 games) ──');
+console.log('── simming round-robin (' + (NT * (NT - 1) / 2) + ' games) ──');
 const t0 = Date.now();
 for (let i = 0; i < teams.length; i++) {
   for (let j = i + 1; j < teams.length; j++) {
-    const home = ((i + j) % 2 === 0) ? teams[i] : teams[j];
+    // Like real schedules (and season.js oocHostIsFirst): in a mismatch the
+    // stronger program hosts 4 times in 5; near-equals alternate.
+    const strongerI = teams[i].baseOvr >= teams[j].baseOvr;
+    const iHosts = Math.abs(teams[i].baseOvr - teams[j].baseOvr) >= 12 ? (Math.random() < 0.8 ? strongerI : !strongerI) : (i + j) % 2 === 0;
+    const home = iHosts ? teams[i] : teams[j];
     const away = home === teams[i] ? teams[j] : teams[i];
     const hi = teams.indexOf(home), ai = teams.indexOf(away);
     const hPts0 = sumPts(home), aPts0 = sumPts(away);
@@ -144,13 +152,23 @@ allOk &= check('5.7 avg team assists/game', L.ast / g, 13, 17, v => v.toFixed(1)
 allOk &= check('7.1 home win%', homeWins / nGames, 0.62, 0.72, v => v.toFixed(3));
 const meanM = margins.reduce((s, m) => s + m, 0) / margins.length;
 const sdM = Math.sqrt(margins.reduce((s, m) => s + (m - meanM) ** 2, 0) / margins.length);
-allOk &= check('1.7 margin sigma', sdM, 9.5, 12.5, v => v.toFixed(1));
+// Expected margin from the talent gap plus home court (least squares):
+// margin = HCA + k * (base gap). The intercept is the home-court edge; the
+// spread around the fit is the game-to-game sigma (KenPom's ~11).
+const gx = marginPairs.map(([h, a]) => teams[h].baseOvr - teams[a].baseOvr), gy = marginPairs.map(p => p[2]);
+const mx = gx.reduce((s, v) => s + v, 0) / gx.length, my = gy.reduce((s, v) => s + v, 0) / gy.length;
+const kFit = gx.reduce((s, x, i) => s + (x - mx) * (gy[i] - my), 0) / gx.reduce((s, x) => s + (x - mx) ** 2, 0);
+const hcaFit = my - kFit * mx;
+const resid = gy.map((y, i) => y - hcaFit - kFit * gx[i]);
+const sdResid = Math.sqrt(resid.reduce((s, v) => s + v * v, 0) / resid.length);
+console.log(`  diag: raw margin sigma (every pairing, mismatches included) = ${sdM.toFixed(1)}; ${kFit.toFixed(2)} pts per base point`);
+allOk &= check('1.7 margin sigma (around the expected margin)', sdResid, 9.5, 12.5, v => v.toFixed(1));
 allOk &= check('1.7 mean |margin|', margins.reduce((s, m) => s + Math.abs(m), 0) / nGames, 10, 14, v => v.toFixed(1));
 const intra = marginPairs.filter(([a, b]) => Math.floor(a / 8) === Math.floor(b / 8)).map(([, , m]) => m);
 const iMean = intra.reduce((s, m) => s + m, 0) / Math.max(1, intra.length);
 const iSd = Math.sqrt(intra.reduce((s, m) => s + (m - iMean) ** 2, 0) / Math.max(1, intra.length));
 console.log(`  diag: intra-tier margin sigma = ${iSd.toFixed(1)} (n=${intra.length})`);
-allOk &= check('7.2 home margin (HCA pts)', meanM, 2.5, 4.0, v => v.toFixed(2));
+allOk &= check('7.2 home margin (HCA pts, talent-adjusted)', hcaFit, 2.5, 4.0, v => v.toFixed(2));
 console.log(`  note: avg total ${((totH + totA) / nGames).toFixed(1)}, home ${(totH / nGames).toFixed(1)} / away ${(totA / nGames).toFixed(1)}`);
 
 const byPos = {};

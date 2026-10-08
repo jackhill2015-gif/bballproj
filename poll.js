@@ -35,7 +35,7 @@ export var VOTE = {
   selPull: 0.5,        // Selection Sunday: share of the gap to the committee's resume order closed
   noise: 1,            // voter spread (spots, sd)
   topNoise: 0.1,       // the top 5 are steadier
-  entrySpacing: 0.9,   // spots between unranked teams waiting in line
+  entrySpacing: 1.8,   // spots between unranked teams waiting in line
   brand: 3.5,          // efficiency points per prestige point below brandBar
   brandBar: 68,        // programs below this prestige get less benefit of the doubt
   record: 100,         // efficiency points per 1.000 of win pct in the strength order

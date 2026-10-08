@@ -214,14 +214,33 @@ function shooterWeight(p, offTeam) {
   var u = (typeof p.usage === 'number' && p.usage > 0) ? p.usage : 20;
   u = clamp(u, 1, 100);
   var scheme = offTeam ? ((offTeam.strat && offTeam.strat.off) || 'balanced') : 'balanced';
-  var ovrExp = (scheme === 'motion') ? 1 : 2.0; // motion: even shot distribution
+  var ovrExp = (scheme === 'motion') ? TUNE.usageExp / 2 : TUNE.usageExp; // motion: more even shot distribution
   var w = p.mins * Math.pow(Math.max(40, p.ovr) / 72, ovrExp) * (u / 20) * (POS_USAGE[p.pos] || 1);
+  // Stars: the best player on the floor takes a bigger share of his own
+  // team's shots (relative to his teammates, not the whole league)
+  if (offTeam) {
+    var top = topTwo(offTeam), k = scheme === 'motion' ? 0.5 : 1;
+    if (p === top[0]) w *= 1 + (TUNE.star1 - 1) * k;
+    else if (p === top[1]) w *= 1 + (TUNE.star2 - 1) * k;
+  }
   if (scheme === 'drive' && p.pos === 'PG') w *= 1.8;
   if (scheme === 'set' && (p.pos === 'PF' || p.pos === 'C')) w *= 1.75;
   return w;
 }
+// A team's two best players with minutes (cached per game)
+var _best = new WeakMap();
+function topTwo(t) {
+  var b = _best.get(t);
+  if (b) return b;
+  var a = t.rost.filter(function(p) { return p.mins > 0; }).sort(function(x, y) { return y.ovr - x.ovr; });
+  b = [a[0] || null, a[1] || null];
+  _best.set(t, b);
+  return b;
+}
 function astW(p) { return p.mins * Math.pow(Math.max(40, p.ply) / 62, 2); }
-function rebW(p) { return p.mins * Math.pow(Math.max(40, p.reb) / 62, 3); }
+function rebW(p) { return p.mins * Math.pow(Math.max(40, p.reb) / 62, 2.3); }
+// Shot blockers: length and timing (rebounding and defense), bigs first
+function blkW(p) { return p.mins * Math.pow(Math.max(40, (p.reb + p.def) / 2) / 62, 4) * (p.pos === 'C' ? 1.8 : p.pos === 'PF' ? 1.4 : 1); }
 
 // Primary-playmaker assist: 55% of assists go to the highest-ply player on
 // the floor (not the scorer), the rest are weighted by playmaking.
@@ -275,6 +294,7 @@ export function simPoss(offT, defT) {
   var run = null;
 
   var possCount = (typeof LS.possCount === 'number') ? LS.possCount : 0;
+  if (possCount <= 1) { _best.delete(offT); _best.delete(defT); }
   var tiredness = Math.min(possCount / 160, 0.12);
   var isClutch = (LS.clock <= 120 && LS.half === 2);
 
@@ -348,11 +368,11 @@ export function simPoss(offT, defT) {
   }
 
   // Turnover
-  var toChance = clamp(17 + Math.round((def.def - off.ply) * 0.13), 8, 28);
-  if (defScheme === 'press') toChance += 6;
+  var toChance = clamp(17 + Math.round((def.def - off.ply) * 0.13 * TUNE.skill), 8, 28);
+  if (defScheme === 'press') toChance += TUNE.pressTO;
   if (defScheme === '2-3' || defScheme === 'zone') toChance -= 2;
   if (defScheme === '3-2') toChance -= 1;
-  if (defScheme === '1-3-1') toChance += 5;
+  if (defScheme === '1-3-1') toChance += 2;
   if (isClutch) toChance += 3;
   if (ri(1, 100) <= toChance) {
     off.s.to = (off.s.to || 0) + 1;
@@ -369,27 +389,28 @@ export function simPoss(offT, defT) {
     var bc = isThree ? 1 : (isRim ? 8 : 5);
     bc = clamp(bc + Math.round((def.reb - 50) * 0.09), 1, 19);
     if (ri(1, 100) <= bc) {
-      if (typeof def.s.blk !== 'number') def.s.blk = 0;
-      def.s.blk++; def.s.reb++;
-      return { pts: 0, time: time, pbp: '<span class="p-bl">' + pick(COM.block, off.name, def.name) + '</span>', big: true, type: 'block', run: null };
+      var blocker = getFloor(defT, blkW);
+      if (typeof blocker.s.blk !== 'number') blocker.s.blk = 0;
+      blocker.s.blk++; blocker.s.reb++;
+      return { pts: 0, time: time, pbp: '<span class="p-bl">' + pick(COM.block, off.name, blocker.name) + '</span>', big: true, type: 'block', run: null };
     }
   }
 
   // Shot make %
   if (makePct === 0) {
     if (isThree) {
-      makePct = clamp(40 + Math.round((off.sht - def.def) * 0.22), 28, 48);
+      makePct = clamp(40 + Math.round((off.sht - def.def) * 0.22 * TUNE.skill), 28, 48);
       if (defScheme === '2-3' || defScheme === 'zone') makePct += 4;
       else if (defScheme === '3-2') makePct -= 5;
       else if (defScheme === '1-3-1') makePct += 2;
       if (defScheme === 'press') makePct += 3;
     } else if (isRim) {
-      makePct = clamp(64 + Math.round((off.fin - def.def) * 0.32), 48, 80);
+      makePct = clamp(64 + Math.round((off.fin - def.def) * 0.32 * TUNE.skill), 48, 80);
       if (defScheme === '2-3' || defScheme === 'zone') makePct -= 6;
       else if (defScheme === '3-2') makePct += 4;
       if (defScheme === 'press') makePct += 3;
     } else {
-      makePct = clamp(48 + Math.round((off.sht - def.def) * 0.26), 36, 58);
+      makePct = clamp(48 + Math.round((off.sht - def.def) * 0.26 * TUNE.skill), 36, 58);
       if (defScheme === '3-2') makePct -= 2;
       if (defScheme === 'press') makePct += 3;
     }
@@ -404,7 +425,7 @@ export function simPoss(offT, defT) {
   if (LS.half >= 2) {
     var liveLead = (offT === LS.tH) ? (LS.hs - LS.as) : (LS.as - LS.hs);
     var liveOver = Math.abs(liveLead) - SCORE_EFFECT_START;
-    if (liveOver > 0) makePct += (liveLead > 0 ? -1 : 1) * Math.min(SCORE_EFFECT_MAX, liveOver * SCORE_EFFECT_RATE);
+    if (liveOver > 0) makePct += (liveLead > 0 ? -1 : 1) * Math.min(TUNE.scoreMax, liveOver * TUNE.scoreRate);
   }
   makePct = Math.round(makePct * (1 - tiredness));
   makePct = clamp(makePct, 26, 78);
@@ -443,11 +464,21 @@ export function simPoss(offT, defT) {
 //   kick out and reset to a normal, perimeter-weighted shot).
 // SCORE_EFFECT_*: second-half lead beyond START costs the leader RATE shooting-%
 //   points per point of lead, capped at MAX (trailer gains the same).
-var HOME_BONUS = 6;
+var HOME_BONUS = 8;
 var PUTBACK_PCT = 50;
 var SCORE_EFFECT_START = 7;
-var SCORE_EFFECT_RATE = 0.7;
-var SCORE_EFFECT_MAX = 9;
+var SCORE_EFFECT_RATE = 0.8;
+var SCORE_EFFECT_MAX = 10;
+// Engine knobs (exported so test-harness/sim-feel.mjs can tune them;
+// research/sim-feel.md has the targets they were tuned to)
+//   skill: how much a matchup's rating gap moves shot and turnover odds
+//   lateTrips / lateSqueeze: last trips of a close game (play for the tie;
+//     a leader milking the clock gets a tougher shot)
+//   oreb: offensive rebound chance on a miss; pressTO: press turnover bump
+//   usageExp: league-wide extra shots for higher-rated players (off)
+//   star1 / star2: shot-share boost for a team's best and second-best player
+//   volFree / volPen: past volFree shots in a game, each is volPen % harder
+export var TUNE = { skill: 2.5, lateTrips: 6, lateSqueeze: 14, oreb: 34, pressTO: 1.5, usageExp: 0, star1: 1.5, star2: 1.15, volFree: 12, volPen: 1.5, scoreRate: SCORE_EFFECT_RATE, scoreMax: SCORE_EFFECT_MAX };
 
 // ── Full Game Simulation (Final Engine) ──────────────────
 // Possession-based with play types, clutch, momentum, fouls, fatigue, schemes.
@@ -461,6 +492,7 @@ export function simGame(home, away, userIsHome) {
   // M2 FIX: difficulty modifiers apply ONLY when the user's team is in the game.
   // userIsHome is unreliable (tournament CPU-vs-CPU games pass true), so derive
   // involvement from team ids vs G.tid.
+  _best.delete(home); _best.delete(away);
   var userInvolved = (home.id === G.tid) || (away.id === G.tid);
   var userIsHomeActual = userInvolved && (home.id === G.tid);
   // Records: snapshot the user's team's per-player stats before the sim so
@@ -505,7 +537,7 @@ export function simGame(home, away, userIsHome) {
 
   // M7 FIX: key fatigue/fouls/minutes by player identity (Map on the player
   // object), not by name — duplicate names used to scramble these.
-  var fatigue = new Map(), playerFouls = new Map(), origMins = new Map();
+  var fatigue = new Map(), playerFouls = new Map(), origMins = new Map(), shots = new Map();
   home.rost.forEach(function(p) {
     if (p.mins > 0) {
       fatigue.set(p, 0); playerFouls.set(p, 0); origMins.set(p, p.mins);
@@ -528,7 +560,7 @@ export function simGame(home, away, userIsHome) {
   // of one team's possessions first gave the first offense a ~+4pt edge because
   // fatigue accumulates across the whole game (the second offense shot tired).
   // Interleaving removes the bias and makes momentum a real tug-of-war.
-  function runOnePoss(offTeam, defTeam, isHomeOff, isClutch) {
+  function runOnePoss(offTeam, defTeam, isHomeOff, isClutch, lateGame) {
     var shotBonus = isHomeOff ? homeBonus : 0;
     var defScheme = (defTeam.strat && defTeam.strat.def) ? defTeam.strat.def : 'man';
     var oScheme = (offTeam.strat && offTeam.strat.off) || 'balanced';
@@ -551,11 +583,11 @@ export function simGame(home, away, userIsHome) {
       else if (offMom >= 4) { momMakeBonus = 1; momTOBonus = 0; }
       momMakeBonus = clamp(momMakeBonus, 0, 5);
 
-      var toChance = clamp(16 + Math.round((def.def - off.ply) * 0.12), 8, 26);
-      if (defScheme === 'press') toChance += 5;
+      var toChance = clamp(16 + Math.round((def.def - off.ply) * 0.12 * TUNE.skill), 8, 26);
+      if (defScheme === 'press') toChance += TUNE.pressTO;
       if (defScheme === '2-3' || defScheme === 'zone') toChance -= 2;
       if (defScheme === '3-2') toChance -= 1;
-      if (defScheme === '1-3-1') toChance += 5;
+      if (defScheme === '1-3-1') toChance += 2;
       if (isClutch) toChance += 2;
       toChance += momTOBonus;
       toChance = clamp(toChance, 8, 30);
@@ -567,7 +599,7 @@ export function simGame(home, away, userIsHome) {
         }
         // M6 FIX: press-forced fastbreak points are credited to the defender who
         // forced the turnover (FGA+FGM+PTS) — no more phantom points.
-        if (defScheme === 'press' && ri(1, 100) <= 15) {
+        if (defScheme === 'press' && ri(1, 100) <= 10) {
           if (isHomeOff) aScore += 2; else hScore += 2;
           def.s.pts += 2; def.s.fgm++; def.s.fga++;
         }
@@ -621,6 +653,13 @@ export function simGame(home, away, userIsHome) {
         var rimCh = (oScheme === 'drive') ? 38 : 25;
         isRim = !isThree && ri(1, 100) <= rimCh;
       }
+      // Late and close: down three, you need a three; down one or two, you
+      // go for two (and the tie)
+      if (lateGame) {
+        var down = isHomeOff ? (aScore - hScore) : (hScore - aScore);
+        if (down === 3) { isThree = true; isRim = false; }
+        else if (down === 1 || down === 2) { if (isThree) { isThree = false; isRim = ri(1, 100) <= 60; } }
+      }
 
       var foulChance = 10 + foulExtra;
       if (def.def < 60) foulChance += 3;
@@ -666,8 +705,9 @@ export function simGame(home, away, userIsHome) {
         var blkChance = isThree ? 1 : (isRim ? 8 : 6);
         blkChance = clamp(blkChance + Math.round((def.reb - 50) * 0.08), 1, 18);
         if (ri(1, 100) <= blkChance) {
-          if (typeof def.s.blk !== 'number') def.s.blk = 0;
-          def.s.blk++; def.s.reb++; off.s.fga++;
+          var blocker = getFloor(defTeam, blkW);
+          if (typeof blocker.s.blk !== 'number') blocker.s.blk = 0;
+          blocker.s.blk++; blocker.s.reb++; off.s.fga++;
           if (isThree) off.s.tpa = (off.s.tpa || 0) + 1;
           if (isHomeOff) { aMomentum++; hMomentum = 0; } else { hMomentum++; aMomentum = 0; }
           return;
@@ -676,18 +716,18 @@ export function simGame(home, away, userIsHome) {
 
       if (makePct === 0) {
         if (isThree) {
-          makePct = clamp(37 + Math.round((off.sht - def.def) * 0.2) + shotBonus, 28, 48);
-          if (defScheme === '2-3' || defScheme === 'zone') makePct += 4;
+          makePct = clamp(37 + Math.round((off.sht - def.def) * 0.2 * TUNE.skill), 28, 48) + shotBonus / 2;
+          if (defScheme === '2-3' || defScheme === 'zone') makePct += 2;
           else if (defScheme === '3-2') makePct -= 5;
           else if (defScheme === '1-3-1') makePct += 2;
           if (defScheme === 'press') makePct += 2;
         } else if (isRim) {
-          makePct = clamp(65 + Math.round((off.fin - def.def) * 0.3) + shotBonus, 48, 80);
-          if (defScheme === '2-3' || defScheme === 'zone') makePct -= 6;
+          makePct = clamp(65 + Math.round((off.fin - def.def) * 0.3 * TUNE.skill), 48, 80) + shotBonus;
+          if (defScheme === '2-3' || defScheme === 'zone') makePct -= 8;
           else if (defScheme === '3-2') makePct += 4;
           if (defScheme === 'press') makePct += 2;
         } else {
-          makePct = clamp(51 + Math.round((off.sht - def.def) * 0.25) + shotBonus, 36, 60);
+          makePct = clamp(51 + Math.round((off.sht - def.def) * 0.25 * TUNE.skill), 36, 60) + shotBonus;
           if (defScheme === '3-2') makePct -= 2;
           if (defScheme === 'press') makePct += 2;
         }
@@ -695,8 +735,20 @@ export function simGame(home, away, userIsHome) {
         if (offStar && off === offStar) makePct -= 6;
       }
       if (isClutch) makePct -= 3;
+      // Volume: past a normal night's shots, each extra attempt is a little
+      // harder (the defense keys on him, tired legs)
+      var vol = shots.get(off) || 0;
+      if (vol > TUNE.volFree) makePct -= (vol - TUNE.volFree) * TUNE.volPen;
+      shots.set(off, vol + 1);
       makePct += momMakeBonus;
       makePct += scoreEffect(isHomeOff);
+      // Late and close, the leader milks the clock for a tougher shot and the
+      // trailer gets all-out effort
+      if (lateGame) {
+        var lead3 = isHomeOff ? (hScore - aScore) : (aScore - hScore);
+        if (lead3 >= 1 && lead3 <= 4) makePct -= TUNE.lateSqueeze;
+        else if (lead3 >= -4 && lead3 <= -1) makePct += TUNE.lateSqueeze / 2;
+      }
       var tiredness3 = Math.min((fatigue.get(off) || 0) / 80, 0.15);
       makePct = Math.round(makePct * (1 - tiredness3));
       makePct = clamp(makePct, 25, 78);
@@ -712,8 +764,8 @@ export function simGame(home, away, userIsHome) {
         if (!isThree && ri(1, 100) <= 8) { if (isHomeOff) hScore++; else aScore++; off.s.pts++; off.s.fta = (off.s.fta || 0) + 1; off.s.ftm = (off.s.ftm || 0) + 1; }
         if (isHomeOff) { hMomentum++; aMomentum = 0; } else { aMomentum++; hMomentum = 0; }
       } else {
-        var oRebChance = 32;
-        if (defScheme === '2-3' || defScheme === 'zone') oRebChance += 5;
+        var oRebChance = TUNE.oreb;
+        if (defScheme === '2-3' || defScheme === 'zone') oRebChance += 3;
         else if (defScheme === '3-2') oRebChance += 2;
         if (ri(1, 100) <= oRebChance) {
           var oReb = getFloor(offTeam, rebW); oReb.s.reb++; oReb.s.oreb = (oReb.s.oreb || 0) + 1;
@@ -725,8 +777,8 @@ export function simGame(home, away, userIsHome) {
             // shot selection (perimeter-weighted) instead of a big's putback.
             var ko = getFloor(offTeam, sw), koDef = getFloor(defTeam);
             var ko3 = ri(1, 100) <= 45;
-            var koPct = ko3 ? clamp(38 + Math.round((ko.sht - koDef.def) * 0.2) + shotBonus, 28, 48)
-                            : clamp(50 + Math.round((ko.sht - koDef.def) * 0.25) + shotBonus, 36, 60);
+            var koPct = ko3 ? clamp(38 + Math.round((ko.sht - koDef.def) * 0.2 * TUNE.skill), 28, 48) + shotBonus / 2
+                            : clamp(50 + Math.round((ko.sht - koDef.def) * 0.25 * TUNE.skill), 36, 60) + shotBonus;
             koPct += scoreEffect(isHomeOff);
             koPct = Math.round(koPct * (1 - Math.min((fatigue.get(ko) || 0) / 80, 0.15)));
             ko.s.fga++; if (ko3) ko.s.tpa = (ko.s.tpa || 0) + 1;
@@ -743,7 +795,7 @@ export function simGame(home, away, userIsHome) {
             return;
           }
           var pbDef = getFloor(defTeam);
-          var pbPct = clamp(52 + Math.round((oReb.fin - pbDef.def) * 0.3) + shotBonus, 38, 72);
+          var pbPct = clamp(52 + Math.round((oReb.fin - pbDef.def) * 0.3 * TUNE.skill), 38, 72) + shotBonus;
           var pbTired = Math.min((fatigue.get(oReb) || 0) / 80, 0.15);
           pbPct = Math.round(pbPct * (1 - pbTired));
           oReb.s.fga++;
@@ -776,7 +828,7 @@ export function simGame(home, away, userIsHome) {
     var lead = isHomeOff ? (hScore - aScore) : (aScore - hScore);
     var over = Math.abs(lead) - SCORE_EFFECT_START;
     if (over <= 0) return 0;
-    var adj = Math.min(SCORE_EFFECT_MAX, over * SCORE_EFFECT_RATE);
+    var adj = Math.min(TUNE.scoreMax, over * TUNE.scoreRate);
     return lead > 0 ? -adj : adj;
   }
 
@@ -790,9 +842,9 @@ export function simGame(home, away, userIsHome) {
   var homeStar = teamStar(home), awayStar = teamStar(away);
   for (var pi = 0; pi < gamePoss; pi++) {
     curPoss = pi;
-    var pClutch = (pi >= gamePoss - 8);
-    runOnePoss(home, away, true, pClutch);
-    runOnePoss(away, home, false, pClutch);
+    var pClutch = (pi >= gamePoss - 8), pLate = (pi >= gamePoss - TUNE.lateTrips);
+    runOnePoss(home, away, true, pClutch, pLate);
+    runOnePoss(away, home, false, pClutch, pLate);
   }
   // M3 FIX: user coach bonuses apply ONLY when the user's team is playing —
   // never in CPU-vs-CPU games.
@@ -801,14 +853,18 @@ export function simGame(home, away, userIsHome) {
     var defBonus = Math.round((G.coach.def - 70) * 0.15);
     if (userIsHomeActual) { hScore += offBonus; aScore -= defBonus; } else { aScore += offBonus; hScore -= defBonus; }
   }
-  var ot = 0;
-  while (hScore === aScore && ot < 5) {
+  // Overtime: real 5-minute periods (an eighth of the game's possessions
+  // each), as many as it takes. The crowd-noise and score rules carry over.
+  var ot = 0, otPoss = Math.max(6, Math.round(gamePoss / 8));
+  while (hScore === aScore && ot < 6) {
     ot++;
-    for (var oti = 0; oti < 4; oti++) { runOnePoss(home, away, true, true); runOnePoss(away, home, false, true); }
+    for (var oti = 0; oti < otPoss; oti++) {
+      var otClutch = oti >= otPoss - 2;
+      runOnePoss(home, away, true, otClutch, otClutch); runOnePoss(away, home, false, otClutch, otClutch);
+    }
   }
-  // M6 FIX: no phantom OT tiebreak point — play extra possessions until the tie
-  // breaks. The credited fallback is a near-impossible safety net (and even it
-  // credits the point to a player rather than thin air).
+  // Safety net after six overtimes (never seen in testing): one more trip
+  // each until it breaks, then credit a free throw to a player
   var otx = 0;
   while (hScore === aScore && otx < 10) {
     otx++;
@@ -820,6 +876,7 @@ export function simGame(home, away, userIsHome) {
   home.rost.forEach(function(p) { if (origMins.has(p)) p.mins = origMins.get(p); });
   away.rost.forEach(function(p) { if (origMins.has(p)) p.mins = origMins.get(p); });
   var res = { homeScore: hScore, awayScore: aScore };
+  if (ot) res.ot = ot;
   if (_recSnap) {
     res.plines = {
       h: { tid: _recSnap.hid, lines: diffRoster(home, _recSnap.h) },

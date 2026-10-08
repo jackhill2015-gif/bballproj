@@ -8,7 +8,7 @@ import { formatFor, roundsIn } from './confformats.js';
 import { payTourneyWin, payOpeningWin } from './finance.js';
 import { recomputeRatings, resumeScore } from './ratings.js';
 import { selectionSundayPoll } from './poll.js';
-import { ge, txt, fmtScore } from './utils.js';
+import { ge, txt, fmtScore, otLabel } from './utils.js';
 import { G, LS, SetupState, saveState } from './state.js';
 import { simGame, SITE } from './simulation.js';
 import { recordGameMorale } from './morale.js';
@@ -274,7 +274,7 @@ export function simConfFull(conf) {
     round.forEach(function(m) {
       if (m.winner !== null) return;
       var res = simConf(m);
-      m.s1 = res.homeScore; m.s2 = res.awayScore;
+      m.s1 = res.homeScore; m.s2 = res.awayScore; if (res.ot) m.ot = res.ot;
       m.winner = res.homeScore > res.awayScore ? m.t1 : m.t2;
       tallyPostseason(m.winner, m.winner === m.t1 ? m.t2 : m.t1);
     });
@@ -297,7 +297,7 @@ function advanceConfRoundExceptUser(conf) {
     if (m.winner !== null) return;
     if (m.t1.id === G.tid || m.t2.id === G.tid) return;
     var res = simConf(m);
-    m.s1 = res.homeScore; m.s2 = res.awayScore;
+    m.s1 = res.homeScore; m.s2 = res.awayScore; if (res.ot) m.ot = res.ot;
     m.winner = res.homeScore > res.awayScore ? m.t1 : m.t2;
     tallyPostseason(m.winner, m.winner === m.t1 ? m.t2 : m.t1);
   });
@@ -321,7 +321,7 @@ export function advanceConfTourney() {
     round.forEach(function(m) {
       if (m.winner !== null) return;
       var res = simConf(m);
-      m.s1 = res.homeScore; m.s2 = res.awayScore;
+      m.s1 = res.homeScore; m.s2 = res.awayScore; if (res.ot) m.ot = res.ot;
       m.winner = res.homeScore > res.awayScore ? m.t1 : m.t2;
       tallyPostseason(m.winner, m.winner === m.t1 ? m.t2 : m.t1);
     });
@@ -349,7 +349,7 @@ export function simConfRound(conf) {
   round.forEach(function(m) {
     if (m.winner !== null) return;
     var res = simConf(m);
-    m.s1 = res.homeScore; m.s2 = res.awayScore;
+    m.s1 = res.homeScore; m.s2 = res.awayScore; if (res.ot) m.ot = res.ot;
     m.winner = res.homeScore > res.awayScore ? m.t1 : m.t2;
     tallyPostseason(m.winner, m.winner === m.t1 ? m.t2 : m.t1);
   });
@@ -852,7 +852,7 @@ export function playTournamentGame(watch) {
         _matchup: m, _conf: um.conf, _ct: um.ct, _type: 'conf', _campus: !!m.campus
       };
       LS.userTeam = G.teams[G.tid];
-      LS.clock = 1200; LS.half = 1; LS.hs = 0; LS.as = 0;
+      LS.clock = 1200; LS.half = 1; LS.hs = 0; LS.as = 0; LS.ot = 0;
       LS.h1 = null; LS.a1 = null; LS.poss = 'A';
       if (watch) {
         var rn = getConfRoundName(um.ct, um.conf);
@@ -865,7 +865,7 @@ export function playTournamentGame(watch) {
         if (_ext.openModal) _ext.openModal(m.t1, m.t2, true, rn);
       } else {
         var res = simConf(m);
-        LS.hs = res.homeScore; LS.as = res.awayScore;
+        LS.hs = res.homeScore; LS.as = res.awayScore; LS.ot = res.ot || 0;
         LS._recLines = userLinesFromRes(res);
         resolveTournamentGame();
       }
@@ -878,14 +878,14 @@ export function playTournamentGame(watch) {
     LS.tH = og.t1; LS.tA = og.t2;
     LS.game = { home: true, conf: false, played: false, uScore: 0, oScore: 0, _og: og, _type: 'opening' };
     LS.userTeam = G.teams[G.tid];
-    LS.clock = 1200; LS.half = 1; LS.hs = 0; LS.as = 0;
+    LS.clock = 1200; LS.half = 1; LS.hs = 0; LS.as = 0; LS.ot = 0;
     LS.h1 = null; LS.a1 = null; LS.poss = 'A';
     if (watch) {
       LS._recPre = { h: snapRoster(og.t1), a: snapRoster(og.t2), hid: og.t1.id, aid: og.t2.id };
       if (_ext.openModal) _ext.openModal(og.t1, og.t2, true, getNCAAroundName());
     } else {
       var reso = simGame(og.t1, og.t2, true);
-      LS.hs = reso.homeScore; LS.as = reso.awayScore;
+      LS.hs = reso.homeScore; LS.as = reso.awayScore; LS.ot = reso.ot || 0;
       LS._recLines = userLinesFromRes(reso);
       resolveTournamentGame();
     }
@@ -898,7 +898,7 @@ export function playTournamentGame(watch) {
         _b1: um2.b1, _b2: um2.b2, _type: 'ncaa'
       };
       LS.userTeam = G.teams[G.tid];
-      LS.clock = 1200; LS.half = 1; LS.hs = 0; LS.as = 0;
+      LS.clock = 1200; LS.half = 1; LS.hs = 0; LS.as = 0; LS.ot = 0;
       LS.h1 = null; LS.a1 = null; LS.poss = 'A';
       if (watch) {
         um2.b1.team._seed = um2.b1.seed;
@@ -908,7 +908,7 @@ export function playTournamentGame(watch) {
         if (_ext.openModal) _ext.openModal(um2.b1.team, um2.b2.team, true, getNCAAroundName());
       } else {
         var res2 = simGame(um2.b1.team, um2.b2.team, true);
-        LS.hs = res2.homeScore; LS.as = res2.awayScore;
+        LS.hs = res2.homeScore; LS.as = res2.awayScore; LS.ot = res2.ot || 0;
         LS._recLines = userLinesFromRes(res2);
         resolveTournamentGame();
       }
@@ -933,21 +933,21 @@ export function resolveTournamentGame() {
   if (game._type === 'conf') {
     var m = game._matchup;
     var conf = game._conf;
-    m.s1 = LS.hs; m.s2 = LS.as;
+    m.s1 = LS.hs; m.s2 = LS.as; if (LS.ot) m.ot = LS.ot;
     m.winner = LS.hs > LS.as ? m.t1 : m.t2;
     tallyPostseason(m.winner, m.winner === m.t1 ? m.t2 : m.t1);
     var userWon = (m.winner.id === G.tid);
     var oppName = (m.t1.id === G.tid ? m.t2 : m.t1).name;
     var oppTeam = (m.t1.id === G.tid ? m.t2 : m.t1);
-    G.lastResult = { yr: G.yr, oppId: oppTeam.id, home: null, u: uScore, o: oScore, won: userWon, wk: G.gi, label: conf + ' tournament' };
+    G.lastResult = { yr: G.yr, oppId: oppTeam.id, home: null, u: uScore, o: oScore, won: userWon, wk: G.gi, label: conf + ' tournament', ot: LS.ot || 0 };
     // Morale: tournament games swing moods too
     recordGameMorale(userWon ? userTeam : oppTeam, userWon ? oppTeam : userTeam);
     if (userWon) {
-      toast(userTeam.name + ' advances, ' + fmtScore(uScore, oScore, '-'), 'var(--grn)');
-      addLog('w', G.gi, '<b>W</b> vs <b>' + oppName + '</b> ' + fmtScore(uScore, oScore) + ' (Conf Tourney)');
+      toast(userTeam.name + ' advances, ' + fmtScore(uScore, oScore, '-', LS.ot), 'var(--grn)');
+      addLog('w', G.gi, '<b>W</b> vs <b>' + oppName + '</b> ' + fmtScore(uScore, oScore, '', LS.ot) + ' (Conf Tourney)');
     } else {
-      toast('Eliminated by ' + oppName + ', ' + fmtScore(uScore, oScore, '-'), 'var(--red)');
-      addLog('l', G.gi, '<b>L</b> vs <b>' + oppName + '</b> ' + fmtScore(uScore, oScore) + ' (Conf Tourney)');
+      toast('Eliminated by ' + oppName + ', ' + fmtScore(uScore, oScore, '-', LS.ot), 'var(--red)');
+      addLog('l', G.gi, '<b>L</b> vs <b>' + oppName + '</b> ' + fmtScore(uScore, oScore, '', LS.ot) + ' (Conf Tourney)');
     }
     advanceConfRoundExceptUser(conf);
     // Also advance other conferences one round
@@ -960,7 +960,7 @@ export function resolveTournamentGame() {
       round.forEach(function(rm) {
         if (rm.winner !== null) return;
         var res3 = simConf(rm);
-        rm.s1 = res3.homeScore; rm.s2 = res3.awayScore;
+        rm.s1 = res3.homeScore; rm.s2 = res3.awayScore; if (res3.ot) rm.ot = res3.ot;
         rm.winner = res3.homeScore > res3.awayScore ? rm.t1 : rm.t2;
         tallyPostseason(rm.winner, rm.winner === rm.t1 ? rm.t2 : rm.t1);
       });
@@ -973,18 +973,18 @@ export function resolveTournamentGame() {
     scoreOpening(og2, LS.hs, LS.as);
     var wonO = og2.winner.id === G.tid;
     var oppO = og2.t1.id === G.tid ? og2.t2 : og2.t1;
-    G.lastResult = { yr: G.yr, oppId: oppO.id, home: null, u: uScore, o: oScore, won: wonO, wk: G.gi, label: 'NCAA Opening Round' };
+    G.lastResult = { yr: G.yr, oppId: oppO.id, home: null, u: uScore, o: oScore, won: wonO, wk: G.gi, label: 'NCAA Opening Round', ot: LS.ot || 0 };
     recordGameMorale(wonO ? userTeam : oppO, wonO ? oppO : userTeam);
     if (wonO) {
       payOpeningWin();
       var slot = bracketEntryAt(og2.pos);
-      toast(userTeam.name + ' wins, ' + fmtScore(uScore, oScore, '-') + '. Into the field as the ' + (slot ? NCAA_REGIONS[slot.region] + ' ' + slot.seed : '') + ' seed.', 'var(--grn)');
-      addLog('w', G.gi, '<b>W</b> vs <b>' + oppO.name + '</b> ' + fmtScore(uScore, oScore) + ' (NCAA Opening Round)');
+      toast(userTeam.name + ' wins, ' + fmtScore(uScore, oScore, '-', LS.ot) + '. Into the field as the ' + (slot ? NCAA_REGIONS[slot.region] + ' ' + slot.seed : '') + ' seed.', 'var(--grn)');
+      addLog('w', G.gi, '<b>W</b> vs <b>' + oppO.name + '</b> ' + fmtScore(uScore, oScore, '', LS.ot) + ' (NCAA Opening Round)');
     } else {
       G.seasonAchievements = G.seasonAchievements || {};
       G.seasonAchievements.tourneyFinish = 'Opening round';
-      toast('Season over. Lost in the Opening Round, ' + fmtScore(uScore, oScore, '-'), 'var(--red)');
-      addLog('l', G.gi, '<b>L</b> vs <b>' + oppO.name + '</b> ' + fmtScore(uScore, oScore) + ' (NCAA Opening Round)');
+      toast('Season over. Lost in the Opening Round, ' + fmtScore(uScore, oScore, '-', LS.ot), 'var(--red)');
+      addLog('l', G.gi, '<b>L</b> vs <b>' + oppO.name + '</b> ' + fmtScore(uScore, oScore, '', LS.ot) + ' (NCAA Opening Round)');
     }
     simOpeningRound(true);
   } else if (game._type === 'ncaa') {
@@ -1003,7 +1003,7 @@ export function resolveTournamentGame() {
     recordGameMorale(userWon2 ? userTeam : oppTeam2, userWon2 ? oppTeam2 : userTeam);
     // Teams left AFTER the full round: 32 / 16 / 8 / 4 / 2 / 1
     var remaining = G.bracket.filter(function(b) { return b.active; }).length;
-    G.lastResult = { yr: G.yr, oppId: oppTeam2.id, home: null, u: uScore, o: oScore, won: userWon2, wk: G.gi, label: 'NCAA tournament' };
+    G.lastResult = { yr: G.yr, oppId: oppTeam2.id, home: null, u: uScore, o: oScore, won: userWon2, wk: G.gi, label: 'NCAA tournament', ot: LS.ot || 0 };
     // Tournament payout per win, larger each round (remaining after the round: 32 → round of 64 win)
     if (userWon2) payTourneyWin({ 32: 0, 16: 1, 8: 2, 4: 3, 2: 4, 1: 5 }[remaining] || 0);
 
@@ -1032,7 +1032,7 @@ export function resolveTournamentGame() {
       // Upset bonus
       if (isUpset) {
         prestigeGain += 2;
-        addLog('ev', G.gi, '\ud83d\udea8 <b>UPSET!</b> #' + userSeed + ' ' + userTeam.name + ' stuns #' + oppSeed + ' ' + oppName2 + '! ' + fmtScore(uScore, oScore, '-'));
+        addLog('ev', G.gi, '\ud83d\udea8 <b>UPSET!</b> #' + userSeed + ' ' + userTeam.name + ' stuns #' + oppSeed + ' ' + oppName2 + '! ' + fmtScore(uScore, oScore, '-', LS.ot));
       }
 
       // Apply prestige
@@ -1040,12 +1040,12 @@ export function resolveTournamentGame() {
       t.schoolPrestige = Math.min(100, (t.schoolPrestige || 50) + prestigeGain);
 
       toast(userTeam.name + ' advances. ' + roundMsg, 'var(--grn)');
-      addLog('w', G.gi, '<b>W</b> vs <b>' + oppName2 + '</b> ' + fmtScore(uScore, oScore) + ' (NCAA \u2014 ' + roundMsg + ')');
+      addLog('w', G.gi, '<b>W</b> vs <b>' + oppName2 + '</b> ' + fmtScore(uScore, oScore, '', LS.ot) + ' (NCAA \u2014 ' + roundMsg + ')');
     } else {
       // Elimination — record how far we got (post-round team counts)
       var finalRound = remaining <= 1 ? 'Championship Game' : remaining <= 2 ? 'Final Four' : remaining <= 4 ? 'Elite Eight' : remaining <= 8 ? 'Sweet 16' : remaining <= 16 ? 'Round of 32' : 'Round of 64';
       toast('Season over. Eliminated in the ' + finalRound + '.', 'var(--red)');
-      addLog('l', G.gi, '<b>L</b> vs <b>' + oppName2 + '</b> ' + fmtScore(uScore, oScore) + ' (NCAA \u2014 ' + finalRound + ')');
+      addLog('l', G.gi, '<b>L</b> vs <b>' + oppName2 + '</b> ' + fmtScore(uScore, oScore, '', LS.ot) + ' (NCAA \u2014 ' + finalRound + ')');
       G.seasonAchievements = G.seasonAchievements || {};
       G.seasonAchievements.tourneyFinish = finalRound;
     }
@@ -1087,6 +1087,7 @@ export function showTournamentResult() {
     + '<div class="tres-rows">'
     + '<div class="tres-row' + (won ? ' w' : '') + '"><span>' + me.name + '</span><b>' + uScore + '</b></div>'
     + '<div class="tres-row' + (won ? '' : ' w') + '"><span>' + opp.name + '</span><b>' + oScore + '</b></div>'
+    + (LS.ot ? '<div class="tres-ot">Final/' + otLabel(LS.ot) + '</div>' : '')
     + '</div>'
     + '<div class="tres-s">' + nextLine + '</div>'
     + '<button class="btn-big" style="width:auto;padding:0 32px;" onclick="closeTournamentResult(this)">Continue</button>'

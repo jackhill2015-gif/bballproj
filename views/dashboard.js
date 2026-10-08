@@ -120,7 +120,7 @@ function renderLastFinal() {
   var fresh = key !== _lastFinalKey; _lastFinalKey = key;
   var where = r.home === null ? 'vs' : (r.home ? 'vs' : 'at');
   return '<div class="final-line ' + (r.won ? 'w' : 'l') + (fresh ? ' fresh' : '') + '">'
-    + '<span class="fl-res">Final: ' + (r.won ? 'W' : 'L') + ' ' + fmtScore(r.u, r.o) + '</span>'
+    + '<span class="fl-res">Final: ' + (r.won ? 'W' : 'L') + ' ' + fmtScore(r.u, r.o, '', r.ot) + '</span>'
     + '<span>' + where + ' ' + opp.name + ' (' + opp.wins + '-' + opp.loss + ')</span>'
     + '<span class="fl-meta">' + r.label + '</span></div>';
 }

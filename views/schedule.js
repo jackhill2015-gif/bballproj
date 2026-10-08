@@ -97,7 +97,7 @@ function gameRow(game, week, natSorted, team, rivals) {
     + '<small>' + ctx + '</small></div>';
 
   if (isPlayed) {
-    h += '<div class="sched-score" style="color:' + (isWin ? 'var(--grn2)' : 'var(--txt2)') + ';">' + (isWin ? 'W ' : 'L ') + fmtScore(game.uScore, game.oScore) + '</div>';
+    h += '<div class="sched-score" style="color:' + (isWin ? 'var(--grn2)' : 'var(--txt2)') + ';">' + (isWin ? 'W ' : 'L ') + fmtScore(game.uScore, game.oScore, '', game.ot) + '</div>';
   } else {
     var dm = DIFF_MOD[G.difficulty] || 0;
     var wp = winProb(getTOvr(team), getTOvr(opp), game.home ? 4 : -4, dm);

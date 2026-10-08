@@ -1713,3 +1713,7 @@ table.ups td { vertical-align: middle; }
 /* Team color accents: tinted school badges + dashboard header bar. */
 .team-logo { display: inline-block; padding: 1px 6px; border-radius: 4px; }
 .dash-accent { height: 3px; border-radius: 2px; margin: 0 0 10px; max-width: 280px; }
+
+/* Overtime: tag under the tournament result; keep "W 78-71 OT" on one line */
+.tres-ot { margin-top: 6px; font-size: 12px; color: var(--txt3); text-align: right; }
+.sched-score { white-space: nowrap; width: auto; min-width: 64px; }

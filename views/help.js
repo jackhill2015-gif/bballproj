@@ -31,6 +31,17 @@ export function renderHelp() {
     + 'In the offseason the button changes with the step: begin the offseason, finish skill points, '
     + 'advance recruiting, or finalize the class and start the new season.');
 
+  h += sec('How games play out',
+    'The better team usually wins, about as often as in real college basketball: a team rated 3 points '
+    + 'higher wins about 60 to 65 percent of the time on a neutral floor, 6 points about 75 percent, '
+    + 'and 12 points about 93 percent. Upsets still happen, and NCAA tournament upsets come at close '
+    + 'to the real rates by seed (a 12 seed beats a 5 seed about a third of the time). '
+    + 'The win percentage on your schedule uses the same numbers. Home court is worth about 3 to 4 '
+    + 'points; conference and NCAA tournament games are on a neutral floor. '
+    + 'Your best player takes the most shots, and the second option the next most, so stars put up '
+    + 'big lines, but a player who shoots a lot in one game gets a little less efficient. '
+    + 'Tied games go to overtime: a full 5-minute period, as many as it takes. Scores show OT or 2OT.');
+
   h += sec('Depth chart and minutes',
     'The top five players on the roster screen start; the next four are the rotation. '
     + 'There are 200 minutes to hand out each game. Drag a row by its handle (or use the arrow keys) '
@@ -42,7 +53,8 @@ export function renderHelp() {
     'Pick an offensive and a defensive scheme in the gameplan panel on the roster screen; '
     + 'changes apply from your next game. Offenses: balanced, motion, drive, set, and early — each '
     + 'shifts pace and where shots come from. Defenses: man-to-man, 2-3 zone, 3-2 zone, 1-3-1 zone, '
-    + 'and box-and-one — each with a clear tradeoff, like protecting the paint at the cost of open threes.');
+    + 'and box-and-one — each with a clear tradeoff, like protecting the paint at the cost of open threes. '
+    + 'A scheme changes a game by a point or two, not more: players decide games.');
 
   h += sec('Redshirts',
     'A player can redshirt once in his career, as long as he has played four games or fewer that '

@@ -135,11 +135,13 @@ export function recomputeRatings() {
 }
 
 // Selection committee resume for NCAA at-large picks and seeding: the
-// ranking score plus a little extra credit for winning games.
-// Selection committee resume: power rating plus a real weight on record.
-// 0.6 win pct is worth +20 (2 points of margin), 0.8 is +60. An 18-13
-// power-conference team now lands around the 8-11 line, not a 3 seed.
-export var RESUME_RECORD_WEIGHT = 200;
+// ranking score plus a little extra credit for winning games (0.8 win pct
+// is worth +18, about two points of margin). The ranking score already
+// counts record (WIN_WEIGHT); a heavier weight here put 30-2 teams from
+// weak conferences on the 4-6 lines ahead of stronger power-conference
+// teams, and first-round upsets ran well above the real seed-vs-seed rates
+// (research/sim-feel.md).
+export var RESUME_RECORD_WEIGHT = 60;
 export function resumeScore(t) {
   var gp = (t.wins || 0) + (t.loss || 0);
   var winPct = gp ? t.wins / gp : 0;
