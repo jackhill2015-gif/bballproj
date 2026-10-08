@@ -349,7 +349,7 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
   margin-top: auto; background: none; border: none; color: var(--txt3);
   font-size: 12px; padding: 10px; min-height: 44px; cursor: pointer; text-align: left;
 }
-.nav-new:hover { color: var(--red); }
+.nav-new:hover { color: var(--txt); }
 #game-log-panel { margin-top: 10px; border-top: 1px solid var(--bdr); padding-top: 8px; }
 .log-head { font-size: 10px; font-weight: 700; color: var(--txt3); padding: 0 6px 6px; }
 #game-log { display: flex; flex-direction: column; gap: 4px; }
@@ -391,7 +391,7 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
     border-top: none; min-height: 48px; font-size: 14px; text-transform: none; letter-spacing: 0;
     padding: 0 14px;
   }
-  .more-handle { display: block; width: 36px; height: 4px; border-radius: 2px; background: var(--bdr2); margin: 4px auto 8px; }
+  .more-handle { display: block; width: 36px; height: 4px; border-radius: 2px; background: var(--bdr2); background-clip: content-box; margin: 4px auto 8px; padding: 16px 24px; cursor: pointer; }
 }
 
 /* ═══ DASHBOARD ═══ */
@@ -1720,3 +1720,13 @@ table.ups td { vertical-align: middle; }
 .bx-ot { font-size: 9.5px; font-weight: 600; color: var(--txt3); letter-spacing: .02em; }
 /* Leaders: gap row before "your player" when he is outside the top 10 */
 tr.sep td { padding: 0; height: 6px; border-top: 1px dashed var(--bdr); }
+
+/* Swipe navigation (swipe.js): quick, subtle slide when a touch swipe
+   changes the main tab. Nothing flashy; off under reduced motion. */
+.view.swipe-in-r { animation: swipe-in-r 180ms ease-out; }
+.view.swipe-in-l { animation: swipe-in-l 180ms ease-out; }
+@keyframes swipe-in-r { from { transform: translateX(26px); opacity: 0.35; } to { transform: none; opacity: 1; } }
+@keyframes swipe-in-l { from { transform: translateX(-26px); opacity: 0.35; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .view.swipe-in-r, .view.swipe-in-l { animation: none; }
+}

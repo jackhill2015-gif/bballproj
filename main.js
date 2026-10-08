@@ -37,7 +37,7 @@ import { renderBracket } from './views/bracket.js';
 import { renderOffseason, pitchRecruit, resolvePitchWeek, resolveRecruitingClass, adjustPoints, advanceRecruitPhase, addTarget, removeTarget, showDetail, closeDetail, setRecruitTab, setRecruitFilter, proceedToRecruiting, allocateSkillPoint, deallocateSkillPoint, finishSkillPoints, applyForJob, stayAtSchool, proceedFromFired, registerRecruitingCallbacks } from './views/recruiting.js';
 import { renderSeasonRecap } from './views/recap.js';
 import {
-  showHomeScreen, loadAndPlay, startNewDynasty, deleteFromHome, newDynasty,
+  showHomeScreen, loadAndPlay, startNewDynasty, deleteFromHome, exitToHome,
   buildPicker, togglePicker, selectTeam, pickRandom, setDiff,
   goToStep2, goToStep1, startDynasty, renderNCAutoList, swapNC,
   submitCoachName, submitDifficulty, selectJob, goBackToJobs,
@@ -154,7 +154,7 @@ if (typeof window !== 'undefined' && window.addEventListener) {
 window._hoopsToast = function(msg) { toast(msg); addLog('ev', G.gi, msg + '.'); };
 window.startNewDynasty = startNewDynasty;
 window.deleteFromHome = deleteFromHome;
-window.newDynasty = newDynasty;
+window.exitToHome = exitToHome;
 window.togglePicker = togglePicker;
 window.selectTeam = selectTeam;
 window.pickRandom = pickRandom;

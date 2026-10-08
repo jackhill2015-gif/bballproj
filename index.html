@@ -107,7 +107,7 @@ try {
         <div class="log-head">Latest</div>
         <div id="game-log"></div>
       </div>
-      <button class="nav-new" data-action="new-dynasty">New Dynasty</button>
+      <button class="nav-new" data-action="exit-home">Exit to home</button>
       <div class="nav-sep"></div>
       <div class="more-theme nav-theme">
         <div class="more-theme-label">Appearance</div>
@@ -131,7 +131,7 @@ try {
       <button class="nav-btn" data-view="help" data-action="nav"><span>How it works</span></button>
       <button class="nav-btn" data-action="devreport"><span>Development report</span></button>
       <button class="nav-btn" data-action="backup"><span>Back up dynasty</span></button>
-      <button class="nav-btn" data-action="new-dynasty"><span>New Dynasty</span></button>
+      <button class="nav-btn" data-action="exit-home"><span>Exit to home</span></button>
       <button class="nav-btn" data-action="tips-reset"><span>Show tips again</span></button>
       <div class="more-sep"></div>
       <div class="more-theme">
@@ -276,6 +276,7 @@ import { ALL_TEAMS } from './constants.js';
 var el = document.getElementById('home-team-count');
 if (el) el.textContent = ALL_TEAMS.length;
 </script>
+<script src="swipe.js"></script>
 <script type="module" src="main.js"></script>
 </body>
 </html>
