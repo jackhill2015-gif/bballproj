@@ -14,6 +14,9 @@ import { G } from '../state.js';
 import { oldOvr } from '../utils.js';
 import { noteSpend, totals } from '../finance.js';
 
+// One decimal, or a dash when a player has no stats (redshirts, no minutes)
+function f1(v) { return typeof v === 'number' && isFinite(v) ? v.toFixed(1) : '–'; }
+
 var MORALE_DEFAULT = 50;
 
 function round5(v) { return Math.round(v / 5) * 5; }
@@ -263,9 +266,15 @@ function nilTable(asks, nilAvail) {
       + '<td>' + a.pos + '</td><td>' + a.cls + '</td>'
       + '<td class="num"><b>' + a.ovr + '</b></td><td class="num">' + (a.pot || a.ovr) + '</td>'
       + '<td class="num">' + mins + '</td>'
+<<<<<<< Updated upstream
       + '<td class="num">' + fmt1(a.ppg) + '</td>'
       + '<td class="num">' + fmt1(a.rpg) + '</td>'
       + '<td class="num">' + fmt1(a.apg) + '</td>'
+=======
+      + '<td class="num">' + f1(a.ppg) + '</td>'
+      + '<td class="num">' + f1(a.rpg) + '</td>'
+      + '<td class="num">' + f1(a.apg) + '</td>'
+>>>>>>> Stashed changes
       + '<td class="dep-status">' + status + '</td>'
       + '<td class="num"><b>' + a.ask + '</b></td>'
       + '<td class="dep-actions">' + actions + '</td></tr>';
@@ -288,7 +297,11 @@ function nilCards(asks, nilAvail, total) {
       h += '<div class="nil-card">'
         + '<div class="nil-head"><div>'
         + '<div class="nil-name">' + pLink(a.name, G.tid) + '</div>'
+<<<<<<< Updated upstream
         + '<div class="nil-sub">' + a.pos + ' · ' + a.ovr + ' OVR' + (a.ppg != null ? ' · ' + a.ppg.toFixed(1) + ' PPG' : '') + '</div>'
+=======
+        + '<div class="nil-sub">' + a.pos + ' · ' + a.ovr + ' OVR · ' + f1(a.ppg) + ' PPG</div>'
+>>>>>>> Stashed changes
         + '<div class="nil-why">' + a.why + '</div>'
         + '</div><div class="nil-ask"><b>' + a.ask + '</b><span>NIL</span></div></div>'
         + '<div class="nil-budget"><div class="nil-fill" style="width:' + Math.min(100, pct) + '%;"></div></div>'
@@ -321,9 +334,9 @@ function depTableRows(list, isDep, isNotBack) {
       var why = (d.notReturningWhy || 'Wants a fresh start');
       why = why.charAt(0).toUpperCase() + why.slice(1);
       // No season line = didn't play (redshirt/deep bench); show reason only, no fake stats
-      var pts = sl ? sl.ppg.toFixed(1) : '';
-      var reb = sl ? sl.rpg.toFixed(1) : '';
-      var ast = sl ? sl.apg.toFixed(1) : '';
+      var pts = sl ? f1(sl.ppg) : '';
+      var reb = sl ? f1(sl.rpg) : '';
+      var ast = sl ? f1(sl.apg) : '';
       h += '<tr class="dep-gone">'
         + '<td class="st-name">' + pLink(d.name, G.tid) + '</td>'
         + '<td>' + d.pos + '</td><td>' + d.cls + '</td>'
@@ -352,7 +365,7 @@ function depList(dep, notBack) {
     var sl = seasonLine(p);
     var why = (p.notReturningWhy || 'Wants a fresh start');
     why = why.charAt(0).toUpperCase() + why.slice(1);
-    var stats = sl ? ' · ' + sl.ppg.toFixed(1) + ' pts, ' + sl.rpg.toFixed(1) + ' reb, ' + sl.apg.toFixed(1) + ' ast' : '';
+    var stats = sl ? ' · ' + f1(sl.ppg) + ' pts, ' + f1(sl.rpg) + ' reb, ' + f1(sl.apg) + ' ast' : '';
     h += '<div class="dep-item"><span class="dep-name">' + pLink(p.name, G.tid) + '</span><span class="dep-why">' + why + stats + '</span></div>';
   });
   return h + '</div>';
