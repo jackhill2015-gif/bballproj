@@ -27,6 +27,7 @@ export var VOTE = {
   lossUnranked: 8.5, loss1125: 6.5, lossTop10: 4.5, // per loss, by opponent's rank
   siteHome: 1.19, siteNeutral: 1.05, siteRoad: 0.77,  // where the loss happened
   topBandScale: 0.45,  // ranks 2-5 fall less than everyone else after a loss
+  bottomBandScale: 0.85, // ranks 16-25 are a little stickier (fewer fall out after one loss)
   numberOneScale: 0.2, // ... and #1 least of all (voters keep a #1 after a close loss)
   winTop10: 1, win1125: 0.6, winUnranked: 0,          // per win
   roadWin: 0.1,        // extra for a road win
@@ -39,6 +40,9 @@ export var VOTE = {
   entrySpacing: 1.8,   // spots between unranked teams waiting in line
   brand: 3.5,          // efficiency points per prestige point below brandBar
   brandBar: 68,        // programs below this prestige get less benefit of the doubt
+  brandFadeBase: 0.4, // share of the brand penalty that fades by the end of the season for any team
+  brandFadeElite: 0.5, // ... plus this much more for an elite record (win pct .70 -> .95)
+  brandFadeFrom: 0.70, brandFadeTo: 0.95,
   record: 100,         // efficiency points per 1.000 of win pct in the strength order
   secondLoss: 0.9      // a second loss in the same week costs 0.9 of the first
 };
@@ -88,8 +92,15 @@ export function pollLabel() {
 // in a weak league doesn't impress voters much.
 function voterKey(t) {
   var gp = (t.wins || 0) + (t.loss || 0);
-  // brand only holds back lesser-known programs; among big names, results decide
-  return (t.pts || 1000) + VOTE.brand * Math.min(0, (t.schoolPrestige || 50) - VOTE.brandBar) + VOTE.record * ((gp ? t.wins / gp : 0.5) - 0.5);
+  var wp = gp ? t.wins / gp : 0.5;
+  // brand only holds back lesser-known programs; among big names, results decide.
+  // Voters give a small-conference team less benefit of the doubt early, but a
+  // team that keeps winning earns it: the penalty fades with games played, and
+  // faster the better the record (a 28-3 one-bid team gets in; 23-5 does not)
+  var progress = Math.min(1, gp / 28);
+  var elite = Math.max(0, Math.min(1, (wp - VOTE.brandFadeFrom) / (VOTE.brandFadeTo - VOTE.brandFadeFrom)));
+  var fade = progress * (VOTE.brandFadeBase + VOTE.brandFadeElite * elite);
+  return (t.pts || 1000) + VOTE.brand * (1 - fade) * Math.min(0, (t.schoolPrestige || 50) - VOTE.brandBar) + VOTE.record * (wp - 0.5);
 }
 function meritOrder(key) {
   var s = G.teams.slice().sort(function(a, b) { return key(b) - key(a); });
@@ -190,6 +201,7 @@ function voterUpdate(res, kind) {
         L *= g.site === 'H' ? VOTE.siteHome : g.site === 'A' ? VOTE.siteRoad : VOTE.siteNeutral;
         if (rankNow[t.id] === 1) L *= VOTE.numberOneScale;
         else if (rankNow[t.id] && rankNow[t.id] <= 5) L *= VOTE.topBandScale;
+        else if (rankNow[t.id] >= 16) L *= VOTE.bottomBandScale;
         if (lost++) L *= VOTE.secondLoss;
         s += L;
       }

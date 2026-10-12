@@ -13,7 +13,6 @@ Claim a job before you start so two agents don't edit the same screens. Remove y
 
 | Who | Job | Files / screens touched | Since |
 |-----|-----|-------------------------|-------|
-| Claude | C2 mid-major polling (voter model) | poll.js, research/rankings, HANDOFF.md, sw.js | 2026-10-12 |
 | Muse | M2 roster + team stats tabs | views/roster.js, style.css, sw.js | 2026-10-12 |
 | Muse | Anonymous Reddit-beta link via Cloudflare Pages (no game code changes) — PAUSED, Jack said later | HANDOFF.md only | 2026-10-07 |
 
@@ -21,6 +20,7 @@ Claim a job before you start so two agents don't edit the same screens. Remove y
 
 Leave a note for the other agent. Delete it once it's handled. **Claude sessions: pull and re-read this section before you push**, since it may have changed while you worked.
 
+- **Claude -> Jack (2026-10-12): C2 done.** Mid-major polling is closer to real: in 20-season runs a ranked mid-major shows up in about 68% of seasons (was 40%, real 80%) and mid-majors hold about 1.0% of Top 25 spots (was 0.55%, real 1.4%). A one-bid team with a great record now climbs late in the season; the brand penalty fades with games played and with win percentage. Your team follows the same rules. Not fixed: the best mid-major now averages #14-19 (real #19), which is a bit high but in band. Wins over ranked teams still count the same for unranked teams; I left that alone.
 - **Muse → Claude (2026-10-12):** M1 removed coach-age displays from setup and History, but views/recruiting.js still shows coach age (coach profile stat cell and coaching carousel sub). Recruiting screens are your lane — please drop those two when convenient.
 
 - **Claude -> Jack (2026-10-12): 0b and C1 done.** CPU teams now suffer injuries, suspensions and hot/cold stretches like yours (about 150 CPU players out at a time; every CPU team still plays 200 minutes). Sim-feel (16 seasons): win curve, upsets, home win, overtime and scheme effects all in band; 2 stats sit just under their band: best player's share of team points 19.6% median (band 20-25; 20.2 before this change) and 23.7% top tenth (band 24-30; 24.1 before). Injuries to stars trim their season totals a little, and both were already on the edge. Say if you want a small usage nudge to bring them back. I lowered your injury roll from 15% to 12% a week so you and the CPU face the same rate. C1 shipped as listed; checked at 390px and 1280px. within-reach-test failed once in a full run and passed six times alone and on the old code (looks like a flake).
@@ -37,6 +37,7 @@ Leave a note for the other agent. Delete it once it's handled. **Claude sessions
 
 ## Recently shipped (newest first, keep about 8)
 
+- Small-conference teams can get ranked (C2): in the voter model the brand penalty for low-prestige schools now fades through the season, faster the better the record (a 28-3 one-bid team gets in; 23-5 does not), and ranks 16-25 are a little stickier after one loss. Calibration over 20 seasons (3 runs, before → after, real in brackets): mid-major share of Top 25 spots 0.55 → 0.4-1.4%, avg 1.0 (1.4); seasons with a ranked mid-major 40 → 45-85%, avg 68 (80); best mid-major rank 17.9 → 14-19 (19.1); power share 71 → 70-72 (74.5); out of the poll after 1L-1W at 16-25 26.5 → 25.8-26.8 (16.1, band edge 28.1). All targets in band every run. *(Claude)*
 - M1: desktop scale (1280px+ wider content and larger type, 1600px wider still; phone unchanged), setup contrast fix (buttons inherit theme color so unselected difficulty reads in dark mode), difficulty header "Welcome, Coach <name>" / "Let's get to work.", job offers sortable by Name/OVR/Prestige with a Random pick button, Trophy room merged into History as Seasons/Coach/Records tabs (nav + More sheet entries removed, old links redirect), "Stats" nav → "League leaders", "Dynasty history" → "History" with plain empty states, coach age removed from setup and History, slogan copy trimmed. *(Muse)*
 
 - Events for every team (0b): CPU teams now get injuries, suspensions and hot/cold/team streaks at the same weekly rates as yours (G.cpuInj / G.cpuBuffs, apart from your G.injuries / G.buffs); only ranked teams' stars or 84+ players get a log line. Injuries run mostly 1-3 weeks, some 4-10, about 1% season-ending (yours dropped from 15% to 12% a week to match the CPU's). Buffs store what was really applied, so a hot streak on a 95+ player no longer lowers him for good (also the TEAM buff and the NIL shop); everything is cleared at the start of the offseason. "UPSET!" and "CINDERELLA ALERT!" lost their emoji. `node test-harness/events-test.mjs`. *(Claude)*
