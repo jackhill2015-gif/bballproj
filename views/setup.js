@@ -202,6 +202,8 @@ function bindSetup(el) {
     if (q('[data-setup="diff-submit"]')) { submitDifficulty(); return; }
     if ((m = q('[data-diff]'))) { setDiff(m.getAttribute('data-diff')); return; }
     if ((m = q('[data-job]'))) { selectJob(parseInt(m.getAttribute('data-job'), 10)); return; }
+    if ((m = q('[data-setup="job-sort"]'))) { _jobSort = m.getAttribute('data-sort'); showStep('job-offers'); return; }
+    if (q('[data-setup="job-random"]')) { randomJob(); return; }
     if (q('[data-setup="back-jobs"]')) { goBackToJobs(); return; }
     if (q('[data-setup="start-dynasty"]')) { startDynasty(); return; }
     if (q('[data-setup="nc-auto"]')) { autoGenNC(); showStep('nc-schedule'); return; }
@@ -225,7 +227,7 @@ function bindSetup(el) {
 
 function renderCoachName() {
   return '<div class="setup-wrap">'
-    + stepHeader('Create your coach', 'Your legacy starts on the sideline.')
+    + stepHeader('Create your coach', 'This name appears on your career record.')
     + '<div class="panel"><div class="panel-h"><span>Name</span></div><div class="panel-b">'
     + '<div style="margin-bottom:12px;"><div class="field-label">First name</div>'
     + '<input id="coach-first" class="setup-input" type="text" placeholder="John" maxlength="20" autocomplete="off"></div>'
@@ -258,7 +260,7 @@ window.submitCoachName = submitCoachName;
 
 function renderDifficulty() {
   var h = '<div class="setup-wrap">'
-    + stepHeader('Welcome, Coach ' + G.coach.lastName, 'Age 30 · first year on the sideline')
+    + stepHeader('Welcome, Coach ' + G.coach.lastName, "Let's get to work.")
     + '<div class="panel"><div class="panel-h"><span>Difficulty</span></div><div class="panel-b">';
   ['easy', 'normal', 'hard', 'legend'].forEach(function(key) {
     var on = SetupState.DIFF === key;
@@ -306,9 +308,13 @@ function renderJobOffers() {
   var h = '<div class="setup-wrap" style="max-width:720px;">'
     + stepHeader('Job offers', 'As a first-year coach, these programs will take a chance on you.')
     + '<div class="panel"><div class="panel-h"><span>Open positions</span><small>' + _jobOffers.length + ' programs</small></div>'
-    + '<div class="panel-b flush"><div class="tbl-wrap"><table>'
+    + '<div class="panel-b flush">'
+    + '<div class="job-sortbar"><span class="job-sort-label">Sort</span>'
+    + jobSortBtn('name', 'Name') + jobSortBtn('ovr', 'OVR') + jobSortBtn('prestige', 'Prestige')
+    + '<button class="btn-quiet job-random" data-setup="job-random">Random pick</button></div>'
+    + '<div class="tbl-wrap"><table>'
     + '<thead><tr><th></th><th>Program</th><th class="num">OVR</th><th class="num">Prestige</th></tr></thead><tbody>';
-  _jobOffers.forEach(function(t) {
+  sortedJobOffers().forEach(function(t) {
     var tier = getTier(t.baseOvr);
     h += '<tr data-job="' + t.id + '" tabindex="0" role="button" aria-label="Take the job at ' + t.name + '" style="cursor:pointer;">'
       + '<td>' + teamLogo(t.name, 'sm') + '</td>'
@@ -319,6 +325,28 @@ function renderJobOffers() {
   h += '</tbody></table></div></div></div></div>';
   return h;
 }
+
+// Presentation-only ordering for the offers list (default A-Z).
+var _jobSort = 'name';
+
+function jobSortBtn(id, label) {
+  return '<button class="job-sort-btn' + (_jobSort === id ? ' on' : '') + '" data-setup="job-sort" data-sort="' + id + '">' + label + '</button>';
+}
+
+function sortedJobOffers() {
+  var arr = _jobOffers.slice();
+  if (_jobSort === 'name') arr.sort(function(a, b) { return a.name < b.name ? -1 : (a.name > b.name ? 1 : 0); });
+  else if (_jobSort === 'ovr') arr.sort(function(a, b) { return getTOvr(b) - getTOvr(a); });
+  else if (_jobSort === 'prestige') arr.sort(function(a, b) { return b.schoolPrestige - a.schoolPrestige; });
+  return arr;
+}
+
+export function randomJob() {
+  if (!_jobOffers.length) return;
+  var t = _jobOffers[ri(0, _jobOffers.length - 1)];
+  selectJob(t.id);
+}
+window.randomJob = randomJob;
 
 export function selectJob(tid) {
   SetupState.SEL_TID = tid;

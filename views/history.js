@@ -1,28 +1,18 @@
 // ═══════════════════════════════════════════════════════════
 //  HOOPS OS — views/history.js
-//  Dynasty almanac: coach resume, season timeline, national
-//  champions, program record book, coaching milestones,
-//  trophy case. (Fixes the old dead view that rendered into
-//  a nonexistent element.)
+//  History: one page with three tabs — Seasons (results by
+//  year), Coach (career totals and achievements), Records
+//  (record book and Hall of Fame). The old Trophy room view
+//  was merged here (M1, 2026-10-12).
 // ═══════════════════════════════════════════════════════════
 
 import { ge, fR } from '../utils.js';
 import { G } from '../state.js';
 import { bookFor, ensureRecords, STAT_LABELS } from '../records.js';
 import { devReportHTML } from './devreport.js';
+import { ACHIEVEMENTS } from '../goals.js';
 
-function finishBadge(tf) {
-  if (tf === 'CHAMP') return '<span class="tag t-cf">National Champion</span>';
-  if (tf === 'Runner-Up') return '<span class="tag">Runner-Up</span>';
-  if (tf === 'Final Four') return '<span class="tag t-home">Final Four</span>';
-  if (tf === 'Elite Eight') return '<span class="tag">Elite 8</span>';
-  if (tf === 'Sweet 16') return '<span class="tag">Sweet 16</span>';
-  if (tf === 'Round of 32') return '<span style="font-size:11px;color:var(--txt3);">Round of 32</span>';
-  if (tf === 'Round of 64') return '<span style="font-size:11px;color:var(--txt3);">Round of 64</span>';
-  if (tf === 'Opening round') return '<span style="font-size:11px;color:var(--txt3);">Opening round</span>';
-  if (tf === 'Conf Tourney') return '<span class="tag t-cf">Conf Tourney</span>';
-  return '';
-}
+var _histTab = 'seasons'; // 'seasons' | 'coach' | 'records'
 
 // ── Trophy case: derived from career data ─────────────────
 function trophies() {
@@ -71,26 +61,58 @@ function recordBook() {
 
 function ordinal(n) { var s = ['th', 'st', 'nd', 'rd'], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); }
 
-export function renderHistory() {
-  var el = ge('history-content');
-  if (!el) return;
-  var c = G.coach || {};
-  var hist = G.history || [];
+function histTabBtn(id, label) {
+  var on = _histTab === id;
+  return '<button class="hist-tab' + (on ? ' on' : '') + '" data-histtab="' + id + '" role="tab" aria-selected="' + on + '">' + label + '</button>';
+}
+
+// ── Tab: Seasons — results by year, one list ───────────────
+function seasonsHTML(hist, c) {
+  var h = '<div class="sec-block"><div class="card-title">Seasons</div>';
+  if (!hist.length) {
+    h += '<div style="font-size:13px;color:var(--txt3);">No completed seasons yet.</div>';
+  } else {
+    h += '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Year</th><th>School</th><th class="num">Record</th><th class="num">Final rank</th><th>Postseason</th></tr></thead><tbody>';
+    hist.slice().reverse().forEach(function(s) {
+      var post = s.tourneyFinish === 'CHAMP' ? '<b>National champions</b>'
+        : s.tourneyFinish === 'Did Not Qualify' ? '<span style="color:var(--txt3);">No NCAA bid</span>' : (s.tourneyFinish || '');
+      if (s.confTitle) post += (post ? ', ' : '') + 'conf. tournament title';
+      var ch = (c.history || []).find(function(e) { return e.yr === s.year; });
+      if (ch && ch.action === 'Fired') post += ' <span class="tag t-rival">Fired</span>';
+      else if (ch && ch.action === 'Hot Seat') post += ' <span class="tag t-rival">Hot Seat</span>';
+      h += '<tr><td>' + s.year + '</td><td>' + (s.school || '') + '</td>'
+        + '<td class="num">' + s.wins + '-' + s.loss + '</td>'
+        + '<td class="num">' + (typeof s.poll === 'number' ? (s.poll ? '#' + s.poll : 'NR') : (s.rank ? '#' + s.rank : '')) + '</td>'
+        + '<td>' + post + '</td></tr>';
+    });
+    h += '</tbody></table></div>';
+  }
+  h += '</div>';
+
+  // Season goals history
+  var gh = (G.goalHistory || []).slice().reverse();
+  if (gh.length) {
+    h += '<div class="sec-block"><div class="card-title">Season goals</div>'
+      + '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Year</th><th>Goals met</th><th>Details</th></tr></thead><tbody>';
+    gh.forEach(function(x) {
+      h += '<tr><td>' + x.yr + '</td><td>' + x.met + ' of ' + x.total + '</td><td style="font-size:12px;color:var(--txt2);">'
+        + (x.results || []).map(function(r) { return (r.done ? '✓ ' : '✗ ') + r.text; }).join('<br>') + '</td></tr>';
+    });
+    h += '</tbody></table></div></div>';
+  }
+  return h;
+}
+
+// ── Tab: Coach — career totals and achievements ─────────────
+function coachHTML(hist, c) {
   var totalW = hist.reduce(function(a, b) { return a + b.wins; }, 0);
   var totalL = hist.reduce(function(a, b) { return a + b.loss; }, 0);
   var titles = hist.filter(function(x) { return x.championship; }).length;
   var confTitles = hist.filter(function(x) { return x.confTitle; }).length;
 
-  var h = '<div style="margin-bottom:12px;"><div class="sec-head">Dynasty history</div>'
-    + '<div class="sec-sub">Every season, every title, every milestone — the permanent record.</div></div>';
-
-  // ── Development report (this offseason's gains, while current) ──
-  if (G.devReport && G.devReport.yr === G.yr) h += devReportHTML();
-
-  // ── Coach resume ──
-  h += '<div class="sec-block"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:12px;">'
+  var h = '<div class="sec-block"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:12px;">'
     + '<div><div style="font-size:19px;font-weight:900;">Coach ' + (c.firstName || '') + ' ' + (c.lastName || '') + '</div>'
-    + '<div style="font-size:12px;color:var(--txt2);margin-top:2px;">Age ' + (c.age || '—') + ' · Level ' + (c.level || 1) + ' · ' + ordinal(hist.length + 1) + ' season · ' + G.teams[G.tid].name + '</div></div>'
+    + '<div style="font-size:12px;color:var(--txt2);margin-top:2px;">Level ' + (c.level || 1) + ' · ' + ordinal(hist.length + 1) + ' season · ' + G.teams[G.tid].name + '</div></div>'
     + '<div style="font-family:var(--mono);font-size:22px;font-weight:900;color:' + (totalW >= totalL ? 'var(--grn2)' : 'var(--red)') + ';">' + fR(totalW, totalL) + '</div></div>'
     + '<div class="stat-strip" style="grid-template-columns:repeat(5,1fr);">';
   [
@@ -104,39 +126,41 @@ export function renderHistory() {
   });
   h += '</div></div>';
 
-  // ── Trophy case ──
+  // Trophy case
   var tr = trophies();
   if (tr.length) {
-    h += '<div class="sec-block"><div class="card-title">Trophy Case</div>';
+    h += '<div class="sec-block"><div class="card-title">Trophy case</div>';
     tr.forEach(function(t2) {
-      // Bugfix: this was a `+ +` typo that rendered literal NaN in the UI
       h += '<div class="leader-row"><div class="leader-name" style="font-weight:800;">' + t2.name
         + '<small>' + t2.desc + '</small></div></div>';
     });
     h += '</div>';
   }
 
-  // ── Season timeline ──
-  h += '<div class="sec-block"><div class="card-title">Season History</div>';
-  if (!hist.length) {
-    h += '<div style="font-size:13px;color:var(--txt3);">No completed seasons yet. Your story starts now.</div>';
-  } else {
-    hist.slice().reverse().forEach(function(yr) {
-      var ch = (c.history || []).find(function(e) { return e.yr === yr.year; });
-      var act = '';
-      if (ch && ch.action === 'Fired') act = ' <span class="tag t-rival">Fired</span>';
-      else if (ch && ch.action === 'Hot Seat') act = ' <span class="tag t-rival">Hot Seat</span>';
-      h += '<div class="leader-row"><div class="leader-rank" style="width:44px;">' + yr.year + '</div>'
-        + '<div class="leader-name"><b>' + fR(yr.wins, yr.loss) + '</b> ' + finishBadge(yr.tourneyFinish) + act
-        + '<small>' + (typeof yr.poll === 'number' ? '' : '#' + yr.rank + ' NET · ') + (yr.note || '') + '</small></div></div>';
-    });
-  }
-  h += '</div>';
+  // Achievements
+  var ach = G.achievements || {};
+  var nAch = ACHIEVEMENTS.filter(function(a) { return ach[a[0]]; }).length;
+  h += '<div class="sec-block"><div class="card-title">Achievements</div>'
+    + '<div class="tbl-wrap"><table class="tbl"><tbody>';
+  ACHIEVEMENTS.forEach(function(x) {
+    var u = ach[x[0]];
+    h += '<tr><td style="width:22px;color:' + (u ? 'var(--grn2)' : 'var(--bdr2)') + ';">' + (u ? '✓' : '○') + '</td>'
+      + '<td style="' + (u ? '' : 'color:var(--txt3);') + '">' + x[1] + '</td>'
+      + '<td class="num" style="color:var(--txt3);font-size:12px;">' + (u ? u.yr + (u.school ? ', ' + u.school : '') : '') + '</td></tr>';
+  });
+  h += '</tbody></table></div>'
+    + '<div style="font-size:11px;color:var(--txt3);margin-top:8px;">' + nAch + ' of ' + ACHIEVEMENTS.length + ' unlocked</div></div>';
+  return h;
+}
 
-  // ── Record book ──
+// ── Tab: Records — record book and Hall of Fame ─────────────
+function recordsHTML() {
+  var h = '';
+
+  // Program record book
   var rb = recordBook();
   if (rb.length) {
-    h += '<div class="sec-block"><div class="card-title">Program Record Book</div>'
+    h += '<div class="sec-block"><div class="card-title">Program record book</div>'
       + '<div class="tbl-wrap"><table class="tbl"><tbody>';
     rb.forEach(function(r) {
       h += '<tr><td class="tname">' + r.label + ' <span class="dim">' + r.note + '</span></td>'
@@ -145,10 +169,10 @@ export function renderHistory() {
     h += '</tbody></table></div></div>';
   }
 
-  // ── Player record book (single game / season / career) ──
+  // Player record book (single game / season / career)
   var pb = bookFor(G.tid);
-  h += '<div class="sec-block"><div class="card-title">Player Record Book</div>'
-    + '<div style="font-size:11px;color:var(--txt3);margin-bottom:8px;">' + G.teams[G.tid].name + ' all-time marks. First seasons write the history.</div>';
+  h += '<div class="sec-block"><div class="card-title">Player record book</div>'
+    + '<div style="font-size:11px;color:var(--txt3);margin-bottom:8px;">' + G.teams[G.tid].name + ' all-time marks.</div>';
   [['game', 'Single Game'], ['season', 'Single Season'], ['career', 'Career']].forEach(function(sc) {
     h += '<div class="rb-scope">' + sc[1] + '</div><div class="tbl-wrap"><table class="tbl"><tbody>';
     ['pts', 'reb', 'ast', 'stl', 'blk'].forEach(function(st) {
@@ -162,12 +186,12 @@ export function renderHistory() {
   });
   h += '</div>';
 
-  // ── Hall of Fame ──
+  // Hall of Fame
   var hof = ensureRecords().hof.filter(function(x) { return x.tid === G.tid; });
   hof.sort(function(a, b) { return b.yr - a.yr; });
   h += '<div class="sec-block"><div class="card-title">Hall of Fame</div>';
   if (!hof.length) {
-    h += '<div style="font-size:13px;color:var(--txt3);">No legends yet. All-Americans, 2,000-point scorers, and players of the year get inducted when they leave.</div>';
+    h += '<div style="font-size:13px;color:var(--txt3);">No Hall of Fame players yet.</div>';
   } else {
     hof.forEach(function(x) {
       var tags = x.honors.map(function(hh) { return '<span class="tag t-home">' + hh + '</span>'; }).join(' ');
@@ -180,9 +204,9 @@ export function renderHistory() {
   }
   h += '</div>';
 
-  // ── National champions ──
+  // National champions
   if (G.leagueChamps && G.leagueChamps.length) {
-    h += '<div class="sec-block"><div class="card-title">National Champions</div>';
+    h += '<div class="sec-block"><div class="card-title">National champions</div>';
     G.leagueChamps.slice().reverse().slice(0, 20).forEach(function(ch) {
       var isU = ch.tid === G.tid;
       h += '<div class="leader-row"><div class="leader-rank" style="width:44px;color:var(--gld2);">' + ch.year + '</div>'
@@ -191,6 +215,35 @@ export function renderHistory() {
     });
     h += '</div>';
   }
+  return h;
+}
+
+export function renderHistory() {
+  var el = ge('history-content');
+  if (!el) return;
+  var c = G.coach || {};
+  var hist = G.history || [];
+
+  var h = '<div style="margin-bottom:12px;"><div class="sec-head">History</div></div>';
+
+  // Development report (this offseason's gains, while current)
+  if (G.devReport && G.devReport.yr === G.yr) h += devReportHTML();
+
+  h += '<div class="hist-tabs" role="tablist">'
+    + histTabBtn('seasons', 'Seasons')
+    + histTabBtn('coach', 'Coach')
+    + histTabBtn('records', 'Records')
+    + '</div>';
+
+  if (_histTab === 'coach') h += coachHTML(hist, c);
+  else if (_histTab === 'records') h += recordsHTML();
+  else h += seasonsHTML(hist, c);
 
   el.innerHTML = h;
+  el.onclick = function(e) {
+    var t = e.target.closest && e.target.closest('[data-histtab]');
+    if (!t) return;
+    _histTab = t.getAttribute('data-histtab');
+    renderHistory();
+  };
 }

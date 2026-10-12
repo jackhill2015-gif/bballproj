@@ -359,6 +359,7 @@ function checkMilestones(rank) {
 // ═══════════════════════════════════════════════════════════
 
 export function navTo(v) {
+  if (v === 'trophies') v = 'history'; // Trophy room merged into History (M1)
   SetupState.ACTIVE_VIEW = v;
   closeMoreSheet();
   document.querySelectorAll('.nav-btn').forEach(function(b) {
@@ -384,20 +385,11 @@ export function refreshView() {
   else if (v === 'bracket' && _views.renderBracket) _views.renderBracket();
   else if (v === 'offseason' && _views.renderOffseason) _views.renderOffseason();
   else if (v === 'strategy') loadStrategyView();
-  else if (v === 'trophies') loadTrophiesView();
   else if (v === 'program' && _views.renderProgram) _views.renderProgram();
   else if (v === 'help') loadHelpView();
   injectTips(v); // first-time tips (views/tips.js); no-op when all dismissed
 }
 
-var _trophiesMod = null;
-function loadTrophiesView() {
-  if (_trophiesMod) { _trophiesMod.renderTrophies(); return; }
-  import('./views/trophies.js').then(function(m) {
-    _trophiesMod = m;
-    if (SetupState.ACTIVE_VIEW === 'trophies') m.renderTrophies();
-  }).catch(function(e) { console.error('trophy room failed to load', e); });
-}
 
 var _helpMod = null;
 function loadHelpView() {

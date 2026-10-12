@@ -1731,3 +1731,44 @@ tr.sep td { padding: 0; height: 6px; border-top: 1px dashed var(--bdr); }
 @media (prefers-reduced-motion: reduce) {
   .view.swipe-in-r, .view.swipe-in-l { animation: none; }
 }
+
+/* ═══ M1 (2026-10-12): setup contrast, job sort bar, desktop scale ═══ */
+
+/* Unselected difficulty options rendered in the browser's default button
+   text color (near-black) in dark mode — inherit the theme color instead. */
+button, input, select { font-family: inherit; font-size: inherit; color: inherit; }
+
+/* Job offers: sort control row */
+.job-sortbar { display: flex; align-items: center; gap: 6px; padding: 10px 12px; border-bottom: 1px solid var(--bdr); flex-wrap: wrap; }
+.job-sort-label { font-size: 11px; font-weight: 700; color: var(--txt3); margin-right: 2px; }
+.job-sort-btn { background: none; border: 1px solid var(--bdr); border-radius: 999px; padding: 6px 12px; font-size: 12px; font-weight: 600; color: var(--txt2); cursor: pointer; min-height: 32px; }
+.job-sort-btn.on { background: var(--blu-soft); border-color: var(--blu); color: var(--blu); }
+.job-random { margin-left: auto; }
+
+/* Desktop scale: 1280px and wider. Phone layout (below this) untouched. */
+@media (min-width: 1280px) {
+  body { font-size: 15px; }
+  #center { max-width: 1240px; padding: 20px 32px 96px; }
+  .setup-wrap { max-width: 700px; }
+  .setup-title { font-size: 30px; }
+  .setup-hero .sec-head { font-size: 19px; }
+  .sec-head { font-size: 17px; }
+  .sec-sub { font-size: 13px; }
+  .card-title, .strat-sec-label { font-size: 12.5px; }
+  .btn-big { font-size: 15px; padding: 14px 20px; }
+  .home-dynasty-team { font-size: 21px; }
+  .home-play-btn { font-size: 14px; padding: 14px 24px; }
+  .setup-input { font-size: 16px; }
+  .scheme-row .sm-name { font-size: 15px; }
+  .scheme-row .sm-desc { font-size: 13px; }
+}
+@media (min-width: 1600px) {
+  #center { max-width: 1420px; }
+  .setup-wrap { max-width: 760px; }
+}
+
+/* M1: History tabs (Seasons / Coach / Records) */
+.hist-tabs { display: flex; gap: 4px; margin-bottom: 14px; border-bottom: 1px solid var(--bdr); }
+.hist-tab { background: none; border: none; border-bottom: 2px solid transparent; padding: 8px 14px; font-size: 13px; font-weight: 600; color: var(--txt2); cursor: pointer; margin-bottom: -1px; min-height: 40px; }
+.hist-tab.on { color: var(--blu); border-bottom-color: var(--blu); }
+@media (min-width: 1280px) { .hist-tab { font-size: 14px; padding: 10px 18px; } }

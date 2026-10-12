@@ -357,7 +357,7 @@ function renderCoach() {
     + '<div style="font-size:12.5px;color:var(--txt2);margin:1px 0 8px;">Year ' + (c.tenure + 1) + ', career ' + c.careerWins + '-' + c.careerLoss + '</div>'
     + '<div class="xp-bar"><div class="xp-fill" style="width:' + pct + '%;"></div></div>'
     + '<div class="xp-lbl"><span>Level ' + lvl + '</span><span>' + xp + ' / ' + need + ' XP</span></div>';
-  body += '<button class="btn-quiet" style="padding-left:0;margin-top:4px;" data-action="nav" data-view="trophies">Trophy room</button>';
+  body += '<button class="btn-quiet" style="padding-left:0;margin-top:4px;" data-action="nav" data-view="history">History</button>';
   return panel('Coach', body);
 }
 
