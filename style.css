@@ -1774,3 +1774,62 @@ button, input, select { font-family: inherit; font-size: inherit; color: inherit
 .hist-tab { background: none; border: none; border-bottom: 2px solid transparent; padding: 8px 14px; font-size: 13px; font-weight: 600; color: var(--txt2); cursor: pointer; margin-bottom: -1px; min-height: 40px; }
 .hist-tab.on { color: var(--blu); border-bottom-color: var(--blu); }
 @media (min-width: 1280px) { .hist-tab { font-size: 14px; padding: 10px 18px; } }
+
+/* ── M2: roster Stats / Depth chart tabs ── */
+.roster-tabs {
+  display: flex; gap: 4px; margin-bottom: 16px;
+  border-bottom: 1px solid var(--bdr); padding-bottom: 0;
+}
+.roster-tab {
+  background: none; border: none; padding: 10px 18px; font-size: 15px; font-weight: 600;
+  color: var(--txt2); cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -1px;
+}
+.roster-tab:hover { color: var(--txt); }
+.roster-tab.on { color: var(--blu); border-bottom-color: var(--blu); }
+
+/* Team leaders row */
+.team-leaders { margin-bottom: 20px; }
+.leaders-row {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 10px;
+}
+.leader-card {
+  background: var(--card); border: 1px solid var(--bdr); border-radius: var(--radius);
+  padding: 12px 10px; text-align: center;
+}
+.leader-face { display: flex; justify-content: center; margin-bottom: 6px; }
+.leader-face .pface { width: 44px; height: 44px; }
+.leader-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.leader-stat { font-size: 18px; font-weight: 700; color: var(--blu); margin-top: 2px; }
+.leader-stat span { display: block; font-size: 11px; font-weight: 400; color: var(--txt3); }
+@media (max-width: 640px) {
+  .leaders-row { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+  .leader-card { padding: 8px 4px; }
+  .leader-name { font-size: 11px; }
+  .leader-stat { font-size: 15px; }
+}
+
+/* Sortable stat table with sticky name column */
+.stat-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.stat-table th {
+  text-align: right; padding: 8px 10px; font-size: 11px; text-transform: uppercase;
+  letter-spacing: 0.04em; color: var(--txt3); border-bottom: 2px solid var(--bdr);
+  cursor: pointer; user-select: none; white-space: nowrap; background: var(--card);
+}
+.stat-table th:hover { color: var(--blu); }
+.stat-table th.st-name, .stat-table td.st-name { text-align: left; }
+.stat-table td { padding: 8px 10px; border-bottom: 1px solid var(--bdr); white-space: nowrap; }
+.stat-table td.num, .stat-table th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.stat-table td.st-ovr { font-weight: 700; }
+.stat-table tbody tr:hover { background: var(--row-hov, rgba(0,0,0,0.02)); }
+/* sticky first column */
+.stat-table .st-name {
+  position: sticky; left: 0; z-index: 1;
+  background: var(--card); box-shadow: 1px 0 0 var(--bdr);
+  min-width: 120px; max-width: 180px; overflow: hidden; text-overflow: ellipsis;
+}
+.stat-table thead .st-name { z-index: 2; }
+@media (max-width: 640px) {
+  .stat-table .hide-sm { display: none; }
+  .stat-table { font-size: 12px; }
+  .stat-table td, .stat-table th { padding: 6px 8px; }
+}

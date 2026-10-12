@@ -64,6 +64,141 @@ export function toggleRedshirt(i) {
 
 function tierOf(i) { return i < 5 ? 'starter' : i < 9 ? 'rotation' : 'bench'; }
 
+// ── M2: Stats / Depth chart tabs ──────────────────────────────
+var _rosterTab = 'stats';
+var _statSort = { key: 'pts', dir: -1 };
+
+function _pg(p, k) {
+  var gp = p.s ? (p.s.gp || 0) : 0;
+  return gp > 0 ? (p.s[k] || 0) / gp : 0;
+}
+function _pct(p, m, a) {
+  var att = p.s ? (p.s[a] || 0) : 0;
+  return att > 0 ? (p.s[m] || 0) / att : 0;
+}
+function _pctTxt(p, m, a) {
+  var att = p.s ? (p.s[a] || 0) : 0;
+  if (!att) return '–';
+  return '.' + Math.round((p.s[m] || 0) / att * 1000);
+}
+
+var _statCols = [
+  { k: 'name', label: 'Player', sort: 1 },
+  { k: 'pos', label: 'Pos', sort: 1 },
+  { k: 'cls', label: 'Class', sort: 1, hideSm: 1 },
+  { k: 'ovr', label: 'OVR', sort: 1 },
+  { k: 'pot', label: 'POT', sort: 1, hideSm: 1 },
+  { k: 'gp', label: 'GP', sort: 1 },
+  { k: 'mins', label: 'MIN', sort: 1 },
+  { k: 'pts', label: 'PTS', sort: 1 },
+  { k: 'reb', label: 'REB', sort: 1 },
+  { k: 'ast', label: 'AST', sort: 1 },
+  { k: 'stl', label: 'STL', sort: 1, hideSm: 1 },
+  { k: 'blk', label: 'BLK', sort: 1, hideSm: 1 },
+  { k: 'to', label: 'TO', sort: 1, hideSm: 1 },
+  { k: 'fgp', label: 'FG%', sort: 1, hideSm: 1 },
+  { k: 'tpp', label: '3P%', sort: 1, hideSm: 1 },
+  { k: 'ftp', label: 'FT%', sort: 1, hideSm: 1 }
+];
+
+function _statVal(p, k) {
+  switch (k) {
+    case 'name': return p.name;
+    case 'pos': return p.pos;
+    case 'cls': return p.cls;
+    case 'ovr': return p.ovr || 0;
+    case 'pot': return p.pot || p.ovr || 0;
+    case 'gp': return p.s ? (p.s.gp || 0) : 0;
+    case 'mins': return p.mins || 0;
+    case 'pts': return _pg(p, 'pts');
+    case 'reb': return _pg(p, 'reb');
+    case 'ast': return _pg(p, 'ast');
+    case 'stl': return _pg(p, 'stl');
+    case 'blk': return _pg(p, 'blk');
+    case 'to': return _pg(p, 'to');
+    case 'fgp': return _pct(p, 'fgm', 'fga');
+    case 'tpp': return _pct(p, 'tpm', 'tpa');
+    case 'ftp': return _pct(p, 'ftm', 'fta');
+    default: return 0;
+  }
+}
+
+function _statCell(p, k, tid, i, hideSm) {
+  var v = _statVal(p, k);
+  var hc = hideSm ? ' hide-sm' : '';
+  if (k === 'name') {
+    return '<td class="st-name' + hc + '"><span class="pname" data-action="player" data-player="' + tid + ':' + i + '" role="button" tabindex="0">' + p.name + '</span></td>';
+  }
+  var txt;
+  if (k === 'pts' || k === 'reb' || k === 'ast' || k === 'stl' || k === 'blk' || k === 'to' || k === 'mins') {
+    txt = (k === 'mins') ? v : v.toFixed(1);
+  } else if (k === 'fgp' || k === 'tpp' || k === 'ftp') {
+    txt = _pctTxt(p, k === 'fgp' ? 'fgm' : k === 'tpp' ? 'tpm' : 'ftm', k === 'fgp' ? 'fga' : k === 'tpp' ? 'tpa' : 'fta');
+  } else {
+    txt = v;
+  }
+  return '<td class="' + (k === 'pos' || k === 'cls' ? '' : 'num') + (k === 'ovr' ? ' st-ovr' : '') + hc + '">' + txt + '</td>';
+}
+
+function renderStatsTab(t) {
+  var tid = G.tid;
+  var school = t.name;
+  // Team leaders: PTS, REB, AST, STL, BLK (per game, min 1 GP)
+  var cats = [
+    { k: 'pts', label: 'Points' },
+    { k: 'reb', label: 'Rebounds' },
+    { k: 'ast', label: 'Assists' },
+    { k: 'stl', label: 'Steals' },
+    { k: 'blk', label: 'Blocks' }
+  ];
+  var h = '<div class="team-leaders"><div class="sec-head">Team leaders</div><div class="leaders-row">';
+  cats.forEach(function(c) {
+    var best = null, bestV = -1, bestI = -1;
+    t.rost.forEach(function(p, i) {
+      var gp = p.s ? (p.s.gp || 0) : 0;
+      if (gp < 1) return;
+      var v = _pg(p, c.k);
+      if (v > bestV) { bestV = v; best = p; bestI = i; }
+    });
+    h += '<div class="leader-card">';
+    if (best) {
+      h += '<div class="leader-face">' + playerFaceSmallHTML(best, school) + '</div>'
+        + '<div class="leader-name"><span class="pname" data-action="player" data-player="' + tid + ':' + bestI + '" role="button" tabindex="0">' + best.name + '</span></div>'
+        + '<div class="leader-stat">' + bestV.toFixed(1) + ' <span>' + c.label + '</span></div>';
+    } else {
+      h += '<div class="leader-name" style="color:var(--txt3);">No games yet</div><div class="leader-stat"><span>' + c.label + '</span></div>';
+    }
+    h += '</div>';
+  });
+  h += '</div></div>';
+
+  // Sortable player table
+  var rows = t.rost.map(function(p, i) { return { p: p, i: i }; });
+  var sk = _statSort.key, dir = _statSort.dir;
+  rows.sort(function(a, b) {
+    var va = _statVal(a.p, sk), vb = _statVal(b.p, sk);
+    if (typeof va === 'string') return dir * va.localeCompare(vb);
+    return dir * (va - vb);
+  });
+
+  h += '<div class="tbl-wrap"><table class="stat-table"><thead><tr>';
+  _statCols.forEach(function(c) {
+    var arrow = (_statSort.key === c.k) ? (dir === -1 ? ' ▼' : ' ▲') : '';
+    h += '<th data-ssort="' + c.k + '" class="' + (c.k === 'name' ? 'st-name' : 'num') + (c.hideSm ? ' hide-sm' : '') + '" role="button" tabindex="0" aria-label="Sort by ' + c.label + '">' + c.label + arrow + '</th>';
+  });
+  h += '</tr></thead><tbody>';
+  rows.forEach(function(r) {
+    h += '<tr>';
+    _statCols.forEach(function(c) {
+      h += _statCell(r.p, c.k, tid, r.i, c.hideSm);
+    });
+    h += '</tr>';
+  });
+  h += '</tbody></table></div>';
+  h += '<div class="sec-sub" style="margin-top:6px;">MIN is the rotation minutes from the depth chart. Tap a column header to sort.</div>';
+  return h;
+}
+
 function depthRow(p, i) {
   var tier = tierOf(i);
   var gp = p.s ? (p.s.gp || 0) : 0;
@@ -111,6 +246,22 @@ export function renderRoster() {
   var t = G.teams[G.tid];
   if (!t || !t.rost) return;
 
+  var h = '<div class="roster-tabs" role="tablist" aria-label="Roster views">'
+    + '<button class="roster-tab' + (_rosterTab === 'stats' ? ' on' : '') + '" data-rostab="stats" role="tab" aria-selected="' + (_rosterTab === 'stats') + '">Stats</button>'
+    + '<button class="roster-tab' + (_rosterTab === 'depth' ? ' on' : '') + '" data-rostab="depth" role="tab" aria-selected="' + (_rosterTab === 'depth') + '">Depth chart</button>'
+    + '</div>';
+
+  if (_rosterTab === 'stats') {
+    h += renderStatsTab(t);
+  } else {
+    h += renderDepthTab(t);
+  }
+
+  el.innerHTML = h;
+  bindRoster(el);
+}
+
+function renderDepthTab(t) {
   var total = t.rost.reduce(function(s, p) { return s + p.mins; }, 0);
   var totalCol = total === 200 ? 'var(--grn2)' : 'var(--red)';
 
@@ -134,8 +285,7 @@ export function renderRoster() {
   });
   h += '<div style="margin-top:16px;">' + gameplanPanelHTML() + '</div>';
 
-  el.innerHTML = h;
-  bindRoster(el);
+  return h;
 }
 
 // Container-level delegation: nudge buttons, auto-set, sliders.
@@ -144,6 +294,20 @@ function bindRoster(el) {
   el.onclick = function(e) {
     var q = function(sel) { return e.target.closest ? e.target.closest(sel) : null; };
     var m;
+    // M2: tab switching
+    if ((m = q('[data-rostab]'))) {
+      _rosterTab = m.getAttribute('data-rostab');
+      renderRoster();
+      return;
+    }
+    // M2: sortable stat columns
+    if ((m = q('[data-ssort]'))) {
+      var k = m.getAttribute('data-ssort');
+      if (_statSort.key === k) _statSort.dir = -_statSort.dir;
+      else _statSort = { key: k, dir: (k === 'name' || k === 'pos' || k === 'cls') ? 1 : -1 };
+      renderRoster();
+      return;
+    }
     if ((m = q('[data-rmove]'))) {
       rosterMove(parseInt(m.getAttribute('data-rmove'), 10), parseInt(m.getAttribute('data-dir'), 10));
       return;
