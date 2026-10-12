@@ -192,64 +192,88 @@ export function applyRetention() {
 
 export function renderRetention() {
   var r = (G.retention && G.retention.yr === G.yr) ? G.retention : { asks: [] };
-  var pending = retentionPending();
   var total = r.asks.reduce(function(s, a) { return s + a.ask; }, 0);
   var kept = r.asks.filter(function(a) { return a.decision === 'keep'; }).reduce(function(s, a) { return s + a.ask; }, 0);
   var t = G.teams[G.tid];
   var dep = G.departingPlayers || [];
   var notBack = (t.rost || []).filter(function(p) { return p.notReturningYr === G.yr; });
   var returning = (t.rost || []).length - notBack.length;
-  var pc = { PG: 0, SG: 0, SF: 0, PF: 0, C: 0 };
-  (t.rost || []).forEach(function(p) { if (pc.hasOwnProperty(p.pos)) pc[p.pos]++; });
-  var needs = Object.keys(pc).filter(function(k) { return pc[k] < 2; });
+  var openSpots = Math.max(0, 15 - returning);
 
   var h = '<div class="dep-wrap"><div class="acq-head"><div class="acq-title">Departures</div>'
     + '<div class="acq-line"><span>Who is leaving, and who wants an NIL deal to stay</span></div></div>';
-  h += '<div class="dep-sum"><div class="dep-stat"><b>' + (dep.length + notBack.length) + '</b><span>leaving</span></div>'
-    + '<div class="dep-stat"><b>' + returning + '</b><span>returning</span></div>'
-    + '<div class="dep-stat"><b>' + Math.max(0, 15 - returning) + '</b><span>open spots</span></div>'
-    + (needs.length ? '<div class="dep-stat dep-thin"><span>Thin at</span><b>' + needs.join(', ') + '</b></div>' : '') + '</div>';
+  // Top summary: roster spots, NIL available, total asks
+  h += '<div class="dep-sum"><div class="dep-stat"><b>' + openSpots + '</b><span>open spots</span></div>'
+    + '<div class="dep-stat"><b>' + (G.pts || 0) + '</b><span>NIL available</span></div>'
+    + '<div class="dep-stat"><b>' + total + '</b><span>total asks' + (kept ? ' · ' + kept + ' committed' : '') + '</span></div></div>';
 
-  // Leaving
-  h += '<div class="dep-sec">Leaving</div><div class="acq-list">';
-  if (!dep.length && !notBack.length) h += '<div class="sg-none dep-empty">Nobody is leaving this year.</div>';
-  dep.forEach(function(d) {
-    h += '<div class="acq-row dep-row"><div class="acq-main"><div class="acq-name">' + d.name + ' <span class="acq-cls">' + d.pos + ' · ' + d.cls + '</span></div>'
-      + '<div class="acq-sub">' + d.ppg + ' ppg · ' + d.rpg + ' rpg · ' + (d.apg || '0.0') + ' apg</div></div>'
-      + '<div class="acq-right"><div class="acq-big">' + d.ovr + '</div><div class="acq-small">' + (d.reason === 'Graduated' ? 'Graduated' : d.reason === 'Drafted' ? 'Drafted' + (d.pick ? ', pick ' + d.pick : '') : 'Declared for the draft') + '</div></div></div>';
+  h += '<div class="tbl-wrap"><table class="dep-table"><thead><tr>'
+    + '<th class="st-name">Player</th><th>Pos</th><th>Class</th><th class="num">OVR</th><th class="num">POT</th>'
+    + '<th class="num">MIN</th><th class="num">PTS</th><th class="num">REB</th><th class="num">AST</th>'
+    + '<th>Status</th><th class="num">NIL ask</th><th></th>'
+    + '</tr></thead><tbody>';
+
+  // NIL requests first (these need decisions)
+  r.asks.forEach(function(a, i) {
+    var p = findPlayer(a.name);
+    var mins = p ? (p.mins || 0) : 0;
+    var cant = a.decision !== 'keep' && (G.pts || 0) < a.ask;
+    var status = a.decision === 'keep' ? '<span class="ret-done">Staying</span>'
+      : a.decision === 'go' ? '<span class="ret-done go">Entering the portal</span>'
+      : a.why;
+    var actions = a.decision === 'keep' || a.decision === 'go'
+      ? '<button class="btn-quiet btn-sm ret-change" data-ret="undo" data-ri="' + i + '">Change</button>'
+      : '<button class="ret-btn" data-ret="keep" data-ri="' + i + '"' + (cant ? ' disabled title="Not enough NIL"' : '') + '>Keep</button>'
+        + '<button class="ret-btn" data-ret="go" data-ri="' + i + '">Let go</button>';
+    h += '<tr class="ret-row' + (a.decision === 'keep' ? ' kept' : a.decision === 'go' ? ' gone' : '') + '">'
+      + '<td class="st-name">' + pLink(a.name, G.tid) + '</td>'
+      + '<td>' + a.pos + '</td><td>' + a.cls + '</td>'
+      + '<td class="num"><b>' + a.ovr + '</b></td><td class="num">' + (a.pot || a.ovr) + '</td>'
+      + '<td class="num">' + mins + '</td>'
+      + '<td class="num">' + (a.ppg !== null && a.ppg !== undefined ? a.ppg.toFixed(1) : '–') + '</td>'
+      + '<td class="num">' + (a.rpg !== null && a.rpg !== undefined ? a.rpg.toFixed(1) : '–') + '</td>'
+      + '<td class="num">' + (a.apg !== null && a.apg !== undefined ? a.apg.toFixed(1) : '–') + '</td>'
+      + '<td class="dep-status">' + status + '</td>'
+      + '<td class="num"><b>' + a.ask + '</b></td>'
+      + '<td class="dep-actions">' + actions + '</td></tr>';
   });
+
+  // Leaving: graduated / drafted
+  dep.forEach(function(d) {
+    var reason = d.reason === 'Graduated' ? 'Graduated'
+      : d.reason === 'Drafted' ? 'Drafted' + (d.pick ? ', pick ' + d.pick : '')
+      : 'Declared for the draft';
+    h += '<tr class="dep-gone">'
+      + '<td class="st-name">' + d.name + '</td>'
+      + '<td>' + d.pos + '</td><td>' + d.cls + '</td>'
+      + '<td class="num"><b>' + d.ovr + '</b></td><td class="num">–</td><td class="num">–</td>'
+      + '<td class="num">' + d.ppg + '</td><td class="num">' + d.rpg + '</td><td class="num">' + (d.apg || '0.0') + '</td>'
+      + '<td class="dep-status"><span class="dep-reason">' + reason + '</span></td>'
+      + '<td class="num">–</td><td class="dep-actions"></td></tr>';
+  });
+
+  // Leaving: not returning (transfer)
   notBack.forEach(function(p) {
     var sl = seasonLine(p);
-    h += '<div class="acq-row dep-row"><div class="acq-main"><div class="acq-name">' + pLink(p.name, G.tid) + ' <span class="acq-cls">' + p.pos + ' · ' + p.cls + '</span></div>'
-      + (sl ? '<div class="acq-sub">' + sl.ppg.toFixed(1) + ' ppg · ' + sl.rpg.toFixed(1) + ' rpg · ' + sl.apg.toFixed(1) + ' apg</div>' : '')
-      + '<div class="acq-sub dep-why">' + (p.notReturningWhy || 'Wants a fresh start').toLowerCase().replace(/^./, function(c) { return c.toUpperCase(); }) + '</div></div>'
-      + '<div class="acq-right"><div class="acq-big">' + p.ovr + '</div><div class="acq-small">Not interested in returning</div></div></div>';
+    var why = (p.notReturningWhy || 'Wants a fresh start');
+    why = why.charAt(0).toUpperCase() + why.slice(1);
+    h += '<tr class="dep-gone">'
+      + '<td class="st-name">' + pLink(p.name, G.tid) + '</td>'
+      + '<td>' + p.pos + '</td><td>' + p.cls + '</td>'
+      + '<td class="num"><b>' + p.ovr + '</b></td><td class="num">' + (p.pot || p.ovr) + '</td><td class="num">' + (p.mins || 0) + '</td>'
+      + '<td class="num">' + (sl ? sl.ppg.toFixed(1) : '–') + '</td>'
+      + '<td class="num">' + (sl ? sl.rpg.toFixed(1) : '–') + '</td>'
+      + '<td class="num">' + (sl ? sl.apg.toFixed(1) : '–') + '</td>'
+      + '<td class="dep-status"><span class="dep-reason">' + why + '</span></td>'
+      + '<td class="num">–</td><td class="dep-actions"></td></tr>';
   });
-  h += '</div>';
 
-  // NIL requests
-  h += '<div class="dep-sec">NIL requests</div>';
-  if (!r.asks.length) {
-    h += '<div class="sg-none dep-empty">No one asked for an NIL deal this year.</div>';
-  } else {
-    h += '<div class="dep-note">Pay to keep a player, or let him enter the transfer portal (he stays if no school signs him). '
-      + '<b>' + (G.pts || 0) + '</b> NIL available · asks total ' + total + (kept ? ' · committed ' + kept : '') + '</div><div class="acq-list">';
-    r.asks.forEach(function(a, i) {
-      var cant = a.decision !== 'keep' && (G.pts || 0) < a.ask;
-      h += '<div class="ret-row' + (a.decision === 'keep' ? ' kept' : a.decision === 'go' ? ' gone' : '') + '">'
-        + '<div class="acq-main"><div class="acq-name">' + pLink(a.name, G.tid) + ' <span class="acq-cls">' + a.pos + ' · ' + a.cls + ' · ' + a.ovr + '</span></div>'
-        + '<div class="acq-sub">' + a.why + (a.ppg !== null ? ' · ' + a.ppg.toFixed(1) + ' ppg' : '') + (a.rpg !== null && a.rpg !== undefined ? ' · ' + a.rpg.toFixed(1) + ' rpg · ' + a.apg.toFixed(1) + ' apg' : '') + '</div></div>'
-        + '<div class="ret-side"><div class="ret-ask">' + a.ask + ' <span>NIL</span></div><div class="ret-btns">'
-        // Decided: say what happens, with a quiet Change (no live Keep / Let go to flip by accident)
-        + (a.decision === 'keep' ? '<span class="ret-done">Staying</span><button class="btn-quiet btn-sm ret-change" data-ret="undo" data-ri="' + i + '">Change</button>'
-          : a.decision === 'go' ? '<span class="ret-done go">Entering the portal</span><button class="btn-quiet btn-sm ret-change" data-ret="undo" data-ri="' + i + '">Change</button>'
-          : '<button class="ret-btn" data-ret="keep" data-ri="' + i + '"' + (cant ? ' disabled title="Not enough NIL"' : '') + '>Keep</button>'
-            + '<button class="ret-btn" data-ret="go" data-ri="' + i + '">Let go</button>')
-        + '</div></div></div>';
-    });
-    h += '</div>';
+  if (!r.asks.length && !dep.length && !notBack.length) {
+    h += '<tr><td colspan="12" style="text-align:center;color:var(--txt3);padding:20px;">Nobody is leaving, and no one asked for an NIL deal.</td></tr>';
   }
 
+  h += '</tbody></table></div>';
+  h += '<div class="dep-note">Pay to keep a player, or let him enter the transfer portal (he stays if no school signs him).</div>';
   h += '<div class="acq-sticky"><button class="btn-big btn-full" data-ret-done="1">Open the transfer portal</button></div></div>';
   return h;
 }

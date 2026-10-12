@@ -1844,3 +1844,30 @@ button, input, select { font-family: inherit; font-size: inherit; color: inherit
 @media (min-width: 1280px) {
   .bx-tree.ff { min-width: 0; width: 100%; justify-content: center; }
 }
+
+/* ── M4: departures table ── */
+.dep-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.dep-table th {
+  text-align: left; padding: 8px 10px; font-size: 11px; text-transform: uppercase;
+  letter-spacing: 0.04em; color: var(--txt3); border-bottom: 2px solid var(--bdr);
+  white-space: nowrap; background: var(--card);
+}
+.dep-table th.num, .dep-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.dep-table td { padding: 9px 10px; border-bottom: 1px solid var(--bdr); white-space: nowrap; vertical-align: middle; }
+.dep-table .st-name {
+  position: sticky; left: 0; z-index: 1; background: var(--card);
+  box-shadow: 1px 0 0 var(--bdr); min-width: 130px;
+}
+.dep-table thead .st-name { z-index: 2; }
+.dep-status { font-size: 12.5px; color: var(--txt2); max-width: 180px; white-space: normal; }
+.dep-reason { color: var(--txt3); }
+.dep-actions { white-space: nowrap; }
+.dep-actions .ret-btn { margin-right: 6px; }
+.dep-actions .ret-btn:last-child { margin-right: 0; }
+tr.dep-gone td { color: var(--txt3); }
+tr.dep-gone td.st-name { color: var(--txt2); }
+.dep-note { font-size: 12.5px; color: var(--txt2); margin: 10px 0; }
+@media (max-width: 640px) {
+  .dep-table { font-size: 12px; }
+  .dep-table td, .dep-table th { padding: 7px 8px; }
+}
