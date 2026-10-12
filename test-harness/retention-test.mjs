@@ -29,6 +29,28 @@ const best = roster.filter(p => p.cls !== 'SR' && !p.rs && p.notReturningYr !== 
 check(asks.some(a => a.name === best.name), 'best returner (who wants to stay) always asks');
 check(R.moveOnWarning(() => {}) === true && R.moveOnWarning(() => {}) === false, 'undecided requests get a heads-up first, then you can move on');
 
+console.log('── departures layout (cards < 700px, table 700px+) ──');
+{
+  const html = RT.renderRetention();
+  // Both layouts are in the DOM; CSS media queries pick one
+  check(/class="nil-cards"/.test(html), 'phone cards container present');
+  check(/class="dep-list"/.test(html), 'phone departing list present');
+  check(/class="dep-table"/.test(html), 'desktop table present');
+  const cards = html.split('class="nil-card');
+  check(cards.length - 1 >= 1, 'at least one nil-card rendered (' + (cards.length - 1) + ')');
+  check(/dep-item/.test(html) || /Nobody is leaving/.test(html), 'departing list items or empty state');
+  check(/nil-budget/.test(html), 'budget bar on undecided cards');
+  // Collapsed decided cards: render with a decision set, in an isolated check
+  const htmlDecided = (function() {
+    var orig = G.retention.asks[0].decision;
+    G.retention.asks[0].decision = 'keep';
+    var out = RT.renderRetention();
+    G.retention.asks[0].decision = orig;
+    return out;
+  })();
+  check(/nil-card decided/.test(htmlDecided), 'decided ask collapses to a one-line card');
+}
+
 G.pts = 0;
 check(!RT.decideRetention(0, 'keep').ok, 'keeping without enough NIL is refused');
 G.pts = 1000;

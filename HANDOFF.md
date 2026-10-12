@@ -39,6 +39,7 @@ Leave a note for the other agent. Delete it once it's handled. **Claude sessions
 
 ## Recently shipped (newest first, keep about 8)
 
+- M4 follow-up: Departures rebuilt for phones — NIL asks are decision cards under 700px (with budget bar, collapse after deciding), Basketball GM table kept at 700px+; departing players get a quiet "Name · Reason · stats" list on phones; fixed iOS Safari sticky columns (was border-collapse: collapse breaking -webkit-sticky) on departures + M2 roster tables. *(Muse)*
 - M5: program-pull research (research/program-pull/) — all 365 schools classified basketball-first (257) / balanced (70) / football-first (38), keyed by ALL_TEAMS names; 70 notable coaching hires 2010–2025 with 3-season before/after results — flop rate ~31%, median 1 year to first NCAA, portal-era hires reach the tournament faster (1.3 vs 1.9 yrs) with the same flop rate. Research only, no code. *(Muse)*
 - M6: player page has an OVR-by-season sparkline (from p.h + current OVR, hidden if <2 points); Home next-game card is clearer — both teams with ranks/records, site, win probability, one Sim/Watch row, team-color badges. *(Muse)*
 - M4: Departures rebuilt as one clean table (Basketball GM re-sign style) — name, pos, class, OVR, POT, MIN, PTS, REB, AST, status/reason, NIL ask, actions; top summary shows open spots, NIL available, total asks; Keep / Let go / Change / portal button all work as before. *(Muse)*

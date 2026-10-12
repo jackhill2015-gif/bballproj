@@ -1809,7 +1809,7 @@ button, input, select { font-family: inherit; font-size: inherit; color: inherit
 }
 
 /* Sortable stat table with sticky name column */
-.stat-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.stat-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px; }
 .stat-table th {
   text-align: right; padding: 8px 10px; font-size: 11px; text-transform: uppercase;
   letter-spacing: 0.04em; color: var(--txt3); border-bottom: 2px solid var(--bdr);
@@ -1824,7 +1824,7 @@ button, input, select { font-family: inherit; font-size: inherit; color: inherit
 /* sticky first column */
 .stat-table .st-name {
   position: sticky; left: 0; z-index: 1;
-  background: var(--card); box-shadow: 1px 0 0 var(--bdr);
+  background: var(--card); box-shadow: 6px 0 6px -6px rgba(0,0,0,0.25);
   min-width: 120px; max-width: 180px; overflow: hidden; text-overflow: ellipsis;
 }
 .stat-table thead .st-name { z-index: 2; }
@@ -1846,7 +1846,7 @@ button, input, select { font-family: inherit; font-size: inherit; color: inherit
 }
 
 /* ── M4: departures table ── */
-.dep-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.dep-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px; }
 .dep-table th {
   text-align: left; padding: 8px 10px; font-size: 11px; text-transform: uppercase;
   letter-spacing: 0.04em; color: var(--txt3); border-bottom: 2px solid var(--bdr);
@@ -1889,4 +1889,52 @@ tr.dep-gone td.st-name { color: var(--txt2); }
 @media (max-width: 480px) {
   .ng-name { font-size: 14px; }
   .ng-teams { gap: 8px; }
+}
+
+/* ── Departures: cards under 700px, table at 700px+ ── */
+.nil-cards { display: none; }
+.dep-list { display: none; }
+@media (max-width: 699px) {
+  .dep-table-wrap { display: none; }
+  .nil-cards { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
+  .dep-list { display: block; margin-bottom: 16px; }
+}
+@media (min-width: 700px) {
+  .nil-cards { display: none !important; }
+  .dep-list { display: none !important; }
+}
+
+/* NIL decision cards */
+.nil-card {
+  background: var(--card); border: 1px solid var(--bdr); border-radius: var(--radius);
+  padding: 14px;
+}
+.nil-card.decided {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px;
+}
+.nil-done { font-size: 14px; font-weight: 600; }
+.nil-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+.nil-name { font-size: 16px; font-weight: 700; }
+.nil-sub { font-size: 13px; color: var(--txt2); margin-top: 2px; }
+.nil-why { font-size: 12.5px; color: var(--txt3); font-style: italic; margin-top: 4px; }
+.nil-ask { text-align: right; flex: 0 0 auto; }
+.nil-ask b { font-size: 22px; font-weight: 700; color: var(--gld2); }
+.nil-ask span { display: block; font-size: 11px; color: var(--txt3); text-transform: uppercase; letter-spacing: 0.05em; }
+.nil-budget { height: 4px; background: var(--bdr); border-radius: 2px; margin-bottom: 12px; overflow: hidden; }
+.nil-fill { height: 100%; background: var(--gld2); border-radius: 2px; transition: width 0.3s; }
+.nil-actions { display: flex; gap: 10px; }
+.nil-actions .btn-big { flex: 1; }
+
+/* Departing list (quiet) */
+.dep-item { padding: 10px 0; border-bottom: 1px solid var(--bdr); font-size: 14px; }
+.dep-item:last-child { border-bottom: none; }
+.dep-name { font-weight: 600; }
+.dep-why { color: var(--txt2); margin-left: 6px; }
+
+/* ── iOS Safari: -webkit-sticky prefix for all sticky columns ── */
+.dep-table .st-name,
+.stat-table .st-name {
+  position: -webkit-sticky;
+  position: sticky;
 }

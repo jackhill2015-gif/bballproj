@@ -199,25 +199,55 @@ export function renderRetention() {
   var notBack = (t.rost || []).filter(function(p) { return p.notReturningYr === G.yr; });
   var returning = (t.rost || []).length - notBack.length;
   var openSpots = Math.max(0, 15 - returning);
+  var nilAvail = G.pts || 0;
 
   var h = '<div class="dep-wrap"><div class="acq-head"><div class="acq-title">Departures</div>'
     + '<div class="acq-line"><span>Who is leaving, and who wants an NIL deal to stay</span></div></div>';
-  // Top summary: roster spots, NIL available, total asks
+  // Top summary
   h += '<div class="dep-sum"><div class="dep-stat"><b>' + openSpots + '</b><span>open spots</span></div>'
-    + '<div class="dep-stat"><b>' + (G.pts || 0) + '</b><span>NIL available</span></div>'
+    + '<div class="dep-stat"><b>' + nilAvail + '</b><span>NIL available</span></div>'
     + '<div class="dep-stat"><b>' + total + '</b><span>total asks' + (kept ? ' · ' + kept + ' committed' : '') + '</span></div></div>';
 
-  h += '<div class="tbl-wrap"><table class="dep-table"><thead><tr>'
-    + '<th class="st-name">Player</th><th>Pos</th><th class="hide-sm">Class</th><th class="num">OVR</th><th class="num hide-sm">POT</th>'
-    + '<th class="num hide-sm">MIN</th><th class="num">PTS</th><th class="num hide-sm">REB</th><th class="num hide-sm">AST</th>'
-    + '<th class="hide-sm">Status</th><th class="num">NIL ask</th><th></th>'
-    + '</tr></thead><tbody>';
+  // ── NIL asks: table (700px+) and cards (under 700px) ──
+  h += '<div class="dep-sec">NIL requests</div>';
+  if (!r.asks.length) {
+    h += '<div class="sg-none dep-empty">No one asked for an NIL deal this year.</div>';
+  } else {
+    h += nilTable(r.asks, nilAvail);
+    h += nilCards(r.asks, nilAvail, total);
+  }
 
-  // NIL requests first (these need decisions)
-  r.asks.forEach(function(a, i) {
+  // ── Departing: table rows (700px+) and quiet list (under 700px) ──
+  h += '<div class="dep-sec">Departing</div>';
+  if (!dep.length && !notBack.length) {
+    h += '<div class="sg-none dep-empty">Nobody is leaving this year.</div>';
+  } else {
+    h += '<div class="tbl-wrap dep-table-wrap"><table class="dep-table"><thead><tr>'
+      + '<th class="st-name">Player</th><th>Pos</th><th>Class</th><th class="num">OVR</th><th class="num">POT</th>'
+      + '<th class="num">MIN</th><th class="num">PTS</th><th class="num">REB</th><th class="num">AST</th>'
+      + '<th>Status</th><th class="num">NIL ask</th><th></th>'
+      + '</tr></thead><tbody>';
+    h += depTableRows(dep, true);
+    h += depTableRows(notBack, false, true);
+    h += '</tbody></table></div>';
+    h += depList(dep, notBack);
+  }
+
+  h += '<div class="dep-note">Pay to keep a player, or let him enter the transfer portal (he stays if no school signs him).</div>';
+  h += '<div class="acq-sticky"><button class="btn-big btn-full" data-ret-done="1">Open the transfer portal</button></div></div>';
+  return h;
+}
+
+// NIL asks as a table (Basketball GM layout, 700px+)
+function nilTable(asks, nilAvail) {
+  var h = '<div class="tbl-wrap dep-table-wrap"><table class="dep-table"><thead><tr>'
+    + '<th class="st-name">Player</th><th>Pos</th><th>Class</th><th class="num">OVR</th><th class="num">POT</th>'
+    + '<th class="num">MIN</th><th class="num">PTS</th><th class="num">REB</th><th class="num">AST</th>'
+    + '<th>Status</th><th class="num">NIL ask</th><th></th></tr></thead><tbody>';
+  asks.forEach(function(a, i) {
     var p = findPlayer(a.name);
     var mins = p ? (p.mins || 0) : 0;
-    var cant = a.decision !== 'keep' && (G.pts || 0) < a.ask;
+    var cant = a.decision !== 'keep' && nilAvail < a.ask;
     var status = a.decision === 'keep' ? '<span class="ret-done">Staying</span>'
       : a.decision === 'go' ? '<span class="ret-done go">Entering the portal</span>'
       : a.why;
@@ -227,53 +257,100 @@ export function renderRetention() {
         + '<button class="ret-btn" data-ret="go" data-ri="' + i + '">Let go</button>';
     h += '<tr class="ret-row' + (a.decision === 'keep' ? ' kept' : a.decision === 'go' ? ' gone' : '') + '">'
       + '<td class="st-name">' + pLink(a.name, G.tid) + '</td>'
-      + '<td>' + a.pos + '</td><td class="hide-sm">' + a.cls + '</td>'
-      + '<td class="num"><b>' + a.ovr + '</b></td><td class="num hide-sm">' + (a.pot || a.ovr) + '</td>'
-      + '<td class="num hide-sm">' + mins + '</td>'
-      + '<td class="num">' + (a.ppg !== null && a.ppg !== undefined ? a.ppg.toFixed(1) : '–') + '</td>'
-      + '<td class="num hide-sm">' + (a.rpg !== null && a.rpg !== undefined ? a.rpg.toFixed(1) : '–') + '</td>'
-      + '<td class="num hide-sm">' + (a.apg !== null && a.apg !== undefined ? a.apg.toFixed(1) : '–') + '</td>'
-      + '<td class="dep-status hide-sm">' + status + '</td>'
+      + '<td>' + a.pos + '</td><td>' + a.cls + '</td>'
+      + '<td class="num"><b>' + a.ovr + '</b></td><td class="num">' + (a.pot || a.ovr) + '</td>'
+      + '<td class="num">' + mins + '</td>'
+      + '<td class="num">' + a.ppg.toFixed(1) + '</td>'
+      + '<td class="num">' + a.rpg.toFixed(1) + '</td>'
+      + '<td class="num">' + a.apg.toFixed(1) + '</td>'
+      + '<td class="dep-status">' + status + '</td>'
       + '<td class="num"><b>' + a.ask + '</b></td>'
       + '<td class="dep-actions">' + actions + '</td></tr>';
   });
+  return h + '</tbody></table></div>';
+}
 
-  // Leaving: graduated / drafted (defensive: older saves may lack pos/cls/ovr)
+// NIL asks as decision cards (under 700px)
+function nilCards(asks, nilAvail, total) {
+  var h = '<div class="nil-cards">';
+  asks.forEach(function(a, i) {
+    var cant = a.decision !== 'keep' && nilAvail < a.ask;
+    if (a.decision === 'keep' || a.decision === 'go') {
+      // Collapsed after decision
+      var label = a.decision === 'keep' ? 'Staying' : 'Entering the portal';
+      h += '<div class="nil-card decided"><span class="nil-done">' + a.name + ' — ' + label + ' (' + a.ask + ' NIL)</span>'
+        + '<button class="btn-quiet btn-sm ret-change" data-ret="undo" data-ri="' + i + '">Change</button></div>';
+    } else {
+      var pct = total > 0 ? Math.round(a.ask / total * 100) : 0;
+      h += '<div class="nil-card">'
+        + '<div class="nil-head"><div>'
+        + '<div class="nil-name">' + pLink(a.name, G.tid) + '</div>'
+        + '<div class="nil-sub">' + a.pos + ' · ' + a.ovr + ' OVR · ' + a.ppg.toFixed(1) + ' PPG</div>'
+        + '<div class="nil-why">' + a.why + '</div>'
+        + '</div><div class="nil-ask"><b>' + a.ask + '</b><span>NIL</span></div></div>'
+        + '<div class="nil-budget"><div class="nil-fill" style="width:' + Math.min(100, pct) + '%;"></div></div>'
+        + '<div class="nil-actions">'
+        + '<button class="btn-big" data-ret="keep" data-ri="' + i + '"' + (cant ? ' disabled title="Not enough NIL"' : '') + '>Keep</button>'
+        + '<button class="btn-big secondary" data-ret="go" data-ri="' + i + '">Let go</button>'
+        + '</div></div>';
+    }
+  });
+  return h + '</div>';
+}
+
+// Departing players as table rows (for the 700px+ table)
+function depTableRows(list, isDep, isNotBack) {
+  var h = '';
+  list.forEach(function(d) {
+    if (isDep) {
+      var reason = d.reason === 'Graduated' ? 'Graduated'
+        : d.reason === 'Drafted' ? 'Drafted' + (d.pick ? ', pick ' + d.pick : '')
+        : 'Declared for the draft';
+      h += '<tr class="dep-gone">'
+        + '<td class="st-name">' + d.name + '</td>'
+        + '<td>' + d.pos + '</td><td>' + d.cls + '</td>'
+        + '<td class="num"><b>' + d.ovr + '</b></td><td class="num">–</td><td class="num">–</td>'
+        + '<td class="num">' + d.ppg + '</td><td class="num">' + d.rpg + '</td><td class="num">' + d.apg + '</td>'
+        + '<td class="dep-status"><span class="dep-reason">' + reason + '</span></td>'
+        + '<td class="num">–</td><td class="dep-actions"></td></tr>';
+    } else if (isNotBack) {
+      var sl = seasonLine(d);
+      var why = (d.notReturningWhy || 'Wants a fresh start');
+      why = why.charAt(0).toUpperCase() + why.slice(1);
+      // No season line = didn't play (redshirt/deep bench); show reason only, no fake stats
+      var pts = sl ? sl.ppg.toFixed(1) : '';
+      var reb = sl ? sl.rpg.toFixed(1) : '';
+      var ast = sl ? sl.apg.toFixed(1) : '';
+      h += '<tr class="dep-gone">'
+        + '<td class="st-name">' + pLink(d.name, G.tid) + '</td>'
+        + '<td>' + d.pos + '</td><td>' + d.cls + '</td>'
+        + '<td class="num"><b>' + d.ovr + '</b></td><td class="num">' + (d.pot || d.ovr) + '</td><td class="num">' + (d.mins || 0) + '</td>'
+        + '<td class="num">' + pts + '</td>'
+        + '<td class="num">' + reb + '</td>'
+        + '<td class="num">' + ast + '</td>'
+        + '<td class="dep-status"><span class="dep-reason">' + why + '</span></td>'
+        + '<td class="num">–</td><td class="dep-actions"></td></tr>';
+    }
+  });
+  return h;
+}
+
+// Departing players as a quiet list (under 700px): "Name · Reason · stats"
+function depList(dep, notBack) {
+  var h = '<div class="dep-list">';
   dep.forEach(function(d) {
     var reason = d.reason === 'Graduated' ? 'Graduated'
-      : d.reason === 'Drafted' ? 'Drafted' + (d.pick ? ', pick ' + d.pick : '')
+      : d.reason === 'Drafted' ? 'Drafted' + (d.pick ? ' (pick ' + d.pick + ')' : '')
       : 'Declared for the draft';
-    h += '<tr class="dep-gone">'
-      + '<td class="st-name">' + d.name + '</td>'
-      + '<td>' + (d.pos || '–') + '</td><td class="hide-sm">' + (d.cls || '–') + '</td>'
-      + '<td class="num"><b>' + (d.ovr || '–') + '</b></td><td class="num hide-sm">–</td><td class="num hide-sm">–</td>'
-      + '<td class="num">' + (d.ppg || '–') + '</td><td class="num hide-sm">' + (d.rpg || '–') + '</td><td class="num hide-sm">' + (d.apg || '–') + '</td>'
-      + '<td class="dep-status hide-sm"><span class="dep-reason">' + reason + '</span></td>'
-      + '<td class="num">–</td><td class="dep-actions"></td></tr>';
+    var stats = (d.ppg !== undefined) ? ' · ' + d.ppg + ' pts, ' + d.rpg + ' reb, ' + d.apg + ' ast' : '';
+    h += '<div class="dep-item"><span class="dep-name">' + d.name + '</span><span class="dep-why">' + reason + stats + '</span></div>';
   });
-
-  // Leaving: not returning (transfer)
   notBack.forEach(function(p) {
     var sl = seasonLine(p);
     var why = (p.notReturningWhy || 'Wants a fresh start');
     why = why.charAt(0).toUpperCase() + why.slice(1);
-    h += '<tr class="dep-gone">'
-      + '<td class="st-name">' + pLink(p.name, G.tid) + '</td>'
-      + '<td>' + p.pos + '</td><td class="hide-sm">' + p.cls + '</td>'
-      + '<td class="num"><b>' + p.ovr + '</b></td><td class="num hide-sm">' + (p.pot || p.ovr) + '</td><td class="num hide-sm">' + (p.mins || 0) + '</td>'
-      + '<td class="num">' + (sl ? sl.ppg.toFixed(1) : '–') + '</td>'
-      + '<td class="num hide-sm">' + (sl ? sl.rpg.toFixed(1) : '–') + '</td>'
-      + '<td class="num hide-sm">' + (sl ? sl.apg.toFixed(1) : '–') + '</td>'
-      + '<td class="dep-status hide-sm"><span class="dep-reason">' + why + '</span></td>'
-      + '<td class="num">–</td><td class="dep-actions"></td></tr>';
+    var stats = sl ? ' · ' + sl.ppg.toFixed(1) + ' pts, ' + sl.rpg.toFixed(1) + ' reb, ' + sl.apg.toFixed(1) + ' ast' : '';
+    h += '<div class="dep-item"><span class="dep-name">' + pLink(p.name, G.tid) + '</span><span class="dep-why">' + why + stats + '</span></div>';
   });
-
-  if (!r.asks.length && !dep.length && !notBack.length) {
-    h += '<tr><td colspan="12" style="text-align:center;color:var(--txt3);padding:20px;">Nobody is leaving, and no one asked for an NIL deal.</td></tr>';
-  }
-
-  h += '</tbody></table></div>';
-  h += '<div class="dep-note">Pay to keep a player, or let him enter the transfer portal (he stays if no school signs him).</div>';
-  h += '<div class="acq-sticky"><button class="btn-big btn-full" data-ret-done="1">Open the transfer portal</button></div></div>';
-  return h;
+  return h + '</div>';
 }
