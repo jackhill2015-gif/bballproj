@@ -1,0 +1,1827 @@
+{
+  "Duke": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Basketball blue blood; football historically weak"
+  },
+  "North Carolina": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Basketball blue blood"
+  },
+  "Virginia": {
+    "priority": "basketball-first",
+    "judgment_call": true,
+    "note": "2019 national title; football solid but secondary"
+  },
+  "Syracuse": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Basketball identity; football declined since McNabb era"
+  },
+  "Miami": {
+    "priority": "football-first",
+    "judgment_call": false,
+    "note": "Football powerhouse identity"
+  },
+  "Florida State": {
+    "priority": "football-first",
+    "judgment_call": false,
+    "note": "Football powerhouse"
+  },
+  "Louisville": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Basketball tradition defines the school"
+  },
+  "NC State": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Strong history in both; 1983 basketball title, solid football"
+  },
+  "Clemson": {
+    "priority": "football-first",
+    "judgment_call": false,
+    "note": "Football powerhouse"
+  },
+  "Wake Forest": {
+    "priority": "basketball-first",
+    "judgment_call": true,
+    "note": "Small private; basketball tradition (Duncan era) outweighs football"
+  },
+  "Pitt": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Football history plus consistent basketball"
+  },
+  "Georgia Tech": {
+    "priority": "football-first",
+    "judgment_call": false,
+    "note": "Football identity"
+  },
+  "Notre Dame": {
+    "priority": "football-first",
+    "judgment_call": false,
+    "note": "Football defines the brand; FBS independent"
+  },
+  "Boston College": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Both sports relevant; neither dominant"
+  },
+  "Virginia Tech": {
+    "priority": "football-first",
+    "judgment_call": false,
+    "note": "Football identity (Beamer era)"
+  },
+  "SMU": {
+    "priority": "football-first",
+    "judgment_call": false,
+    "note": "Moved to ACC for football; basketball secondary"
+  },
+  "Stanford": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Elite academics; both sports have had strong runs"
+  },
+  "California": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Neither sport elite; both draw support"
+  },
+  "Kansas": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Basketball blue blood"
+  },
+  "Houston": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Basketball powerhouse under Sampson"
+  },
+  "Baylor": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "2021 basketball title; football also strong"
+  },
+  "Arizona": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Basketball powerhouse"
+  },
+  "Iowa State": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Competitive in both"
+  },
+  "BYU": {
+    "priority": "balanced",
+    "judgment_call": false,
+    "note": "Strong football and basketball traditions"
+  },
+  "Texas Tech": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "2019 basketball Final Four; solid football"
+  },
+  "TCU": {
+    "priority": "football-first",
+    "judgment_call": false,
+    "note": "Football identity"
+  },
+  "Utah": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Strong football; basketball decent"
+  },
+  "Colorado": {
+    "priority": "football-first",
+    "judgment_call": false,
+    "note": "Football identity (Deion era amplified)"
+  },
+  "Kansas State": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Competitive in both"
+  },
+  "Cincinnati": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Good in both sports"
+  },
+  "UCF": {
+    "priority": "football-first",
+    "judgment_call": false,
+    "note": "Football-driven program"
+  },
+  "Oklahoma State": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Football slightly bigger but basketball relevant"
+  },
+  "West Virginia": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Football identity with strong Huggins basketball era"
+  },
+  "Arizona State": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Decent in both; football slightly bigger"
+  },
+  "Purdue": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Basketball identity; football weak"
+  },
+  "Illinois": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Basketball identity; football weak"
+  },
+  "Wisconsin": {
+    "priority": "balanced",
+    "judgment_call": false,
+    "note": "Strong football plus Final Four basketball"
+  },
+  "Ohio State": {
+    "priority": "football-first",
+    "judgment_call": false,
+    "note": "Football powerhouse; basketball good but secondary"
+  },
+  "Michigan State": {
+    "priority": "balanced",
+    "judgment_call": false,
+    "note": "Elite in both (Izzo + Dantonio eras)"
+  },
+  "Michigan": {
+    "priority": "football-first",
+    "judgment_call": false,
+    "note": "Football blue blood"
+  },
+  "Indiana": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Basketball blue blood"
+  },
+  "Maryland": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "2002 basketball title defines the school"
+  },
+  "Iowa": {
+    "priority": "football-first",
+    "judgment_call": true,
+    "note": "Consistently strong football; basketball secondary"
+  },
+  "Northwestern": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Academic school; both sports have had moments"
+  },
+  "Penn State": {
+    "priority": "football-first",
+    "judgment_call": false,
+    "note": "Football blue blood"
+  },
+  "Rutgers": {
+    "priority": "football-first",
+    "judgment_call": true,
+    "note": "Big Ten membership driven by football TV market"
+  },
+  "Nebraska": {
+    "priority": "football-first",
+    "judgment_call": false,
+    "note": "Football blue blood"
+  },
+  "Minnesota": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Neither elite recently; both draw support"
+  },
+  "UCLA": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Basketball blue blood"
+  },
+  "USC": {
+    "priority": "football-first",
+    "judgment_call": false,
+    "note": "Football blue blood"
+  },
+  "Oregon": {
+    "priority": "football-first",
+    "judgment_call": false,
+    "note": "Football identity (Nike money)"
+  },
+  "Washington": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Strong football with good basketball"
+  },
+  "Kentucky": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Basketball blue blood"
+  },
+  "Tennessee": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Football history with strong basketball"
+  },
+  "Alabama": {
+    "priority": "football-first",
+    "judgment_call": false,
+    "note": "Football blue blood"
+  },
+  "Auburn": {
+    "priority": "football-first",
+    "judgment_call": false,
+    "note": "Football identity"
+  },
+  "Florida": {
+    "priority": "balanced",
+    "judgment_call": false,
+    "note": "Elite in both (football + back-to-back basketball titles)"
+  },
+  "Texas A&M": {
+    "priority": "football-first",
+    "judgment_call": false,
+    "note": "Football-driven; top-3 revenue"
+  },
+  "Arkansas": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Football bigger but basketball relevant"
+  },
+  "Texas": {
+    "priority": "football-first",
+    "judgment_call": false,
+    "note": "Football blue blood; richest athletic department"
+  },
+  "Oklahoma": {
+    "priority": "football-first",
+    "judgment_call": false,
+    "note": "Football blue blood"
+  },
+  "LSU": {
+    "priority": "football-first",
+    "judgment_call": false,
+    "note": "Football powerhouse"
+  },
+  "Missouri": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Competitive in both"
+  },
+  "Georgia": {
+    "priority": "football-first",
+    "judgment_call": false,
+    "note": "Football powerhouse"
+  },
+  "Ole Miss": {
+    "priority": "football-first",
+    "judgment_call": true,
+    "note": "Football identity; basketball secondary"
+  },
+  "Mississippi State": {
+    "priority": "football-first",
+    "judgment_call": true,
+    "note": "Football bigger; basketball secondary"
+  },
+  "Vanderbilt": {
+    "priority": "basketball-first",
+    "judgment_call": true,
+    "note": "Football weak; basketball is the stronger program"
+  },
+  "South Carolina": {
+    "priority": "football-first",
+    "judgment_call": true,
+    "note": "Football bigger despite 2017 basketball Final Four"
+  },
+  "Memphis": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Basketball identity; football decent"
+  },
+  "Tulsa": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Competitive in both at G5 level"
+  },
+  "East Carolina": {
+    "priority": "football-first",
+    "judgment_call": false,
+    "note": "Football identity"
+  },
+  "South Florida": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Neither sport dominant"
+  },
+  "Temple": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Basketball history defines the school"
+  },
+  "Wichita State": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "No football program; basketball school"
+  },
+  "UAB": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Both sports relevant"
+  },
+  "North Texas": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Neither sport dominant"
+  },
+  "UTSA": {
+    "priority": "football-first",
+    "judgment_call": true,
+    "note": "Young program built on football"
+  },
+  "Rice": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Academic; neither sport elite"
+  },
+  "Florida Atlantic": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "2023 basketball Final Four; football growing"
+  },
+  "San Diego State": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Basketball powerhouse; football decent"
+  },
+  "Nevada": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Good basketball; decent football"
+  },
+  "New Mexico": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "The Pit; basketball defines the school"
+  },
+  "UNLV": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Basketball history (1990 title); football weak"
+  },
+  "Utah State": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Competitive in both"
+  },
+  "Boise State": {
+    "priority": "football-first",
+    "judgment_call": false,
+    "note": "Football identity (blue turf)"
+  },
+  "Colorado State": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Neither sport dominant"
+  },
+  "Air Force": {
+    "priority": "football-first",
+    "judgment_call": false,
+    "note": "Service academy; football identity"
+  },
+  "Wyoming": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Football slightly bigger; neither elite"
+  },
+  "Fresno State": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Competitive in both"
+  },
+  "San Jose State": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Neither sport dominant"
+  },
+  "Gonzaga": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Saint Mary's": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "San Francisco": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Pacific": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Pepperdine": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Santa Clara": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Portland": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Montana": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "LMU": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "San Diego": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Dayton": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "VCU": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Davidson": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Saint Louis": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Rhode Island": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Richmond": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "George Mason": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Fordham": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "La Salle": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Duquesne": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Saint Joseph's": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Massachusetts": {
+    "priority": "basketball-first",
+    "judgment_call": true,
+    "note": "Calipari-era basketball history; football weak"
+  },
+  "St. Bonaventure": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "George Washington": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Drake": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Loyola Chicago": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Bradley": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Illinois State": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Indiana State": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Missouri State": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "New FBS; decent basketball"
+  },
+  "Southern Illinois": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Evansville": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "UNI": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Belmont": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Liberty": {
+    "priority": "football-first",
+    "judgment_call": true,
+    "note": "Football-driven program"
+  },
+  "Jacksonville State": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "FCS football power transitioning"
+  },
+  "New Mexico State": {
+    "priority": "basketball-first",
+    "judgment_call": true,
+    "note": "Basketball tournament regular; football weak"
+  },
+  "Sam Houston": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "FCS football power transitioning"
+  },
+  "Western Kentucky": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Basketball tradition; football secondary"
+  },
+  "UTEP": {
+    "priority": "basketball-first",
+    "judgment_call": true,
+    "note": "1966 basketball title; football weak"
+  },
+  "Louisiana Tech": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Competitive in both at G5 level"
+  },
+  "Middle Tennessee": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Competitive in both at G5 level"
+  },
+  "FIU": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Neither sport dominant"
+  },
+  "Charlotte": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Young FBS program; neither sport dominant"
+  },
+  "Old Dominion": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Basketball history; FBS football"
+  },
+  "Southern Miss": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Football history; decent basketball"
+  },
+  "Troy": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Decent football; basketball secondary"
+  },
+  "Georgia Southern": {
+    "priority": "football-first",
+    "judgment_call": false,
+    "note": "Football tradition (FCS dynasty)"
+  },
+  "Louisiana": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Competitive in both"
+  },
+  "App State": {
+    "priority": "football-first",
+    "judgment_call": false,
+    "note": "Football identity"
+  },
+  "South Alabama": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Neither sport dominant"
+  },
+  "Arkansas State": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Neither sport dominant"
+  },
+  "Texas State": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Neither sport dominant"
+  },
+  "ULM": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Neither sport dominant"
+  },
+  "Georgia State": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Urban school; neither dominant"
+  },
+  "Marshall": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Football history; decent basketball"
+  },
+  "Coastal Carolina": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Both sports growing"
+  },
+  "James Madison": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "FCS football power; basketball growing"
+  },
+  "Utah Valley": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Grand Canyon": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "No football; basketball school"
+  },
+  "Cal Baptist": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Abilene Christian": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Tarleton State": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Southern Utah": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Seattle U": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Chicago State": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Lamar": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "UConn": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Basketball blue blood; FBS football is secondary"
+  },
+  "Marquette": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Creighton": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Providence": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Villanova": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Xavier": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Seton Hall": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Georgetown": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "DePaul": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Butler": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "St. John's": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Toledo": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Strong football; decent basketball"
+  },
+  "Akron": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Good basketball; decent football"
+  },
+  "Ball State": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Neither sport dominant"
+  },
+  "Ohio": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Competitive in both"
+  },
+  "Miami (OH)": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Football history (Cradle of Coaches); decent basketball"
+  },
+  "Buffalo": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Basketball success with decent football"
+  },
+  "Kent State": {
+    "priority": "basketball-first",
+    "judgment_call": true,
+    "note": "2002 Elite Eight; football weak"
+  },
+  "Western Michigan": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Neither sport dominant"
+  },
+  "Eastern Michigan": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Neither sport dominant"
+  },
+  "Bowling Green": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Neither sport dominant"
+  },
+  "Northern Illinois": {
+    "priority": "football-first",
+    "judgment_call": false,
+    "note": "Football identity"
+  },
+  "Central Michigan": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Neither sport dominant"
+  },
+  "Cleveland State": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Wright State": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Detroit Mercy": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Oakland": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Youngstown State": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Milwaukee": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "IU Indianapolis": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Green Bay": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Northern Kentucky": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Purdue Fort Wayne": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Iona": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Rider": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Manhattan": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Niagara": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Quinnipiac": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Fairfield": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Canisius": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Marist": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Siena": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Saint Peter's": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Stephen F. Austin": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "SE Louisiana": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "McNeese": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Nicholls": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Houston Christian": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Incarnate Word": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Northwestern State": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "New Orleans": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "UNC Asheville": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "High Point": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Longwood": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Charleston Southern": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Presbyterian": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Campbell": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Winthrop": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Gardner-Webb": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "USC Upstate": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Towson": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Hofstra": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Drexel": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "UNC Wilmington": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Delaware": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "New FBS; FCS football power with decent basketball"
+  },
+  "Elon": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "William & Mary": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Charleston": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Stony Brook": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Hampton": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Tennessee Tech": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Little Rock": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Tennessee State": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Morehead State": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "SIUE": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "UT Martin": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Colgate": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Lehigh": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "American": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Navy": {
+    "priority": "football-first",
+    "judgment_call": false,
+    "note": "Service academy; football is the identity"
+  },
+  "Army": {
+    "priority": "football-first",
+    "judgment_call": false,
+    "note": "Service academy; football is the identity (Army-Navy game)"
+  },
+  "Holy Cross": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Bucknell": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Lafayette": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Boston University": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "South Dakota State": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "South Dakota": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "North Dakota State": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "North Dakota": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Denver": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Oral Roberts": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Omaha": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Western Illinois": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Kansas City": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Grambling": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Southern": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Prairie View A&M": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Texas Southern": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Jackson State": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Alabama A&M": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Alabama State": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Bethune-Cookman": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Florida A&M": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Alcorn State": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Howard": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Morgan State": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Delaware State": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Coppin State": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "NC A&T": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Norfolk State": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "SC State": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Maryland Eastern Shore": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Vermont": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "UMBC": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "UAlbany": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "UMass Lowell": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Binghamton": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Maine": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "New Hampshire": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Merrimack": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Sacred Heart": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "LIU": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Wagner": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "FDU": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Saint Francis": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "New Haven": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Bryant": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "CCSU": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Furman": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Chattanooga": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Mercer": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "ETSU": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Western Carolina": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "VMI": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "The Citadel": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "UNC Greensboro": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Samford": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Wofford": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Yale": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Princeton": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Penn": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Harvard": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Columbia": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Cornell": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Dartmouth": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Brown": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "UC Irvine": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "UCSB": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Long Beach State": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "UC San Diego": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Cal Poly": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Hawaii": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "UC Davis": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "UC Riverside": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Cal State Fullerton": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "CSU Bakersfield": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Cal State Northridge": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Kennesaw State": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Young FBS program; neither sport dominant"
+  },
+  "Jacksonville": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Lipscomb": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "North Florida": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Queens": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Eastern Kentucky": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Florida Gulf Coast": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Bellarmine": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Austin Peay": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Central Arkansas": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "NJIT": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Tulane": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Good football with relevant basketball"
+  },
+  "North Alabama": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Stetson": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "West Georgia": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Eastern Washington": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Idaho": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Idaho State": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Montana State": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Northern Arizona": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Northern Colorado": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Portland State": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Weber State": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Radford": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Sacramento State": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Monmouth": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Northeastern": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Robert Morris": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Mount St. Mary's": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "NC Central": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Murray State": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "UIC": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Valparaiso": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Le Moyne": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Mercyhurst": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Stonehill": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Eastern Illinois": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Lindenwood": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Southeast Missouri": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Southern Indiana": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Oregon State": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Competitive in both"
+  },
+  "Washington State": {
+    "priority": "balanced",
+    "judgment_call": true,
+    "note": "Competitive in both"
+  },
+  "Loyola Maryland": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "East Texas A&M": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Texas A&M-CC": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "UTRGV": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "UAPB": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "MVSU": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "St. Thomas": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "UT Arlington": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  },
+  "Utah Tech": {
+    "priority": "basketball-first",
+    "judgment_call": false,
+    "note": "Non-FBS conference; basketball is the primary sport"
+  }
+}

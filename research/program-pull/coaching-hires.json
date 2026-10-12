@@ -1,0 +1,3630 @@
+[
+  {
+    "after": [
+      {
+        "best_finish": "Elite Eight",
+        "losses": 3,
+        "ncaa": true,
+        "season": "2009-10",
+        "wins": 35
+      },
+      {
+        "best_finish": "Final Four",
+        "losses": 9,
+        "ncaa": true,
+        "season": "2010-11",
+        "wins": 29
+      },
+      {
+        "best_finish": "Champion",
+        "losses": 2,
+        "ncaa": true,
+        "season": "2011-12",
+        "wins": 38
+      }
+    ],
+    "before": [
+      {
+        "best_finish": "Round of 32",
+        "losses": 12,
+        "ncaa": true,
+        "season": "2006-07",
+        "wins": 22
+      },
+      {
+        "best_finish": "Round of 64",
+        "losses": 13,
+        "ncaa": true,
+        "season": "2007-08",
+        "wins": 18
+      },
+      {
+        "best_finish": "NIT",
+        "losses": 14,
+        "ncaa": false,
+        "season": "2008-09",
+        "wins": 22
+      }
+    ],
+    "coach": "John Calipari",
+    "notes": "The defining hire of the era. Title in year 3. Left for Arkansas in 2024.",
+    "outcome": "instant-title",
+    "previous_job": "Memphis (head coach)",
+    "recruiting_rank": 1,
+    "school": "Kentucky",
+    "transfers_followed": "2010 #1 class (Wall, Cousins, Bledsoe); one-and-done pipeline established",
+    "year": 2009
+  },
+  {
+    "after": [
+      {
+        "best_finish": null,
+        "losses": 15,
+        "ncaa": false,
+        "season": "2009-10",
+        "wins": 16
+      },
+      {
+        "best_finish": "Elite Eight",
+        "losses": 8,
+        "ncaa": true,
+        "season": "2010-11",
+        "wins": 30
+      },
+      {
+        "best_finish": "NIT",
+        "losses": 12,
+        "ncaa": false,
+        "season": "2011-12",
+        "wins": 23
+      }
+    ],
+    "before": [
+      {
+        "best_finish": "Round of 64",
+        "losses": 11,
+        "ncaa": true,
+        "season": "2006-07",
+        "wins": 20
+      },
+      {
+        "best_finish": "Round of 64",
+        "losses": 15,
+        "ncaa": true,
+        "season": "2007-08",
+        "wins": 19
+      },
+      {
+        "best_finish": "Sweet 16",
+        "losses": 14,
+        "ncaa": true,
+        "season": "2008-09",
+        "wins": 21
+      }
+    ],
+    "coach": "Sean Miller",
+    "notes": "Rebuilt Arizona into a Pac-12 power; Elite Eights in 2011, 2014, 2015. Fired 2021 amid FBI probe fallout.",
+    "outcome": "success",
+    "previous_job": "Xavier (head coach)",
+    "recruiting_rank": null,
+    "school": "Arizona",
+    "transfers_followed": null,
+    "year": 2009
+  },
+  {
+    "after": [
+      {
+        "best_finish": null,
+        "losses": 16,
+        "ncaa": false,
+        "season": "2009-10",
+        "wins": 15
+      },
+      {
+        "best_finish": null,
+        "losses": 15,
+        "ncaa": false,
+        "season": "2010-11",
+        "wins": 16
+      },
+      {
+        "best_finish": "Round of 64",
+        "losses": 10,
+        "ncaa": true,
+        "season": "2011-12",
+        "wins": 22
+      }
+    ],
+    "before": [
+      {
+        "best_finish": "Round of 32",
+        "losses": 11,
+        "ncaa": true,
+        "season": "2006-07",
+        "wins": 21
+      },
+      {
+        "best_finish": null,
+        "losses": 16,
+        "ncaa": false,
+        "season": "2007-08",
+        "wins": 17
+      },
+      {
+        "best_finish": null,
+        "losses": 18,
+        "ncaa": false,
+        "season": "2008-09",
+        "wins": 10
+      }
+    ],
+    "coach": "Tony Bennett",
+    "notes": "Textbook slow build: 3 years to first NCAA, then 2019 national title. Retired 2024.",
+    "outcome": "slow-build-elite",
+    "previous_job": "Washington State (head coach)",
+    "recruiting_rank": null,
+    "school": "Virginia",
+    "transfers_followed": "Built through development (Brogdon, Harris, Hunter); not a transfer-driven build",
+    "year": 2009
+  },
+  {
+    "after": [
+      {
+        "best_finish": "CBI Champion",
+        "losses": 9,
+        "ncaa": false,
+        "season": "2009-10",
+        "wins": 27
+      },
+      {
+        "best_finish": "Final Four",
+        "losses": 12,
+        "ncaa": true,
+        "season": "2010-11",
+        "wins": 28
+      },
+      {
+        "best_finish": "Round of 32",
+        "losses": 7,
+        "ncaa": true,
+        "season": "2011-12",
+        "wins": 29
+      }
+    ],
+    "before": [
+      {
+        "best_finish": "Round of 32",
+        "losses": 7,
+        "ncaa": true,
+        "season": "2006-07",
+        "wins": 28
+      },
+      {
+        "best_finish": "NIT",
+        "losses": 8,
+        "ncaa": false,
+        "season": "2007-08",
+        "wins": 24
+      },
+      {
+        "best_finish": "Round of 64",
+        "losses": 10,
+        "ncaa": true,
+        "season": "2008-09",
+        "wins": 24
+      }
+    ],
+    "coach": "Shaka Smart",
+    "notes": "2011 Final Four from the First Four \u2014 the Havoc era. Left for Texas 2015.",
+    "outcome": "instant-success",
+    "previous_job": "Florida (assistant)",
+    "recruiting_rank": null,
+    "school": "VCU",
+    "transfers_followed": null,
+    "year": 2009
+  },
+  {
+    "after": [
+      {
+        "best_finish": "CBI",
+        "losses": 18,
+        "ncaa": false,
+        "season": "2010-11",
+        "wins": 21
+      },
+      {
+        "best_finish": "NIT",
+        "losses": 10,
+        "ncaa": false,
+        "season": "2011-12",
+        "wins": 24
+      },
+      {
+        "best_finish": "Sweet 16",
+        "losses": 9,
+        "ncaa": true,
+        "season": "2012-13",
+        "wins": 28
+      }
+    ],
+    "before": [
+      {
+        "best_finish": null,
+        "losses": 14,
+        "ncaa": false,
+        "season": "2007-08",
+        "wins": 18
+      },
+      {
+        "best_finish": null,
+        "losses": 23,
+        "ncaa": false,
+        "season": "2008-09",
+        "wins": 8
+      },
+      {
+        "best_finish": null,
+        "losses": 16,
+        "ncaa": false,
+        "season": "2009-10",
+        "wins": 16
+      }
+    ],
+    "coach": "Dana Altman",
+    "notes": "Steady 3-year build to Sweet 16; 2017 Final Four followed.",
+    "outcome": "success",
+    "previous_job": "Creighton (head coach)",
+    "recruiting_rank": null,
+    "school": "Oregon",
+    "transfers_followed": "Transfer-heavy roster building became the Oregon model",
+    "year": 2010
+  },
+  {
+    "after": [
+      {
+        "best_finish": "NIT",
+        "losses": 13,
+        "ncaa": false,
+        "season": "2011-12",
+        "wins": 20
+      },
+      {
+        "best_finish": "Sweet 16",
+        "losses": 7,
+        "ncaa": true,
+        "season": "2012-13",
+        "wins": 29
+      },
+      {
+        "best_finish": null,
+        "losses": 16,
+        "ncaa": false,
+        "season": "2013-14",
+        "wins": 17
+      }
+    ],
+    "before": [
+      {
+        "best_finish": "NIT",
+        "losses": 13,
+        "ncaa": false,
+        "season": "2008-09",
+        "wins": 19
+      },
+      {
+        "best_finish": null,
+        "losses": 13,
+        "ncaa": false,
+        "season": "2009-10",
+        "wins": 20
+      },
+      {
+        "best_finish": "NIT",
+        "losses": 15,
+        "ncaa": false,
+        "season": "2010-11",
+        "wins": 21
+      }
+    ],
+    "coach": "Jim Larranaga",
+    "notes": "2013 ACC titles (regular season + tournament); later 2022 Elite Eight and 2023 Final Four.",
+    "outcome": "success",
+    "previous_job": "George Mason (head coach)",
+    "recruiting_rank": null,
+    "school": "Miami",
+    "transfers_followed": null,
+    "year": 2011
+  },
+  {
+    "after": [
+      {
+        "best_finish": null,
+        "losses": 15,
+        "ncaa": false,
+        "season": "2011-12",
+        "wins": 17
+      },
+      {
+        "best_finish": "NIT",
+        "losses": 13,
+        "ncaa": false,
+        "season": "2012-13",
+        "wins": 25
+      },
+      {
+        "best_finish": null,
+        "losses": 15,
+        "ncaa": false,
+        "season": "2013-14",
+        "wins": 17
+      }
+    ],
+    "before": [
+      {
+        "best_finish": "Round of 64",
+        "losses": 14,
+        "ncaa": true,
+        "season": "2008-09",
+        "wins": 21
+      },
+      {
+        "best_finish": "Round of 32",
+        "losses": 9,
+        "ncaa": true,
+        "season": "2009-10",
+        "wins": 24
+      },
+      {
+        "best_finish": null,
+        "losses": 14,
+        "ncaa": false,
+        "season": "2010-11",
+        "wins": 19
+      }
+    ],
+    "coach": "Mark Turgeon",
+    "notes": "Slow start; eventually 2015 Sweet 16 and 2020 Big Ten title. Resigned 2021.",
+    "outcome": "mixed",
+    "previous_job": "Texas A&M (head coach)",
+    "recruiting_rank": null,
+    "school": "Maryland",
+    "transfers_followed": null,
+    "year": 2011
+  },
+  {
+    "after": [
+      {
+        "best_finish": "Round of 32",
+        "losses": 5,
+        "ncaa": true,
+        "season": "2011-12",
+        "wins": 30
+      },
+      {
+        "best_finish": "Round of 64",
+        "losses": 11,
+        "ncaa": true,
+        "season": "2012-13",
+        "wins": 23
+      },
+      {
+        "best_finish": "NIT",
+        "losses": 12,
+        "ncaa": false,
+        "season": "2013-14",
+        "wins": 23
+      }
+    ],
+    "before": [
+      {
+        "best_finish": "Elite Eight",
+        "losses": 7,
+        "ncaa": true,
+        "season": "2008-09",
+        "wins": 31
+      },
+      {
+        "best_finish": "Round of 64",
+        "losses": 11,
+        "ncaa": true,
+        "season": "2009-10",
+        "wins": 23
+      },
+      {
+        "best_finish": "Round of 64",
+        "losses": 11,
+        "ncaa": true,
+        "season": "2010-11",
+        "wins": 23
+      }
+    ],
+    "coach": "Frank Haith",
+    "notes": "Inherited an Elite Eight roster; program declined each year. Left for Tulsa 2014.",
+    "outcome": "decline",
+    "previous_job": "Miami (head coach)",
+    "recruiting_rank": null,
+    "school": "Missouri",
+    "transfers_followed": null,
+    "year": 2011
+  },
+  {
+    "after": [
+      {
+        "best_finish": null,
+        "losses": 14,
+        "ncaa": false,
+        "season": "2011-12",
+        "wins": 18
+      },
+      {
+        "best_finish": null,
+        "losses": 13,
+        "ncaa": false,
+        "season": "2012-13",
+        "wins": 19
+      },
+      {
+        "best_finish": "NIT",
+        "losses": 12,
+        "ncaa": false,
+        "season": "2013-14",
+        "wins": 22
+      }
+    ],
+    "before": [
+      {
+        "best_finish": null,
+        "losses": 16,
+        "ncaa": false,
+        "season": "2008-09",
+        "wins": 14
+      },
+      {
+        "best_finish": null,
+        "losses": 18,
+        "ncaa": false,
+        "season": "2009-10",
+        "wins": 14
+      },
+      {
+        "best_finish": null,
+        "losses": 13,
+        "ncaa": false,
+        "season": "2010-11",
+        "wins": 18
+      }
+    ],
+    "coach": "Mike Anderson",
+    "notes": "Took 4 years to reach the NCAA (2015). Fired 2019.",
+    "outcome": "slow",
+    "previous_job": "Missouri (head coach)",
+    "recruiting_rank": null,
+    "school": "Arkansas",
+    "transfers_followed": null,
+    "year": 2011
+  },
+  {
+    "after": [
+      {
+        "best_finish": "Ineligible",
+        "losses": 10,
+        "ncaa": false,
+        "season": "2012-13",
+        "wins": 20
+      },
+      {
+        "best_finish": "Champion",
+        "losses": 8,
+        "ncaa": true,
+        "season": "2013-14",
+        "wins": 32
+      },
+      {
+        "best_finish": null,
+        "losses": 15,
+        "ncaa": false,
+        "season": "2014-15",
+        "wins": 20
+      }
+    ],
+    "before": [
+      {
+        "best_finish": null,
+        "losses": 16,
+        "ncaa": false,
+        "season": "2009-10",
+        "wins": 18
+      },
+      {
+        "best_finish": "Champion",
+        "losses": 9,
+        "ncaa": true,
+        "season": "2010-11",
+        "wins": 32
+      },
+      {
+        "best_finish": "Round of 64",
+        "losses": 14,
+        "ncaa": true,
+        "season": "2011-12",
+        "wins": 20
+      }
+    ],
+    "coach": "Kevin Ollie",
+    "notes": "Won the 2014 title in year 2, then collapsed. Fired 2018 for NCAA violations.",
+    "outcome": "flash-then-flop",
+    "previous_job": "UConn (assistant)",
+    "recruiting_rank": null,
+    "school": "UConn",
+    "transfers_followed": null,
+    "year": 2012
+  },
+  {
+    "school": "UCLA",
+    "year": 2013,
+    "coach": "Steve Alford",
+    "previous_job": "New Mexico (head coach)",
+    "before": [
+      {
+        "season": "2010-11",
+        "wins": 23,
+        "losses": 11,
+        "ncaa": true,
+        "best_finish": "Round of 32"
+      },
+      {
+        "season": "2011-12",
+        "wins": 19,
+        "losses": 14,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2012-13",
+        "wins": 25,
+        "losses": 10,
+        "ncaa": true,
+        "best_finish": "Round of 64"
+      }
+    ],
+    "after": [
+      {
+        "season": "2013-14",
+        "wins": 28,
+        "losses": 9,
+        "ncaa": true,
+        "best_finish": "Sweet 16"
+      },
+      {
+        "season": "2014-15",
+        "wins": 22,
+        "losses": 14,
+        "ncaa": true,
+        "best_finish": "Sweet 16"
+      },
+      {
+        "season": "2015-16",
+        "wins": 15,
+        "losses": 17,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": null,
+    "outcome": "mixed-fired",
+    "notes": "Two Sweet 16s then collapse. Fired mid-2018-19."
+  },
+  {
+    "school": "Minnesota",
+    "year": 2013,
+    "coach": "Richard Pitino",
+    "previous_job": "FIU (head coach)",
+    "before": [
+      {
+        "season": "2010-11",
+        "wins": 17,
+        "losses": 14,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2011-12",
+        "wins": 23,
+        "losses": 15,
+        "ncaa": false,
+        "best_finish": "NIT"
+      },
+      {
+        "season": "2012-13",
+        "wins": 21,
+        "losses": 13,
+        "ncaa": true,
+        "best_finish": "Round of 32"
+      }
+    ],
+    "after": [
+      {
+        "season": "2013-14",
+        "wins": 25,
+        "losses": 13,
+        "ncaa": false,
+        "best_finish": "NIT Champion"
+      },
+      {
+        "season": "2014-15",
+        "wins": 18,
+        "losses": 15,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2015-16",
+        "wins": 8,
+        "losses": 23,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": null,
+    "outcome": "flop",
+    "notes": "8-23 in year 3. Fired 2021 after one NCAA in 8 years."
+  },
+  {
+    "school": "Northwestern",
+    "year": 2013,
+    "coach": "Chris Collins",
+    "previous_job": "Duke (assistant)",
+    "before": [
+      {
+        "season": "2010-11",
+        "wins": 20,
+        "losses": 14,
+        "ncaa": false,
+        "best_finish": "NIT"
+      },
+      {
+        "season": "2011-12",
+        "wins": 19,
+        "losses": 14,
+        "ncaa": false,
+        "best_finish": "NIT"
+      },
+      {
+        "season": "2012-13",
+        "wins": 13,
+        "losses": 19,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [
+      {
+        "season": "2013-14",
+        "wins": 14,
+        "losses": 15,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2014-15",
+        "wins": 15,
+        "losses": 17,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2015-16",
+        "wins": 20,
+        "losses": 12,
+        "ncaa": false,
+        "best_finish": "NIT"
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": null,
+    "outcome": "slow-build",
+    "notes": "First-ever NCAA bid in 2017 (year 4). Program's first tournament appearance."
+  },
+  {
+    "school": "Houston",
+    "year": 2014,
+    "coach": "Kelvin Sampson",
+    "previous_job": "Houston Rockets (NBA assistant)",
+    "before": [
+      {
+        "season": "2011-12",
+        "wins": 15,
+        "losses": 15,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2012-13",
+        "wins": 20,
+        "losses": 13,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2013-14",
+        "wins": 17,
+        "losses": 16,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [
+      {
+        "season": "2014-15",
+        "wins": 13,
+        "losses": 19,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2015-16",
+        "wins": 22,
+        "losses": 10,
+        "ncaa": false,
+        "best_finish": "NIT"
+      },
+      {
+        "season": "2016-17",
+        "wins": 21,
+        "losses": 11,
+        "ncaa": false,
+        "best_finish": "NIT"
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": "Built through transfers and development; 2021 Final Four, 2025 title game",
+    "outcome": "slow-build-elite",
+    "notes": "Year 1 was a teardown (13-19); then 8 straight 22+ win seasons. Verified via uhcougars.com."
+  },
+  {
+    "school": "Virginia Tech",
+    "year": 2014,
+    "coach": "Buzz Williams",
+    "previous_job": "Marquette (head coach)",
+    "before": [
+      {
+        "season": "2011-12",
+        "wins": 16,
+        "losses": 17,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2012-13",
+        "wins": 13,
+        "losses": 19,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2013-14",
+        "wins": 9,
+        "losses": 22,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [
+      {
+        "season": "2014-15",
+        "wins": 11,
+        "losses": 22,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2015-16",
+        "wins": 20,
+        "losses": 15,
+        "ncaa": false,
+        "best_finish": "NIT"
+      },
+      {
+        "season": "2016-17",
+        "wins": 22,
+        "losses": 11,
+        "ncaa": true,
+        "best_finish": "Round of 64"
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": null,
+    "outcome": "turnaround",
+    "notes": "From 9 wins to NCAA in 3 years. Left for Texas A&M 2019."
+  },
+  {
+    "school": "Tennessee",
+    "year": 2014,
+    "coach": "Donnie Tyndall",
+    "previous_job": "Southern Miss (head coach)",
+    "before": [
+      {
+        "season": "2011-12",
+        "wins": 19,
+        "losses": 15,
+        "ncaa": false,
+        "best_finish": "NIT"
+      },
+      {
+        "season": "2012-13",
+        "wins": 20,
+        "losses": 13,
+        "ncaa": false,
+        "best_finish": "NIT"
+      },
+      {
+        "season": "2013-14",
+        "wins": 24,
+        "losses": 13,
+        "ncaa": true,
+        "best_finish": "Sweet 16"
+      }
+    ],
+    "after": [
+      {
+        "season": "2014-15",
+        "wins": 16,
+        "losses": 16,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": null,
+    "outcome": "flop-scandal",
+    "notes": "Fired after 1 year for NCAA violations at Southern Miss. Only 16-16."
+  },
+  {
+    "school": "Alabama",
+    "year": 2015,
+    "coach": "Avery Johnson",
+    "previous_job": "Brooklyn Nets (NBA head coach)",
+    "before": [
+      {
+        "season": "2012-13",
+        "wins": 23,
+        "losses": 12,
+        "ncaa": false,
+        "best_finish": "NIT"
+      },
+      {
+        "season": "2013-14",
+        "wins": 13,
+        "losses": 16,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2014-15",
+        "wins": 19,
+        "losses": 15,
+        "ncaa": false,
+        "best_finish": "NIT"
+      }
+    ],
+    "after": [
+      {
+        "season": "2015-16",
+        "wins": 18,
+        "losses": 14,
+        "ncaa": false,
+        "best_finish": "NIT"
+      },
+      {
+        "season": "2016-17",
+        "wins": 19,
+        "losses": 15,
+        "ncaa": true,
+        "best_finish": "Round of 32"
+      },
+      {
+        "season": "2017-18",
+        "wins": 20,
+        "losses": 16,
+        "ncaa": true,
+        "best_finish": "Round of 64"
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": null,
+    "outcome": "mediocre-fired",
+    "notes": "Never finished above .500 in SEC. Fired 2019."
+  },
+  {
+    "school": "Mississippi State",
+    "year": 2015,
+    "coach": "Ben Howland",
+    "previous_job": "UCLA (head coach)",
+    "before": [
+      {
+        "season": "2012-13",
+        "wins": 10,
+        "losses": 22,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2013-14",
+        "wins": 14,
+        "losses": 16,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2014-15",
+        "wins": 13,
+        "losses": 19,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [
+      {
+        "season": "2015-16",
+        "wins": 14,
+        "losses": 17,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2016-17",
+        "wins": 16,
+        "losses": 16,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2017-18",
+        "wins": 25,
+        "losses": 12,
+        "ncaa": false,
+        "best_finish": "NIT"
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": null,
+    "outcome": "improvement-no-ncaa",
+    "notes": "Improved but never reached NCAA in first 3 years. Fired 2022."
+  },
+  {
+    "school": "Texas",
+    "year": 2015,
+    "coach": "Shaka Smart",
+    "previous_job": "VCU (head coach)",
+    "before": [
+      {
+        "season": "2012-13",
+        "wins": 16,
+        "losses": 18,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2013-14",
+        "wins": 24,
+        "losses": 11,
+        "ncaa": true,
+        "best_finish": "Round of 32"
+      },
+      {
+        "season": "2014-15",
+        "wins": 20,
+        "losses": 14,
+        "ncaa": true,
+        "best_finish": "Round of 64"
+      }
+    ],
+    "after": [
+      {
+        "season": "2015-16",
+        "wins": 20,
+        "losses": 13,
+        "ncaa": true,
+        "best_finish": "Round of 64"
+      },
+      {
+        "season": "2016-17",
+        "wins": 11,
+        "losses": 22,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2017-18",
+        "wins": 19,
+        "losses": 15,
+        "ncaa": true,
+        "best_finish": "Round of 64"
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": null,
+    "outcome": "flop",
+    "notes": "Havoc didn't translate. 11-22 in year 2. Left for Marquette 2021."
+  },
+  {
+    "school": "Florida",
+    "year": 2015,
+    "coach": "Michael White",
+    "previous_job": "Louisiana Tech (head coach)",
+    "before": [
+      {
+        "season": "2012-13",
+        "wins": 29,
+        "losses": 8,
+        "ncaa": true,
+        "best_finish": "Elite Eight"
+      },
+      {
+        "season": "2013-14",
+        "wins": 36,
+        "losses": 3,
+        "ncaa": true,
+        "best_finish": "Final Four"
+      },
+      {
+        "season": "2014-15",
+        "wins": 16,
+        "losses": 17,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [
+      {
+        "season": "2015-16",
+        "wins": 21,
+        "losses": 15,
+        "ncaa": false,
+        "best_finish": "NIT"
+      },
+      {
+        "season": "2016-17",
+        "wins": 27,
+        "losses": 9,
+        "ncaa": true,
+        "best_finish": "Elite Eight"
+      },
+      {
+        "season": "2017-18",
+        "wins": 21,
+        "losses": 13,
+        "ncaa": true,
+        "best_finish": "Round of 32"
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": null,
+    "outcome": "success",
+    "notes": "Elite Eight in year 2. Left for Georgia 2022."
+  },
+  {
+    "school": "Texas Tech",
+    "year": 2016,
+    "coach": "Chris Beard",
+    "previous_job": "Little Rock (head coach)",
+    "before": [
+      {
+        "season": "2013-14",
+        "wins": 14,
+        "losses": 18,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2014-15",
+        "wins": 13,
+        "losses": 19,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2015-16",
+        "wins": 19,
+        "losses": 13,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [
+      {
+        "season": "2016-17",
+        "wins": 18,
+        "losses": 14,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2017-18",
+        "wins": 27,
+        "losses": 10,
+        "ncaa": true,
+        "best_finish": "Elite Eight"
+      },
+      {
+        "season": "2018-19",
+        "wins": 31,
+        "losses": 7,
+        "ncaa": true,
+        "best_finish": "Runner-up"
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": "Transfer-heavy (Mooney, Owens); defensive identity",
+    "outcome": "elite",
+    "notes": "National title game in year 3. Left for Texas 2021."
+  },
+  {
+    "school": "Ohio State",
+    "year": 2017,
+    "coach": "Chris Holtmann",
+    "previous_job": "Butler (head coach)",
+    "before": [
+      {
+        "season": "2014-15",
+        "wins": 21,
+        "losses": 14,
+        "ncaa": true,
+        "best_finish": "Round of 32"
+      },
+      {
+        "season": "2015-16",
+        "wins": 21,
+        "losses": 14,
+        "ncaa": false,
+        "best_finish": "NIT"
+      },
+      {
+        "season": "2016-17",
+        "wins": 17,
+        "losses": 15,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [
+      {
+        "season": "2017-18",
+        "wins": 25,
+        "losses": 9,
+        "ncaa": true,
+        "best_finish": "Round of 32"
+      },
+      {
+        "season": "2018-19",
+        "wins": 20,
+        "losses": 15,
+        "ncaa": true,
+        "best_finish": "Round of 32"
+      },
+      {
+        "season": "2019-20",
+        "wins": 21,
+        "losses": 10,
+        "ncaa": false,
+        "best_finish": "Cancelled"
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": null,
+    "outcome": "solid",
+    "notes": "Steady tournament team. Fired 2024 after decline."
+  },
+  {
+    "school": "Indiana",
+    "year": 2017,
+    "coach": "Archie Miller",
+    "previous_job": "Dayton (head coach)",
+    "before": [
+      {
+        "season": "2014-15",
+        "wins": 20,
+        "losses": 14,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2015-16",
+        "wins": 27,
+        "losses": 8,
+        "ncaa": true,
+        "best_finish": "Sweet 16"
+      },
+      {
+        "season": "2016-17",
+        "wins": 18,
+        "losses": 16,
+        "ncaa": false,
+        "best_finish": "NIT"
+      }
+    ],
+    "after": [
+      {
+        "season": "2017-18",
+        "wins": 16,
+        "losses": 15,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2018-19",
+        "wins": 19,
+        "losses": 16,
+        "ncaa": false,
+        "best_finish": "NIT"
+      },
+      {
+        "season": "2019-20",
+        "wins": 20,
+        "losses": 12,
+        "ncaa": false,
+        "best_finish": "Cancelled"
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": null,
+    "outcome": "flop",
+    "notes": "Never reached NCAA in 4 years. Fired 2021."
+  },
+  {
+    "school": "LSU",
+    "year": 2017,
+    "coach": "Will Wade",
+    "previous_job": "VCU (head coach)",
+    "before": [
+      {
+        "season": "2014-15",
+        "wins": 22,
+        "losses": 11,
+        "ncaa": true,
+        "best_finish": "Round of 64"
+      },
+      {
+        "season": "2015-16",
+        "wins": 19,
+        "losses": 14,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2016-17",
+        "wins": 10,
+        "losses": 21,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [
+      {
+        "season": "2017-18",
+        "wins": 18,
+        "losses": 15,
+        "ncaa": false,
+        "best_finish": "NIT"
+      },
+      {
+        "season": "2018-19",
+        "wins": 28,
+        "losses": 7,
+        "ncaa": true,
+        "best_finish": "Sweet 16"
+      },
+      {
+        "season": "2019-20",
+        "wins": 21,
+        "losses": 10,
+        "ncaa": false,
+        "best_finish": "Cancelled"
+      }
+    ],
+    "recruiting_rank": 5,
+    "transfers_followed": "Elite recruiting (Waters, Smart); FBI wiretap scandal",
+    "outcome": "success-scandal",
+    "notes": "SEC title year 2. Fired 2022 for NCAA violations."
+  },
+  {
+    "school": "Missouri",
+    "year": 2017,
+    "coach": "Cuonzo Martin",
+    "previous_job": "California (head coach)",
+    "before": [
+      {
+        "season": "2014-15",
+        "wins": 9,
+        "losses": 23,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2015-16",
+        "wins": 10,
+        "losses": 21,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2016-17",
+        "wins": 15,
+        "losses": 17,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [
+      {
+        "season": "2017-18",
+        "wins": 20,
+        "losses": 13,
+        "ncaa": true,
+        "best_finish": "Round of 64"
+      },
+      {
+        "season": "2018-19",
+        "wins": 15,
+        "losses": 17,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2019-20",
+        "wins": 15,
+        "losses": 16,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": "Michael Porter Jr. (injured most of year)",
+    "outcome": "brief-uptick",
+    "notes": "One NCAA then decline. Fired 2022."
+  },
+  {
+    "school": "Memphis",
+    "year": 2018,
+    "coach": "Penny Hardaway",
+    "previous_job": "Memphis East HS (head coach)",
+    "before": [
+      {
+        "season": "2015-16",
+        "wins": 19,
+        "losses": 15,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2016-17",
+        "wins": 19,
+        "losses": 13,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2017-18",
+        "wins": 21,
+        "losses": 13,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [
+      {
+        "season": "2018-19",
+        "wins": 22,
+        "losses": 14,
+        "ncaa": false,
+        "best_finish": "NIT"
+      },
+      {
+        "season": "2019-20",
+        "wins": 21,
+        "losses": 10,
+        "ncaa": false,
+        "best_finish": "Cancelled"
+      },
+      {
+        "season": "2020-21",
+        "wins": 20,
+        "losses": 8,
+        "ncaa": false,
+        "best_finish": "NIT Champion"
+      }
+    ],
+    "recruiting_rank": 1,
+    "transfers_followed": "#1 2019 class (Wiseman, Achiuwa) but underachieved",
+    "outcome": "underwhelming",
+    "notes": "Elite recruiting, zero NCAAs in first 3 years. Made 2022-23 tournaments."
+  },
+  {
+    "school": "UConn",
+    "year": 2018,
+    "coach": "Dan Hurley",
+    "previous_job": "Rhode Island (head coach)",
+    "before": [
+      {
+        "season": "2015-16",
+        "wins": 25,
+        "losses": 11,
+        "ncaa": true,
+        "best_finish": "Round of 64"
+      },
+      {
+        "season": "2016-17",
+        "wins": 16,
+        "losses": 17,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2017-18",
+        "wins": 14,
+        "losses": 18,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [
+      {
+        "season": "2018-19",
+        "wins": 16,
+        "losses": 17,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2019-20",
+        "wins": 19,
+        "losses": 12,
+        "ncaa": false,
+        "best_finish": "Cancelled"
+      },
+      {
+        "season": "2020-21",
+        "wins": 15,
+        "losses": 8,
+        "ncaa": true,
+        "best_finish": "Round of 64"
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": "Built through development + portal (Newton, Spencer); back-to-back titles 2023-24",
+    "outcome": "slow-build-elite",
+    "notes": "3 years to first NCAA; then consecutive national titles. Verified via uconnhuskies.com."
+  },
+  {
+    "school": "Pitt",
+    "year": 2018,
+    "coach": "Jeff Capel",
+    "previous_job": "Duke (assistant)",
+    "before": [
+      {
+        "season": "2015-16",
+        "wins": 21,
+        "losses": 17,
+        "ncaa": false,
+        "best_finish": "NIT"
+      },
+      {
+        "season": "2016-17",
+        "wins": 16,
+        "losses": 17,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2017-18",
+        "wins": 8,
+        "losses": 24,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [
+      {
+        "season": "2018-19",
+        "wins": 14,
+        "losses": 19,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2019-20",
+        "wins": 16,
+        "losses": 17,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2020-21",
+        "wins": 10,
+        "losses": 12,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": null,
+    "outcome": "flop",
+    "notes": "Never reached NCAA. Fired 2023."
+  },
+  {
+    "school": "Georgia",
+    "year": 2018,
+    "coach": "Tom Crean",
+    "previous_job": "Indiana (head coach)",
+    "before": [
+      {
+        "season": "2015-16",
+        "wins": 20,
+        "losses": 14,
+        "ncaa": false,
+        "best_finish": "NIT"
+      },
+      {
+        "season": "2016-17",
+        "wins": 19,
+        "losses": 15,
+        "ncaa": false,
+        "best_finish": "NIT"
+      },
+      {
+        "season": "2017-18",
+        "wins": 18,
+        "losses": 15,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [
+      {
+        "season": "2018-19",
+        "wins": 11,
+        "losses": 21,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2019-20",
+        "wins": 16,
+        "losses": 16,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2020-21",
+        "wins": 14,
+        "losses": 12,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": "Anthony Edwards (#1 pick) in year 2 but 16-16",
+    "outcome": "flop",
+    "notes": "Even #1 NBA pick couldn't get them to .500. Fired 2022."
+  },
+  {
+    "school": "Alabama",
+    "year": 2019,
+    "coach": "Nate Oats",
+    "previous_job": "Buffalo (head coach)",
+    "before": [
+      {
+        "season": "2016-17",
+        "wins": 19,
+        "losses": 15,
+        "ncaa": true,
+        "best_finish": "Round of 32"
+      },
+      {
+        "season": "2017-18",
+        "wins": 20,
+        "losses": 16,
+        "ncaa": true,
+        "best_finish": "Round of 64"
+      },
+      {
+        "season": "2018-19",
+        "wins": 18,
+        "losses": 16,
+        "ncaa": false,
+        "best_finish": "NIT"
+      }
+    ],
+    "after": [
+      {
+        "season": "2019-20",
+        "wins": 16,
+        "losses": 15,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2020-21",
+        "wins": 26,
+        "losses": 7,
+        "ncaa": true,
+        "best_finish": "Sweet 16"
+      },
+      {
+        "season": "2021-22",
+        "wins": 19,
+        "losses": 14,
+        "ncaa": true,
+        "best_finish": "Round of 64"
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": "Up-tempo system; 2021 SEC titles; 2024 Final Four",
+    "outcome": "success",
+    "notes": "SEC regular season + tournament titles in year 2."
+  },
+  {
+    "school": "UCLA",
+    "year": 2019,
+    "coach": "Mick Cronin",
+    "previous_job": "Cincinnati (head coach)",
+    "before": [
+      {
+        "season": "2016-17",
+        "wins": 31,
+        "losses": 5,
+        "ncaa": true,
+        "best_finish": "Sweet 16"
+      },
+      {
+        "season": "2017-18",
+        "wins": 21,
+        "losses": 12,
+        "ncaa": true,
+        "best_finish": "Round of 64"
+      },
+      {
+        "season": "2018-19",
+        "wins": 17,
+        "losses": 16,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [
+      {
+        "season": "2019-20",
+        "wins": 19,
+        "losses": 12,
+        "ncaa": false,
+        "best_finish": "Cancelled"
+      },
+      {
+        "season": "2020-21",
+        "wins": 22,
+        "losses": 10,
+        "ncaa": true,
+        "best_finish": "Final Four"
+      },
+      {
+        "season": "2021-22",
+        "wins": 27,
+        "losses": 8,
+        "ncaa": true,
+        "best_finish": "Sweet 16"
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": null,
+    "outcome": "success",
+    "notes": "Final Four in year 2 from First Four. Defensive culture change."
+  },
+  {
+    "school": "Texas A&M",
+    "year": 2019,
+    "coach": "Buzz Williams",
+    "previous_job": "Virginia Tech (head coach)",
+    "before": [
+      {
+        "season": "2016-17",
+        "wins": 16,
+        "losses": 15,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2017-18",
+        "wins": 22,
+        "losses": 13,
+        "ncaa": true,
+        "best_finish": "Sweet 16"
+      },
+      {
+        "season": "2018-19",
+        "wins": 14,
+        "losses": 18,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [
+      {
+        "season": "2019-20",
+        "wins": 16,
+        "losses": 14,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2020-21",
+        "wins": 8,
+        "losses": 10,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2021-22",
+        "wins": 27,
+        "losses": 13,
+        "ncaa": false,
+        "best_finish": "NIT Runner-up"
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": null,
+    "outcome": "mixed",
+    "notes": "NIT final year 3; NCAAs in 2023-24. Left for Maryland 2025."
+  },
+  {
+    "school": "Nebraska",
+    "year": 2019,
+    "coach": "Fred Hoiberg",
+    "previous_job": "Chicago Bulls (NBA head coach)",
+    "before": [
+      {
+        "season": "2016-17",
+        "wins": 12,
+        "losses": 19,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2017-18",
+        "wins": 22,
+        "losses": 11,
+        "ncaa": false,
+        "best_finish": "NIT"
+      },
+      {
+        "season": "2018-19",
+        "wins": 19,
+        "losses": 17,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [
+      {
+        "season": "2019-20",
+        "wins": 7,
+        "losses": 25,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2020-21",
+        "wins": 7,
+        "losses": 20,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2021-22",
+        "wins": 10,
+        "losses": 22,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": null,
+    "outcome": "flop",
+    "notes": "Three straight 20-loss seasons. Finally reached NCAA in 2024 (year 5)."
+  },
+  {
+    "school": "North Carolina",
+    "year": 2021,
+    "coach": "Hubert Davis",
+    "previous_job": "North Carolina (assistant)",
+    "before": [
+      {
+        "season": "2018-19",
+        "wins": 29,
+        "losses": 7,
+        "ncaa": true,
+        "best_finish": "Sweet 16"
+      },
+      {
+        "season": "2019-20",
+        "wins": 14,
+        "losses": 19,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2020-21",
+        "wins": 18,
+        "losses": 11,
+        "ncaa": true,
+        "best_finish": "Round of 64"
+      }
+    ],
+    "after": [
+      {
+        "season": "2021-22",
+        "wins": 29,
+        "losses": 10,
+        "ncaa": true,
+        "best_finish": "Runner-up"
+      },
+      {
+        "season": "2022-23",
+        "wins": 20,
+        "losses": 13,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2023-24",
+        "wins": 29,
+        "losses": 8,
+        "ncaa": true,
+        "best_finish": "Sweet 16"
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": null,
+    "outcome": "success",
+    "notes": "Title game in year 1 as a #8 seed. Preseason #1 to NIT in year 2."
+  },
+  {
+    "school": "Arizona",
+    "year": 2021,
+    "coach": "Tommy Lloyd",
+    "previous_job": "Gonzaga (assistant)",
+    "before": [
+      {
+        "season": "2018-19",
+        "wins": 17,
+        "losses": 15,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2019-20",
+        "wins": 21,
+        "losses": 11,
+        "ncaa": false,
+        "best_finish": "Cancelled"
+      },
+      {
+        "season": "2020-21",
+        "wins": 17,
+        "losses": 9,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [
+      {
+        "season": "2021-22",
+        "wins": 33,
+        "losses": 4,
+        "ncaa": true,
+        "best_finish": "Sweet 16"
+      },
+      {
+        "season": "2022-23",
+        "wins": 28,
+        "losses": 7,
+        "ncaa": true,
+        "best_finish": "Round of 32"
+      },
+      {
+        "season": "2023-24",
+        "wins": 27,
+        "losses": 9,
+        "ncaa": true,
+        "best_finish": "Sweet 16"
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": "International pipeline from Gonzaga; immediate contender",
+    "outcome": "instant-success",
+    "notes": "33 wins year 1. Three straight Sweet 16s."
+  },
+  {
+    "school": "Texas",
+    "year": 2021,
+    "coach": "Chris Beard",
+    "previous_job": "Texas Tech (head coach)",
+    "before": [
+      {
+        "season": "2018-19",
+        "wins": 16,
+        "losses": 16,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2019-20",
+        "wins": 20,
+        "losses": 13,
+        "ncaa": false,
+        "best_finish": "Cancelled"
+      },
+      {
+        "season": "2020-21",
+        "wins": 19,
+        "losses": 8,
+        "ncaa": true,
+        "best_finish": "Round of 64"
+      }
+    ],
+    "after": [
+      {
+        "season": "2021-22",
+        "wins": 22,
+        "losses": 12,
+        "ncaa": true,
+        "best_finish": "Round of 32"
+      },
+      {
+        "season": "2022-23",
+        "wins": 12,
+        "losses": 11,
+        "ncaa": false,
+        "best_finish": "Fired mid-season"
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": "Brought Texas Tech transfers; #1 portal class 2021",
+    "outcome": "fired",
+    "notes": "Fired Dec 2022 after domestic violence arrest. Team still made Elite Eight under Terry."
+  },
+  {
+    "school": "Indiana",
+    "year": 2021,
+    "coach": "Mike Woodson",
+    "previous_job": "New York Knicks (NBA assistant)",
+    "before": [
+      {
+        "season": "2018-19",
+        "wins": 19,
+        "losses": 16,
+        "ncaa": false,
+        "best_finish": "NIT"
+      },
+      {
+        "season": "2019-20",
+        "wins": 20,
+        "losses": 12,
+        "ncaa": false,
+        "best_finish": "Cancelled"
+      },
+      {
+        "season": "2020-21",
+        "wins": 12,
+        "losses": 15,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [
+      {
+        "season": "2021-22",
+        "wins": 21,
+        "losses": 14,
+        "ncaa": true,
+        "best_finish": "Round of 64"
+      },
+      {
+        "season": "2022-23",
+        "wins": 23,
+        "losses": 12,
+        "ncaa": true,
+        "best_finish": "Round of 32"
+      },
+      {
+        "season": "2023-24",
+        "wins": 19,
+        "losses": 14,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": null,
+    "outcome": "mediocre",
+    "notes": "Two NCAAs then decline. Retired 2025."
+  },
+  {
+    "school": "Minnesota",
+    "year": 2021,
+    "coach": "Ben Johnson",
+    "previous_job": "Xavier (assistant)",
+    "before": [
+      {
+        "season": "2018-19",
+        "wins": 22,
+        "losses": 14,
+        "ncaa": true,
+        "best_finish": "Round of 32"
+      },
+      {
+        "season": "2019-20",
+        "wins": 15,
+        "losses": 16,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2020-21",
+        "wins": 14,
+        "losses": 15,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [
+      {
+        "season": "2021-22",
+        "wins": 13,
+        "losses": 17,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2022-23",
+        "wins": 9,
+        "losses": 22,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2023-24",
+        "wins": 19,
+        "losses": 15,
+        "ncaa": false,
+        "best_finish": "NIT"
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": null,
+    "outcome": "flop",
+    "notes": "9-22 in year 2. Fired 2025."
+  },
+  {
+    "school": "Duke",
+    "year": 2022,
+    "coach": "Jon Scheyer",
+    "previous_job": "Duke (assistant)",
+    "before": [
+      {
+        "season": "2019-20",
+        "wins": 25,
+        "losses": 6,
+        "ncaa": false,
+        "best_finish": "Cancelled"
+      },
+      {
+        "season": "2020-21",
+        "wins": 13,
+        "losses": 11,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2021-22",
+        "wins": 32,
+        "losses": 7,
+        "ncaa": true,
+        "best_finish": "Final Four"
+      }
+    ],
+    "after": [
+      {
+        "season": "2022-23",
+        "wins": 27,
+        "losses": 9,
+        "ncaa": true,
+        "best_finish": "Round of 32"
+      },
+      {
+        "season": "2023-24",
+        "wins": 27,
+        "losses": 9,
+        "ncaa": true,
+        "best_finish": "Elite Eight"
+      },
+      {
+        "season": "2024-25",
+        "wins": 35,
+        "losses": 4,
+        "ncaa": true,
+        "best_finish": "Final Four"
+      }
+    ],
+    "recruiting_rank": 1,
+    "transfers_followed": "#1 classes (Flagg 2024); seamless post-K transition",
+    "outcome": "success",
+    "notes": "ACC titles and Final Fours; no drop-off from Coach K."
+  },
+  {
+    "school": "Kansas State",
+    "year": 2022,
+    "coach": "Jerome Tang",
+    "previous_job": "Baylor (assistant)",
+    "before": [
+      {
+        "season": "2019-20",
+        "wins": 11,
+        "losses": 21,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2020-21",
+        "wins": 9,
+        "losses": 20,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2021-22",
+        "wins": 14,
+        "losses": 17,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [
+      {
+        "season": "2022-23",
+        "wins": 26,
+        "losses": 10,
+        "ncaa": true,
+        "best_finish": "Elite Eight"
+      },
+      {
+        "season": "2023-24",
+        "wins": 19,
+        "losses": 15,
+        "ncaa": false,
+        "best_finish": "NIT"
+      },
+      {
+        "season": "2024-25",
+        "wins": 16,
+        "losses": 17,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": "Portal stars (Nowell, Johnson) fueled year-1 Elite Eight",
+    "outcome": "flash-then-fade",
+    "notes": "Elite Eight year 1, then sub-.500. Portal-dependent roster."
+  },
+  {
+    "school": "Louisville",
+    "year": 2022,
+    "coach": "Kenny Payne",
+    "previous_job": "New York Knicks (NBA assistant)",
+    "before": [
+      {
+        "season": "2019-20",
+        "wins": 24,
+        "losses": 7,
+        "ncaa": false,
+        "best_finish": "Cancelled"
+      },
+      {
+        "season": "2020-21",
+        "wins": 13,
+        "losses": 19,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2021-22",
+        "wins": 13,
+        "losses": 19,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [
+      {
+        "season": "2022-23",
+        "wins": 4,
+        "losses": 28,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2023-24",
+        "wins": 8,
+        "losses": 24,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": null,
+    "outcome": "historic-flop",
+    "notes": "4-28 is the worst season in program history. Fired 2024."
+  },
+  {
+    "school": "Xavier",
+    "year": 2022,
+    "coach": "Sean Miller",
+    "previous_job": "Arizona (head coach)",
+    "before": [
+      {
+        "season": "2019-20",
+        "wins": 19,
+        "losses": 13,
+        "ncaa": false,
+        "best_finish": "Cancelled"
+      },
+      {
+        "season": "2020-21",
+        "wins": 13,
+        "losses": 11,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2021-22",
+        "wins": 23,
+        "losses": 13,
+        "ncaa": false,
+        "best_finish": "NIT"
+      }
+    ],
+    "after": [
+      {
+        "season": "2022-23",
+        "wins": 27,
+        "losses": 10,
+        "ncaa": true,
+        "best_finish": "Sweet 16"
+      },
+      {
+        "season": "2023-24",
+        "wins": 16,
+        "losses": 18,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2024-25",
+        "wins": 22,
+        "losses": 12,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": null,
+    "outcome": "mixed",
+    "notes": "Sweet 16 year 1, then decline. Left for Texas 2025."
+  },
+  {
+    "school": "St. John's",
+    "year": 2023,
+    "coach": "Rick Pitino",
+    "previous_job": "Iona (head coach)",
+    "before": [
+      {
+        "season": "2020-21",
+        "wins": 16,
+        "losses": 11,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2021-22",
+        "wins": 17,
+        "losses": 15,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2022-23",
+        "wins": 18,
+        "losses": 15,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [
+      {
+        "season": "2023-24",
+        "wins": 20,
+        "losses": 13,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2024-25",
+        "wins": 31,
+        "losses": 5,
+        "ncaa": true,
+        "best_finish": "Round of 32"
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": "Portal-heavy (Luis, Richmond); Big East titles year 2",
+    "outcome": "turnaround",
+    "notes": "31 wins and Big East titles in year 2 at age 72."
+  },
+  {
+    "school": "Georgetown",
+    "year": 2023,
+    "coach": "Ed Cooley",
+    "previous_job": "Providence (head coach)",
+    "before": [
+      {
+        "season": "2020-21",
+        "wins": 13,
+        "losses": 13,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2021-22",
+        "wins": 6,
+        "losses": 25,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2022-23",
+        "wins": 7,
+        "losses": 25,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [
+      {
+        "season": "2023-24",
+        "wins": 9,
+        "losses": 23,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2024-25",
+        "wins": 18,
+        "losses": 16,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": null,
+    "outcome": "slow",
+    "notes": "Doubled wins year 2 but still sub-.500. Long rebuild."
+  },
+  {
+    "school": "Ole Miss",
+    "year": 2023,
+    "coach": "Chris Beard",
+    "previous_job": "Texas (head coach)",
+    "before": [
+      {
+        "season": "2020-21",
+        "wins": 16,
+        "losses": 12,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2021-22",
+        "wins": 13,
+        "losses": 19,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2022-23",
+        "wins": 12,
+        "losses": 21,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [
+      {
+        "season": "2023-24",
+        "wins": 20,
+        "losses": 12,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2024-25",
+        "wins": 24,
+        "losses": 12,
+        "ncaa": true,
+        "best_finish": "Sweet 16"
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": "Portal-driven; Sweet 16 year 2",
+    "outcome": "turnaround",
+    "notes": "From 12 wins to Sweet 16 in 2 years."
+  },
+  {
+    "school": "Arkansas",
+    "year": 2024,
+    "coach": "John Calipari",
+    "previous_job": "Kentucky (head coach)",
+    "before": [
+      {
+        "season": "2021-22",
+        "wins": 28,
+        "losses": 9,
+        "ncaa": true,
+        "best_finish": "Elite Eight"
+      },
+      {
+        "season": "2022-23",
+        "wins": 22,
+        "losses": 14,
+        "ncaa": true,
+        "best_finish": "Sweet 16"
+      },
+      {
+        "season": "2023-24",
+        "wins": 16,
+        "losses": 17,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [
+      {
+        "season": "2024-25",
+        "wins": 22,
+        "losses": 14,
+        "ncaa": true,
+        "best_finish": "Sweet 16"
+      },
+      {
+        "season": "2025-26",
+        "wins": 28,
+        "losses": 9,
+        "ncaa": true,
+        "best_finish": null
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": "Brought Kentucky recruits (Fland, Richmond); #1 portal class",
+    "outcome": "instant-improvement",
+    "notes": "Sweet 16 year 1 after 16-17. Verified via basketballquant.com."
+  },
+  {
+    "school": "Kentucky",
+    "year": 2024,
+    "coach": "Mark Pope",
+    "previous_job": "BYU (head coach)",
+    "before": [
+      {
+        "season": "2021-22",
+        "wins": 26,
+        "losses": 8,
+        "ncaa": true,
+        "best_finish": "Round of 64"
+      },
+      {
+        "season": "2022-23",
+        "wins": 22,
+        "losses": 12,
+        "ncaa": true,
+        "best_finish": "Round of 32"
+      },
+      {
+        "season": "2023-24",
+        "wins": 23,
+        "losses": 10,
+        "ncaa": true,
+        "best_finish": "Round of 64"
+      }
+    ],
+    "after": [
+      {
+        "season": "2024-25",
+        "wins": 24,
+        "losses": 12,
+        "ncaa": true,
+        "best_finish": "Sweet 16"
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": "Portal-heavy first roster; Sweet 16 year 1",
+    "outcome": "promising",
+    "notes": "Only 1 season of data. Beat Tennessee twice."
+  },
+  {
+    "school": "Michigan",
+    "year": 2024,
+    "coach": "Dusty May",
+    "previous_job": "Florida Atlantic (head coach)",
+    "before": [
+      {
+        "season": "2021-22",
+        "wins": 19,
+        "losses": 15,
+        "ncaa": true,
+        "best_finish": "Sweet 16"
+      },
+      {
+        "season": "2022-23",
+        "wins": 18,
+        "losses": 16,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2023-24",
+        "wins": 8,
+        "losses": 24,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [
+      {
+        "season": "2024-25",
+        "wins": 27,
+        "losses": 10,
+        "ncaa": true,
+        "best_finish": "Sweet 16"
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": "Portal stars (Wolf, Donaldson); Big Ten title year 1",
+    "outcome": "instant-turnaround",
+    "notes": "8-24 to 27-10 and Big Ten champs. Portal-era instant rebuild."
+  },
+  {
+    "school": "Louisville",
+    "year": 2024,
+    "coach": "Pat Kelsey",
+    "previous_job": "Charleston (head coach)",
+    "before": [
+      {
+        "season": "2021-22",
+        "wins": 13,
+        "losses": 19,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2022-23",
+        "wins": 4,
+        "losses": 28,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2023-24",
+        "wins": 8,
+        "losses": 24,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [
+      {
+        "season": "2024-25",
+        "wins": 27,
+        "losses": 8,
+        "ncaa": true,
+        "best_finish": "Round of 32"
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": "Portal-driven; 19-win improvement",
+    "outcome": "instant-turnaround",
+    "notes": "8-24 to 27-8. Largest turnaround in ACC history."
+  },
+  {
+    "school": "Florida Atlantic",
+    "year": 2018,
+    "coach": "Dusty May",
+    "previous_job": "Florida (assistant)",
+    "before": [
+      {
+        "season": "2015-16",
+        "wins": 8,
+        "losses": 25,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2016-17",
+        "wins": 10,
+        "losses": 20,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2017-18",
+        "wins": 12,
+        "losses": 19,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [
+      {
+        "season": "2018-19",
+        "wins": 17,
+        "losses": 16,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2019-20",
+        "wins": 17,
+        "losses": 15,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2020-21",
+        "wins": 13,
+        "losses": 10,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": "Built through development; 2023 Final Four in year 5",
+    "outcome": "slow-build-elite",
+    "notes": "5 years to Final Four. Then left for Michigan."
+  },
+  {
+    "school": "NC State",
+    "year": 2025,
+    "coach": "Will Wade",
+    "previous_job": "McNeese (head coach)",
+    "before": [
+      {
+        "season": "2022-23",
+        "wins": 23,
+        "losses": 11,
+        "ncaa": true,
+        "best_finish": "Round of 64"
+      },
+      {
+        "season": "2023-24",
+        "wins": 26,
+        "losses": 15,
+        "ncaa": true,
+        "best_finish": "Final Four"
+      },
+      {
+        "season": "2024-25",
+        "wins": 12,
+        "losses": 19,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [],
+    "recruiting_rank": null,
+    "transfers_followed": null,
+    "outcome": "too-early",
+    "notes": "Hired after McNeese success. No seasons yet."
+  },
+  {
+    "school": "Virginia",
+    "year": 2025,
+    "coach": "Ryan Odom",
+    "previous_job": "VCU (head coach)",
+    "before": [
+      {
+        "season": "2022-23",
+        "wins": 25,
+        "losses": 8,
+        "ncaa": true,
+        "best_finish": "Round of 64"
+      },
+      {
+        "season": "2023-24",
+        "wins": 23,
+        "losses": 11,
+        "ncaa": true,
+        "best_finish": "Round of 64"
+      },
+      {
+        "season": "2024-25",
+        "wins": 15,
+        "losses": 17,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [],
+    "recruiting_rank": null,
+    "transfers_followed": null,
+    "outcome": "too-early",
+    "notes": "UMBC upset author (2018). No seasons yet."
+  },
+  {
+    "school": "Texas",
+    "year": 2025,
+    "coach": "Sean Miller",
+    "previous_job": "Xavier (head coach)",
+    "before": [
+      {
+        "season": "2022-23",
+        "wins": 29,
+        "losses": 9,
+        "ncaa": true,
+        "best_finish": "Elite Eight"
+      },
+      {
+        "season": "2023-24",
+        "wins": 21,
+        "losses": 13,
+        "ncaa": true,
+        "best_finish": "Round of 64"
+      },
+      {
+        "season": "2024-25",
+        "wins": 19,
+        "losses": 16,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [],
+    "recruiting_rank": null,
+    "transfers_followed": null,
+    "outcome": "too-early",
+    "notes": "Third stint at a power program. No seasons yet."
+  },
+  {
+    "school": "Indiana",
+    "year": 2025,
+    "coach": "Darian DeVries",
+    "previous_job": "West Virginia (head coach)",
+    "before": [
+      {
+        "season": "2022-23",
+        "wins": 23,
+        "losses": 12,
+        "ncaa": true,
+        "best_finish": "Round of 32"
+      },
+      {
+        "season": "2023-24",
+        "wins": 19,
+        "losses": 14,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2024-25",
+        "wins": 19,
+        "losses": 13,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [],
+    "recruiting_rank": null,
+    "transfers_followed": "Son Tucker DeVries followed from Drake to WVU to Indiana",
+    "outcome": "too-early",
+    "notes": "No seasons yet."
+  },
+  {
+    "school": "Maryland",
+    "year": 2025,
+    "coach": "Buzz Williams",
+    "previous_job": "Texas A&M (head coach)",
+    "before": [
+      {
+        "season": "2022-23",
+        "wins": 22,
+        "losses": 13,
+        "ncaa": true,
+        "best_finish": "Round of 32"
+      },
+      {
+        "season": "2023-24",
+        "wins": 16,
+        "losses": 17,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2024-25",
+        "wins": 17,
+        "losses": 15,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [],
+    "recruiting_rank": null,
+    "transfers_followed": null,
+    "outcome": "too-early",
+    "notes": "No seasons yet."
+  },
+  {
+    "school": "Oklahoma",
+    "year": 2021,
+    "coach": "Porter Moser",
+    "previous_job": "Loyola Chicago (head coach)",
+    "before": [
+      {
+        "season": "2018-19",
+        "wins": 20,
+        "losses": 14,
+        "ncaa": true,
+        "best_finish": "Round of 64"
+      },
+      {
+        "season": "2019-20",
+        "wins": 19,
+        "losses": 12,
+        "ncaa": false,
+        "best_finish": "Cancelled"
+      },
+      {
+        "season": "2020-21",
+        "wins": 16,
+        "losses": 11,
+        "ncaa": true,
+        "best_finish": "Round of 64"
+      }
+    ],
+    "after": [
+      {
+        "season": "2021-22",
+        "wins": 19,
+        "losses": 16,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2022-23",
+        "wins": 15,
+        "losses": 17,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2023-24",
+        "wins": 20,
+        "losses": 12,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": null,
+    "outcome": "mediocre",
+    "notes": "Loyola Final Four magic didn't translate. No NCAAs in 3 years."
+  },
+  {
+    "school": "New Mexico",
+    "year": 2021,
+    "coach": "Richard Pitino",
+    "previous_job": "Minnesota (head coach)",
+    "before": [
+      {
+        "season": "2018-19",
+        "wins": 14,
+        "losses": 18,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2019-20",
+        "wins": 19,
+        "losses": 11,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2020-21",
+        "wins": 6,
+        "losses": 16,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [
+      {
+        "season": "2021-22",
+        "wins": 13,
+        "losses": 19,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2022-23",
+        "wins": 22,
+        "losses": 12,
+        "ncaa": false,
+        "best_finish": "NIT"
+      },
+      {
+        "season": "2023-24",
+        "wins": 26,
+        "losses": 10,
+        "ncaa": true,
+        "best_finish": "Round of 64"
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": null,
+    "outcome": "turnaround",
+    "notes": "6 wins to 26 and NCAA in 3 years. Left for Xavier 2025."
+  },
+  {
+    "school": "Providence",
+    "year": 2023,
+    "coach": "Kim English",
+    "previous_job": "George Mason (head coach)",
+    "before": [
+      {
+        "season": "2020-21",
+        "wins": 13,
+        "losses": 13,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2021-22",
+        "wins": 27,
+        "losses": 6,
+        "ncaa": true,
+        "best_finish": "Sweet 16"
+      },
+      {
+        "season": "2022-23",
+        "wins": 21,
+        "losses": 12,
+        "ncaa": true,
+        "best_finish": "Round of 64"
+      }
+    ],
+    "after": [
+      {
+        "season": "2023-24",
+        "wins": 21,
+        "losses": 14,
+        "ncaa": false,
+        "best_finish": "NIT"
+      },
+      {
+        "season": "2024-25",
+        "wins": 12,
+        "losses": 20,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": null,
+    "outcome": "decline",
+    "notes": "From Sweet 16 to 12-20 in 2 years."
+  },
+  {
+    "school": "Notre Dame",
+    "year": 2023,
+    "coach": "Micah Shrewsberry",
+    "previous_job": "Penn State (head coach)",
+    "before": [
+      {
+        "season": "2020-21",
+        "wins": 11,
+        "losses": 15,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2021-22",
+        "wins": 24,
+        "losses": 11,
+        "ncaa": true,
+        "best_finish": "Round of 64"
+      },
+      {
+        "season": "2022-23",
+        "wins": 11,
+        "losses": 21,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [
+      {
+        "season": "2023-24",
+        "wins": 13,
+        "losses": 20,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2024-25",
+        "wins": 15,
+        "losses": 18,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": null,
+    "outcome": "slow",
+    "notes": "Marginal improvement. Still sub-.500."
+  },
+  {
+    "school": "Syracuse",
+    "year": 2023,
+    "coach": "Adrian Autry",
+    "previous_job": "Syracuse (assistant)",
+    "before": [
+      {
+        "season": "2020-21",
+        "wins": 18,
+        "losses": 14,
+        "ncaa": true,
+        "best_finish": "Sweet 16"
+      },
+      {
+        "season": "2021-22",
+        "wins": 16,
+        "losses": 17,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2022-23",
+        "wins": 17,
+        "losses": 15,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [
+      {
+        "season": "2023-24",
+        "wins": 20,
+        "losses": 12,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2024-25",
+        "wins": 14,
+        "losses": 19,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": null,
+    "outcome": "decline",
+    "notes": "Post-Boeheim decline continued. Fired 2025."
+  },
+  {
+    "school": "SMU",
+    "year": 2024,
+    "coach": "Andy Enfield",
+    "previous_job": "USC (head coach)",
+    "before": [
+      {
+        "season": "2021-22",
+        "wins": 23,
+        "losses": 9,
+        "ncaa": false,
+        "best_finish": "NIT"
+      },
+      {
+        "season": "2022-23",
+        "wins": 10,
+        "losses": 22,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2023-24",
+        "wins": 20,
+        "losses": 13,
+        "ncaa": false,
+        "best_finish": "NIT"
+      }
+    ],
+    "after": [
+      {
+        "season": "2024-25",
+        "wins": 24,
+        "losses": 11,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": null,
+    "outcome": "promising",
+    "notes": "Improved to 24 wins in ACC debut. Only 1 season."
+  },
+  {
+    "school": "Saint Louis",
+    "year": 2024,
+    "coach": "Josh Schertz",
+    "previous_job": "Indiana State (head coach)",
+    "before": [
+      {
+        "season": "2021-22",
+        "wins": 23,
+        "losses": 12,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2022-23",
+        "wins": 21,
+        "losses": 12,
+        "ncaa": false,
+        "best_finish": "NIT"
+      },
+      {
+        "season": "2023-24",
+        "wins": 13,
+        "losses": 20,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [
+      {
+        "season": "2024-25",
+        "wins": 19,
+        "losses": 15,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": "Brought Indiana State core (Avila, Swope)",
+    "outcome": "improvement",
+    "notes": "6-win improvement year 1. Players followed from Indiana State."
+  },
+  {
+    "school": "Vanderbilt",
+    "year": 2024,
+    "coach": "Mark Byington",
+    "previous_job": "James Madison (head coach)",
+    "before": [
+      {
+        "season": "2021-22",
+        "wins": 19,
+        "losses": 17,
+        "ncaa": false,
+        "best_finish": "NIT"
+      },
+      {
+        "season": "2022-23",
+        "wins": 22,
+        "losses": 15,
+        "ncaa": false,
+        "best_finish": "NIT"
+      },
+      {
+        "season": "2023-24",
+        "wins": 9,
+        "losses": 23,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [
+      {
+        "season": "2024-25",
+        "wins": 20,
+        "losses": 13,
+        "ncaa": true,
+        "best_finish": "Round of 64"
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": null,
+    "outcome": "instant-improvement",
+    "notes": "9-23 to 20-13 and NCAA. 11-win improvement."
+  },
+  {
+    "school": "Ohio State",
+    "year": 2024,
+    "coach": "Jake Diebler",
+    "previous_job": "Ohio State (interim)",
+    "before": [
+      {
+        "season": "2021-22",
+        "wins": 20,
+        "losses": 12,
+        "ncaa": true,
+        "best_finish": "Round of 32"
+      },
+      {
+        "season": "2022-23",
+        "wins": 16,
+        "losses": 19,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2023-24",
+        "wins": 22,
+        "losses": 14,
+        "ncaa": false,
+        "best_finish": "NIT"
+      }
+    ],
+    "after": [
+      {
+        "season": "2024-25",
+        "wins": 17,
+        "losses": 15,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": null,
+    "outcome": "mediocre",
+    "notes": "8-3 as interim earned the job; 17-15 full season."
+  },
+  {
+    "school": "Florida",
+    "year": 2022,
+    "coach": "Todd Golden",
+    "previous_job": "San Francisco (head coach)",
+    "before": [
+      {
+        "season": "2019-20",
+        "wins": 19,
+        "losses": 12,
+        "ncaa": false,
+        "best_finish": "Cancelled"
+      },
+      {
+        "season": "2020-21",
+        "wins": 15,
+        "losses": 10,
+        "ncaa": true,
+        "best_finish": "Round of 64"
+      },
+      {
+        "season": "2021-22",
+        "wins": 20,
+        "losses": 14,
+        "ncaa": false,
+        "best_finish": "NIT"
+      }
+    ],
+    "after": [
+      {
+        "season": "2022-23",
+        "wins": 16,
+        "losses": 17,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2023-24",
+        "wins": 24,
+        "losses": 12,
+        "ncaa": true,
+        "best_finish": "Round of 64"
+      },
+      {
+        "season": "2024-25",
+        "wins": 36,
+        "losses": 4,
+        "ncaa": true,
+        "best_finish": "Champion"
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": "Analytics-driven; portal + development; 2025 title year 3",
+    "outcome": "slow-build-title",
+    "notes": "16-17 year 1, then 24 wins, then national title. Patience rewarded."
+  },
+  {
+    "school": "Missouri",
+    "year": 2022,
+    "coach": "Dennis Gates",
+    "previous_job": "Cleveland State (head coach)",
+    "before": [
+      {
+        "season": "2019-20",
+        "wins": 15,
+        "losses": 16,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2020-21",
+        "wins": 16,
+        "losses": 10,
+        "ncaa": true,
+        "best_finish": "Round of 64"
+      },
+      {
+        "season": "2021-22",
+        "wins": 12,
+        "losses": 21,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [
+      {
+        "season": "2022-23",
+        "wins": 25,
+        "losses": 10,
+        "ncaa": true,
+        "best_finish": "Round of 32"
+      },
+      {
+        "season": "2023-24",
+        "wins": 8,
+        "losses": 24,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2024-25",
+        "wins": 22,
+        "losses": 12,
+        "ncaa": true,
+        "best_finish": "Round of 64"
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": "Portal-heavy; volatile year-to-year",
+    "outcome": "volatile",
+    "notes": "25 wins, then 8-24, then 22 wins. Portal roster volatility."
+  },
+  {
+    "school": "Mississippi State",
+    "year": 2022,
+    "coach": "Chris Jans",
+    "previous_job": "New Mexico State (head coach)",
+    "before": [
+      {
+        "season": "2019-20",
+        "wins": 20,
+        "losses": 14,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2020-21",
+        "wins": 18,
+        "losses": 15,
+        "ncaa": false,
+        "best_finish": "NIT"
+      },
+      {
+        "season": "2021-22",
+        "wins": 18,
+        "losses": 16,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [
+      {
+        "season": "2022-23",
+        "wins": 21,
+        "losses": 13,
+        "ncaa": true,
+        "best_finish": "Round of 64"
+      },
+      {
+        "season": "2023-24",
+        "wins": 21,
+        "losses": 14,
+        "ncaa": true,
+        "best_finish": "Round of 64"
+      },
+      {
+        "season": "2024-25",
+        "wins": 21,
+        "losses": 13,
+        "ncaa": true,
+        "best_finish": "Round of 64"
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": null,
+    "outcome": "consistent",
+    "notes": "Three straight 21-win NCAAs. Model of consistency."
+  },
+  {
+    "school": "South Carolina",
+    "year": 2022,
+    "coach": "Lamont Paris",
+    "previous_job": "Chattanooga (head coach)",
+    "before": [
+      {
+        "season": "2019-20",
+        "wins": 18,
+        "losses": 13,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2020-21",
+        "wins": 14,
+        "losses": 11,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2021-22",
+        "wins": 18,
+        "losses": 13,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [
+      {
+        "season": "2022-23",
+        "wins": 11,
+        "losses": 21,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2023-24",
+        "wins": 26,
+        "losses": 8,
+        "ncaa": true,
+        "best_finish": "Round of 64"
+      },
+      {
+        "season": "2024-25",
+        "wins": 12,
+        "losses": 20,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": null,
+    "outcome": "one-hit",
+    "notes": "SEC COY 2024 (26-8), then 12-20. Single peak."
+  },
+  {
+    "school": "Texas Tech",
+    "year": 2023,
+    "coach": "Grant McCasland",
+    "previous_job": "North Texas (head coach)",
+    "before": [
+      {
+        "season": "2020-21",
+        "wins": 18,
+        "losses": 11,
+        "ncaa": true,
+        "best_finish": "Round of 64"
+      },
+      {
+        "season": "2021-22",
+        "wins": 27,
+        "losses": 10,
+        "ncaa": true,
+        "best_finish": "Sweet 16"
+      },
+      {
+        "season": "2022-23",
+        "wins": 16,
+        "losses": 16,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "after": [
+      {
+        "season": "2023-24",
+        "wins": 23,
+        "losses": 11,
+        "ncaa": true,
+        "best_finish": "Round of 64"
+      },
+      {
+        "season": "2024-25",
+        "wins": 28,
+        "losses": 9,
+        "ncaa": true,
+        "best_finish": "Elite Eight"
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": null,
+    "outcome": "success",
+    "notes": "Elite Eight year 2. Seamless post-Adams rebuild."
+  },
+  {
+    "school": "Villanova",
+    "year": 2022,
+    "coach": "Kyle Neptune",
+    "previous_job": "Fordham (head coach)",
+    "before": [
+      {
+        "season": "2019-20",
+        "wins": 24,
+        "losses": 7,
+        "ncaa": false,
+        "best_finish": "Cancelled"
+      },
+      {
+        "season": "2020-21",
+        "wins": 18,
+        "losses": 7,
+        "ncaa": true,
+        "best_finish": "Sweet 16"
+      },
+      {
+        "season": "2021-22",
+        "wins": 30,
+        "losses": 8,
+        "ncaa": true,
+        "best_finish": "Final Four"
+      }
+    ],
+    "after": [
+      {
+        "season": "2022-23",
+        "wins": 17,
+        "losses": 17,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2023-24",
+        "wins": 18,
+        "losses": 16,
+        "ncaa": false,
+        "best_finish": null
+      },
+      {
+        "season": "2024-25",
+        "wins": 19,
+        "losses": 14,
+        "ncaa": false,
+        "best_finish": null
+      }
+    ],
+    "recruiting_rank": null,
+    "transfers_followed": null,
+    "outcome": "flop",
+    "notes": "Final Four to three straight NIT-or-worse. Fired 2025."
+  }
+]
