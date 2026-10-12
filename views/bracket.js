@@ -9,6 +9,14 @@ import { ge, clamp, getTOvr, fmtScore, winProb, otLabel } from '../utils.js';
 import { G } from '../state.js';
 import { allConfDone, getUserNCAAmatchup, getUserConfMatchup, getConfRoundName, confRoundLabel, openingPending, getUserOpeningGame, bracketEntryAt } from '../tournament.js';
 import { getUiPrefs, setUiPrefs } from './ui-prefs.js';
+import { TEAM_COLORS } from '../teamcolors.js';
+
+// Team-color badge for ESPN-style bracket cards.
+function teamBadge(name) {
+  var c = TEAM_COLORS[name];
+  if (!c || !c[0]) return '';
+  return '<span class="bx-badge" style="background:' + c[0] + ';" aria-hidden="true"></span>';
+}
 
 // Team name link (same shape as the player pLink convention).
 function tLink(tid, name) {
@@ -210,7 +218,7 @@ function slotLabel(g) {
 function openRow(t, g, sc) {
   var played = !!g.winner;
   var cls = (t.id === G.tid ? ' me' : '') + (played ? (g.winner === t ? ' w' : ' l') : '');
-  return '<div class="bx-team' + cls + '"><span class="bx-name">' + tLink(t.id, t.name) + '</span>'
+  return '<div class="bx-team' + cls + '">' + teamBadge(t.name) + '<span class="bx-name">' + tLink(t.id, t.name) + '</span>'
     + '<span class="bx-m2">' + t.wins + '-' + t.loss + '</span>'
     + '<span class="bx-sc">' + (played ? sc + (g.winner === t ? otTag(g.ot) : '') : '') + '</span></div>';
 }
@@ -288,9 +296,10 @@ function slotRow(b, k, mt) {
   var won = played && wonRound(b, k);
   var lost = played && !won && other && playedRound(other, k);
   var cls = (b.team.id === G.tid && b.pending === undefined ? ' me' : '') + (won ? ' w' : '') + (lost ? ' l' : '');
-  return '<div class="bx-team' + cls + '"><span class="bx-seed">' + b.seed + '</span>'
+  var sc = played ? b.sc[k] + (won ? otTag(b.ot && b.ot[k]) : '') : '<span class="bx-rec">' + b.team.wins + '-' + b.team.loss + '</span>';
+  return '<div class="bx-team' + cls + '"><span class="bx-seed">' + b.seed + '</span>' + teamBadge(b.team.name)
     + '<span class="bx-name">' + tLink(b.team.id, b.team.name) + '</span>'
-    + '<span class="bx-sc">' + (played ? b.sc[k] + (won ? otTag(b.ot && b.ot[k]) : '') : '') + '</span></div>';
+    + '<span class="bx-sc">' + sc + '</span></div>';
 }
 function matchBox(mt, k) {
   var isMe = function(e) { return e && e.pending === undefined && e.team.id === G.tid; };

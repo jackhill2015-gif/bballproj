@@ -6,7 +6,7 @@
 //  fails if a game file is missing from this list.
 // ═══════════════════════════════════════════════════════════
 
-var CACHE = 'hoops-os-v53';
+var CACHE = 'hoops-os-v54';
 var APP_FILES = [
   "./",
   "index.html",

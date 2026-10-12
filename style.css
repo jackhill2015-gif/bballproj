@@ -1833,3 +1833,14 @@ button, input, select { font-family: inherit; font-size: inherit; color: inherit
   .stat-table { font-size: 12px; }
   .stat-table td, .stat-table th { padding: 6px 8px; }
 }
+
+/* ── M3: ESPN-style bracket ── */
+.bx-badge {
+  width: 8px; height: 8px; border-radius: 2px; flex: 0 0 8px;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.15);
+}
+.bx-rec { font-size: 11px; color: var(--txt3); font-variant-numeric: tabular-nums; }
+/* Final Four centered on desktop */
+@media (min-width: 1280px) {
+  .bx-tree.ff { min-width: 0; width: 100%; justify-content: center; }
+}
