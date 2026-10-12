@@ -13,6 +13,7 @@ Claim a job before you start so two agents don't edit the same screens. Remove y
 
 | Who | Job | Files / screens touched | Since |
 |-----|-----|-------------------------|-------|
+| Claude | Item 0 part 2: player development (growth, hidden true potential, scouted POT, breakouts/stalls, coach/facility, minutes) | player.js/season growth code, test-harness/player-dev.mjs, research/player-dev.md; screens: development report, Help, recruiting POT copy, player page POT | 2026-10-12 |
 | Muse | Anonymous Reddit-beta link via Cloudflare Pages (no game code changes) — PAUSED, Jack said later | HANDOFF.md only | 2026-10-07 |
 
 ## Messages
