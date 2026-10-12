@@ -19,8 +19,13 @@ var TIPS = {
 };
 
 function tipHTML(key) {
+  var text = TIPS[key];
+  // M6: the home tip references the Next game panel, which only exists in-season
+  if (key === 'home' && G && G.phase !== 'reg') {
+    text = 'Sim game plays your next game instantly. The offseason strip at the top tracks departures, portal, recruiting and signing day.';
+  }
   return '<div class="tip-card" data-tipcard="' + key + '">'
-    + '<div class="tip-text">' + TIPS[key] + '</div>'
+    + '<div class="tip-text">' + text + '</div>'
     + '<button class="btn-quiet tip-gotit" data-action="tip-dismiss" data-tip="' + key + '">Got it</button>'
     + '</div>';
 }
