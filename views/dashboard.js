@@ -11,6 +11,7 @@
 import { DIFF_MOD } from '../constants.js';
 import { ge, clamp, getTOvr, fR, fmtScore, awardScore, winProb as sharedWinProb } from '../utils.js';
 import { pollRankMap, pollRank } from '../poll.js';
+import { TEAM_COLORS } from '../teamcolors.js';
 import { ensureGoals, progress, GOAL_REWARD } from '../goals.js';
 import { FACILITIES, FACILITY_MAX, myFacilities, upgradeCost } from '../facilities.js';
 import { STREAMS, BUCKETS, ledger, totals, committed } from '../finance.js';
@@ -202,10 +203,9 @@ function renderExpectations() {
 
 function renderGameCard() {
   var t = G.teams[G.tid];
-  function buttons(simLabel) {
-    return '<div class="big-btn-row">'
-      + '<button class="btn-big" data-action="play" data-mode="quick">' + (simLabel || 'Sim game') + '</button>'
-      + '<button class="btn-big secondary" data-action="play" data-mode="live">Watch game</button></div>';
+  function teamBadge(name) {
+    var c = TEAM_COLORS[name];
+    return c && c[0] ? '<span class="bx-badge" style="background:' + c[0] + ';" aria-hidden="true"></span>' : '';
   }
   if (G.phase === 'reg' && G.gi < 30) {
     var ng = t.sched[G.gi];
@@ -213,18 +213,25 @@ function renderGameCard() {
     if (ng && no) {
       var wp = winProb(t, no, ng.home);
       var rk = pollRankMap();
+      var myRank = rk[t.id], oppRank = rk[no.id];
       var r = rivalIds(), rev = revengeIds();
       var flags = (r[no.id] ? ' <span class="tag t-rival">Rival</span>' : '') + (rev[no.id] ? ' <span class="tag t-revenge">Revenge</span>' : '');
-      var body = '<div class="ng-row"><div class="ng-opp">' + (ng.home ? 'vs ' : 'at ') + (rk[no.id] ? '#' + rk[no.id] + ' ' : '') + tLink(no.id, no.name) + flags + '</div>'
-        + '<div class="ng-meta">' + no.wins + '-' + no.loss + ', OVR ' + getTOvr(no) + '</div></div>'
+      var site = ng.home ? 'Home' : 'Away';
+      // M6: clearer next-game card — both teams, both records, both ranks, site, win prob, one Sim/Watch row
+      var body = '<div class="ng-card">'
+        + '<div class="ng-teams">'
+        + '<div class="ng-team">' + teamBadge(t.name) + '<div><div class="ng-name">' + (myRank ? '#' + myRank + ' ' : '') + t.name + '</div><div class="ng-rec">' + t.wins + '-' + t.loss + '</div></div></div>'
+        + '<div class="ng-vs">' + (ng.home ? 'vs' : 'at') + '</div>'
+        + '<div class="ng-team">' + teamBadge(no.name) + '<div><div class="ng-name">' + (oppRank ? '#' + oppRank + ' ' : '') + tLink(no.id, no.name) + flags + '</div><div class="ng-rec">' + no.wins + '-' + no.loss + '</div></div></div>'
+        + '</div>'
+        + '<div class="ng-site">' + site + ' · Week ' + (G.gi + 1) + ', ' + (ng.conf ? t.conf : 'non-conference') + '</div>'
         + '<div class="prob-row"><span>Win probability</span><span style="color:' + wpColor(wp) + ';font-weight:600;">' + wp + '%</span></div>'
         + '<div class="prob-bar"><div class="prob-fill" style="width:' + wp + '%;background:' + wpColor(wp) + ';"></div></div>'
-        + buttons()
-        + '<div style="display:flex;gap:16px;margin-top:2px;">'
-        + '<button class="btn-quiet" style="padding-left:0;" data-action="nav" data-view="roster">Edit gameplan</button>'
-        + '<button class="btn-quiet" style="padding-left:0;" data-action="nav" data-view="program">Boosts</button></div>'
+        + '<div class="big-btn-row"><button class="btn-big" data-action="play" data-mode="quick">Sim game</button>'
+        + '<button class="btn-big secondary" data-action="play" data-mode="live">Watch game</button></div>'
+        + '</div>'
         + renderExpectations();
-      return panel('Next game', body, { right: 'Week ' + (G.gi + 1) + ', ' + (ng.conf ? t.conf : 'non-conference') });
+      return panel('Next game', body, { right: '' });
     }
     return panel('Bye week', '<div class="ng-meta">No game in week ' + (G.gi + 1) + '.</div>'
       + '<div class="big-btn-row"><button class="btn-big" data-action="play" data-mode="quick">Sim week</button></div>' + renderExpectations());

@@ -62,6 +62,24 @@ function statStrip(cells) {
   return h + '</div>';
 }
 
+// M6: OVR-by-season sparkline from p.h rows + current OVR. Hidden if <2 points.
+function ovrSparkline(p) {
+  var pts = (p.h || []).slice().sort(function(a, b) { return a[0] - b[0]; }).map(function(r) { return r[2]; });
+  pts.push(p.ovr);
+  if (pts.length < 2) return '';
+  var min = Math.min.apply(null, pts), max = Math.max.apply(null, pts);
+  var span = Math.max(1, max - min);
+  var W = 120, H = 36, pad = 4;
+  var coords = pts.map(function(v, i) {
+    var x = pad + (W - pad * 2) * (pts.length === 1 ? 0.5 : i / (pts.length - 1));
+    var y = pad + (H - pad * 2) * (1 - (v - min) / span);
+    return x.toFixed(1) + ',' + y.toFixed(1);
+  }).join(' ');
+  return '<svg class="ovr-spark" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" aria-label="OVR history: ' + pts.join(' → ') + '">'
+    + '<polyline points="' + coords + '" fill="none" stroke="var(--blu)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
+    + '</svg>';
+}
+
 function profileHTML(t, p) {
   var cls = p.cls + (p.rsUsed ? ' (RS)' : '');
   var sub = p.pos + ' · ' + cls + ' · ' + t.name
@@ -105,7 +123,7 @@ function profileHTML(t, p) {
 
   // Career, season by season (from p.h)
   var rows = (p.h || []).slice().sort(function(a, b) { return b[0] - a[0]; });
-  h += '<div class="panel"><div class="panel-h"><span>Career</span></div><div class="panel-b flush">';
+  h += '<div class="panel"><div class="panel-h"><span>Career</span>' + ovrSparkline(p) + '</div><div class="panel-b flush">';
   if (!rows.length) {
     h += '<div class="empty-state">No completed seasons yet.</div>';
   } else {
