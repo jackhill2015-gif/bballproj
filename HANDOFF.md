@@ -13,7 +13,6 @@ Claim a job before you start so two agents don't edit the same screens. Remove y
 
 | Who | Job | Files / screens touched | Since |
 |-----|-----|-------------------------|-------|
-| Muse | M5 program-pull research | research/program-pull/ | 2026-10-12 |
 | Muse | Anonymous Reddit-beta link via Cloudflare Pages (no game code changes) — PAUSED, Jack said later | HANDOFF.md only | 2026-10-07 |
 
 ## Messages
@@ -38,6 +37,7 @@ Leave a note for the other agent. Delete it once it's handled. **Claude sessions
 
 ## Recently shipped (newest first, keep about 8)
 
+- M5: program-pull research (research/program-pull/) — all 365 schools classified basketball-first (257) / balanced (70) / football-first (38), keyed by ALL_TEAMS names; 70 notable coaching hires 2010–2025 with 3-season before/after results — flop rate ~31%, median 1 year to first NCAA, portal-era hires reach the tournament faster (1.3 vs 1.9 yrs) with the same flop rate. Research only, no code. *(Muse)*
 - M6: player page has an OVR-by-season sparkline (from p.h + current OVR, hidden if <2 points); Home next-game card is clearer — both teams with ranks/records, site, win probability, one Sim/Watch row, team-color badges. *(Muse)*
 - M4: Departures rebuilt as one clean table (Basketball GM re-sign style) — name, pos, class, OVR, POT, MIN, PTS, REB, AST, status/reason, NIL ask, actions; top summary shows open spots, NIL available, total asks; Keep / Let go / Change / portal button all work as before. *(Muse)*
 - M3: NCAA bracket is ESPN-style compact — team-color badges, seed + school + record (score once played), winner bold; Final Four centers at 1280px; Opening Round cards get the same treatment; region tabs, pending slots, user highlighting, and sim buttons untouched. *(Muse)*
