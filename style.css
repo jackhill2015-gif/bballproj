@@ -1749,7 +1749,9 @@ button, input, select { font-family: inherit; font-size: inherit; color: inherit
 @media (min-width: 1280px) {
   body { font-size: 15px; }
   #center { max-width: 1240px; padding: 20px 32px 96px; }
-  .setup-wrap { max-width: 700px; }
+  .setup-wrap { max-width: 800px; }
+  .home-cards { width: min(640px, 100%); }
+  .home-brand { font-size: 48px; }
   .setup-title { font-size: 30px; }
   .setup-hero .sec-head { font-size: 19px; }
   .sec-head { font-size: 17px; }
