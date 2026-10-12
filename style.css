@@ -1938,3 +1938,7 @@ tr.dep-gone td.st-name { color: var(--txt2); }
   position: -webkit-sticky;
   position: sticky;
 }
+
+/* The NIL table's rows reuse .ret-row (a flex row from the old list view);
+   inside a table that breaks the column layout, so keep them table rows */
+.dep-table tr.ret-row { display: table-row; padding: 0; }

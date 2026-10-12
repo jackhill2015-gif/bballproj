@@ -339,6 +339,14 @@ function depTableRows(list, isDep, isNotBack) {
   return h;
 }
 
+// " · 12.9 pts, 1.6 reb, 3.5 ast", or " · did not play" when he never got on the floor
+function statLine(ppg, rpg, apg) {
+  var n = [ppg, rpg, apg].map(function(v) { return parseFloat(v); });
+  if (n.every(function(v) { return !isFinite(v); })) return '';
+  if (n.every(function(v) { return !v; })) return ' · did not play';
+  return ' · ' + fmt1(n[0]) + ' pts, ' + fmt1(n[1]) + ' reb, ' + fmt1(n[2]) + ' ast';
+}
+
 // Departing players as a quiet list (under 700px): "Name · Reason · stats"
 function depList(dep, notBack) {
   var h = '<div class="dep-list">';
@@ -346,14 +354,14 @@ function depList(dep, notBack) {
     var reason = d.reason === 'Graduated' ? 'Graduated'
       : d.reason === 'Drafted' ? 'Drafted' + (d.pick ? ' (pick ' + d.pick + ')' : '')
       : 'Declared for the draft';
-    var stats = (d.ppg !== undefined) ? ' · ' + d.ppg + ' pts, ' + d.rpg + ' reb, ' + d.apg + ' ast' : '';
+    var stats = statLine(d.ppg, d.rpg, d.apg);
     h += '<div class="dep-item"><span class="dep-name">' + d.name + '</span><span class="dep-why">' + reason + stats + '</span></div>';
   });
   notBack.forEach(function(p) {
     var sl = seasonLine(p);
     var why = (p.notReturningWhy || 'Wants a fresh start');
     why = why.charAt(0).toUpperCase() + why.slice(1);
-    var stats = sl ? ' · ' + fmt1(sl.ppg) + ' pts, ' + fmt1(sl.rpg) + ' reb, ' + fmt1(sl.apg) + ' ast' : '';
+    var stats = sl ? statLine(sl.ppg, sl.rpg, sl.apg) : '';
     h += '<div class="dep-item"><span class="dep-name">' + pLink(p.name, G.tid) + '</span><span class="dep-why">' + why + stats + '</span></div>';
   });
   return h + '</div>';
