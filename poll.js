@@ -47,8 +47,10 @@ export var VOTE = {
   secondLoss: 0.9      // a second loss in the same week costs 0.9 of the first
 };
 
-// Preseason weights (z-scores): roster talent, last season's finish, brand
-export var PRESEASON = { talent: 1.2, lastFinal: 0.55, brand: 1.25, noise: 0.2 };
+// Preseason weights (z-scores): roster talent, last season's finish, brand.
+// Talent leads: with player development (simulation.js), rosters change more
+// from one season to the next, so last season's finish says less.
+export var PRESEASON = { talent: 1.8, lastFinal: 0.45, brand: 1.1, noise: 0.2 };
 
 var _hooks = [];
 // Calibration and tests watch every poll (ids before/after and each team's games)

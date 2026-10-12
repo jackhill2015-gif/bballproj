@@ -68,19 +68,10 @@ export function genPlayer(base, pos, cls) {
   ['sht', 'fin', 'def', 'reb', 'ply'].forEach(function(a) { p[a] = clamp(p[a], 38, 99); });
   p.ovr = getOvr(p);
 
-  // Development curve + potential
-  var devRoll = ri(1, 100);
-  if (cls === 'FR') { p.devCurve = (devRoll <= 20) ? 'early' : (devRoll <= 80) ? 'normal' : 'late'; }
-  else if (cls === 'SO') { p.devCurve = (devRoll <= 15) ? 'early' : (devRoll <= 75) ? 'normal' : 'late'; }
-  else { p.devCurve = (devRoll <= 35) ? 'late' : 'normal'; }
-
-  var potGap = (cls === 'FR') ? ri(5, 18) : (cls === 'SO') ? ri(3, 12) : (cls === 'JR') ? ri(1, 7) : ri(0, 3);
-  if (cls === 'FR' && ri(1, 100) <= 8) { potGap = ri(18, 30); if (p.devCurve === 'normal') p.devCurve = 'late'; }
-  if (p.devCurve === 'late') potGap += ri(4, 9);
-  // Elite players have little room left: headroom shrinks the gap near the top
-  var raw = rawOvr(p);
-  var headroom = clamp((99 - raw) / 30, 0.2, 1);
-  p.pot = Math.max(p.ovr, scaleOvr(raw + potGap * headroom));
+  // True potential and a class-appropriate current level (see DEV below):
+  // the ratings above are a finished player at this level; a freshman is
+  // that player before college, older classes have closed part of the gap
+  setPotential(p, cls);
 
   return p;
 }
@@ -88,7 +79,7 @@ export function genPlayer(base, pos, cls) {
 // ── Walk-ons ─────────────────────────────────────────────
 // A walk-on freshman rated about `target` overall (well below the roster).
 // About 1 in 12 is a gem: high potential, and he really grows into it
-// (see calcGrowth). The rest top out a few points above where they start.
+// (see developPlayer). The rest top out a few points above where they start.
 export var WALKON_GEM_RATE = 1 / 12;
 export function genWalkon(target, pos) {
   var p = genPlayer(Math.max(45, Math.round(oldOvr(target)) - 6), pos, 'FR');
@@ -101,40 +92,118 @@ export function genWalkon(target, pos) {
   }
   p.walkon = true;
   if (Math.random() < WALKON_GEM_RATE) {
-    p.devCurve = 'early';
-    p.pot = Math.min(99, Math.max(p.ovr + 12, target + ri(14, 20)));
+    p.tp = Math.min(99, Math.max(p.ovr + 12, target + ri(14, 20)));
   } else {
-    p.devCurve = 'normal';
-    p.pot = p.ovr + ri(1, 4);
+    p.tp = p.ovr + ri(1, 4);
   }
+  p.pot = p.tp;
   return p;
 }
 
-export function calcGrowth(p, coachDev) {
-  var devBonus = Math.round((coachDev - 70) / 15);
-  var baseTotal = (p.cls === 'FR') ? ri(4, 9) : (p.cls === 'SO') ? ri(3, 6) : (p.cls === 'JR') ? ri(2, 4) : ri(1, 3);
-  baseTotal += devBonus;
-  baseTotal = clamp(baseTotal, 1, 12);
-  if (p.devCurve === 'early' && (p.cls === 'FR' || p.cls === 'SO')) baseTotal += ri(1, 3);
-  if (p.devCurve === 'late' && (p.cls === 'JR' || p.cls === 'SR')) baseTotal += ri(2, 4);
-  baseTotal = clamp(baseTotal, 1, 15);
-  var changes = { sht: 0, fin: 0, def: 0, reb: 0, ply: 0 };
-  var remaining = baseTotal;
-  var attrs = ['sht', 'fin', 'def', 'reb', 'ply'];
-  while (remaining > 0) {
-    var attr = attrs[ri(0, 4)];
-    var add = ri(1, Math.min(3, remaining + 1));
-    changes[attr] += add; remaining -= add;
+// ── Development ──────────────────────────────────────────
+// Every player has a hidden true potential, p.tp (overall scale). p.pot is
+// the scouted estimate the game shows: a few points either way for a
+// recruit, closer the better the scouting, and it closes in on the truth
+// each year he plays. Each offseason a player closes part of his gap to
+// his true potential, the biggest share after his freshman year. Coaching
+// (development rating), the practice facility and playing time scale that;
+// about 1 in 20 offseasons is a breakout (+6 to +10, and his ceiling rises)
+// and about 1 in 14 a stall (nothing). Growth goes mostly to the ratings
+// that count for his position (the rawOvr weights), with some randomness.
+// CPU players follow the same rules.
+export var DEV = {
+  frac: { FR: 0.40, SO: 0.38, JR: 0.36, SR: 0.3 }, // share of the gap closed, by class going into the offseason
+  gap: 8, gapSd: 2.5,       // a new freshman's gap to his true potential
+  lift: 4.5, liftSd: 1.5,   // true potential vs the finished player genPlayer rolls
+  noise: 0.3,              // spread of a normal year (share of the expected growth, sd)
+  breakout: 0.05, stall: 0.07,
+  coachPerPt: 0.006,       // per development point from 70 (99: +17%, 40: -18%)
+  practicePerLvl: 0.05,    // per practice facility level (5: +25%)
+  scoutSd: { FR: 3.5, SO: 2.5, JR: 2, SR: 1 } // shown POT error by class
+};
+var ATTRS5 = ['sht', 'fin', 'def', 'reb', 'ply'];
+// share of each rating in a position's overall (rawOvr), and the odds a
+// growth point lands on it (weight^1.5: mostly what matters, not only that)
+var _posW = {};
+function posWeights(pos) {
+  if (_posW[pos]) return _posW[pos];
+  var w = {}, odds = {}, tot = 0;
+  ATTRS5.forEach(function(a) {
+    var q = { pos: pos, sht: 0, fin: 0, def: 0, reb: 0, ply: 0 }; q[a] = 1;
+    w[a] = rawOvr(q); odds[a] = Math.pow(w[a], 1.5); tot += odds[a];
+  });
+  ATTRS5.forEach(function(a) { odds[a] /= tot; });
+  return (_posW[pos] = { w: w, odds: odds });
+}
+function gauss() {
+  var u = 0, v = 0;
+  while (!u) u = Math.random();
+  while (!v) v = Math.random();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+// Overall scale without rounding (scaleOvr), so small steps add up
+function ovrScale(a) { return a <= 60 ? a : 60 + (a - 60) * 0.75 + (a > 90 ? (a - 90) * 0.6 : 0); }
+
+// Move a player's overall by about `delta` (overall scale, either sign),
+// one rating point at a time on the ratings his position leans on
+export function moveRatings(p, delta) {
+  var raw = rawOvr(p);
+  var need = oldOvr(Math.max(1, Math.min(99, ovrScale(raw) + delta))) - raw;
+  var pw = posWeights(p.pos), sign = need > 0 ? 1 : -1;
+  need = Math.abs(need);
+  for (var guard = 0; need > 0.04 && guard < 600; guard++) {
+    var open = ATTRS5.filter(function(a) { var v = p[a] + sign; return v >= 38 && v <= 99; });
+    if (!open.length) break;
+    var tot = 0; open.forEach(function(a) { tot += pw.odds[a]; });
+    var roll = Math.random() * tot, a = open[open.length - 1];
+    for (var i = 0; i < open.length; i++) { roll -= pw.odds[open[i]]; if (roll <= 0) { a = open[i]; break; } }
+    p[a] += sign; need -= pw.w[a];
   }
-  // Gem walk-ons (high potential) grow fast until they reach it: from well
-  // below the roster to a rotation player in 2-3 years
-  if (p.walkon && (p.pot || 0) - (p.ovr || 0) >= 5) {
-    var extra = ri(12, 18);
-    while (extra > 0) { var ea = attrs[ri(0, 4)]; changes[ea] += 1; extra--; }
+  p.ovr = getOvr(p);
+}
+
+// Scouted potential: the truth plus an error of about sd points
+export function scoutPot(p, sd) {
+  return clamp(Math.round(p.tp + sd * gauss()), p.ovr, 99);
+}
+// The share of a freshman's gap still open at the start of each class
+var _left = { FR: 1 };
+_left.SO = 1 - DEV.frac.FR; _left.JR = _left.SO * (1 - DEV.frac.SO); _left.SR = _left.JR * (1 - DEV.frac.JR);
+
+// A new player's true potential and current level for his class. Ratings
+// on p are a finished player at his level (genPlayer's roll).
+export function setPotential(p, cls) {
+  // less lift near the top of the scale, so 90+ stays rare
+  var head = clamp((97 - p.ovr) / 12, 0.3, 1);
+  var tp = Math.min(98, p.ovr + (DEV.lift + DEV.liftSd * gauss()) * head);
+  var gap = clamp(DEV.gap + DEV.gapSd * gauss(), 2, 24) * (_left[cls] || _left.SR);
+  moveRatings(p, tp - gap - p.ovr);
+  p.tp = Math.max(p.ovr, Math.round(tp));
+  p.pot = scoutPot(p, DEV.scoutSd[cls] || 1);
+}
+
+// One offseason of development (call before the class moves up). coachDev:
+// the coach's development rating; practice: facility level; playing time
+// comes from p.mins. Returns 'breakout', 'stall' or ''.
+export function developPlayer(p, coachDev, practice) {
+  if (typeof p.tp !== 'number') p.tp = Math.max(p.ovr, p.pot || p.ovr);
+  var gap = p.tp - ovrScale(rawOvr(p));
+  var mins = Math.min(1, (p.mins || 0) / 30);
+  var mult = (1 + ((coachDev || 70) - 70) * DEV.coachPerPt) * (1 + (practice || 0) * DEV.practicePerLvl) * (0.85 + 0.27 * mins);
+  var roll = Math.random(), g, kind = '';
+  if (roll < DEV.breakout) {
+    g = ri(6, 10); kind = 'breakout';
+    p.tp = Math.min(99, Math.max(p.tp, p.ovr + g + ri(1, 4)));
+  } else if (roll < DEV.breakout + DEV.stall) {
+    g = 0; kind = 'stall';
+  } else {
+    g = Math.max(0, gap) * (DEV.frac[p.cls] || DEV.frac.SR) * mult * Math.max(0, 1 + DEV.noise * gauss());
   }
-  if (p.pos === 'PG' || p.pos === 'SG') changes.ply = clamp(changes.ply + ri(0, 1), 0, 5);
-  if (p.pos === 'PF' || p.pos === 'C') changes.reb = clamp(changes.reb + ri(0, 1), 0, 5);
-  return changes;
+  if (g > 0) moveRatings(p, g);
+  if (p.ovr > p.tp) p.tp = p.ovr;
+  // a year of watching him play: the estimate closes half its error
+  p.pot = clamp(Math.round((p.pot || p.ovr) + (p.tp - (p.pot || p.ovr)) * 0.5), p.ovr, 99);
+  return kind;
 }
 
 // ── Engine Strategy / Schemes ────────────────────────────

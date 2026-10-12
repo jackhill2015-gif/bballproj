@@ -14,7 +14,7 @@ import { noteSpend } from './finance.js';
 
 export var FACILITY_MAX = 5;
 export var FACILITIES = [
-  { id: 'practice', name: 'Practice facility', effect: function(l) { return l ? '+' + l + ' development each offseason' : 'No bonus yet'; } },
+  { id: 'practice', name: 'Practice facility', effect: function(l) { return l ? '+' + (l * 5) + '% offseason development' : 'No bonus yet'; } },
   { id: 'arena', name: 'Arena', effect: function(l) { return l ? 'Home court +' + (l * 0.5).toFixed(1) + ', ticket sales +' + (l * 12) + '%' : 'No bonus yet'; } },
   { id: 'training', name: 'Training room', effect: function(l) { return l ? (l * 15) + '% chance each week an injured player heals faster' : 'No bonus yet'; } }
 ];
@@ -49,6 +49,6 @@ export function upgradeFacility(id) {
 }
 
 // ── Effects (read by the engine) ──
-export function practiceBonus(tid) { return facilitiesFor(tid).practice || 0; }       // growth points
+export function practiceBonus(tid) { return facilitiesFor(tid).practice || 0; }       // level: +5% growth each (simulation.js DEV)
 export function arenaBonus(tid) { return (facilitiesFor(tid).arena || 0) * 0.5; }      // shooting % at home
 export function trainingChance(tid) { return (facilitiesFor(tid).training || 0) * 0.15; }

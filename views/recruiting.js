@@ -20,7 +20,7 @@ import { TEAM_STATES, STATE_TO_REGION, STATE_NAMES, SCHOOL_RECRUIT_GATES, COACH_
 import { G, LS, SetupState, saveState, calcRecruitingBudget } from '../state.js';
 import { renderPortal, genPortalEntrants, registerPortalCallbacks, adjustOffer, pivotOffer, advancePortalStage, advanceFromPortal, setPortalFilter, togglePortalDetail, PORTAL_OFFER_STEP, setPortalTab, openPortalPage, openPortalFilter, clearPortalFilter } from './portal.js';
 import { genPlayer } from '../simulation.js';
-import { cpuRoomMap, cpuLanding, rankedTeams } from '../recruitpool.js';
+import { cpuRoomMap, cpuLanding, rankedTeams, scoutSd } from '../recruitpool.js';
 import { buildRetentionAsks, renderRetention, decideRetention, applyRetention, retentionPending, rollNotReturning } from './retention.js';
 import { teamLogo } from '../ui.js';
 import * as Battle from './battle.js';
@@ -1609,7 +1609,8 @@ function recruitPage(st) {
         : (canPursueAnother() || (r.points || 0) > 0 ? '<button class="btn-big" style="width:auto;padding:0 16px;min-height:36px;" data-add-target="' + r.id + '">Add to targets</button>' : ''))
       + '</div></div>'
       + (!isTarget && !(r.points || 0) && !canPursueAnother() ? '<div class="tg-note" style="margin:-4px 0 10px;">' + pursuitBlockedMsg() + '</div>' : '');
-    h += '<div class="pp-sec"><div class="scout-type">' + playerType(r) + '</div></div>';
+    h += '<div class="pp-sec"><div class="scout-type">' + playerType(r) + '</div>'
+      + '<div class="pp-note" style="margin-top:6px;">Potential is your staff\'s estimate, give or take about ' + Math.round(scoutSd()) + ' points. Most recruits arrive raw and grow toward it.</div></div>';
     h += '<div class="pp-sec"><div class="card-title">Fit with ' + G.teams[G.tid].name + ' next season</div>' + fitListHTML(r) + '</div>';
   }
   return { title: 'Recruit', html: h };

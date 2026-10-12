@@ -2,8 +2,9 @@
 //  HOOPS OS — views/devreport.js
 //  Offseason development report: what every returner gained.
 //  Reads G.devReport = { yr, school, rows: [{ name, pos,
-//  clsFrom, clsTo, redshirt, ovrFrom, ovrTo, pot, delta:
-//  { sht, fin, def, reb, ply } }] } (built in season.js each
+//  clsFrom, clsTo, redshirt, ovrFrom, ovrTo, potFrom, pot, kind
+//  ('breakout' | 'stall' | ''), delta: { sht, fin, def, reb, ply } }] }
+//  (built in season.js each
 //  offseason). Rendered at the top of the History screen while
 //  G.devReport.yr === G.yr, and on demand via the "Development
 //  report" item in the More menu (ui.js 'devreport' action),
@@ -38,7 +39,8 @@ export function devReportHTML() {
   });
   var h = '<div class="panel"><div class="panel-h"><span>Development report</span>'
     + '<small>' + r.yr + ' · ' + r.school + '</small></div><div class="panel-b flush">'
-    + '<div class="sec-sub" style="padding:10px 12px 0;">How last season\'s returners grew over the offseason.</div>'
+    + '<div class="sec-sub" style="padding:10px 12px 0;">How last season\'s returners grew over the offseason. '
+    + 'POT is your staff\'s estimate and gets closer to the truth each year.</div>'
     + '<div class="tbl-wrap"><table><thead><tr><th>Player</th><th>Class</th>'
     + '<th class="num">OVR</th><th>Biggest gain</th></tr></thead><tbody>';
   rows.forEach(function(x) {
@@ -46,10 +48,12 @@ export function devReportHTML() {
     var gainStr = (gain >= 0 ? '+' : '') + gain;
     var gc = gain > 0 ? 'var(--grn2)' : gain < 0 ? 'var(--red)' : 'var(--txt3)';
     h += '<tr><td>' + x.name + ' <span class="pt-sub">' + x.pos + '</span>'
-      + (x.redshirt ? ' <span class="tag">Redshirt year</span>' : '') + '</td>'
+      + (x.redshirt ? ' <span class="tag">Redshirt year</span>' : '')
+      + (x.kind === 'breakout' ? ' <span class="tag t-ok">Breakout</span>' : x.kind === 'stall' ? ' <span class="tag">Stalled</span>' : '') + '</td>'
       + '<td style="white-space:nowrap;">' + x.clsFrom + ' → ' + x.clsTo + '</td>'
       + '<td class="num" style="white-space:nowrap;">' + x.ovrFrom + ' → <b>' + x.ovrTo + '</b> '
-      + '<span style="color:' + gc + ';font-weight:700;">(' + gainStr + ')</span></td>'
+      + '<span style="color:' + gc + ';font-weight:700;">(' + gainStr + ')</span>'
+      + '<div class="pt-sub">POT ' + (x.potFrom != null && x.potFrom !== x.pot ? x.potFrom + ' → ' : '') + x.pot + '</div></td>'
       + '<td>' + biggestGain(x.delta) + '</td></tr>';
   });
   h += '</tbody></table></div></div></div>';

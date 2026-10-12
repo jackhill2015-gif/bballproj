@@ -238,6 +238,9 @@ export function renderRetention() {
   return h;
 }
 
+// One decimal, or a dash for a player with no season stats
+function fmt1(v) { return typeof v === 'number' ? v.toFixed(1) : '—'; }
+
 // NIL asks as a table (Basketball GM layout, 700px+)
 function nilTable(asks, nilAvail) {
   var h = '<div class="tbl-wrap dep-table-wrap"><table class="dep-table"><thead><tr>'
@@ -260,9 +263,9 @@ function nilTable(asks, nilAvail) {
       + '<td>' + a.pos + '</td><td>' + a.cls + '</td>'
       + '<td class="num"><b>' + a.ovr + '</b></td><td class="num">' + (a.pot || a.ovr) + '</td>'
       + '<td class="num">' + mins + '</td>'
-      + '<td class="num">' + a.ppg.toFixed(1) + '</td>'
-      + '<td class="num">' + a.rpg.toFixed(1) + '</td>'
-      + '<td class="num">' + a.apg.toFixed(1) + '</td>'
+      + '<td class="num">' + fmt1(a.ppg) + '</td>'
+      + '<td class="num">' + fmt1(a.rpg) + '</td>'
+      + '<td class="num">' + fmt1(a.apg) + '</td>'
       + '<td class="dep-status">' + status + '</td>'
       + '<td class="num"><b>' + a.ask + '</b></td>'
       + '<td class="dep-actions">' + actions + '</td></tr>';
@@ -285,7 +288,7 @@ function nilCards(asks, nilAvail, total) {
       h += '<div class="nil-card">'
         + '<div class="nil-head"><div>'
         + '<div class="nil-name">' + pLink(a.name, G.tid) + '</div>'
-        + '<div class="nil-sub">' + a.pos + ' · ' + a.ovr + ' OVR · ' + a.ppg.toFixed(1) + ' PPG</div>'
+        + '<div class="nil-sub">' + a.pos + ' · ' + a.ovr + ' OVR' + (a.ppg != null ? ' · ' + a.ppg.toFixed(1) + ' PPG' : '') + '</div>'
         + '<div class="nil-why">' + a.why + '</div>'
         + '</div><div class="nil-ask"><b>' + a.ask + '</b><span>NIL</span></div></div>'
         + '<div class="nil-budget"><div class="nil-fill" style="width:' + Math.min(100, pct) + '%;"></div></div>'

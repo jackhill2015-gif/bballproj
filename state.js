@@ -323,6 +323,16 @@ function _slimConfTourneys(cts) {
   return out;
 }
 
+// Saves from before hidden potential (simulation.js developPlayer): a true
+// potential near the POT shown, never below today's overall. Nothing else
+// changes on load.
+function _givePotential(p){
+  if(!p||typeof p.tp==='number'||typeof p.ovr!=='number')return;
+  var pot=typeof p.pot==='number'?p.pot:p.ovr;
+  p.tp=Math.max(p.ovr,Math.min(99,pot+Math.floor(Math.random()*5)-2));
+  delete p.devCurve;
+}
+
 // The recruit pool (about 1,500 in the offseason, none in season) is packed
 // column-wise like rosters. Unsigned recruits keep their race (rivals as
 // team ids); signed ones drop it. Empty stat lines, minutes and morale are
@@ -626,6 +636,9 @@ export function loadState() {
     });}
     var _resave = false;
     if (_origVer < 11) { _rescaleV11(); _resave = true; }
+    G.teams.forEach(function(t){ (t.rost||[]).forEach(_givePotential); });
+    (G.recruits||[]).forEach(_givePotential);
+    (G.portalEntrants||[]).forEach(_givePotential);
     // S10: rehydrate slimmed tournament data (team IDs → team objects)
     G.bracket=_fattenBracket(s.bracket);
     G.confTourneys=_fattenConfTourneys(s.confTourneys);

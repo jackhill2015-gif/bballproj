@@ -88,7 +88,7 @@ function profileHTML(t, p) {
   var h = '<div class="pf-top pf-with-face">' + playerFaceHTML(p, t.name)
     + '<div><div class="pf-name">' + p.name + '</div>'
     + '<div class="pf-sub">' + sub + '</div>'
-    + '<div class="pf-ovr"><b>' + p.ovr + '</b> OVR <span class="dim">· ' + (p.pot || p.ovr) + ' POT</span></div></div></div>';
+    + '<div class="pf-ovr"><b>' + p.ovr + '</b> OVR <span class="dim">· ' + (p.pot || p.ovr) + ' POT (est.)</span></div></div></div>';
 
   // Player type + strengths/weaknesses (views/scouting.js, read-only)
   var sw = strengthsAndWeaknesses(p);

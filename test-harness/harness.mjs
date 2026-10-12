@@ -381,8 +381,8 @@ stage('utils edge cases', () => {
   assert(U.getTOvr({ rost: [] }) === 0, 'getTOvr empty roster', '');
   assert(U.ord(1) === '1st' && U.ord(2) === '2nd' && U.ord(3) === '3rd', 'ord', '');
   U.fixMins([{ mins: 0 }]); // short roster must not crash
-  const g1 = SIM.calcGrowth(SIM.genPlayer(70, 'PG', 'FR'), 70);
-  assert(isNum(g1.sht), 'calcGrowth', '');
+  const g1 = SIM.genPlayer(70, 'PG', 'FR'); g1.mins = 30; SIM.developPlayer(g1, 70, 0);
+  assert(isNum(g1.sht) && isNum(g1.tp) && g1.pot >= g1.ovr, 'developPlayer', '');
   const _sty = U.getTeamStyle('ACC', 95);
   assert(_sty && ['balanced','motion','drive','set','early'].indexOf(_sty.off) >= 0 &&
     ['man','2-3','3-2','1-3-1','box1'].indexOf(_sty.def) >= 0 &&

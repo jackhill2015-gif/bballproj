@@ -15,7 +15,7 @@ import {
   awardScore, pickPositionalTeam
 } from './utils.js';
 import { G, LS, SetupState, saveState } from './state.js';
-import { genPlayer, genWalkon, simGame, calcGrowth } from './simulation.js';
+import { genPlayer, genWalkon, simGame, developPlayer } from './simulation.js';
 import { genRecruitPool, recruitToPlayer, fillCpuClasses, cpuClassSize, balanceCpuClasses, CPU_MIN_ROSTER, CPU_CLASS_CAP } from './recruitpool.js';
 import { recordGameMorale } from './morale.js';
 import { rollEvents, clearSeasonEvents } from './events.js';
@@ -1009,25 +1009,15 @@ export function doOffseason() {
     return { p: p, cls: p.cls, rs: !!p.rs, ovr: p.ovr, pot: p.pot || p.ovr, sht: p.sht, fin: p.fin, def: p.def, reb: p.reb, ply: p.ply };
   });
 
-  // Age up / develop returning players using calcGrowth.
-  // Redshirts: no class change (the year doesn't count), +2 extra
-  // development, and the redshirt is used up for good.
+  // Age up / develop returning players (simulation.js developPlayer: coach
+  // development rating, practice facility, playing time). Redshirts: no
+  // class change, so the year counts as an extra year of development; the
+  // redshirt is used up for good.
+  var _kind = new Map();
   t.rost.forEach(function(p) {
     if (p.cls === 'SR' && !p.rs) return;
-    var growth = calcGrowth(p, G.coach.dev);
-    // Practice facility: extra development points, spread at random
-    for (var _pb = practiceBonus(G.tid), _ga = ['sht', 'fin', 'def', 'reb', 'ply']; _pb > 0; _pb--) {
-      var _a = _ga[ri(0, 4)]; growth[_a] = (growth[_a] || 0) + 1;
-    }
-    ['sht', 'fin', 'def', 'reb', 'ply'].forEach(function(a) {
-      p[a] = clamp(p[a] + (growth[a] || 0), 38, 99);
-    });
-    p.ovr = getOvr(p);
-    if (p.pot && p.ovr > p.pot) p.pot = p.ovr;
+    _kind.set(p, developPlayer(p, G.coach.dev, practiceBonus(G.tid)));
     if (p.rs) {
-      var _rsA = ['sht', 'fin', 'def', 'reb', 'ply'];
-      for (var _r = 0; _r < 2; _r++) { var _k = _rsA[ri(0, 4)]; p[_k] = clamp(p[_k] + 1, 38, 99); }
-      p.ovr = getOvr(p); if (p.pot && p.ovr > p.pot) p.pot = p.ovr;
       p.rs = false; p.rsUsed = true; p._rsKeep = true;
       return;
     }
@@ -1043,7 +1033,7 @@ export function doOffseason() {
       var p = b.p, d = {};
       ['sht', 'fin', 'def', 'reb', 'ply'].forEach(function(a) { d[a] = p[a] - b[a]; });
       return { name: p.name, pos: p.pos, clsFrom: b.cls, clsTo: p.cls, redshirt: b.rs,
-               ovrFrom: b.ovr, ovrTo: p.ovr, pot: p.pot || p.ovr, delta: d };
+               ovrFrom: b.ovr, ovrTo: p.ovr, potFrom: b.pot, pot: p.pot || p.ovr, delta: d, kind: _kind.get(p) || '' };
     })
   };
 
@@ -1092,12 +1082,9 @@ export function doOffseason() {
       // CPU returners develop too, by their own coach's development rating
       // (without this, CPU ratings froze after signing and every user
       // program pulled away by season 4-5 — research/difficulty-report.md)
-      var _cdev = (tm.coach && tm.coach.dev) || 70;
+      var _cdev = (tm.coach && tm.coach.dev) || 70, _prac = practiceBonus(tm.id);
       tm.rost.forEach(function(p) {
-        var _g = calcGrowth(p, _cdev);
-        ['sht', 'fin', 'def', 'reb', 'ply'].forEach(function(a) { p[a] = clamp(p[a] + (_g[a] || 0), 38, 99); });
-        p.ovr = getOvr(p);
-        if (p.pot && p.ovr > p.pot) p.pot = p.ovr;
+        developPlayer(p, _cdev, _prac);
         var i = CLS.indexOf(p.cls);
         if (i < 3) p.cls = CLS[i + 1];
         p.s = freshS();

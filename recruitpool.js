@@ -18,7 +18,7 @@
 
 import { G } from './state.js';
 import { ri, oldOvr, freshS } from './utils.js';
-import { genPlayer } from './simulation.js';
+import { genPlayer, scoutPot } from './simulation.js';
 import { POS, RECRUIT_STATE_POOL } from './constants.js';
 
 export var POOL_PER_TEAM = 4.2;
@@ -83,11 +83,14 @@ export function genRecruitPool() {
     var tb = i < core ? bases[i % nt] : bases[ri(0, low - 1)];
     var base = Math.round(avg + (tb - avg) * POOL_SPREAD) + ri(-2, 2);
     var r = genPlayer(base, POS[ri(0, 4)], 'FR');
+    r.pot = scoutPot(r, scoutSd());
     r.interest = ri(0, 25); r.signed = -1; r.points = 0; r.status = 'open';
     r.homeState = RECRUIT_STATE_POOL[ri(0, RECRUIT_STATE_POOL.length - 1)];
     list.push(r);
   }
-  list.sort(function(a, b) { return b.ovr - a.ovr; });
+  // National rank goes by what scouts see: today's overall and the
+  // potential estimate, half each
+  list.sort(function(a, b) { return (b.ovr + b.pot) - (a.ovr + a.pot) || b.ovr - a.ovr; });
   var nt = G.teams.length, posCount = {};
   list.forEach(function(r, idx) {
     r.id = idx; r.natRank = idx + 1;
@@ -107,6 +110,14 @@ export function genRecruitPool() {
     r.rivals = shuffle(ranked.slice(lo, hi)).slice(0, ri(3, 5)).map(function(t) { return { tid: t.id, name: t.name }; });
   });
   return list;
+}
+
+// Your staff's scouting: the POT shown for a recruit is his true potential
+// give or take about this many points (recruiting rating 50: 5, 70: 3.5,
+// 90: 2)
+export function scoutSd() {
+  var rec = (G.coach && G.coach.rec) || 70;
+  return Math.max(1.5, Math.min(5, 5 - (rec - 50) * 0.075));
 }
 
 // ── CPU class room ──

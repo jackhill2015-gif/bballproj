@@ -39,7 +39,7 @@ check(Math.max(...lowPot) <= 5, 'the rest have low potential (pot within 5 of ov
 
 // 3. Gems really grow: a rotation player or better in 2-3 years; the rest don't
 const rosterAvg = 70;
-const grow = (p, yrs) => { for (let y = 0; y < yrs; y++) { const g = SIM.calcGrowth(p, 70); ['sht', 'fin', 'def', 'reb', 'ply'].forEach(a => { p[a] = U.clamp(p[a] + (g[a] || 0), 38, 99); }); p.ovr = U.getOvr(p); if (p.ovr > p.pot) p.pot = p.ovr; p.cls = ['FR', 'SO', 'JR', 'SR'][Math.min(3, y + 1)]; } return p; };
+const grow = (p, yrs) => { for (let y = 0; y < yrs; y++) { p.mins = 12; SIM.developPlayer(p, 70, 0); p.cls = ['FR', 'SO', 'JR', 'SR'][Math.min(3, y + 1)]; } return p; };
 let gemsGrown = [], restGrown = [];
 for (let i = 0; i < 2000 && gemsGrown.length < 60; i++) {
   const p = SIM.genWalkon(rosterAvg - 11, POS[i % 5]);

@@ -57,10 +57,21 @@ export function renderHelp() {
     + 'and box-and-one — each with a clear tradeoff, like protecting the paint at the cost of open threes. '
     + 'A scheme changes a game by a point or two, not more: players decide games.');
 
+  h += sec('Player development',
+    'Every player has a true potential you never see. The POT shown is your staff\'s estimate: for a '
+    + 'recruit it can be a few points off either way (a better recruiting rating scouts closer), and it '
+    + 'gets more accurate each year he plays. Each offseason a player closes part of the gap to his '
+    + 'true potential, the most after his freshman year, so most recruits arrive raw and are at their '
+    + 'best as juniors and seniors. Your development rating, the practice facility and playing time '
+    + 'all speed that up; players who sit at the end of the bench grow a little slower. About one '
+    + 'offseason in twenty a player breaks out (+6 to +10, and his ceiling rises), and about one in '
+    + 'fourteen he stalls. Growth goes mostly to the ratings that matter for his position. CPU teams '
+    + 'follow the same rules. The development report (in the menu) shows what each returner gained.');
+
   h += sec('Redshirts',
     'A player can redshirt once in his career, as long as he has played four games or fewer that '
-    + 'season. He sits out the rest of the year, keeps his class year, and develops a little extra '
-    + 'in the offseason. You can undo it during the season if you change your mind.');
+    + 'season. He sits out the rest of the year and keeps his class year, so the offseason is an '
+    + 'extra year of development. You can undo it during the season if you change your mind.');
 
   h += sec('Rankings',
     'The Top 25 is a voters\u2019 poll, modeled on ten seasons of real AP polls. The preseason poll '
@@ -81,7 +92,7 @@ export function renderHelp() {
 
   h += sec('Facilities',
     'Three upgrade tracks, each with five levels, bought once with NIL: the practice facility '
-    + 'speeds up offseason development, the arena strengthens your home court and raises ticket sales, '
+    + 'speeds up offseason development (5% per level), the arena strengthens your home court and raises ticket sales, '
     + 'and the training room gives injured players a weekly chance to heal early. '
     + 'Facilities belong to the school — take a new job and you start over with that program\'s levels.');
 
