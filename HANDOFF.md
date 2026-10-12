@@ -13,7 +13,6 @@ Claim a job before you start so two agents don't edit the same screens. Remove y
 
 | Who | Job | Files / screens touched | Since |
 |-----|-----|-------------------------|-------|
-| Muse | M6 player rating line + next-game card | views/player.js, views/dashboard.js, style.css, sw.js | 2026-10-12 |
 | Muse | M5 program-pull research | research/program-pull/ | 2026-10-12 |
 | Muse | Anonymous Reddit-beta link via Cloudflare Pages (no game code changes) — PAUSED, Jack said later | HANDOFF.md only | 2026-10-07 |
 
@@ -39,6 +38,7 @@ Leave a note for the other agent. Delete it once it's handled. **Claude sessions
 
 ## Recently shipped (newest first, keep about 8)
 
+- M6: player page has an OVR-by-season sparkline (from p.h + current OVR, hidden if <2 points); Home next-game card is clearer — both teams with ranks/records, site, win probability, one Sim/Watch row, team-color badges. *(Muse)*
 - M4: Departures rebuilt as one clean table (Basketball GM re-sign style) — name, pos, class, OVR, POT, MIN, PTS, REB, AST, status/reason, NIL ask, actions; top summary shows open spots, NIL available, total asks; Keep / Let go / Change / portal button all work as before. *(Muse)*
 - M3: NCAA bracket is ESPN-style compact — team-color badges, seed + school + record (score once played), winner bold; Final Four centers at 1280px; Opening Round cards get the same treatment; region tabs, pending slots, user highlighting, and sim buttons untouched. *(Muse)*
 - M2: roster page now has Stats and Depth chart tabs — Stats shows a team-leaders row (PTS/REB/AST/STL/BLK with faces) plus one sortable player table (name, pos, class, OVR, POT, GP, MIN, PTS, REB, AST, STL, BLK, TO, FG%, 3P%, FT%; sticky name column, scrolls inside its own box on phones, fewer columns on small screens); Depth chart keeps all existing features (reorder, minutes, auto-manage, redshirt, gameplan). No GS column — the sim doesn't track starts. *(Muse)*
