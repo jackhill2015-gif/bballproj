@@ -133,6 +133,54 @@ export function autoLineup(t, injuredNames) {
   }
 }
 
+// ── Temporary rating buffs (events, NIL shop) ────────────
+// A buff stores the change that was really applied (ratings clamp at 99 and
+// 30), so undoing it puts back exactly what it took.
+var BUFF_ATTRS = ['sht', 'fin', 'def'];
+export function applyBuff(t, who, attr, mod, gamesLeft) {
+  var bf = { playerName: who, attr: attr, mod: mod, gamesLeft: gamesLeft };
+  if (who === 'TEAM') {
+    bf.deltas = [];
+    t.rost.forEach(function(p) {
+      if (!(p.mins > 0)) return;
+      var d = BUFF_ATTRS.map(function(a) { var b = p[a]; p[a] = clamp(p[a] + mod, 30, 99); return p[a] - b; });
+      bf.deltas.push([p.name].concat(d));
+    });
+  } else {
+    var tp = null;
+    t.rost.forEach(function(p) { if (p.name === who) tp = p; });
+    var before = tp ? tp[attr] : 0;
+    if (tp) tp[attr] = clamp(tp[attr] + mod, 30, 99);
+    bf.applied = tp ? tp[attr] - before : 0;
+  }
+  return bf;
+}
+export function undoBuff(t, bf) {
+  if (bf.playerName === 'TEAM') {
+    if (bf.deltas) {
+      bf.deltas.forEach(function(row) {
+        t.rost.forEach(function(p) { if (p.name === row[0]) BUFF_ATTRS.forEach(function(a, k) { p[a] = clamp(p[a] - row[k + 1], 30, 99); }); });
+      });
+    } else { // saves from before deltas were stored
+      t.rost.forEach(function(p) { if (p.mins > 0) { p.sht -= bf.mod; p.fin -= bf.mod; p.def -= bf.mod; } });
+    }
+  } else if (bf.attr) {
+    var amt = typeof bf.applied === 'number' ? bf.applied : bf.mod;
+    t.rost.forEach(function(p) { if (p.name === bf.playerName) p[bf.attr] = clamp((p[bf.attr] || 70) - amt, 30, 99); });
+  }
+}
+
+// How long an injury keeps a player out: mostly one to three weeks, now and
+// then longer, rarely the rest of the season (99).
+export function injuryWeeks() {
+  var r = ri(1, 100);
+  if (r <= 55) return ri(1, 2);
+  if (r <= 88) return 3;
+  if (r <= 96) return ri(4, 6);
+  if (r <= 99) return ri(7, 10);
+  return 99;
+}
+
 export function freshS() {
   // M9: 3PT/FT/TO splits + offensive rebounds wired through both sim paths so
   // the engine can be calibrated against real D1 bands (3P%, 3PA rate, FT%,

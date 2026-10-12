@@ -710,7 +710,7 @@ input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 
 /* Scoreboard: compact, tabular, text-first */
 .gc-teams { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; padding: 14px; border-bottom: 1px solid var(--bdr); }
 .gc-team { min-width: 0; }
-.gc-team:last-of-type { text-align: right; }
+.gc-team.h { text-align: right; }
 .gc-name { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .gc-name.u { color: var(--blu); }
 .gc-score { font-size: 34px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.1; }

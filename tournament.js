@@ -7,8 +7,8 @@
 import { formatFor, roundsIn } from './confformats.js';
 import { payTourneyWin, payOpeningWin } from './finance.js';
 import { recomputeRatings, resumeScore } from './ratings.js';
-import { selectionSundayPoll } from './poll.js';
-import { ge, txt, fmtScore, otLabel } from './utils.js';
+import { selectionSundayPoll, pollRank } from './poll.js';
+import { ge, txt, fmtScore, otLabel, getTOvr } from './utils.js';
 import { G, LS, SetupState, saveState } from './state.js';
 import { simGame, SITE } from './simulation.js';
 import { recordGameMorale } from './morale.js';
@@ -839,6 +839,17 @@ function checkNCAAdone() {
 //  TOURNAMENT GAME PLAY (user games — conf & NCAA)
 // ═══════════════════════════════════════════════════════════
 
+// Neutral-site games are listed away team left, home team right. The better
+// seed is the home team; with no seeds, the higher-ranked team (poll, then
+// team rating). Ties keep the bracket order. No home-court edge is involved:
+// this only fixes which side is shown where.
+function betterIsHome(a, sa, b, sb) {
+  if (sa && sb && sa !== sb) return sa < sb;
+  var ra = pollRank(a.id) || 999, rb = pollRank(b.id) || 999;
+  if (ra !== rb) return ra < rb;
+  return getTOvr(a) >= getTOvr(b);
+}
+
 export function playTournamentGame(watch) {
   // Saves stuck between the regular season and the brackets: build them now
   if (G.phase === 'conf_tourn' && (!G.confTourneys || !Object.keys(G.confTourneys).length)) {
@@ -849,7 +860,7 @@ export function playTournamentGame(watch) {
     var um = getUserConfMatchup();
     if (um) {
       var m = um.matchup;
-      LS.tH = m.t1; LS.tA = m.t2;
+      LS.tH = m.t1; LS.tA = m.t2; LS.swapped = false;
       LS.game = {
         home: true, conf: true, played: false, uScore: 0, oScore: 0,
         _matchup: m, _conf: um.conf, _ct: um.ct, _type: 'conf', _campus: !!m.campus
@@ -878,16 +889,17 @@ export function playTournamentGame(watch) {
   } else if (G.phase === 'ncaa' && openingPending()) {
     var og = getUserOpeningGame();
     if (!og) { simNCAAround(); return; }
-    LS.tH = og.t1; LS.tA = og.t2;
+    var oH = betterIsHome(og.t1, 0, og.t2, 0) ? og.t1 : og.t2, oA = oH === og.t1 ? og.t2 : og.t1;
+    LS.tH = oH; LS.tA = oA; LS.swapped = oH !== og.t1;
     LS.game = { home: true, conf: false, played: false, uScore: 0, oScore: 0, _og: og, _type: 'opening' };
     LS.userTeam = G.teams[G.tid];
     LS.clock = 1200; LS.half = 1; LS.hs = 0; LS.as = 0; LS.ot = 0;
     LS.h1 = null; LS.a1 = null; LS.poss = 'A';
     if (watch) {
-      LS._recPre = { h: snapRoster(og.t1), a: snapRoster(og.t2), hid: og.t1.id, aid: og.t2.id };
-      if (_ext.openModal) _ext.openModal(og.t1, og.t2, true, getNCAAroundName());
+      LS._recPre = { h: snapRoster(oH), a: snapRoster(oA), hid: oH.id, aid: oA.id };
+      if (_ext.openModal) _ext.openModal(oH, oA, true, getNCAAroundName());
     } else {
-      var reso = simGame(og.t1, og.t2, true);
+      var reso = simGame(oH, oA, true);
       LS.hs = reso.homeScore; LS.as = reso.awayScore; LS.ot = reso.ot || 0;
       LS._recLines = userLinesFromRes(reso);
       resolveTournamentGame();
@@ -895,7 +907,9 @@ export function playTournamentGame(watch) {
   } else if (G.phase === 'ncaa') {
     var um2 = getUserNCAAmatchup();
     if (um2) {
-      LS.tH = um2.b1.team; LS.tA = um2.b2.team;
+      var nHome = betterIsHome(um2.b1.team, um2.b1.seed, um2.b2.team, um2.b2.seed) ? um2.b1 : um2.b2;
+      var nAway = nHome === um2.b1 ? um2.b2 : um2.b1;
+      LS.tH = nHome.team; LS.tA = nAway.team; LS.swapped = nHome !== um2.b1;
       LS.game = {
         home: true, conf: false, played: false, uScore: 0, oScore: 0,
         _b1: um2.b1, _b2: um2.b2, _type: 'ncaa'
@@ -907,10 +921,10 @@ export function playTournamentGame(watch) {
         um2.b1.team._seed = um2.b1.seed;
         um2.b2.team._seed = um2.b2.seed;
         // Records: snapshot for the post-game diff (live path)
-        LS._recPre = { h: snapRoster(um2.b1.team), a: snapRoster(um2.b2.team), hid: um2.b1.team.id, aid: um2.b2.team.id };
-        if (_ext.openModal) _ext.openModal(um2.b1.team, um2.b2.team, true, getNCAAroundName());
+        LS._recPre = { h: snapRoster(nHome.team), a: snapRoster(nAway.team), hid: nHome.team.id, aid: nAway.team.id };
+        if (_ext.openModal) _ext.openModal(nHome.team, nAway.team, true, getNCAAroundName());
       } else {
-        var res2 = simGame(um2.b1.team, um2.b2.team, true);
+        var res2 = simGame(nHome.team, nAway.team, true);
         LS.hs = res2.homeScore; LS.as = res2.awayScore; LS.ot = res2.ot || 0;
         LS._recLines = userLinesFromRes(res2);
         resolveTournamentGame();
@@ -932,12 +946,14 @@ export function resolveTournamentGame() {
   var userIsHome = LS.tH && LS.tH.id === G.tid;
   var uScore = userIsHome ? LS.hs : LS.as;
   var oScore = userIsHome ? LS.as : LS.hs;
+  // Scores in bracket order (the home/away sides may be swapped for display)
+  var s1 = LS.swapped ? LS.as : LS.hs, s2 = LS.swapped ? LS.hs : LS.as;
 
   if (game._type === 'conf') {
     var m = game._matchup;
     var conf = game._conf;
-    m.s1 = LS.hs; m.s2 = LS.as; if (LS.ot) m.ot = LS.ot;
-    m.winner = LS.hs > LS.as ? m.t1 : m.t2;
+    m.s1 = s1; m.s2 = s2; if (LS.ot) m.ot = LS.ot;
+    m.winner = s1 > s2 ? m.t1 : m.t2;
     tallyPostseason(m.winner, m.winner === m.t1 ? m.t2 : m.t1);
     var userWon = (m.winner.id === G.tid);
     var oppName = (m.t1.id === G.tid ? m.t2 : m.t1).name;
@@ -973,7 +989,7 @@ export function resolveTournamentGame() {
     if (allConfDone() && !G.bracket.length) buildNCAA();
   } else if (game._type === 'opening') {
     var og2 = game._og;
-    scoreOpening(og2, LS.hs, LS.as, LS.ot);
+    scoreOpening(og2, s1, s2, LS.ot);
     var wonO = og2.winner.id === G.tid;
     var oppO = og2.t1.id === G.tid ? og2.t2 : og2.t1;
     G.lastResult = { yr: G.yr, oppId: oppO.id, home: null, u: uScore, o: oScore, won: wonO, wk: G.gi, label: 'NCAA Opening Round', ot: LS.ot || 0 };
@@ -997,9 +1013,9 @@ export function resolveTournamentGame() {
     // drop its loser from the list, shifting every later pairing and even
     // leaving one team with no game at all (T1).
     simNCAArimExceptUser();
-    scoreNCAAgame(b1, b2, LS.hs, LS.as, LS.ot);
+    scoreNCAAgame(b1, b2, s1, s2, LS.ot);
     recomputeRatings(); // rankings keep moving through March
-    var userWon2 = (b1.team.id === G.tid) ? (LS.hs > LS.as) : (LS.as > LS.hs);
+    var userWon2 = (b1.team.id === G.tid) ? (s1 > s2) : (s2 > s1);
     var oppName2 = (b1.team.id === G.tid ? b2 : b1).team.name;
     var oppTeam2 = (b1.team.id === G.tid ? b2 : b1).team;
     // Morale: tournament games swing moods too
@@ -1029,13 +1045,13 @@ export function resolveTournamentGame() {
       if (userSeed >= 11 && remaining <= 8) {
         prestigeGain += 5;
         if (!G.cinderellaRun) G.cinderellaRun = true;
-        addLog('ev', G.gi, '\ud83d\udc60 <b>CINDERELLA ALERT!</b> #' + userSeed + ' ' + userTeam.name + ' keeps dancing! The country is watching.');
+        addLog('ev', G.gi, '<b>Cinderella alert.</b> #' + userSeed + ' ' + userTeam.name + ' keeps dancing! The country is watching.');
       }
 
       // Upset bonus
       if (isUpset) {
         prestigeGain += 2;
-        addLog('ev', G.gi, '\ud83d\udea8 <b>UPSET!</b> #' + userSeed + ' ' + userTeam.name + ' stuns #' + oppSeed + ' ' + oppName2 + '! ' + fmtScore(uScore, oScore, '-', LS.ot));
+        addLog('ev', G.gi, '<b>Upset.</b> #' + userSeed + ' ' + userTeam.name + ' stuns #' + oppSeed + ' ' + oppName2 + '! ' + fmtScore(uScore, oScore, '-', LS.ot));
       }
 
       // Apply prestige

@@ -3,15 +3,129 @@
 //  Mid-season events: injuries, streaks, drama, recruiting, national
 // ═══════════════════════════════════════════════════════════
 
-import { ri, clamp } from './utils.js';
+import { ri, autoLineup, applyBuff, undoBuff, injuryWeeks } from './utils.js';
 import { G, saveState } from './state.js';
 import { pollRank, pollTeams } from './poll.js';
 import { addLog, toast } from './ui.js';
+
+// ── CPU teams ───────────────────────────────────────────
+// Every other team gets the player events too, quietly: injuries, suspensions,
+// hot and cold stretches. State lives in G.cpuInj / G.cpuBuffs (entries carry
+// the team id), apart from the user's G.injuries / G.buffs. Only ranked teams'
+// stars and the league's best players get a line in the log.
+var CPU_RATES = { injury: 12, academic: 2, conduct: 1.5, hot: 8, cold: 6, chem: 4, drama: 3, flu: 3 };
+var CPU_LOG_CAP = 4;
+
+function rollPct(p) { return Math.random() * 100 < p; }
+
+function cpuHealthLine(t, p, text, weekNum, state) {
+  if (state.logged >= CPU_LOG_CAP) return;
+  var rank = pollRank(t.id);
+  var top = t.rost.slice().sort(function(a, b) { return b.ovr - a.ovr; }).slice(0, 3);
+  var notable = p.ovr >= 84 || (rank && rank <= 25 && top.indexOf(p) >= 0);
+  if (!notable) return;
+  state.logged++;
+  addLog('ev', weekNum, (rank && rank <= 25 ? '#' + rank + ' ' : '') + '<b>' + t.name + '</b>: ' + text);
+}
+
+export function rollCpuEvents(weekNum) {
+  if (!G.cpuInj) G.cpuInj = [];
+  if (!G.cpuBuffs) G.cpuBuffs = [];
+  var state = { logged: 0 };
+  var touched = {}; // tid -> true when a team's available players changed
+
+  // Tick down injuries; a returning player gets his minutes back below
+  for (var i = G.cpuInj.length - 1; i >= 0; i--) {
+    var inj = G.cpuInj[i];
+    inj.weeksLeft--;
+    if (inj.weeksLeft <= 0) {
+      touched[inj.tid] = true;
+      G.cpuInj.splice(i, 1);
+    }
+  }
+  // Tick down buffs
+  for (var j = G.cpuBuffs.length - 1; j >= 0; j--) {
+    var bf = G.cpuBuffs[j];
+    bf.gamesLeft--;
+    if (bf.gamesLeft <= 0) {
+      if (G.teams[bf.tid]) undoBuff(G.teams[bf.tid], bf);
+      G.cpuBuffs.splice(j, 1);
+    }
+  }
+
+  function out(tid, name) {
+    for (var k = 0; k < G.cpuInj.length; k++) if (G.cpuInj[k].tid === tid && G.cpuInj[k].playerName === name) return true;
+    return false;
+  }
+  function hurt(t, type, weeks, text) {
+    var pool = t.rost.filter(function(p) { return p.mins > 0 && !out(t.id, p.name); });
+    if (pool.length < 6) return; // never strip a team below a rotation
+    var p = pool[ri(0, pool.length - 1)];
+    G.cpuInj.push({ tid: t.id, playerName: p.name, type: type, weeksLeft: weeks });
+    touched[t.id] = true;
+    cpuHealthLine(t, p, '<b>' + p.name + '</b> (' + p.pos + ') ' + text(weeks), weekNum, state);
+  }
+  function buff(t, who, attr, mod, games) {
+    G.cpuBuffs.push(Object.assign(applyBuff(t, who, attr, mod, games), { tid: t.id }));
+  }
+  function starter(t) {
+    var s = t.rost.slice().sort(function(a, b) { return b.mins - a.mins; }).slice(0, 5);
+    return s[ri(0, s.length - 1)];
+  }
+
+  G.teams.forEach(function(t) {
+    if (t.id === G.tid || !t.rost || !t.rost.length) return;
+    if (rollPct(CPU_RATES.injury)) {
+      var types = ['ankle sprain', 'broken finger', 'concussion', 'hamstring strain', 'knee contusion', 'shoulder sprain'];
+      var type = types[ri(0, types.length - 1)];
+      hurt(t, type, injuryWeeks(), function(w) { return 'is out with a ' + type + (w >= 30 ? ' for the season.' : ' for ' + w + (w === 1 ? ' week.' : ' weeks.')); });
+    }
+    if (rollPct(CPU_RATES.academic)) hurt(t, 'Academic', 2, function() { return 'is academically ineligible for 2 games.'; });
+    if (rollPct(CPU_RATES.conduct)) hurt(t, 'Suspension', 1, function() { return 'is suspended for 1 game.'; });
+    if (rollPct(CPU_RATES.hot)) buff(t, starter(t).name, 'sht', 5, 3);
+    if (rollPct(CPU_RATES.cold)) buff(t, starter(t).name, 'sht', -5, 3);
+    if (rollPct(CPU_RATES.flu)) buff(t, starter(t).name, 'fin', -4, 1);
+    if (rollPct(CPU_RATES.chem)) buff(t, 'TEAM', 'all', 2, 2);
+    if (rollPct(CPU_RATES.drama)) buff(t, 'TEAM', 'all', -2, 2);
+  });
+
+  // Hand out minutes again where someone left or came back
+  Object.keys(touched).forEach(function(tid) {
+    var t = G.teams[tid];
+    if (!t || t.id === G.tid) return;
+    var outMap = {};
+    G.cpuInj.forEach(function(inj) { if (inj.tid === t.id) outMap[inj.playerName] = true; });
+    autoLineup(t, outMap);
+  });
+}
+
+// Season over: nobody stays hurt into the offseason and temporary rating
+// changes come off before players develop.
+export function clearSeasonEvents() {
+  var user = G.teams[G.tid];
+  (G.buffs || []).forEach(function(bf) { if (user) undoBuff(user, bf); });
+  G.buffs = [];
+  if (user) (G.injuries || []).forEach(function(inj) {
+    user.rost.forEach(function(p) { if (p.name === inj.playerName && !p.rs) p.mins = inj.origMins || 20; });
+  });
+  G.injuries = [];
+  (G.cpuBuffs || []).forEach(function(bf) { if (G.teams[bf.tid]) undoBuff(G.teams[bf.tid], bf); });
+  G.cpuBuffs = [];
+  var hurt = {};
+  (G.cpuInj || []).forEach(function(inj) { hurt[inj.tid] = true; });
+  G.cpuInj = [];
+  Object.keys(hurt).forEach(function(tid) {
+    var t = G.teams[tid];
+    if (t && t.id !== G.tid && t.rost) autoLineup(t, {});
+  });
+}
 
 export function rollEvents(weekNum) {
   if (!G.injuries) G.injuries = [];
   if (!G.buffs) G.buffs = [];
   if (typeof G.nextHomeBonus !== 'number') G.nextHomeBonus = 0;
+
+  rollCpuEvents(weekNum);
 
   var t = G.teams[G.tid];
   if (!t || !t.rost) return;
@@ -36,16 +150,7 @@ export function rollEvents(weekNum) {
   for (var j = G.buffs.length - 1; j >= 0; j--) {
     G.buffs[j].gamesLeft--;
     if (G.buffs[j].gamesLeft <= 0) {
-      var bp = null;
-      var bf = G.buffs[j];
-      if (bf.playerName === 'TEAM') {
-        t.rost.forEach(function(p) {
-          if (p.mins > 0) { p.sht -= bf.mod; p.fin -= bf.mod; p.def -= bf.mod; }
-        });
-      } else {
-        t.rost.forEach(function(p) { if (p.name === bf.playerName) bp = p; });
-        if (bp && bf.attr) bp[bf.attr] = clamp((bp[bf.attr] || 70) - bf.mod, 30, 99);
-      }
+      undoBuff(t, G.buffs[j]);
       G.buffs.splice(j, 1);
     }
   }
@@ -82,25 +187,24 @@ export function rollEvents(weekNum) {
 
   // ── PLAYER EVENTS ──
 
-  // 1. Injury (15%)
-  tryFire(15, function() {
+  // 1. Injury (12%, same weekly rate as every CPU team)
+  tryFire(12, function() {
     var p = active[ri(0, active.length - 1)];
     var already = G.injuries.find(function(inj) { return inj.playerName === p.name; });
     if (already) return;
     var types = ['sprained ankle', 'broken finger', 'concussion', 'hamstring strain', 'knee contusion', 'shoulder sprain'];
     var type = types[ri(0, types.length - 1)];
-    var weeks = ri(2, 4);
+    var weeks = injuryWeeks();
     G.injuries.push({ playerName: p.name, type: type, weeksLeft: weeks, origMins: p.mins });
     p.mins = 0;
-    addLog('ev', weekNum, '<b>' + p.name + '</b> (' + p.pos + ') suffers a <b>' + type + '</b> \u2014 out ' + weeks + ' weeks.');
+    addLog('ev', weekNum, '<b>' + p.name + '</b> (' + p.pos + ') suffers a <b>' + type + '</b> \u2014 ' + (weeks >= 30 ? 'out for the season.' : 'out ' + weeks + (weeks === 1 ? ' week.' : ' weeks.')));
     toast(p.name + ' injured', '#dc2626');
   });
 
   // 2. Hot Streak (12%)
   tryFire(12, function() {
     var p = starters[ri(0, starters.length - 1)];
-    p.sht = clamp(p.sht + 5, 30, 99);
-    G.buffs.push({ playerName: p.name, attr: 'sht', mod: 5, gamesLeft: 3 });
+    G.buffs.push(applyBuff(t, p.name, 'sht', 5, 3));
     addLog('ev', weekNum, '<b>' + p.name + '</b> is on a hot streak \u2014 +5 shooting for the next 3 games.');
     toast(p.name + ' on a hot streak', 'var(--gld)');
   });
@@ -108,8 +212,7 @@ export function rollEvents(weekNum) {
   // 3. Cold Streak (10%)
   tryFire(10, function() {
     var p = starters[ri(0, starters.length - 1)];
-    p.sht = clamp(p.sht - 5, 30, 99);
-    G.buffs.push({ playerName: p.name, attr: 'sht', mod: -5, gamesLeft: 3 });
+    G.buffs.push(applyBuff(t, p.name, 'sht', -5, 3));
     addLog('ev', weekNum, '<b>' + p.name + '</b> is in a shooting slump \u2014 struggling from the field for 3 games.');
     toast(p.name + ' slumping', 'var(--txt3)');
   });
@@ -150,20 +253,14 @@ export function rollEvents(weekNum) {
 
   // 7. Chemistry Boost (8%)
   tryFire(8, function() {
-    t.rost.forEach(function(p) {
-      if (p.mins > 0) { p.sht = clamp(p.sht + 2, 30, 99); p.fin = clamp(p.fin + 2, 30, 99); p.def = clamp(p.def + 2, 30, 99); }
-    });
-    G.buffs.push({ playerName: 'TEAM', attr: 'all', mod: 2, gamesLeft: 2 });
+    G.buffs.push(applyBuff(t, 'TEAM', 'all', 2, 2));
     addLog('ev', weekNum, 'Team chemistry surging \u2014 all attributes +2 for next 2 games.');
     toast('Chemistry boost', 'var(--grn)');
   });
 
   // 8. Locker Room Drama (5%)
   tryFire(5, function() {
-    t.rost.forEach(function(p) {
-      if (p.mins > 0) { p.sht = clamp(p.sht - 2, 30, 99); p.fin = clamp(p.fin - 2, 30, 99); p.def = clamp(p.def - 2, 30, 99); }
-    });
-    G.buffs.push({ playerName: 'TEAM', attr: 'all', mod: -2, gamesLeft: 2 });
+    G.buffs.push(applyBuff(t, 'TEAM', 'all', -2, 2));
     addLog('ev', weekNum, 'Locker room tension after ' + (lastWin ? 'a close call' : 'tough loss') + ' \u2014 team distracted for 2 games.');
     toast('Locker room drama', '#dc2626');
   });
@@ -268,8 +365,7 @@ export function rollEvents(weekNum) {
   // 20. Video Game Distraction (5%)
   tryFire(5, function() {
     var p = active[ri(0, active.length - 1)];
-    p.sht = clamp(p.sht - 3, 30, 99);
-    G.buffs.push({ playerName: p.name, attr: 'sht', mod: -3, gamesLeft: 1 });
+    G.buffs.push(applyBuff(t, p.name, 'sht', -3, 1));
     addLog('ev', weekNum, '<b>' + p.name + '</b> was up all night before a game release. Shooting \u22123 next game.');
   });
 
@@ -291,8 +387,7 @@ export function rollEvents(weekNum) {
   // 23. Flu Game (6%)
   tryFire(6, function() {
     var p = starters[ri(0, starters.length - 1)];
-    p.fin = clamp(p.fin - 4, 30, 99);
-    G.buffs.push({ playerName: p.name, attr: 'fin', mod: -4, gamesLeft: 1 });
+    G.buffs.push(applyBuff(t, p.name, 'fin', -4, 1));
     addLog('ev', weekNum, '<b>' + p.name + '</b> battling illness \u2014 playing through it but finishing \u22124 next game.');
   });
 
@@ -301,10 +396,8 @@ export function rollEvents(weekNum) {
     var freshmen = t.rost.filter(function(p) { return p.cls === 'FR' && p.mins > 0; });
     if (freshmen.length) {
       var p = freshmen[ri(0, freshmen.length - 1)];
-      p.sht = clamp(p.sht + 3, 30, 99);
-      p.fin = clamp(p.fin + 3, 30, 99);
-      G.buffs.push({ playerName: p.name, attr: 'sht', mod: 3, gamesLeft: 4 });
-      G.buffs.push({ playerName: p.name, attr: 'fin', mod: 3, gamesLeft: 4 });
+      G.buffs.push(applyBuff(t, p.name, 'sht', 3, 4));
+      G.buffs.push(applyBuff(t, p.name, 'fin', 3, 4));
       addLog('ev', weekNum, 'Freshman <b>' + p.name + '</b> is on a breakout stretch \u2014 boosted for 4 games.');
       toast(p.name + ' breakout', 'var(--grn)');
     }
@@ -331,8 +424,7 @@ export function rollEvents(weekNum) {
   // 27. Weather Delay (3%)
   tryFire(3, function() {
     addLog('ev', weekNum, 'Winter storm delays team travel \u2014 players arrive fatigued for next away game.');
-    t.rost.forEach(function(p) { if (p.mins > 0) { p.fin = clamp(p.fin - 1, 30, 99); } });
-    G.buffs.push({ playerName: 'TEAM', attr: 'all', mod: -1, gamesLeft: 1 });
+    G.buffs.push(applyBuff(t, 'TEAM', 'all', -1, 1));
   });
 
   // 28. Walk-on Hero (3%)

@@ -18,7 +18,7 @@
 
 import { G } from '../state.js';
 import { pollRank } from '../poll.js';
-import { fmtScore } from '../utils.js';
+import { fmtScore, otLabel } from '../utils.js';
 import { openSheet } from './sheet.js';
 import { playerType } from './scouting.js';
 import { playerFaceSmallHTML } from './faces.js';
@@ -155,15 +155,17 @@ export function openGameDetail(week) {
     return;
   }
   var win = g.uScore > g.oScore;
+  // Away team first, home team second, with the score in the same order
+  var away = g.home ? opp : me, home = g.home ? me : opp;
+  var awayPts = g.home ? g.oScore : g.uScore, homePts = g.home ? g.uScore : g.oScore;
+  var nm = function(t) { return t === me ? '<span style="font-weight:700;">' + me.name + '</span>' : teamLink(t.id, t.name); };
   var h = '<div style="text-align:center;margin-bottom:12px;">'
     + '<div style="font-size:13px;color:var(--txt3);">Week ' + (week + 1) + ' · ' + (g.home ? 'Home' : 'Away')
     + (g.conf ? ' · ' + me.conf : '') + '</div>'
     + '<div style="font-size:26px;font-weight:800;margin:6px 0;font-family:var(--mono);">'
-    + fmtScore(g.uScore, g.oScore, '', g.ot) + '</div>'
-    + '<div><span class="badge ' + (win ? 'w' : 'l') + '">' + (win ? 'W' : 'L') + '</span>'
-    + ' <span style="font-weight:700;">' + me.name + '</span>'
-    + ' <span style="color:var(--txt3);">vs</span> '
-    + teamLink(opp.id, opp.name) + '</div></div>';
+    + awayPts + '\u2013' + homePts + (g.ot ? ' ' + otLabel(g.ot) : '') + '</div>'
+    + '<div><span class="badge ' + (win ? 'w' : 'l') + '">' + (win ? 'W' : 'L') + '</span> '
+    + nm(away) + ' <span style="color:var(--txt3);">@</span> ' + nm(home) + '</div></div>';
 
   if (g.box) {
     // Box score saved with the game (season.js recordResult): [name, pos, pts, reb, ast, stl, blk]
@@ -182,10 +184,10 @@ export function openGameDetail(week) {
       });
       return t + '</tbody></table></div>';
     };
-    h += boxTbl(me, g.box.u || []) + boxTbl(opp, g.box.o || []);
+    h += g.home ? boxTbl(opp, g.box.o || []) + boxTbl(me, g.box.u || []) : boxTbl(me, g.box.u || []) + boxTbl(opp, g.box.o || []);
   } else {
-    h += '<div class="sec-head">' + me.name + ' leaders</div>' + leaderRows(me);
-    h += '<div class="sec-head" style="margin-top:14px;">' + opp.name + ' leaders</div>' + leaderRows(opp);
+    h += '<div class="sec-head">' + away.name + ' leaders</div>' + leaderRows(away);
+    h += '<div class="sec-head" style="margin-top:14px;">' + home.name + ' leaders</div>' + leaderRows(home);
     h += '<div style="font-size:12px;color:var(--txt3);margin-top:10px;">Season scoring leaders. Box scores are saved for games played from now on.</div>';
   }
   openSheet(h, 'Game detail');

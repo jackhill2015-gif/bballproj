@@ -18,7 +18,7 @@ import { G, LS, SetupState, saveState } from './state.js';
 import { genPlayer, genWalkon, simGame, calcGrowth } from './simulation.js';
 import { genRecruitPool, recruitToPlayer, fillCpuClasses, cpuClassSize, balanceCpuClasses, CPU_MIN_ROSTER, CPU_CLASS_CAP } from './recruitpool.js';
 import { recordGameMorale } from './morale.js';
-import { rollEvents } from './events.js';
+import { rollEvents, clearSeasonEvents } from './events.js';
 import {
   snapRoster, diffRoster, userLinesFromRes, surfaceUserGameRecords,
   processSeasonRecords, clearSeasonBreaks
@@ -940,6 +940,7 @@ export function beginOffseason() {
   var rs = ge('recap-screen');
   if (rs) rs.classList.remove('open');
   G.phase = 'offseason';
+  clearSeasonEvents();
   runDraft();
   // An old save's uneven classes even out (no-op in a normal league)
   G.jucoAdds = balanceCpuClasses();

@@ -447,7 +447,7 @@ function _writeSave() {
       bracket:_slimBracket(G.bracket),
       confTourneys:_slimConfTourneys(G.confTourneys),
       ncaaOpening:_slimOpening(G.ncaaOpening),
-      injuries:G.injuries||[],buffs:G.buffs||[],nextHomeBonus:G.nextHomeBonus||0,
+      injuries:G.injuries||[],buffs:G.buffs||[],cpuInj:G.cpuInj||[],cpuBuffs:G.cpuBuffs||[],nextHomeBonus:G.nextHomeBonus||0,
       lastResult:G.lastResult||null,
       jobMarket:G.jobMarket||null,
       goals:G.goals||null,goalHistory:G.goalHistory||[],achievements:G.achievements||{},
@@ -566,6 +566,8 @@ export function loadState() {
     G.skillPointsToSpend=s.skillPointsToSpend||0;
     G.injuries=s.injuries||[];
     G.buffs=s.buffs||[];
+    G.cpuInj=s.cpuInj||[];
+    G.cpuBuffs=s.cpuBuffs||[];
     G.nextHomeBonus=s.nextHomeBonus||0;
     G.lastResult=s.lastResult||null;
     G.jobMarket=s.jobMarket||null;

@@ -9,7 +9,7 @@ import { pollRank, pollPrevRank } from './poll.js';
 import { backupDynasty, restoreDynasty } from './backup.js';
 import { noteSpend } from './finance.js';
 import { upgradeFacility } from './facilities.js';
-import { ge, txt, fR, clamp, otLabel } from './utils.js';
+import { ge, txt, fR, clamp, otLabel, applyBuff, undoBuff } from './utils.js';
 import { G, LS, SetupState, saveState } from './state.js';
 import { simPoss, simGame } from './simulation.js';
 import { openPlayerFromEl } from './views/player.js';
@@ -849,15 +849,8 @@ export function buyBoost(itemId, btnEl) {
     G.nextHomeBonus = 3; // consumed by simGame for the user's next home game
     addLog('ev', G.gi, '<b>Sellout crowd</b> bought with NIL funds — +3 edge for the next home game.');
   } else if (itemId === 'film') {
-    t.rost.forEach(function(p) {
-      if (p.mins > 0) {
-        p.sht = clamp(p.sht + 2, 30, 99);
-        p.fin = clamp(p.fin + 2, 30, 99);
-        p.def = clamp(p.def + 2, 30, 99);
-      }
-    });
     if (!G.buffs) G.buffs = [];
-    G.buffs.push({ playerName: 'TEAM', attr: 'all', mod: 2, gamesLeft: 2 });
+    G.buffs.push(applyBuff(t, 'TEAM', 'all', 2, 2));
     addLog('ev', G.gi, '<b>Film session</b> — all attributes +2 for 2 games.');
   } else if (itemId === 'recovery') {
     var cleared = 0;
@@ -865,12 +858,7 @@ export function buyBoost(itemId, btnEl) {
       for (var i = G.buffs.length - 1; i >= 0; i--) {
         var bf = G.buffs[i];
         if (bf.mod < 0) {
-          // Reverse the applied mod (mirrors events.js expiry logic)
-          if (bf.playerName === 'TEAM') {
-            t.rost.forEach(function(p) { if (p.mins > 0) { p.sht -= bf.mod; p.fin -= bf.mod; p.def -= bf.mod; } });
-          } else {
-            t.rost.forEach(function(p) { if (p.name === bf.playerName && bf.attr) p[bf.attr] = clamp((p[bf.attr] || 70) - bf.mod, 30, 99); });
-          }
+          undoBuff(t, bf);
           G.buffs.splice(i, 1);
           cleared++;
         }
@@ -917,7 +905,7 @@ export function openModal(tH, tA, isTournament, roundName) {
   };
 
   ge('gmod').classList.add('open');
-  txt('gmod-title', teamAbbr(tA.name) + ' vs. ' + teamAbbr(tH.name) + (roundName ? '  ·  ' + roundName : ''));
+  txt('gmod-title', teamAbbr(tA.name) + ' @ ' + teamAbbr(tH.name) + (roundName ? '  ·  ' + roundName : ''));
 
   var ae = ge('sb-away'), he = ge('sb-home');
   ae.textContent = tA.name + (isTournament && tA._seed ? '  #' + tA._seed : '');

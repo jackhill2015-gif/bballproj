@@ -391,7 +391,10 @@ function matchupHTML(title, sub, ut, useed, opp, oseed) {
 function simRowHTML(line, label) {
   return '<div class="panel"><div class="panel-b" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">'
     + '<div style="font-size:13.5px;">' + line + '</div>'
-    + '<button class="btn-big" style="flex:0 0 auto;width:auto;padding-left:20px;padding-right:20px;" data-action="play" data-mode="quick">' + label + '</button></div></div>';
+    + '<div style="display:flex;gap:8px;flex-wrap:wrap;">'
+    + '<button class="btn-big secondary" style="flex:0 0 auto;width:auto;padding-left:20px;padding-right:20px;" data-action="play" data-mode="quick">' + label + '</button>'
+    + '<button class="btn-big" style="flex:0 0 auto;width:auto;padding-left:20px;padding-right:20px;" data-action="play" data-mode="sim-season">Sim to end of tournament</button>'
+    + '</div></div></div>';
 }
 function openingCard() {
   var og = getUserOpeningGame();
