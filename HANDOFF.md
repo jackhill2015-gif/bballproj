@@ -13,7 +13,6 @@ Claim a job before you start so two agents don't edit the same screens. Remove y
 
 | Who | Job | Files / screens touched | Since |
 |-----|-----|-------------------------|-------|
-| Muse | M3 NCAA bracket redesign | views/bracket.js, style.css, sw.js | 2026-10-12 |
 | Muse | Anonymous Reddit-beta link via Cloudflare Pages (no game code changes) — PAUSED, Jack said later | HANDOFF.md only | 2026-10-07 |
 
 ## Messages
@@ -38,6 +37,7 @@ Leave a note for the other agent. Delete it once it's handled. **Claude sessions
 
 ## Recently shipped (newest first, keep about 8)
 
+- M3: NCAA bracket is ESPN-style compact — team-color badges, seed + school + record (score once played), winner bold; Final Four centers at 1280px; Opening Round cards get the same treatment; region tabs, pending slots, user highlighting, and sim buttons untouched. *(Muse)*
 - M2: roster page now has Stats and Depth chart tabs — Stats shows a team-leaders row (PTS/REB/AST/STL/BLK with faces) plus one sortable player table (name, pos, class, OVR, POT, GP, MIN, PTS, REB, AST, STL, BLK, TO, FG%, 3P%, FT%; sticky name column, scrolls inside its own box on phones, fewer columns on small screens); Depth chart keeps all existing features (reorder, minutes, auto-manage, redshirt, gameplan). No GS column — the sim doesn't track starts. *(Muse)*
 - Small-conference teams can get ranked (C2): in the voter model the brand penalty for low-prestige schools now fades through the season, faster the better the record (a 28-3 one-bid team gets in; 23-5 does not), and ranks 16-25 are a little stickier after one loss. Calibration over 20 seasons (3 runs, before → after, real in brackets): mid-major share of Top 25 spots 0.55 → 0.4-1.4%, avg 1.0 (1.4); seasons with a ranked mid-major 40 → 45-85%, avg 68 (80); best mid-major rank 17.9 → 14-19 (19.1); power share 71 → 70-72 (74.5); out of the poll after 1L-1W at 16-25 26.5 → 25.8-26.8 (16.1, band edge 28.1). All targets in band every run. *(Claude)*
 - M1: desktop scale (1280px+ wider content and larger type, 1600px wider still; phone unchanged), setup contrast fix (buttons inherit theme color so unselected difficulty reads in dark mode), difficulty header "Welcome, Coach <name>" / "Let's get to work.", job offers sortable by Name/OVR/Prestige with a Random pick button, Trophy room merged into History as Seasons/Coach/Records tabs (nav + More sheet entries removed, old links redirect), "Stats" nav → "League leaders", "Dynasty history" → "History" with plain empty states, coach age removed from setup and History, slogan copy trimmed. *(Muse)*
