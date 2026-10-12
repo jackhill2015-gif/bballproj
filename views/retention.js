@@ -208,9 +208,9 @@ export function renderRetention() {
     + '<div class="dep-stat"><b>' + total + '</b><span>total asks' + (kept ? ' · ' + kept + ' committed' : '') + '</span></div></div>';
 
   h += '<div class="tbl-wrap"><table class="dep-table"><thead><tr>'
-    + '<th class="st-name">Player</th><th>Pos</th><th>Class</th><th class="num">OVR</th><th class="num">POT</th>'
-    + '<th class="num">MIN</th><th class="num">PTS</th><th class="num">REB</th><th class="num">AST</th>'
-    + '<th>Status</th><th class="num">NIL ask</th><th></th>'
+    + '<th class="st-name">Player</th><th>Pos</th><th class="hide-sm">Class</th><th class="num">OVR</th><th class="num hide-sm">POT</th>'
+    + '<th class="num hide-sm">MIN</th><th class="num">PTS</th><th class="num hide-sm">REB</th><th class="num hide-sm">AST</th>'
+    + '<th class="hide-sm">Status</th><th class="num">NIL ask</th><th></th>'
     + '</tr></thead><tbody>';
 
   // NIL requests first (these need decisions)
@@ -227,28 +227,28 @@ export function renderRetention() {
         + '<button class="ret-btn" data-ret="go" data-ri="' + i + '">Let go</button>';
     h += '<tr class="ret-row' + (a.decision === 'keep' ? ' kept' : a.decision === 'go' ? ' gone' : '') + '">'
       + '<td class="st-name">' + pLink(a.name, G.tid) + '</td>'
-      + '<td>' + a.pos + '</td><td>' + a.cls + '</td>'
-      + '<td class="num"><b>' + a.ovr + '</b></td><td class="num">' + (a.pot || a.ovr) + '</td>'
-      + '<td class="num">' + mins + '</td>'
+      + '<td>' + a.pos + '</td><td class="hide-sm">' + a.cls + '</td>'
+      + '<td class="num"><b>' + a.ovr + '</b></td><td class="num hide-sm">' + (a.pot || a.ovr) + '</td>'
+      + '<td class="num hide-sm">' + mins + '</td>'
       + '<td class="num">' + (a.ppg !== null && a.ppg !== undefined ? a.ppg.toFixed(1) : '–') + '</td>'
-      + '<td class="num">' + (a.rpg !== null && a.rpg !== undefined ? a.rpg.toFixed(1) : '–') + '</td>'
-      + '<td class="num">' + (a.apg !== null && a.apg !== undefined ? a.apg.toFixed(1) : '–') + '</td>'
-      + '<td class="dep-status">' + status + '</td>'
+      + '<td class="num hide-sm">' + (a.rpg !== null && a.rpg !== undefined ? a.rpg.toFixed(1) : '–') + '</td>'
+      + '<td class="num hide-sm">' + (a.apg !== null && a.apg !== undefined ? a.apg.toFixed(1) : '–') + '</td>'
+      + '<td class="dep-status hide-sm">' + status + '</td>'
       + '<td class="num"><b>' + a.ask + '</b></td>'
       + '<td class="dep-actions">' + actions + '</td></tr>';
   });
 
-  // Leaving: graduated / drafted
+  // Leaving: graduated / drafted (defensive: older saves may lack pos/cls/ovr)
   dep.forEach(function(d) {
     var reason = d.reason === 'Graduated' ? 'Graduated'
       : d.reason === 'Drafted' ? 'Drafted' + (d.pick ? ', pick ' + d.pick : '')
       : 'Declared for the draft';
     h += '<tr class="dep-gone">'
       + '<td class="st-name">' + d.name + '</td>'
-      + '<td>' + d.pos + '</td><td>' + d.cls + '</td>'
-      + '<td class="num"><b>' + d.ovr + '</b></td><td class="num">–</td><td class="num">–</td>'
-      + '<td class="num">' + d.ppg + '</td><td class="num">' + d.rpg + '</td><td class="num">' + (d.apg || '0.0') + '</td>'
-      + '<td class="dep-status"><span class="dep-reason">' + reason + '</span></td>'
+      + '<td>' + (d.pos || '–') + '</td><td class="hide-sm">' + (d.cls || '–') + '</td>'
+      + '<td class="num"><b>' + (d.ovr || '–') + '</b></td><td class="num hide-sm">–</td><td class="num hide-sm">–</td>'
+      + '<td class="num">' + (d.ppg || '–') + '</td><td class="num hide-sm">' + (d.rpg || '–') + '</td><td class="num hide-sm">' + (d.apg || '–') + '</td>'
+      + '<td class="dep-status hide-sm"><span class="dep-reason">' + reason + '</span></td>'
       + '<td class="num">–</td><td class="dep-actions"></td></tr>';
   });
 
@@ -259,12 +259,12 @@ export function renderRetention() {
     why = why.charAt(0).toUpperCase() + why.slice(1);
     h += '<tr class="dep-gone">'
       + '<td class="st-name">' + pLink(p.name, G.tid) + '</td>'
-      + '<td>' + p.pos + '</td><td>' + p.cls + '</td>'
-      + '<td class="num"><b>' + p.ovr + '</b></td><td class="num">' + (p.pot || p.ovr) + '</td><td class="num">' + (p.mins || 0) + '</td>'
+      + '<td>' + p.pos + '</td><td class="hide-sm">' + p.cls + '</td>'
+      + '<td class="num"><b>' + p.ovr + '</b></td><td class="num hide-sm">' + (p.pot || p.ovr) + '</td><td class="num hide-sm">' + (p.mins || 0) + '</td>'
       + '<td class="num">' + (sl ? sl.ppg.toFixed(1) : '–') + '</td>'
-      + '<td class="num">' + (sl ? sl.rpg.toFixed(1) : '–') + '</td>'
-      + '<td class="num">' + (sl ? sl.apg.toFixed(1) : '–') + '</td>'
-      + '<td class="dep-status"><span class="dep-reason">' + why + '</span></td>'
+      + '<td class="num hide-sm">' + (sl ? sl.rpg.toFixed(1) : '–') + '</td>'
+      + '<td class="num hide-sm">' + (sl ? sl.apg.toFixed(1) : '–') + '</td>'
+      + '<td class="dep-status hide-sm"><span class="dep-reason">' + why + '</span></td>'
       + '<td class="num">–</td><td class="dep-actions"></td></tr>';
   });
 

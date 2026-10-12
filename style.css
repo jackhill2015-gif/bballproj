@@ -1856,7 +1856,7 @@ button, input, select { font-family: inherit; font-size: inherit; color: inherit
 .dep-table td { padding: 9px 10px; border-bottom: 1px solid var(--bdr); white-space: nowrap; vertical-align: middle; }
 .dep-table .st-name {
   position: sticky; left: 0; z-index: 1; background: var(--card);
-  box-shadow: 1px 0 0 var(--bdr); min-width: 130px;
+  box-shadow: 6px 0 6px -6px rgba(0,0,0,0.25); min-width: 110px;
 }
 .dep-table thead .st-name { z-index: 2; }
 .dep-status { font-size: 12.5px; color: var(--txt2); max-width: 180px; white-space: normal; }
@@ -1870,6 +1870,7 @@ tr.dep-gone td.st-name { color: var(--txt2); }
 @media (max-width: 640px) {
   .dep-table { font-size: 12px; }
   .dep-table td, .dep-table th { padding: 7px 8px; }
+  .dep-table .hide-sm { display: none; }
 }
 
 /* ── M6: OVR sparkline ── */
