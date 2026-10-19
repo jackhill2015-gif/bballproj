@@ -5,6 +5,29 @@
    no shadows, no decoration. Information density over flair.
    ═══════════════════════════════════════════════════════════ */
 
+/* Self-hosted condensed face for titles, scores and big numbers (OFL) */
+@font-face {
+  font-family: 'Barlow Condensed';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('vendor/fonts/barlow-condensed-500.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Barlow Condensed';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('vendor/fonts/barlow-condensed-600.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Barlow Condensed';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('vendor/fonts/barlow-condensed-700.woff2') format('woff2');
+}
+
 :root {
   /* Calm, office-safe palette: reads like an internal dashboard at a glance.
      Paper panels on a light canvas, one muted steel-blue accent, desaturated
@@ -37,8 +60,9 @@
   --fbtn-bg: var(--s1);    /* filter button face */
   --radius: 3px;
   --shadow: none;
-  --mono: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --condensed: "Barlow Condensed", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -312,6 +336,72 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 .tb-meta { text-align: right; line-height: 1.3; white-space: nowrap; }
 .tb-phase { font-size: 10px; font-weight: 600; color: #8fb4ec; }
 .tb-yr { font-size: 10px; color: #93a1bb; font-weight: 600; }
+
+/* ═══ CONDENSED UTILITY ═══ */
+.condensed { font-family: var(--condensed); }
+
+/* ═══ SCORES STRIP (under topbar) ═══ */
+#scores-strip {
+  background: var(--card);
+  border-bottom: 1px solid var(--bdr);
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+#scores-strip::-webkit-scrollbar { display: none; }
+#scores-track {
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px;
+  width: max-content;
+  min-width: 100%;
+}
+.score-card {
+  flex: 0 0 auto;
+  min-width: 108px;
+  padding: 6px 10px;
+  border-right: 1px solid var(--bdr);
+}
+.score-card:last-child { border-right: none; }
+.score-card.user { background: var(--blu-soft); border-radius: var(--radius); border-right: none; }
+.sc-final {
+  font-family: var(--condensed);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--txt3);
+  margin-bottom: 3px;
+}
+.sc-team {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--txt3);
+  line-height: 1.5;
+}
+.sc-team.win { color: var(--txt); font-weight: 700; }
+.sc-rank { font-size: 10px; color: var(--txt3); min-width: 18px; }
+.sc-team.win .sc-rank { color: var(--txt2); }
+.sc-abbr {
+  font-family: var(--condensed);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: .5px;
+}
+.sc-score {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+.sc-team.win .sc-score { font-weight: 700; }
+.scores-empty {
+  padding: 4px 0;
+  font-size: 12px;
+  color: var(--txt3);
+}
 @media (max-width: 700px) {
   .tb-matchup .tb-rec, .tb-vs { display: none; }
   .tb-opp { max-width: 120px; }
@@ -395,8 +485,145 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
   .more-handle::after { content: ""; display: block; width: 36px; height: 4px; border-radius: 2px; background: var(--bdr2); margin: 0 auto; }
 }
 
+/* ═══ DESKTOP: school title + tab row (replaces vertical sidebar) ═══ */
+#desk-head { display: none; }
+@media (min-width: 861px) {
+  #main-nav {
+    width: 100%;
+    height: auto;
+    position: static;
+    flex-direction: column;
+    border-right: none;
+    border-bottom: 1px solid var(--bdr);
+    padding: 0;
+    overflow: visible;
+  }
+  #main-nav .nav-main,
+  #main-nav .nav-extra,
+  #main-nav .nav-sep,
+  #main-nav .nav-new,
+  #main-nav .nav-more-btn,
+  #main-nav .more-theme { display: none; }
+  #desk-head { display: block; padding: 18px 24px 0; }
+  #desk-school {
+    font-family: var(--condensed);
+    font-size: 42px;
+    font-weight: 700;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    line-height: 1;
+    color: var(--txt);
+    margin-bottom: 10px;
+  }
+  #desk-tabs {
+    display: flex;
+    gap: 4px;
+    border-bottom: 2px solid var(--bdr);
+  }
+  .dtab {
+    background: none;
+    border: none;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--txt2);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+  }
+  .dtab:hover { color: var(--txt); }
+  .dtab.on {
+    color: var(--txt);
+    border-bottom-color: var(--txt);
+  }
+  #desk-more-menu {
+    display: none;
+    position: absolute;
+    background: var(--card);
+    border: 1px solid var(--bdr2);
+    border-radius: var(--radius);
+    min-width: 200px;
+    z-index: 600;
+    padding: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.15);
+  }
+  #desk-more-menu.open { display: block; }
+  #desk-more-menu .nav-btn {
+    border-left: none;
+    border-radius: var(--radius);
+    min-height: 40px;
+  }
+}
+@media (max-width: 860px) {
+  #desk-head { display: none !important; }
+}
+
+/* ═══ PILL TOGGLES (black when on) ═══ */
+.pill-tabs {
+  display: inline-flex;
+  gap: 6px;
+  padding: 3px;
+  background: var(--inset);
+  border-radius: 999px;
+  margin-bottom: 12px;
+}
+.pill-tab {
+  border: none;
+  background: none;
+  padding: 7px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--txt2);
+  cursor: pointer;
+}
+.pill-tab:hover { color: var(--txt); }
+.pill-tab.on {
+  background: #111;
+  color: #fff;
+}
+:root[data-theme="dark"] .pill-tab.on,
+:root:not([data-theme="light"]) .pill-tab.on {
+  background: #f5f2ec;
+  color: #171412;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .pill-tab.on { background: #f5f2ec; color: #171412; }
+}
+
+/* Compact leaders line (replaces centered avatar cards) */
+.leaders-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--bdr);
+  margin-bottom: 12px;
+  font-size: 12.5px;
+  color: var(--txt2);
+}
+.leaders-line b { color: var(--txt); font-weight: 600; }
+.leaders-line .ll-cat { color: var(--txt3); }
+
 /* ═══ DASHBOARD ═══ */
-/* School identity: plain type block, no card chrome */
+/* School identity: solid color band behind the title */
+.dash-band {
+  margin: -12px -12px 16px;
+  padding: 20px 16px 14px;
+}
+.dash-band h1 {
+  font-family: var(--condensed);
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  line-height: 1;
+  margin: 0 0 4px;
+}
+.dash-band-sub {
+  font-size: 13px;
+  opacity: .9;
+}
 .school-card { padding: 2px 0 0; margin-bottom: 2px; }
 .sc-top { display: flex; align-items: baseline; gap: 10px; }
 .sc-id { flex: 1; min-width: 0; }
@@ -861,17 +1088,20 @@ input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 
 }
 
 /* Panels: white box, grey header strip (BBGM / admin-tool idiom) */
-.panel { border: 1px solid var(--bdr); border-radius: var(--radius); margin-bottom: 12px; background: var(--card); }
+.panel { margin-bottom: 16px; }
 .panel-h {
   display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
-  background: var(--panel); border-bottom: 1px solid var(--bdr);
-  padding: 6px 10px; font-size: 12.5px; font-weight: 600; color: var(--txt);
+  padding: 0 0 6px; margin-bottom: 8px;
+  border-bottom: 1px solid var(--bdr);
+  font-family: var(--condensed);
+  font-size: 18px; font-weight: 600; letter-spacing: .5px; text-transform: uppercase;
+  color: var(--txt);
 }
-.panel-h small { font-weight: 400; color: var(--txt3); font-size: 11.5px; }
-.panel-b { padding: 8px 10px; }
+.panel-h small { font-weight: 400; color: var(--txt3); font-size: 11.5px; font-family: var(--sans); text-transform: none; letter-spacing: 0; }
+.panel-b { padding: 0; }
 .panel-b.flush { padding: 0; }
-.panel table td:first-child, .panel table th:first-child { padding-left: 10px; }
-.panel table td:last-child, .panel table th:last-child { padding-right: 10px; }
+.panel table td:first-child, .panel table th:first-child { padding-left: 0; }
+.panel table td:last-child, .panel table th:last-child { padding-right: 0; }
 
 /* Buttons: compact, sentence case, medium weight */
 .btn, .btn-big, .btn-quiet, .home-play-btn { font-weight: 500; }
@@ -1547,72 +1777,72 @@ table.ups td { vertical-align: middle; }
   --rowhover: #f3f5f8;          /* table row hover tint */
 }
 :root[data-theme="dark"] {
-  --bg: #14181d;
-  --panel: #1a2027;
-  --inset: #1e242c;
-  --bdr: #2b333d;
-  --bdr2: #3a434e;
-  --txt: #e9edf1;
-  --txt2: #a9b2bd;
-  --txt3: #828c98;
+  --bg: #171412;
+  --panel: #1f1b17;
+  --inset: #241f1a;
+  --bdr: #322b24;
+  --bdr2: #453a2e;
+  --txt: #ece7df;
+  --txt2: #b3a99b;
+  --txt3: #8a7f71;
   --blu: #82a6d0;
   --blu2: #82a6d0;
   --blu-d: #3a5a82;
-  --blu-soft: #1d2b3d;
+  --blu-soft: #232a35;
   --blu-btn: #2f4a6e;
   --grn: #72b184;
   --grn2: #84bd94;
-  --grn-soft: #1b2e22;
+  --grn-soft: #1e2b21;
   --red: #d18d84;
-  --red-soft: #34211e;
+  --red-soft: #33211d;
   --red-btn: #8e3b33;
   --gld: #cba855;
   --gld2: #d6b566;
-  --gld-soft: #2f2817;
-  --s1: #1c222a;
-  --s2: #1a2027;
-  --s3: #1e242c;
+  --gld-soft: #2e2716;
+  --s1: #201b16;
+  --s2: #1f1b17;
+  --s3: #241f1a;
   --chiptx: var(--blu);
-  --fbtn-bg: #232c36;
-  --card: #1c222a;
+  --fbtn-bg: #26211b;
+  --card: #201b16;
   --scrim: rgba(0,0,0,.6);
-  --zebra: #161c22;
-  --rowhover: #212a34;
+  --zebra: #191512;
+  --rowhover: #26211b;
 }
 /* System setting: follow the OS, unless the user picked Light explicitly. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #14181d;
-    --panel: #1a2027;
-    --inset: #1e242c;
-    --bdr: #2b333d;
-    --bdr2: #3a434e;
-    --txt: #e9edf1;
-    --txt2: #a9b2bd;
-    --txt3: #828c98;
+    --bg: #171412;
+    --panel: #1f1b17;
+    --inset: #241f1a;
+    --bdr: #322b24;
+    --bdr2: #453a2e;
+    --txt: #ece7df;
+    --txt2: #b3a99b;
+    --txt3: #8a7f71;
     --blu: #82a6d0;
     --blu2: #82a6d0;
     --blu-d: #3a5a82;
-    --blu-soft: #1d2b3d;
+    --blu-soft: #232a35;
     --blu-btn: #2f4a6e;
     --grn: #72b184;
     --grn2: #84bd94;
-    --grn-soft: #1b2e22;
+    --grn-soft: #1e2b21;
     --red: #d18d84;
-    --red-soft: #34211e;
+    --red-soft: #33211d;
     --red-btn: #8e3b33;
     --gld: #cba855;
     --gld2: #d6b566;
-    --gld-soft: #2f2817;
-    --s1: #1c222a;
-    --s2: #1a2027;
-    --s3: #1e242c;
+    --gld-soft: #2e2716;
+    --s1: #201b16;
+    --s2: #1f1b17;
+    --s3: #241f1a;
     --chiptx: var(--blu);
-    --fbtn-bg: #232c36;
-    --card: #1c222a;
+    --fbtn-bg: #26211b;
+    --card: #201b16;
     --scrim: rgba(0,0,0,.6);
-    --zebra: #161c22;
-    --rowhover: #212a34;
+    --zebra: #191512;
+    --rowhover: #26211b;
   }
 }
 
@@ -1656,7 +1886,7 @@ table.ups td { vertical-align: middle; }
 .dr-name .pface { width: 30px; height: 30px; margin-right: 6px; }
 
 /* ═══ HOME: SAVE SLOTS ═══ */
-.home-slot .home-new { border-style: dashed; }
+.home-slot .home-new { border-style: solid; }
 .home-slot .home-save-title { margin-bottom: 8px; }
 .home-note { width: min(480px, 100%); margin-top: 14px; font-size: 12px; line-height: 1.45; color: var(--txt2); text-align: center; }
 .restore-slots { display: flex; flex-direction: column; gap: 8px; }

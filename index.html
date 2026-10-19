@@ -12,9 +12,6 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Hoops OS">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
 <script>
 /* Theme pre-paint: set data-theme (and chrome colors) before style.css
    loads so dark-mode users never see a white frame. Mirrors
@@ -29,7 +26,7 @@ try {
   else if (_tm === 'light') document.documentElement.setAttribute('data-theme', 'light');
   if (_dark) {
     var _tc = document.querySelector('meta[name="theme-color"]');
-    if (_tc) _tc.setAttribute('content', '#14181d');
+    if (_tc) _tc.setAttribute('content', '#171412');
     var _sb = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
     if (_sb) _sb.setAttribute('content', 'black-translucent');
   }
@@ -43,8 +40,7 @@ try {
 
 <!-- ═══ HOME SCREEN (rendered by views/setup.js) ═══ -->
 <div id="home-screen" style="display:none;">
-  <div class="home-brand">Hoops <em>OS</em></div>
-  <div class="home-tagline"><span id="home-team-count">365</span> D1 programs. One champion. Build your dynasty.</div>
+  <div class="home-brand condensed">Hoops <em>OS</em></div>
   <div class="home-cards" id="home-slots" aria-label="Save slots"></div>
   <div id="home-storage-note" class="home-note" hidden>This browser is using basic storage, which has less room. Back up your dynasty now and then.</div>
   <div class="home-backup">Have a backup file? <button class="btn-quiet" data-action="restore">Restore from backup</button></div>
@@ -86,11 +82,33 @@ try {
     </div>
   </header>
 
+  <!-- Scores strip: this week's finals for ranked teams + your conference -->
+  <div id="scores-strip" aria-label="This week's scores"><div id="scores-track"></div></div>
+
   <div id="app-body">
     <!-- Desktop sidebar / mobile 5-icon bottom bar.
          Mobile shows: Roster · Schedule · Dashboard · Bracket · More.
          The rest live in the More sheet (mobile) / sidebar (desktop). -->
     <nav id="main-nav" aria-label="Primary">
+      <!-- Desktop: big condensed school title + tab row (phones keep bottom nav) -->
+      <div id="desk-head">
+        <div id="desk-school" class="condensed">—</div>
+        <div id="desk-tabs" role="tablist" aria-label="Sections">
+          <button class="dtab on" data-view="dashboard" data-action="nav" role="tab" aria-selected="true"><span>Home</span></button>
+          <button class="dtab" data-view="roster" data-action="nav" role="tab" aria-selected="false"><span>Roster</span></button>
+          <button class="dtab" data-view="schedule" data-action="nav" role="tab" aria-selected="false"><span>Schedule</span></button>
+          <button class="dtab" data-view="bracket" data-action="nav" role="tab" aria-selected="false"><span>Bracket</span></button>
+          <button class="dtab" data-view="standings" data-action="nav" role="tab" aria-selected="false"><span>Rankings</span></button>
+          <button class="dtab" data-action="desk-more" aria-haspopup="true" aria-expanded="false"><span>More</span></button>
+        </div>
+        <div id="desk-more-menu" role="menu">
+          <button class="nav-btn" data-view="program" data-action="nav"><span>Program</span></button>
+          <button class="nav-btn" data-view="stats" data-action="nav"><span>League leaders</span></button>
+          <button class="nav-btn" data-view="history" data-action="nav"><span>History</span></button>
+          <button class="nav-btn" data-view="help" data-action="nav"><span>How it works</span></button>
+          <button class="nav-btn" data-action="exit-home"><span>Exit to home</span></button>
+        </div>
+      </div>
       <button class="nav-btn nav-main" data-view="roster" data-action="nav"><span>Roster</span></button>
       <button class="nav-btn nav-main" data-view="schedule" data-action="nav"><span>Schedule</span></button>
       <button class="nav-btn nav-main on" data-view="dashboard" data-action="nav"><span>Home</span></button>
@@ -101,11 +119,6 @@ try {
       <button class="nav-btn nav-extra" data-view="standings" data-action="nav"><span>Rankings</span></button>
       <button class="nav-btn nav-extra" data-view="history" data-action="nav"><span>History</span></button>
       <button class="nav-btn nav-extra" data-view="help" data-action="nav"><span>How it works</span></button>
-      <div class="nav-sep"></div>
-      <div id="game-log-panel">
-        <div class="log-head">Latest</div>
-        <div id="game-log"></div>
-      </div>
       <button class="nav-new" data-action="exit-home">Exit to home</button>
       <div class="nav-sep"></div>
       <div class="more-theme nav-theme">
@@ -267,12 +280,6 @@ try {
 })();
 </script>
 
-<!-- Dynamic team-count tagline: ALL_TEAMS.length == G.teams.length post-dedupe -->
-<script type="module">
-import { ALL_TEAMS } from './constants.js';
-var el = document.getElementById('home-team-count');
-if (el) el.textContent = ALL_TEAMS.length;
-</script>
 <script src="swipe.js"></script>
 <script type="module" src="main.js"></script>
 </body>

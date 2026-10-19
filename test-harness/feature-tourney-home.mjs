@@ -72,7 +72,7 @@ SetupState.ACTIVE_VIEW = 'dashboard';
 console.log('── 1. home swap: reg → conf_tourn → ncaa ──');
 DASH.renderDashboard();
 let html = _els['dash-content'].innerHTML;
-ok(html.includes('dash-sum'), 'reg phase: home shows normal dashboard (school card)');
+ok(html.includes('dash-band'), 'reg phase: home shows normal dashboard (school card)');
 ok(!html.includes('Conference tournaments'), 'reg phase: home does NOT show tournament hub');
 
 T.startConfTourney(); // sets phase='conf_tourn', navTo('dashboard')
@@ -80,7 +80,7 @@ DASH.renderDashboard();
 html = _els['dash-content'].innerHTML;
 ok(G.phase === 'conf_tourn', 'phase is conf_tourn after startConfTourney');
 ok(html.includes('Conference tournaments'), 'conf_tourn phase: home shows tournament hub');
-ok(!html.includes('dash-sum'), 'conf_tourn phase: home does NOT show regular dashboard');
+ok(!html.includes('dash-band'), 'conf_tourn phase: home does NOT show regular dashboard');
 ok(html.includes('Sim game') || html.includes('Watch game') || html.includes('Sim next round'), 'conf_tourn home: user can play/advance from home (or sim past a bye)');
 
 // sim through all conf tourneys (user's conf needs its game simmed too)
@@ -93,7 +93,7 @@ ok(G.phase === 'ncaa', 'phase is ncaa after buildNCAA');
 DASH.renderDashboard();
 html = _els['dash-content'].innerHTML;
 ok(html.includes('NCAA tournament'), 'ncaa phase: home shows NCAA hub');
-ok(!html.includes('dash-sum'), 'ncaa phase: home does NOT show regular dashboard');
+ok(!html.includes('dash-band'), 'ncaa phase: home does NOT show regular dashboard');
 
 console.log('── 2. full-bracket reveal (no region stepping) ──');
 const btn = _els['br-reveal-btn'];
@@ -112,7 +112,7 @@ console.log('── 3. new season reverts home ──');
 G.phase = 'reg'; G.gi = 0; G.yr++;
 DASH.renderDashboard();
 html = _els['dash-content'].innerHTML;
-ok(html.includes('dash-sum'), 'new season (reg): home reverts to normal dashboard');
+ok(html.includes('dash-band'), 'new season (reg): home reverts to normal dashboard');
 // (goal text like "Make the NCAA tournament" may legitimately appear — check the hub itself)
 ok(!html.includes('br-champ') && !html.includes('br-region') && !html.includes('Around the country'), 'new season: no tournament hub on home');
 

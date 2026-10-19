@@ -13,6 +13,7 @@
 
 import { ge, clamp } from '../utils.js';
 import { G, saveState } from '../state.js';
+import { TEAM_COLORS } from '../teamcolors.js';
 import { moodTag, moodColors, MORALE_DEFAULT } from '../morale.js';
 import { gameplanPanelHTML, handleGameplanClick, handleGameplanChange } from './strategy.js';
 import { playerType } from './scouting.js';
@@ -142,16 +143,15 @@ function _statCell(p, k, tid, i, hideSm) {
 
 function renderStatsTab(t) {
   var tid = G.tid;
-  var school = t.name;
-  // Team leaders: PTS, REB, AST, STL, BLK (per game, min 1 GP)
+  // Team leaders: compact line (PTS/REB/AST/STL/BLK per game, min 1 GP)
   var cats = [
-    { k: 'pts', label: 'Points' },
-    { k: 'reb', label: 'Rebounds' },
-    { k: 'ast', label: 'Assists' },
-    { k: 'stl', label: 'Steals' },
-    { k: 'blk', label: 'Blocks' }
+    { k: 'pts', label: 'PTS' },
+    { k: 'reb', label: 'REB' },
+    { k: 'ast', label: 'AST' },
+    { k: 'stl', label: 'STL' },
+    { k: 'blk', label: 'BLK' }
   ];
-  var h = '<div class="team-leaders"><div class="sec-head">Team leaders</div><div class="leaders-row">';
+  var h = '<div class="leaders-line">';
   cats.forEach(function(c) {
     var best = null, bestV = -1, bestI = -1;
     t.rost.forEach(function(p, i) {
@@ -160,17 +160,11 @@ function renderStatsTab(t) {
       var v = _pg(p, c.k);
       if (v > bestV) { bestV = v; best = p; bestI = i; }
     });
-    h += '<div class="leader-card">';
     if (best) {
-      h += '<div class="leader-face">' + playerFaceSmallHTML(best, school) + '</div>'
-        + '<div class="leader-name"><span class="pname" data-action="player" data-player="' + tid + ':' + bestI + '" role="button" tabindex="0">' + best.name + '</span></div>'
-        + '<div class="leader-stat">' + bestV.toFixed(1) + ' <span>' + c.label + '</span></div>';
-    } else {
-      h += '<div class="leader-name" style="color:var(--txt3);">No games yet</div><div class="leader-stat"><span>' + c.label + '</span></div>';
+      h += '<span><span class="ll-cat">' + c.label + '</span> <b><span class="pname" data-action="player" data-player="' + tid + ':' + bestI + '" role="button" tabindex="0">' + best.name.split(' ').slice(-1)[0] + '</span> ' + bestV.toFixed(1) + '</b></span>';
     }
-    h += '</div>';
   });
-  h += '</div></div>';
+  h += '</div>';
 
   // Sortable player table
   var rows = t.rost.map(function(p, i) { return { p: p, i: i }; });
@@ -240,15 +234,34 @@ function depthRow(p, i) {
   return h;
 }
 
+// School-color header band (matches Home)
+function renderRosterBand(t) {
+  var c = TEAM_COLORS[t.name];
+  var bandBg = c && c[0] ? c[0] : 'var(--blu-d)';
+  var bandFg = '#fff';
+  try {
+    var hh = String(bandBg).replace('#', '');
+    if (hh.length === 3) hh = hh[0] + hh[0] + hh[1] + hh[1] + hh[2] + hh[2];
+    var r = parseInt(hh.slice(0, 2), 16), g = parseInt(hh.slice(2, 4), 16), b = parseInt(hh.slice(4, 6), 16);
+    if ((0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.6) bandFg = '#1f2630';
+  } catch (e) {}
+  return '<div class="dash-band" style="background:' + bandBg + ';color:' + bandFg + ';">'
+    + '<h1 class="condensed">' + t.name + '</h1>'
+    + '<div class="dash-band-sub">Roster · ' + t.rost.length + ' players</div>'
+    + '</div>';
+}
+
 export function renderRoster() {
   var el = ge('roster-content');
   if (!el) return;
   var t = G.teams[G.tid];
   if (!t || !t.rost) return;
 
-  var h = '<div class="roster-tabs" role="tablist" aria-label="Roster views">'
-    + '<button class="roster-tab' + (_rosterTab === 'stats' ? ' on' : '') + '" data-rostab="stats" role="tab" aria-selected="' + (_rosterTab === 'stats') + '">Stats</button>'
-    + '<button class="roster-tab' + (_rosterTab === 'depth' ? ' on' : '') + '" data-rostab="depth" role="tab" aria-selected="' + (_rosterTab === 'depth') + '">Depth chart</button>'
+  var h = renderRosterBand(t);
+
+  h += '<div class="pill-tabs" role="tablist" aria-label="Roster views">'
+    + '<button class="pill-tab' + (_rosterTab === 'stats' ? ' on' : '') + '" data-rostab="stats" role="tab" aria-selected="' + (_rosterTab === 'stats') + '">Stats</button>'
+    + '<button class="pill-tab' + (_rosterTab === 'depth' ? ' on' : '') + '" data-rostab="depth" role="tab" aria-selected="' + (_rosterTab === 'depth') + '">Depth chart</button>'
     + '</div>';
 
   if (_rosterTab === 'stats') {

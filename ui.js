@@ -5,7 +5,7 @@
 //  narrated recaps, coach XP, milestones, live sim modal.
 // ═══════════════════════════════════════════════════════════
 
-import { pollRank, pollPrevRank } from './poll.js';
+import { pollRank, pollPrevRank, pollRankMap } from './poll.js';
 import { backupDynasty, restoreDynasty } from './backup.js';
 import { noteSpend } from './finance.js';
 import { upgradeFacility } from './facilities.js';
@@ -179,6 +179,109 @@ export function renderLog() {
   el.innerHTML = G.logs.slice(0, LOG_CAP).map(function(e) {
     return logNode(e.type, e.wk, e.text);
   }).join('');
+}
+
+// ── Desktop header: school title + tab row ──
+function updateDeskHead() {
+  var t = G.teams[G.tid];
+  if (!t) return;
+  var el = ge('desk-school');
+  if (el) el.textContent = t.name;
+}
+
+// Sync desktop tabs with the active view
+export function syncDeskTabs(view) {
+  var tabs = document.querySelectorAll ? document.querySelectorAll('#desk-tabs .dtab[data-view]') : [];
+  for (var i = 0; i < tabs.length; i++) {
+    var on = tabs[i].getAttribute('data-view') === view;
+    tabs[i].classList.toggle('on', on);
+    tabs[i].setAttribute('aria-selected', on ? 'true' : 'false');
+  }
+  // Close the More menu on nav
+  var menu = ge('desk-more-menu');
+  if (menu) menu.classList.remove('open');
+  var moreBtn = document.querySelector ? document.querySelector('#desk-tabs .dtab[data-action="desk-more"]') : null;
+  if (moreBtn) moreBtn.setAttribute('aria-expanded', 'false');
+}
+
+export function toggleDeskMore() {
+  var menu = ge('desk-more-menu');
+  if (!menu) return;
+  var open = menu.classList.toggle('open');
+  var btn = document.querySelector ? document.querySelector('#desk-tabs .dtab[data-action="desk-more"]') : null;
+  if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+
+// ── Scores strip: this week's finals for ranked teams + your conference ──
+// Replaces the Latest sidebar. Winner bold, loser muted, your team highlighted.
+export function renderScoresStrip() {
+  var track = ge('scores-track');
+  if (!track || !G.teams || !G.teams.length) return;
+  var t = G.teams[G.tid];
+  if (!t) return;
+  var wk = G.gi;
+  var rankMap = {};
+  try { rankMap = pollRankMap() || {}; } catch (e) {}
+  var conf = t.conf;
+  var seen = {};
+  var games = [];
+  G.teams.forEach(function(tm) {
+    if (!tm || !tm.sched) return;
+    var s = tm.sched[wk];
+    if (!s || !s.played || s.opp === undefined || s.opp === null) return;
+    var opp = G.teams[s.opp];
+    if (!opp) return;
+    // Only ranked teams or your conference
+    var tmRank = rankMap[tm.id] || 0;
+    var oppRank = rankMap[opp.id] || 0;
+    var inScope = (tmRank > 0 && tmRank <= 25) || (oppRank > 0 && oppRank <= 25)
+      || tm.conf === conf || opp.conf === conf;
+    if (!inScope) return;
+    // Dedupe: each game appears in both teams' schedules
+    var key = wk + ':' + Math.min(tm.id, opp.id) + '-' + Math.max(tm.id, opp.id);
+    if (seen[key]) return;
+    seen[key] = true;
+    // Scores are stored per-team perspective; normalize to home/away
+    var homeTm = s.home ? tm : opp;
+    var awayTm = s.home ? opp : tm;
+    var homeScore = s.home ? s.uScore : s.oScore;
+    var awayScore = s.home ? s.oScore : s.uScore;
+    games.push({
+      away: awayTm, home: homeTm,
+      awayScore: awayScore, homeScore: homeScore,
+      awayRank: rankMap[awayTm.id] || 0, homeRank: rankMap[homeTm.id] || 0,
+      isUser: awayTm.id === G.tid || homeTm.id === G.tid,
+      ot: s.ot
+    });
+  });
+  // Your game first, then ranked matchups
+  games.sort(function(a, b) {
+    if (a.isUser !== b.isUser) return a.isUser ? -1 : 1;
+    var ar = Math.min(a.awayRank || 99, a.homeRank || 99);
+    var br = Math.min(b.awayRank || 99, b.homeRank || 99);
+    return ar - br;
+  });
+  if (!games.length) {
+    track.innerHTML = '<div class="scores-empty">No finals yet this week</div>';
+    return;
+  }
+  var h = '';
+  games.forEach(function(g) {
+    var aWin = g.awayScore > g.homeScore;
+    var otTxt = g.ot ? ' ' + otLabel(g.ot) : '';
+    h += '<div class="score-card' + (g.isUser ? ' user' : '') + '">'
+      + '<div class="sc-final">Final' + otTxt + '</div>'
+      + '<div class="sc-team' + (aWin ? ' win' : '') + '">'
+      + '<span class="sc-rank">' + (g.awayRank ? g.awayRank : '') + '</span>'
+      + '<span class="sc-abbr">' + teamAbbr(g.away.name) + '</span>'
+      + '<span class="sc-score">' + g.awayScore + '</span></div>'
+      + '<div class="sc-team' + (!aWin ? ' win' : '') + '">'
+      + '<span class="sc-rank">' + (g.homeRank ? g.homeRank : '') + '</span>'
+      + '<span class="sc-abbr">' + teamAbbr(g.home.name) + '</span>'
+      + '<span class="sc-score">' + g.homeScore + '</span></div>'
+      + '</div>';
+  });
+  track.innerHTML = h;
 }
 
 // ── Narrated game recaps: 1–2 sentence log lines ──────────
@@ -365,6 +468,7 @@ export function navTo(v) {
   document.querySelectorAll('.nav-btn').forEach(function(b) {
     b.classList.toggle('on', b.getAttribute('data-view') === v);
   });
+  syncDeskTabs(v);
   document.querySelectorAll('.view').forEach(function(el) { el.classList.remove('on'); });
   var vEl = ge('v-' + v);
   if (vEl) vEl.classList.add('on');
@@ -482,20 +586,9 @@ function teamBadgeStyle(name) {
 // school's primary color. Injected at render time so views/setup.js
 // (Claude's lane) stays untouched.
 function accentDashHeader() {
-  if (typeof document === 'undefined' || !document.querySelector) return;
-  var el = document.querySelector('.dash-team');
-  if (!el) return;
-  var old = el.querySelector('.dash-accent');
-  if (old) old.remove();
-  var t = (typeof G !== 'undefined' && G && G.teams && G.teams[G.tid]) || null;
-  if (!t) return;
-  var c = teamColorsFor(t.name);
-  if (!c) return;
-  var bar = document.createElement('div');
-  bar.className = 'dash-accent';
-  bar.setAttribute('aria-hidden', 'true');
-  bar.style.background = c[0];
-  el.insertBefore(bar, el.firstChild);
+  // Replaced by the solid school-color band in renderSchoolCard (de-AI pass).
+  // Kept as a no-op for call-site compat.
+  return;
 }
 export function teamAbbr(name) {
   return String(name || '???').replace(/[^A-Za-z]/g, '').slice(0, 4).toUpperCase() || '???';
@@ -574,6 +667,8 @@ export function updateAll() {
   txt('tb-phase', phases[G.phase] || 'Preseason');
   updateMatchupChip();
   updateAdvanceBtn();
+  renderScoresStrip();
+  updateDeskHead();
 
   _prevRank = rank;
   refreshView(); // single render path — no double renders
@@ -728,6 +823,9 @@ function handleAction(el) {
       break;
     case 'more':
       toggleMoreSheet();
+      break;
+    case 'desk-more':
+      toggleDeskMore();
       break;
     case 'theme':
       setTheme(el.getAttribute('data-mode'));

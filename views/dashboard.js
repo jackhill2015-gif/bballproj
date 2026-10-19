@@ -100,22 +100,25 @@ function moveTxt(d) {
 function renderSchoolCard() {
   var t = G.teams[G.tid];
   var pollR = userRank();
-  var netRank = effRank(G.tid); // efficiency: what the committee seeds on
-  var confTeams = G.teams.filter(function(x) { return x.conf === t.conf; });
-  confTeams.sort(function(a, b) { return (b.cWins / Math.max(1, b.cWins + b.cLoss)) - (a.cWins / Math.max(1, a.cWins + a.cLoss)) || b.pts - a.pts; });
-  var confRank = confTeams.findIndex(function(x) { return x.id === G.tid; }) + 1;
-  // Seed projection appears once the season takes shape
-  var seed = G.gi >= 8 && netRank <= 64 ? Math.ceil(netRank / 4) : 0;
   var phase = { reg: 'regular season', conf_tourn: 'conference tournament', ncaa: 'NCAA tournament', offseason: 'offseason' }[G.phase] || '';
-  return '<div class="dash-sum">'
-    + '<div class="dash-team"><h1>' + t.name + '</h1>'
-    + '<div class="sub">' + t.conf + ', ' + G.yr + ' ' + phase + '</div></div>'
-    + '<div class="kv">'
-    + '<div><b>' + fR(t.wins, t.loss) + '</b><span>Record</span></div>'
-    + '<div><b>' + (pollR ? '#' + pollR : 'NR') + moveTxt(rankDelta()) + '</b><span>Top 25</span></div>'
-    + '<div><b>' + confRank + '</b><span>Conference</span></div>'
-    + '<div><b>' + (seed || '–') + '</b><span>Proj. seed</span></div>'
-    + '</div></div>';
+  var c = null;
+  try { c = TEAM_COLORS[t.name]; } catch (e) {}
+  var bandBg = c && c[0] ? c[0] : 'var(--blu-d)';
+  // Text color: white on dark colors, dark on light colors
+  var bandFg = '#fff';
+  try {
+    var h = String(bandBg).replace('#', '');
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    var r = parseInt(h.slice(0, 2), 16), g = parseInt(h.slice(2, 4), 16), b = parseInt(h.slice(4, 6), 16);
+    var lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    if (lum > 0.6) bandFg = '#1f2630';
+  } catch (e) {}
+  return '<div class="dash-band" style="background:' + bandBg + ';color:' + bandFg + ';">'
+    + '<h1 class="condensed">' + t.name + '</h1>'
+    + '<div class="dash-band-sub">' + t.conf + ' · ' + fR(t.wins, t.loss)
+    + (pollR ? ' · #' + pollR : '')
+    + (phase ? ' · ' + phase : '') + ' ' + G.yr + '</div>'
+    + '</div>';
 }
 
 // The last final stays visible until the next game is played.
@@ -145,12 +148,12 @@ function panel(title, body, opts) {
 // ═══════════════════════════════════════════════════════════
 
 function renderNotifications() {
-  var logs = (G.logs || []).slice(0, 5);
+  // Game results live in the scores strip now; News shows everything else.
+  var logs = (G.logs || []).filter(function(lg) { return lg.type !== 'w' && lg.type !== 'l'; }).slice(0, 5);
   var body = '';
-  if (!logs.length) body = '<div style="color:var(--txt3);padding:2px 0;">Nothing yet. Results and news show up here.</div>';
+  if (!logs.length) body = '<div style="color:var(--txt3);padding:2px 0;">Nothing yet. News shows up here.</div>';
   logs.forEach(function(lg) {
-    var badge = lg.type === 'w' ? 'W' : lg.type === 'l' ? 'L' : '';
-    body += '<div class="headline">' + (badge ? '<span class="hbadge ' + lg.type + '">' + badge + '</span>' : '<span class="hbadge dot"></span>') + '<span>' + lg.text + '</span></div>';
+    body += '<div class="headline"><span class="hbadge dot"></span><span>' + lg.text + '</span></div>';
   });
   return panel('News', body);
 }
@@ -203,10 +206,6 @@ function renderExpectations() {
 
 function renderGameCard() {
   var t = G.teams[G.tid];
-  function teamBadge(name) {
-    var c = TEAM_COLORS[name];
-    return c && c[0] ? '<span class="bx-badge" style="background:' + c[0] + ';" aria-hidden="true"></span>' : '';
-  }
   if (G.phase === 'reg' && G.gi < 30) {
     var ng = t.sched[G.gi];
     var no = ng && ng.opp !== undefined && ng.opp !== null ? G.teams[ng.opp] : null;
@@ -220,9 +219,9 @@ function renderGameCard() {
       // M6: clearer next-game card — both teams, both records, both ranks, site, win prob, one Sim/Watch row
       var body = '<div class="ng-card">'
         + '<div class="ng-teams">'
-        + '<div class="ng-team">' + teamBadge(t.name) + '<div><div class="ng-name">' + (myRank ? '#' + myRank + ' ' : '') + t.name + '</div><div class="ng-rec">' + t.wins + '-' + t.loss + '</div></div></div>'
+        + '<div class="ng-team"><div><div class="ng-name">' + (myRank ? '#' + myRank + ' ' : '') + t.name + '</div><div class="ng-rec">' + t.wins + '-' + t.loss + '</div></div></div>'
         + '<div class="ng-vs">' + (ng.home ? 'vs' : 'at') + '</div>'
-        + '<div class="ng-team">' + teamBadge(no.name) + '<div><div class="ng-name">' + (oppRank ? '#' + oppRank + ' ' : '') + tLink(no.id, no.name) + flags + '</div><div class="ng-rec">' + no.wins + '-' + no.loss + '</div></div></div>'
+        + '<div class="ng-team"><div><div class="ng-name">' + (oppRank ? '#' + oppRank + ' ' : '') + tLink(no.id, no.name) + flags + '</div><div class="ng-rec">' + no.wins + '-' + no.loss + '</div></div></div>'
         + '</div>'
         + '<div class="ng-site">' + site + ' · Week ' + (G.gi + 1) + ', ' + (ng.conf ? t.conf : 'non-conference') + '</div>'
         + '<div class="prob-row"><span>Win probability</span><span style="color:' + wpColor(wp) + ';font-weight:600;">' + wp + '%</span></div>'
