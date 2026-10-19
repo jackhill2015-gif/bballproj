@@ -86,7 +86,8 @@ export function calcRecruitingBudget() {
   var open = Math.max(0, 15 - returning - signed);
   var perSpot = 20 + sp * 0.13;
   var recBonus = Math.round(((G.coach ? G.coach.rec : 70) - 70) * 0.5);
-  return Math.min(450, Math.max(50, Math.round(40 + open * perSpot + recBonus)));
+  // Whole fives: bids move in steps of 5, so the budget does too
+  return Math.min(450, Math.max(50, Math.round((40 + open * perSpot + recBonus) / 5) * 5));
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -430,7 +431,7 @@ function _writeSave() {
       logs:G.logs.slice(0,30),history:G.history||[],leagueChamps:G.leagueChamps||[],
       records:G.records||null,
       recruitPhase:G.recruitPhase,recruitingBudget:G.recruitingBudget,
-      recruitingSpent:G.recruitingSpent,recruitTargets:G.recruitTargets||[],
+      recruitingSpent:G.recruitingSpent,recruitSunk:G.recruitSunk||0,recruitTargets:G.recruitTargets||[],
       departingPlayers:G.departingPlayers||[],offseasonStep:G.offseasonStep||'turnover',
       portalEntrants:G.portalEntrants||[],portalStage:G.portalStage||0,
       portalCpuTakes:G.portalCpuTakes||{},portalUserSigns:G.portalUserSigns||0,
@@ -561,7 +562,9 @@ export function loadState() {
       G.prestige = _ut ? Math.max(1, Math.round(((_ut.schoolPrestige) || 50) / 20)) : 3;
     }
     G.recruitPhase=s.recruitPhase||0;G.recruitingBudget=s.recruitingBudget||0;
-    G.recruitingSpent=s.recruitingSpent||0;
+    G.recruitingSpent=s.recruitingSpent||0;G.recruitSunk=s.recruitSunk||0;
+    // Older saves could carry an odd budget (e.g. 173) while bids move in fives
+    if (G.recruitingBudget % 5) G.recruitingBudget = Math.max(G.recruitingSpent, Math.round(G.recruitingBudget / 5) * 5);
     G.recruitTargets=s.recruitTargets||[];
     G.departingPlayers=s.departingPlayers||[];
     G.offseasonStep=s.offseasonStep||'turnover';

@@ -215,7 +215,7 @@ function recalcSpent() {
 }
 
 function initRecruitingIfNeeded() {
-  if (G.recruitPhase === 0) { G.recruitPhase = 1; G.recruitingBudget = calcRecruitingBudget(); G.recruitingSpent = 0; }
+  if (G.recruitPhase === 0) { G.recruitPhase = 1; G.recruitingBudget = calcRecruitingBudget(); G.recruitingSpent = 0; G.recruitSunk = 0; }
   G.recruits.forEach(function(r) {
     if (typeof r.points !== 'number') r.points = 0;
     if (typeof r.status !== 'string') r.status = r.signed >= 0 ? (r.signed === G.tid ? 'committed' : 'gone') : 'open';
@@ -242,6 +242,20 @@ function pursuitBlockedMsg() {
     : 'Your roster is full for next season.';
 }
 
+// Pulling points after the Open stage sinks part of them. The budget only
+// ever moves in whole fives (bids are steps of 5), so the sunk share builds
+// up in G.recruitSunk and comes off the budget five at a time. Returns the
+// points taken off the budget now.
+function sinkPoints(amount) {
+  G.recruitSunk = (G.recruitSunk || 0) + amount;
+  var take = Math.floor(G.recruitSunk / 5 + 1e-9) * 5;
+  if (take > 0) {
+    G.recruitSunk -= take;
+    G.recruitingBudget = Math.max(0, G.recruitingBudget - take);
+  }
+  return take;
+}
+
 export function adjustPoints(rid, delta) {
   var r = G.recruits.find(function(x) { return x.id === rid; });
   if (!r || r.status !== 'open') return;
@@ -251,8 +265,7 @@ export function adjustPoints(rid, delta) {
   if (delta > 0 && left < delta) return;
   if (delta < 0 && (G.recruitPhase || 1) >= 2) {
     // Pulling out after the Open stage sinks 25% — pivoting has a cost.
-    var sunk = Math.round(-delta * (1 - Battle.PIVOT_REFUND));
-    if (sunk > 0) G.recruitingBudget = Math.max(0, G.recruitingBudget - sunk);
+    sinkPoints(-delta * (1 - Battle.PIVOT_REFUND));
   }
   r.points = nv; delete r._schools; delete r._schoolsPhase;
   recalcSpent(); saveState();
@@ -289,11 +302,8 @@ export function removeTarget(rid) {
     // Pivot: pull out of a lost cause. After the Open stage, 25% is sunk.
     var pts = r.points || 0;
     if (pts > 0 && (G.recruitPhase || 1) >= 2) {
-      var sunk = Math.round(pts * (1 - Battle.PIVOT_REFUND));
-      if (sunk > 0) {
-        G.recruitingBudget = Math.max(0, G.recruitingBudget - sunk);
-        toast('Dropped. ' + sunk + ' points not refunded.', 'var(--gld)');
-      }
+      var sunk = sinkPoints(pts * (1 - Battle.PIVOT_REFUND));
+      if (sunk > 0) toast('Dropped. ' + sunk + ' points not refunded.', 'var(--gld)');
     }
     r.points = 0; delete r._schools; delete r._schoolsPhase;
   }
