@@ -13,6 +13,7 @@ Claim a job before you start so two agents don't edit the same screens. Remove y
 
 | Who | Job | Files / screens touched | Since |
 |-----|-----|-------------------------|-------|
+| Claude | R1 roster building (fair odds, no surprise returns, one Build your roster screen) | recruiting.js/portal.js logic, views/recruiting.js, views/portal.js, new roster-building view, test-harness; not Home/Roster | 2026-10-20 |
 | Muse | Anonymous Reddit-beta link via Cloudflare Pages (no game code changes) — PAUSED, Jack said later | HANDOFF.md only | 2026-10-07 |
 
 ## Messages
