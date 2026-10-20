@@ -31,6 +31,33 @@ export function stageOf(idx) {
 // after the Open stage — the rest is sunk. Pivoting has a cost.
 export var PIVOT_REFUND = 0.75;
 
+// ── Signing odds: one rule for recruiting and the portal ──
+// Your offer against the best rival offer, logistic: even odds when yours is
+// `even` times the best rival's, steepness k, never below floor or above cap.
+// Transfers pick the best deal (steep, near-certain with a clear lead, but
+// you must match the top offer); high school recruits are fickle (an offer at
+// 70% of the best rival's is even odds, and nobody is a lock).
+export var HS_ODDS = { even: 0.7, k: 4, floor: 0.02, cap: 0.90 };
+export var PORTAL_ODDS = { even: 1.0, k: 7, floor: 0.02, cap: 0.97 };
+export function chanceVsBest(mine, best, rule) {
+  if (!(mine > 0)) return 0;
+  if (!best) return rule.cap;
+  var x = 1 / (1 + Math.exp(-rule.k * (mine / (rule.even * best) - 1)));
+  return Math.max(rule.floor, Math.min(rule.cap, x));
+}
+// Your offer needed for a given chance against best (inverse of the above)
+export function offerFor(chance, best, rule) {
+  if (!best) return 0;
+  return rule.even * best * (1 + Math.log(chance / (1 - chance)) / rule.k);
+}
+
+// Budget-fit line for the player pages
+export function favoredLine(cost, unit, offer) {
+  if (!isFinite(cost)) return 'No offer makes you the favorite for him.';
+  if (offer >= cost) return 'Favored at your offer.';
+  return 'About ' + cost + ' ' + unit + ' to be favored';
+}
+
 // ── Trends: this stage's % vs last stage's ──
 export function trendFor(pct, prevPct) {
   if (prevPct === undefined || prevPct === null || typeof prevPct !== 'number')

@@ -6,7 +6,7 @@
 //  fails if a game file is missing from this list.
 // ═══════════════════════════════════════════════════════════
 
-var CACHE = 'hoops-os-v64';
+var CACHE = 'hoops-os-v65';
 var APP_FILES = [
   "./",
   "index.html",
@@ -46,6 +46,7 @@ var APP_FILES = [
   "views/history.js",
   "views/player.js",
   "views/portal.js",
+  "views/build.js",
   "views/recap.js",
   "views/recruiting.js",
   "views/retention.js",

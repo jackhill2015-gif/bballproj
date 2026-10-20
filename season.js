@@ -600,16 +600,13 @@ export function doPlay(mode) {
       if (window.proceedToRecruiting) window.proceedToRecruiting();
     } else if (G.offseasonStep === 'retention') {
       if (window.finishRetention) window.finishRetention();
-    } else if (G.offseasonStep === 'portal') {
-      if (window.advancePortalStage) window.advancePortalStage();
     } else if (G.offseasonStep === 'signed') {
       if (window.toSchedule) window.toSchedule(); else doOffseason();
     } else if (G.offseasonStep === 'schedule') {
       doOffseason();
-    } else if (G.recruitPhase < 3) {
-      if (window.advanceRecruitPhase) window.advanceRecruitPhase();
     } else {
-      if (window.finishSigningDay) window.finishSigningDay(); else doOffseason();
+      // Build your roster (old saves: the separate portal or recruiting step)
+      if (window.advanceBuild) window.advanceBuild(); else doOffseason();
     }
   }
 }

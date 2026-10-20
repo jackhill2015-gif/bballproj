@@ -35,19 +35,22 @@ function userOffseason(strong) {
   if (strong) {
     for (let g = 0; (G.skillPointsToSpend || 0) > 0 && g < 60; g++) R.allocateSkillPoint(G.coach.rec < 85 || G.coach.dev >= 99 ? 'rec' : 'dev');
   }
-  if (G.offseasonStep === 'portal' && strong) {
+  if (G.offseasonStep === 'build' && strong) {
     const t = G.teams[G.tid];
     const fifth = (t.rost.map(p => p.ovr).sort((a, b) => b - a)[4]) || 0;
     const board = P.portalBoard().filter(e => e.fromTid !== G.tid && e.pickedBy === -1 && e.ovr > fifth);
     const cap = Math.floor((G.pts || 0) * 0.7);
     let spent = 0;
     for (const e of board) {
-      const cost = P.portalCost(e);
+      const fav = P.nilFor50(e);
+      if (!isFinite(fav)) continue;
+      const cost = Math.ceil(fav * 1.15 / P.PORTAL_OFFER_STEP) * P.PORTAL_OFFER_STEP; // a bit over even odds, like recruits below
       if (spent + cost > cap) continue;
       if (P.adjustOffer(e.pid, cost)) spent += cost; else if (spent) break;
     }
   }
-  if (G.offseasonStep === 'portal') { P.advancePortalStage(); P.advancePortalStage(); P.advancePortalStage(); }
+  // the portal decides first (the old order), then recruiting
+  if (G.offseasonStep === 'build' && (G.portalStage || 0) < 3) { P.advancePortalStage(); P.advancePortalStage(); P.advancePortalStage(); }
   // Recruiting: one top target's worth of points on the best players within reach
   G.recruitPhase = 1; G.recruitingBudget = ST.calcRecruitingBudget(); G.recruitingSpent = 0;
   G.recruits.forEach(r => { if (typeof r.points !== 'number') r.points = 0; });

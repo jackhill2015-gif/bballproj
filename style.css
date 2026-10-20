@@ -1942,3 +1942,53 @@ tr.dep-gone td.st-name { color: var(--txt2); }
 /* The NIL table's rows reuse .ret-row (a flex row from the old list view);
    inside a table that breaks the column layout, so keep them table rows */
 .dep-table tr.ret-row { display: table-row; padding: 0; }
+
+/* ═══ Build your roster (views/build.js): transfers + recruits, one table ═══ */
+.bld-wrap { width: 100%; }
+.bld-needs { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 14px; font-size: 13px; color: var(--txt2); margin: 2px 0 4px; }
+.bld-needs b { color: var(--txt); font-weight: 600; }
+.bld-tool { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px; margin: 2px 0 8px; }
+.bld-tool .fsel { margin: 0; }
+.bld-check { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--txt); cursor: pointer; min-height: 36px; }
+.bld-check input { width: 16px; height: 16px; accent-color: var(--blu); margin: 0; }
+.bld-tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 8px; }
+.bld-tbl { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px; }
+.bld-tbl th {
+  text-align: left; padding: 8px 10px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;
+  color: var(--txt3); border-bottom: 2px solid var(--bdr); background: var(--card); white-space: nowrap;
+}
+.bld-tbl th.sortable:hover, .bld-tbl th.on { color: var(--txt); }
+.bld-tbl th.num, .bld-tbl td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.bld-arrow { display: inline-block; width: 12px; font-size: 9px; margin-left: 3px; vertical-align: 1px; }
+.bld-tbl td { padding: 8px 10px; border-bottom: 1px solid var(--bdr); white-space: nowrap; vertical-align: middle; background: var(--card); }
+.bld-tbl tbody tr { cursor: pointer; }
+.bld-tbl tbody tr:nth-child(even) td { background: var(--zebra, var(--card)); }
+.bld-tbl tbody tr:hover td { background: var(--rowhover, var(--s2)); }
+.bld-tbl tbody tr.hl td, .bld-tbl tbody tr.hl:nth-child(even) td { background: var(--blu-soft); }
+.bld-tbl .st-name { position: -webkit-sticky; position: sticky; left: 0; z-index: 1; min-width: 150px; }
+.bld-tbl thead .st-name { z-index: 2; }
+.bld-tbl .stars { color: var(--gld2); font-size: 11.5px; letter-spacing: -1px; }
+.bld-tbl .dim, .bld-cards .dim { color: var(--txt3); }
+.bld-ovr { font-weight: 700; }
+.bld-type { color: var(--txt2); }
+.bld-from { font-size: 11.5px; color: var(--txt3); margin-top: 1px; }
+.bld-fit { font-size: 12.5px; }
+.bld-fit.fits { color: var(--grn2); }
+.bld-fit.stretch { color: var(--gld2); }
+.bld-fit.over, .bld-fit.out, .bld-fit.full { color: var(--txt3); }
+.bld-fit.on { color: var(--blu); font-weight: 600; }
+.bld-pot { font-size: 12px; font-weight: 400; color: var(--txt3); }
+.bld-key { font-size: 12px; color: var(--txt3); margin: 8px 0 4px; max-width: 900px; }
+.bld-cards { display: none; }
+.bld-sortsel { display: none; }
+.bld-orow .bt-offer { flex-shrink: 0; }
+@media (max-width: 699px) {
+  .bld-orow { flex-wrap: wrap; row-gap: 6px; }
+  .bld-orow .acq-main { flex-basis: 100%; }
+  .bld-orow .acq-name, .bld-orow .acq-sub { white-space: normal; }
+  .bld-orow .bt-offer { margin-left: auto; }
+  .bld-tbl-wrap { display: none; }
+  .bld-cards { display: block; }
+  .bld-sortsel { display: inline-flex; }
+  .bld-tool { gap: 6px 10px; }
+}

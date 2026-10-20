@@ -29,7 +29,7 @@ export function renderHelp() {
     + 'sim to the end of the regular season, through the conference tournament (stopping at '
     + 'Selection Sunday), or through the end of the season (stopping at the offseason). '
     + 'In the offseason the button changes with the step: begin the offseason, finish skill points, '
-    + 'advance recruiting, or finalize the class and start the new season.');
+    + 'close a round of offers, or finalize your class and start the new season.');
 
   h += sec('How games play out',
     'The better team usually wins, about as often as in real college basketball: a team rated 3 points '
@@ -115,7 +115,7 @@ export function renderHelp() {
 
   h += sec('The offseason, in order',
     'Season recap (spend your skill points right there — unspent points carry over to next season), the coaching carousel, departures (who is leaving, '
-    + 'and NIL requests from players who want to stay), the transfer portal, recruiting, signing day, and your '
+    + 'and NIL requests from players who want to stay), building your roster (transfers and recruits), decision day, and your '
     + 'non-conference schedule for next season. Each step advances with the button at the bottom or the top-bar '
     + 'button. Before a step where it matters, you get a heads-up (unspent skill points, open roster spots with '
     + 'no offers out, unspent recruiting points, a position with nobody next season); tap again to continue anyway.');
@@ -145,47 +145,43 @@ export function renderHelp() {
   h += sec('Player retention',
     'Before the portal opens, your two or three best returning players ask for an NIL deal to stay '
     + '(a fourth may ask if he is unhappy). Keep pays the ask and he will not enter the portal this year. '
-    + 'Let go sends him into the portal; if no school signs him, he stays. Asks grow with rating, '
+    + 'Let go sends him into the portal, and he is gone for good: another school signs him or he moves down a level. Asks grow with rating, '
     + 'production and your program\'s size, and happier players ask for less. All requests together never cost more than three quarters of what your program earned that season. You can switch a decision '
     + 'until you open the portal; switching a keep to let go refunds it.');
 
   h += sec('Who signed where',
-    'After every round of the transfer portal and recruiting, a Round results panel lists who signed with you, '
-    + 'who chose another school (and which one), and which of your own players left or came back. Your incoming '
-    + 'class panel keeps a running list of transfers in, recruits signed, and open roster spots. On signing day you '
+    'After every round, Targets lists who signed with you, who chose another school (and which one), and '
+    + 'where your own portal entrants went. On decision day you '
     + 'see the whole class before the season starts, and Home recaps your offseason moves for the first few weeks.');
 
-  h += sec('Recruiting and the transfer portal: the layout',
-    'Both screens work the same way. The Board lists every player: his type (for example Floor general or Rim protector) '
-    + 'and where he would land on your roster next season: Best player, Starter, Rotation or Bench. Need means he upgrades '
-    + 'your roster\'s thinnest area. Tap a player for his page: Overview (your offer or recruiting points, plus fit with your '
-    + 'roster), Ratings (strengths, weaknesses and rating bars) and Odds (every school\'s chance to sign him, yours included). Filters live behind the '
-    + 'Filter button; tap a filter chip to clear it. You can pursue at most one player per open roster spot, '
-    + 'so nobody who signs is ever cut for room. Targets is where you manage everyone you are pursuing: '
-    + 'players who signed with you show green, players who went elsewhere show red. '
-    + 'Your class shows round results and who has signed. Roster shows your depth chart for next season. The button at '
-    + 'the bottom closes the round.');
+  h += sec('Building your roster',
+    'Transfers and high school recruits share one screen. The top line shows your needs by position for next season '
+    + '(for example 2 guards, 1 big) and how many open spots have someone in the running. High school and Transfers list '
+    + 'the players in one table: type, overall, potential, last season\'s stats for transfers, the offer it takes to be '
+    + 'favored, your odds and whether he fits your budget. Tap a column header to sort (tap again to flip it); on a phone, '
+    + 'use the Sort menu. Best fit, the default, puts players you can afford first, then the best ones, with a small '
+    + 'edge for positions you need. Tap a player for his page: your offer, his fit with your roster, ratings and every '
+    + 'school\'s odds. Targets lists everyone you are going after, with steppers to raise or lower each offer. You can go '
+    + 'after one player per open spot, transfers and recruits together, so nobody who signs is ever cut for room.');
 
-  h += sec('The transfer portal',
-    'The portal runs in three rounds: initial offers, follow-up, and decision day. Offers are '
-    + 'escrowed in NIL, placed in steps of 10, and your odds against the field of suitor schools '
-    + 'are shown before you commit. Withdrawing after the first round refunds 75% of the offer. '
-    + 'Players with a clear leader can sign early, and rival schools bid harder as the rounds '
-    + 'advance, so odds decay unless you keep investing. Elite transfers are gated by prestige — '
-    + 'a small school can dream, but the math punishes it.');
+  h += sec('Offers and odds',
+    'Recruits cost recruiting points; transfers cost NIL, the same money that pays retention and facilities. Both use one '
+    + 'rule: your offer against the best rival offer as it will stand on decision day. To be favored is the offer that '
+    + 'gives you an even chance. Transfers take the best deal: you must match the top offer, and once you clearly beat it '
+    + 'he is close to certain. High school recruits are cheaper but fickle: an offer at 70% of the best rival is an even '
+    + 'chance, and nobody is a lock. Fits your budget (on by default) keeps players you can be favored for with up to two '
+    + 'even shares of what you have left across your open spots. Elite players are gated by prestige: a small school can '
+    + 'dream, but the math punishes it.');
 
-  h += sec('Recruiting',
-    'Mark prospects as targets, then spend recruiting points from a budget built in plain sight: '
-    + 'you start with a base amount, add points for every open roster spot (each spot is worth more '
-    + 'at a prestigious school), and your coach\'s recruiting skill nudges it higher. More open spots '
-    + 'and more prestige mean more points. It runs on the same three-round rhythm as the portal: '
-    + 'concentrate points on a few prospects or spread them, watch the odds move, and drop out after '
-    + 'round one for a 75% refund. The odds shown are your real chance to sign him on signing day, '
-    + 'not a flavor number. Signing day ends with class rankings for every school, for recruiting '
-    + 'classes and transfer classes alike. Each class has about four prospects for every school, so '
-    + 'every program can replace the players it loses, and other schools only sign as many as they '
-    + 'have room for (13 to 15 players). The Board opens on Within reach: the best prospects you can '
-    + 'land, up to 40 plus 10 per open spot; Show everyone lists the whole class.');
+  h += sec('Rounds',
+    'Offers run in three rounds: initial offers, follow-up and decision day, and one button closes each round for transfers '
+    + 'and recruits together. A player with a clear leader can sign early. Lowering or withdrawing an offer after the first '
+    + 'round refunds 75%. If you lose a player, your offer comes back. On decision day everyone left decides. Transfers '
+    + 'nobody signs move down a level, so the open spots you see are exact. Recruiting points come from a budget built in '
+    + 'plain sight: a base amount, more for every open spot (worth more at a prestigious school), nudged by your coach\'s '
+    + 'recruiting rating. Decision day ends with class rankings for every school, for recruiting and transfer classes '
+    + 'alike. Each class has about four prospects for every school, and other schools only sign as many as they have room '
+    + 'for (13 to 15 players).');
 
   h += sec('Job security',
     'Every season comes with a win expectation based on your roster. Finish below the danger line '

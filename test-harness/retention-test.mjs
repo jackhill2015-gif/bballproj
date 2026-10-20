@@ -75,7 +75,7 @@ ST.saveStateNow(); const saved = JSON.stringify(G.retention);
 ST.loadState && ST.loadState();
 check(JSON.stringify(G.retention) === saved, 'retention decisions persist in the save');
 
-check(R.finishRetention() === true && G.offseasonStep === 'portal', 'all decided → portal opens');
+check(R.finishRetention() === true && G.offseasonStep === 'build', 'all decided → Build your roster opens (portal + recruiting)');
 const keptName = asks[0].name;
 const mine = G.portalEntrants.filter(e => e.fromTid === G.tid);
 check(!mine.some(e => e.name === keptName), 'kept player is not in the portal');
@@ -100,7 +100,7 @@ console.log('── undecided = let go ──');
 S.buildUniverse(); newDynasty(tid); toTurnover(); R.proceedToRecruiting();
 const und = G.retention.asks.map(a => a.name);
 R.finishRetention();
-check(G.offseasonStep === 'portal' && G.retention.asks.every(a => a.decision === 'go'), 'undecided requests become let go');
+check(G.offseasonStep === 'build' && G.retention.asks.every(a => a.decision === 'go'), 'undecided requests become let go');
 check(und.every(n => G.portalEntrants.some(e => e.fromTid === G.tid && e.name === n)), 'and those players enter the portal');
 const mineIn = G.portalEntrants.filter(e => e.fromTid === G.tid);
 check(mineIn.every(e => e.forced), 'none of your players enter the portal by surprise (only let-go or not-interested)');

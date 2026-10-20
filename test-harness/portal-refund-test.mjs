@@ -1,6 +1,6 @@
 // Every NIL unit offered in the portal is accounted for: it's either still
 // escrowed, spent on a player who signed with you, or refunded in full
-// when he picks another school or stays home.
+// when he picks another school or moves down a level.
 import { G, S, U, newDynasty, runRegSeason, runConfTourneys, runNCAA } from './season-lib.mjs';
 const R = await import('../views/recruiting.js');
 const P = await import('../views/portal.js');
@@ -31,7 +31,7 @@ for (let run = 0; run < 4; run++) {
     if (before - after > signed()) checkedEarlyLoss = true; // someone else signed a player you bid on
     check(inv() === START, `run ${run}, round ${st + 1}: books balance (${G.pts} free + ${FI.committed()} escrowed + ${signed()} signed)`);
   }
-  if (G.offseasonStep === 'portal') P.advancePortalStage();
+  if ((G.portalStage || 0) === 2) P.advancePortalStage(); // decision day
   check(G.pts + 10 * signed() === START, `run ${run}: after decision day only signed players cost NIL`);
   check((FI.ledger().spend.portal || 0) - spend0 === 10 * signed(), `run ${run}: ledger portal spend matches signings`);
 }

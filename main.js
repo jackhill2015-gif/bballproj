@@ -34,7 +34,7 @@ import { renderStandings } from './views/standings.js';
 import { renderScheduleView } from './views/schedule.js';
 import { renderHistory } from './views/history.js';
 import { renderBracket } from './views/bracket.js';
-import { renderOffseason, pitchRecruit, resolvePitchWeek, resolveRecruitingClass, adjustPoints, advanceRecruitPhase, addTarget, removeTarget, showDetail, closeDetail, setRecruitTab, setRecruitFilter, proceedToRecruiting, allocateSkillPoint, deallocateSkillPoint, finishSkillPoints, applyForJob, stayAtSchool, proceedFromFired, registerRecruitingCallbacks } from './views/recruiting.js';
+import { renderOffseason, pitchRecruit, resolvePitchWeek, resolveRecruitingClass, adjustPoints, advanceRecruitPhase, addTarget, removeTarget, proceedToRecruiting, allocateSkillPoint, deallocateSkillPoint, finishSkillPoints, applyForJob, stayAtSchool, proceedFromFired, registerRecruitingCallbacks } from './views/recruiting.js';
 import { renderSeasonRecap } from './views/recap.js';
 import {
   showHomeScreen, loadAndPlay, startNewDynasty, deleteFromHome, exitToHome,
@@ -182,10 +182,6 @@ window.adjustPoints = adjustPoints;
 window.advanceRecruitPhase = advanceRecruitPhase;
 window.addTarget = addTarget;
 window.removeTarget = removeTarget;
-window.showDetail = showDetail;
-window.closeDetail = closeDetail;
-window.setRecruitTab = setRecruitTab;
-window.setRecruitFilter = setRecruitFilter;
 window.proceedToRecruiting = proceedToRecruiting;
 window.allocateSkillPoint = allocateSkillPoint;
 window.deallocateSkillPoint = deallocateSkillPoint;

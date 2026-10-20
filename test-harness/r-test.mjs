@@ -114,7 +114,7 @@ if (G.offseasonStep === 'retention') {
   G.retention.asks.forEach(a => { a.decision = 'keep'; });
   R.finishRetention();
 }
-check(G.offseasonStep === 'portal', 'proceedToRecruiting now routes to portal (R9)');
+check(G.offseasonStep === 'build', 'departures route to Build your roster (portal + recruiting)');
 check(Array.isArray(G.portalEntrants) && G.portalEntrants.length > 0,
   'portal entrants generated', 'count=' + (G.portalEntrants || []).length);
 check(G.portalStage === 0, 'portal battle starts at stage 0 (Open)');
@@ -141,13 +141,13 @@ P.advancePortalStage(); // → Vibe Check
 check(G.portalStage === 1, 'battle advances to stage 1 (Vibe Check)');
 P.advancePortalStage(); // → Signing Day
 check(G.portalStage === 2, 'battle advances to stage 2 (Signing Day)');
-P.advancePortalStage(); // → finalize → recruiting
-check(G.offseasonStep === 'recruiting', 'finalize routes to recruiting');
+P.advancePortalStage(); // → decision day
+check(G.offseasonStep === 'build' && G.portalStage === 3, 'decision day closes the portal');
 check(!G.portalEntrants.some(e => e.pid === pick1.pid), 'offered entrant leaves the pool');
 const onUser = G.teams[G.tid].rost.some(p => p.name === p1name);
 const onCpu = G.teams.some(tm => tm.id !== G.tid && tm.rost.some(p => p.name === p1name));
 const stayed = G.teams[p1from].rost.some(p => p.name === p1name);
-check(onUser || onCpu || stayed, 'offered entrant landed somewhere or stayed put');
+check(!stayed, 'offered entrant left his old school (signed somewhere or a lower level)', 'onUser=' + onUser + ' onCpu=' + onCpu);
 // The old school can still sign OTHER transfers, so check the real
 // invariants: the entrant is never duplicated and rosters stay within 15.
 check(G.teams.reduce((n, tm) => n + tm.rost.filter(p => p.name === p1name && p.pos === pick1.pos).length, 0) <= 1, 'entrant never duplicated across rosters');
@@ -157,9 +157,10 @@ let leaked = 0;
 G.teams.forEach(tm => tm.rost.forEach(p => { if (p._portalPid) leaked++; }));
 check(leaked === 0, 'no _portalPid flags leak after battle', 'leaked=' + leaked);
 
-console.log('── R9: portal → recruiting via doPlay router ──');
+console.log('── Build your roster via the doPlay router ──');
+const ph0 = G.recruitPhase;
 S.doPlay('sim');
-check(G.offseasonStep === 'recruiting', 'doPlay portal branch advances to recruiting');
+check(G.offseasonStep === 'build' && G.recruitPhase === ph0 + 1, 'doPlay closes a round on Build your roster', 'phase ' + ph0 + ' → ' + G.recruitPhase);
 
 console.log('── R1: recruiting phases — signed stores team id ──');
 // invest points in a few recruits
@@ -175,16 +176,18 @@ check(badSigned.length === 0, 'R1: every CPU signee signed = valid team id (not 
 const nameMismatch = gone.filter(r => r.goneTo && G.teams[r.signed] && G.teams[r.signed].name !== r.goneTo);
 check(nameMismatch.length === 0, 'R1: goneTo matches the signed team name', 'bad=' + nameMismatch.length);
 
-console.log('── Board lists every open recruit (no show-more) ──');
-R.setBoardFilter({ fit: 'all', near: false, targets: false, pos: 'All', stars: 0 }); // Show everyone
+console.log('── Build your roster: high school table (no show-more) ──');
+const BLD = await import('../views/build.js');
+BLD.setBuildTab('hs'); BLD.setBuildFilter('fits', false); BLD.setBuildFilter('pos', 'All');
 R.renderOffseason();
 const html = _els['offseason-content'].innerHTML;
-const rows = (html.match(/data-acq-open-r="/g) || []).length;
-const openN = G.recruits.filter(r => !(r.signed >= 0)).length;
-check(rows === openN, 'board renders every open recruit', 'rows=' + rows + ' open=' + openN);
-R.setBoardFilter({ fit: 'reach' }); R.renderOffseason();
-const reachRows = (_els['offseason-content'].innerHTML.match(/data-acq-open-r="/g) || []).length;
-check(reachRows === R.boardList(G.recruits.filter(r => r.status === 'open')).length && reachRows <= openN, 'default board renders every recruit within reach', 'rows=' + reachRows + ' list=' + R.boardList(G.recruits.filter(r => r.status === 'open')).length + ' open=' + openN);
+const rows = (html.match(/data-acq-open-r="/g) || []).length / 2; // table row + phone row
+const openN = G.recruits.filter(r => r.status === 'open').length;
+const purs = G.recruits.filter(r => r.status === 'open' && (G.recruitTargets.indexOf(r.id) >= 0 || (r.points || 0) > 0)).length;
+check(rows === purs + Math.min(openN - purs, BLD.rowCap()), 'table lists the best ' + BLD.rowCap() + ' plus everyone you are pursuing', 'rows=' + rows + ' open=' + openN);
+BLD.setBuildFilter('fits', true); R.renderOffseason();
+const fitRows = (_els['offseason-content'].innerHTML.match(/data-acq-open-r="/g) || []).length / 2;
+check(fitRows <= rows, 'Fits your budget narrows the list', 'rows=' + fitRows);
 check(html.indexOf('data-show-more') < 0, 'no show-more button');
 
 console.log('── doOffseason: R2 signees join, R6 class cap, R9 portal before walk-ons ──');
@@ -266,8 +269,8 @@ check(took === 3, 'resolvePortalCPU: needy team takes up to 3 (cap)', 'took=' + 
 const newGuys = needy.rost.slice(needyBefore);
 check(newGuys.every(p => p.transfer === true && isNum(p.ovr) && CLSA.indexOf(p.cls) >= 0),
   'portal pickups flagged transfer, valid ovr/cls');
-check(donor.rost.length === donorBefore - 3, 'claimed entrants removed from old roster');
-check(G.portalEntrants.length === 1, 'unwanted entrant stays in pool when winner is capped');
+check(donor.rost.length === donorBefore - 4, 'claimed and unclaimed entrants all leave the old roster');
+check(G.portalEntrants.length === 0, 'unclaimed entrant leaves for a lower level (pool empties)');
 P.clearPortalState();
 check((G.portalEntrants || []).length === 0, 'portal state cleared after offseason');
 // NaN sweep

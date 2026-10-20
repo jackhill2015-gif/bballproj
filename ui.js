@@ -615,14 +615,14 @@ export function updateAdvanceBtn() {
   } else if (G.phase === 'offseason') {
     if (G.offseasonStep === 'recap') txtLbl = 'Begin offseason';
     else if (G.offseasonStep === 'turnover') txtLbl = 'To recruiting';
-    else if (G.offseasonStep === 'retention') txtLbl = 'Open portal';
+    else if (G.offseasonStep === 'retention') txtLbl = 'Build roster';
     else if (G.offseasonStep === 'skillpoints') txtLbl = 'Finish';
     else if (G.offseasonStep === 'carousel') txtLbl = 'Continue';
     else if (G.offseasonStep === 'fired') txtLbl = 'Continue';
     else if (G.offseasonStep === 'signed') txtLbl = 'Schedule';
     else if (G.offseasonStep === 'schedule') txtLbl = 'Start season';
-    else if (G.recruitPhase >= 3) txtLbl = 'Signing day';
-    else txtLbl = 'Continue';
+    else if (G.recruitPhase >= 3) txtLbl = 'Decision day';
+    else txtLbl = 'Close round';
   }
   if (label) label.textContent = txtLbl;
   buildAdvanceMenu();
@@ -656,14 +656,14 @@ export function buildAdvanceMenu() {
     var stepLbl = 'Advance', stepSub = 'Move to the next step';
     if (G.offseasonStep === 'recap') { stepLbl = 'Begin offseason'; stepSub = 'Review departures, then recruit'; }
     else if (G.offseasonStep === 'turnover') { stepLbl = 'Proceed to recruiting'; stepSub = 'Review departures, then recruit'; }
-    else if (G.offseasonStep === 'retention') { stepLbl = 'Open the transfer portal'; stepSub = 'Decide on every NIL request first'; }
+    else if (G.offseasonStep === 'retention') { stepLbl = 'Build your roster'; stepSub = 'Decide on every NIL request first'; }
     else if (G.offseasonStep === 'skillpoints') { stepLbl = 'Finish skill points'; stepSub = 'Lock in coach upgrades'; }
     else if (G.offseasonStep === 'carousel') { stepLbl = 'Continue'; stepSub = 'Stay or take a new job'; }
     else if (G.offseasonStep === 'fired') { stepLbl = 'Continue'; stepSub = 'Find your next job'; }
     else if (G.offseasonStep === 'signed') { stepLbl = 'Set non-conference schedule'; stepSub = 'Pick next season\'s 10 opponents'; }
     else if (G.offseasonStep === 'schedule') { stepLbl = 'Start the season'; stepSub = 'Your new roster takes the floor'; }
-    else if (G.recruitPhase >= 3) { stepLbl = 'Go to signing day'; stepSub = 'Every recruit decides'; }
-    else { stepLbl = 'Advance recruiting'; stepSub = 'Resolve this signing period'; }
+    else if (G.recruitPhase >= 3) { stepLbl = 'Finalize'; stepSub = 'Every transfer and recruit decides'; }
+    else { stepLbl = 'Close this round'; stepSub = 'Transfers and recruits answer your offers'; }
     h += playOpt(stepLbl, stepSub, 'advance');
   }
   dd.innerHTML = h;

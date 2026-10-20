@@ -14,15 +14,15 @@ import { getUiPrefs, setUiPrefs } from './ui-prefs.js';
 var TIPS = {
   home: 'Sim game plays your next game instantly. Your next opponent is in the Next game panel.',
   roster: 'Auto-manage keeps your best healthy players starting and resets minutes each week. Turn it off to set the lineup yourself.',
-  offseason: 'The strip at the top tracks the offseason order. Departures, portal, recruiting and signing day happen in that order.',
-  recruiting: 'Open spots are in the header. You can pursue one player per open spot, and your percentage is the real chance he signs on signing day.'
+  offseason: 'The strip at the top tracks the offseason order: departures, then building your roster (transfers and recruits together), then decision day.',
+  recruiting: 'You can go after one player per open spot, transfers and recruits together. Your odds are the real chance he signs on decision day.'
 };
 
 function tipHTML(key) {
   var text = TIPS[key];
   // M6: the home tip references the Next game panel, which only exists in-season
   if (key === 'home' && G && G.phase !== 'reg') {
-    text = 'Sim game plays your next game instantly. The offseason strip at the top tracks departures, portal, recruiting and signing day.';
+    text = 'Sim game plays your next game instantly. The offseason strip at the top tracks departures, building your roster and decision day.';
   }
   return '<div class="tip-card" data-tipcard="' + key + '">'
     + '<div class="tip-text">' + text + '</div>'
@@ -42,7 +42,7 @@ export function injectTips(view) {
     keys = ['roster']; target = 'roster-content';
   } else if (view === 'offseason') {
     if (prefs.offseason) keys.push('offseason');
-    if (prefs.recruiting && G && G.offseasonStep === 'recruiting') keys.push('recruiting');
+    if (prefs.recruiting && G && (G.offseasonStep === 'build' || G.offseasonStep === 'recruiting')) keys.push('recruiting');
     target = 'offseason-content'; afterStrip = true;
   }
   if (!keys.length || !target || typeof document === 'undefined') return;

@@ -9,7 +9,7 @@ let fails = 0; const check = (c, m) => { console.log((c ? '  ok  ' : '  FAIL ') 
 S.buildUniverse(); newDynasty(80); U.fixMins(G.teams[G.tid].rost);
 runRegSeason(); runConfTourneys(); runNCAA(); S.beginOffseason(); R.finishSkillPoints(); R.stayAtSchool(); R.proceedToRecruiting();
 if (G.offseasonStep === 'retention') { G.pts = 9999; G.retention.asks.forEach((a, i) => { a.decision = i === 0 ? 'go' : 'keep'; }); R.finishRetention(); }
-check(G.offseasonStep === 'portal', 'portal open');
+check(G.offseasonStep === 'build', 'Build your roster open');
 // trim roster so we can sign people, then offer on 25 players
 const t = G.teams[G.tid]; t.rost = t.rost.slice(0, 9); G.pts = 5000;
 const spots0 = SG.openSpots();
@@ -18,8 +18,8 @@ const offered = P.portalBoard().filter(e => e.fromTid !== G.tid && (e.offer || 0
 check(offered === Math.min(25, spots0), `one offer per open spot: ${offered} offers for ${spots0} open spots`);
 P.advancePortalStage();
 check(G.signings && G.signings.report && /initial offers/.test(G.signings.report.title), 'round 1 report exists: ' + (G.signings.report || {}).title);
-P.advancePortalStage(); P.advancePortalStage(); // decision day → recruiting
-check(G.offseasonStep === 'recruiting', 'portal closed, on to recruiting');
+P.advancePortalStage(); P.advancePortalStage(); // decision day
+check(G.offseasonStep === 'build' && G.portalStage === 3, 'portal closed, recruiting carries on');
 check(/decision day/.test(G.signings.report.title), 'decision day report shown on the recruiting screen');
 const portalIn = G.signings.log.filter(x => x.kind === 'portal' && x.outcome === 'you').map(x => x.name).sort();
 const rosterIn = t.rost.filter(p => p.portalYr === G.yr).map(p => p.name).sort();
@@ -28,7 +28,8 @@ const pursuedOut = G.signings.log.filter(x => x.kind === 'portal' && (x.outcome 
 check(portalIn.length + pursuedOut.length === offered, `all ${offered} players you offered have an outcome (${portalIn.length} signed, ${pursuedOut.length} elsewhere)`);
 check(pursuedOut.filter(x => x.outcome === 'other').every(x => x.school), 'players who chose elsewhere name the school');
 const letGo = G.retention.asks[0].name;
-check(G.signings.log.some(x => x.name === letGo && (x.outcome === 'left' || x.outcome === 'returns')), 'your let-go player shows as transferred out or came back');
+check(G.signings.log.some(x => x.name === letGo && x.outcome === 'left'), 'your let-go player shows as gone (another school or a lower level)');
+check(!t.rost.some(p => p.name === letGo), 'and he is off your roster for good');
 // recruiting: target and spend on 12 recruits
 G.recruitingBudget = 500; G.recruitingSpent = 0;
 const rspots = SG.openSpots();

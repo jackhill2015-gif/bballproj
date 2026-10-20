@@ -3,7 +3,7 @@
 //  Player retention (NIL step 2). Before the transfer portal opens,
 //  2–4 of your best returning players ask for an NIL deal to stay.
 //    Keep    — pay the ask now: he will not enter the portal this year
-//    Let go  — he enters the portal (if nobody signs him, he stays)
+//    Let go  — he enters the portal and leaves (signed elsewhere or a lower level)
 //  Flow: turnover → proceedToRecruiting → 'retention' (when there are
 //  asks) → finishRetention → portal. Ledger bucket: 'retention'.
 //  State: G.retention = { yr, asks: [{ name, pos, cls, ovr, pot, ppg,
@@ -234,8 +234,8 @@ export function renderRetention() {
     h += depList(dep, notBack);
   }
 
-  h += '<div class="dep-note">Pay to keep a player, or let him enter the transfer portal (he stays if no school signs him).</div>';
-  h += '<div class="acq-sticky"><button class="btn-big btn-full" data-ret-done="1">Open the transfer portal</button></div></div>';
+  h += '<div class="dep-note">Pay to keep a player, or let him enter the transfer portal. Whoever enters is gone for good: another school signs him or he moves down a level.</div>';
+  h += '<div class="acq-sticky"><button class="btn-big btn-full" data-ret-done="1">Build your roster</button></div></div>';
   return h;
 }
 

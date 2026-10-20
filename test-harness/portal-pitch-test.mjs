@@ -261,13 +261,12 @@ G.teams.forEach(tm => {
   // it during the portal but don't take a spot (signings.openSpots)
   const n = tm.id === G.tid ? tm.rost.filter(p => !(p.cls === 'SR' && !p.rs)).length : tm.rost.length;
   if (n > 15) badRoster++;
-  // Unclaimed entrants stay flagged until the offseason's global CPU pass
-  // (resolvePortalCPU) — only a flag with no pending entrant is a leak.
+  // Every entrant has decided by now; any flag left is a leak
   tm.rost.forEach(p => { if (p._portalPid && !(G.portalEntrants || []).some(e => e.pid === p._portalPid && e.pickedBy === -1)) dupPortal++; });
 });
 check(badRoster === 0, 'no roster exceeds 15 after full battle', 'bad=' + badRoster);
 check(dupPortal === 0, 'no _portalPid flags leak onto rosters', 'leaked=' + dupPortal);
-check(G.offseasonStep === 'recruiting', 'battle ends by advancing to recruiting');
+check(G.offseasonStep === 'build' && G.portalStage === 3, 'battle ends with the portal closed, back on Build your roster');
 
 console.log('\n' + (failures ? failures + ' FAILURES' : 'ALL PASS'));
 process.exit(failures ? 1 : 0);

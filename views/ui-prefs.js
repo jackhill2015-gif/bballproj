@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════
 //  HOOPS OS — views/ui-prefs.js
 //  Remember-view-settings store. UI-only preferences (portal filters,
-//  recruiting filters, stats category, rankings tab, bracket region).
+//  recruiting filters, Build your roster tab/sort/filters, stats category, rankings tab, bracket region).
 //  Everything lives under ONE localStorage key ("hoops_os_ui") and is
 //  completely separate from the game save. Every read and write is
 //  try/catch wrapped (private-mode browsers throw); on any failure the
@@ -18,11 +18,13 @@ var RECRUIT_FIT = ['reach', 'all', 'start', 'rot', 'need']; // 'reach' = Within 
 var PORTAL_TIERS = ['all', 'a', 'b', 'c', 'd', 'e'];
 var PORTAL_SORTS = ['ovr', 'pot', 'odds', 'ask', 'name', 'pos', 'offer', 'from'];
 var RECRUIT_SORTS = ['rank', 'ovr', 'pot', 'stars', 'name', 'pos'];
+var BUILD_SORTS = ['fit', 'name', 'pos', 'cls', 'type', 'ovr', 'pot', 'stat', 'cost', 'offer', 'odds'];
 var STAT_CATS = ['poy', 'ppg', 'rpg', 'apg', 'fg', 'spg', 'bpg'];
 
 var DEFAULTS = {
   portal: { pos: 'All', tier: 'all', mine: false, fit: 'all', sort: 'ovr', dir: -1 },
   recruiting: { pos: 'All', stars: 0, sort: 'rank', dir: 1, near: false, targets: false, fit: 'reach', reachV: 1 },
+  build: { tab: 'hs', pos: 'All', fits: true, sort: 'fit', dir: -1 },
   stats: { category: 'poy' },
   rankings: { tab: 'nat', conf: null },
   bracket: { region: null },
@@ -55,6 +57,12 @@ function validateSection(name, raw) {
     // those players start on Within reach too (once)
     o.fit = raw.reachV ? oneOf(raw.fit, RECRUIT_FIT, d.fit) : (raw.fit === 'all' ? d.fit : oneOf(raw.fit, RECRUIT_FIT, d.fit));
     o.reachV = 1;
+  } else if (name === 'build') {
+    o.tab = oneOf(raw.tab, ['hs', 'tr', 'targets', 'roster'], d.tab);
+    o.pos = oneOf(raw.pos, POS.concat(['Needs']), d.pos);
+    o.fits = bool(raw.fits, d.fits);
+    o.sort = oneOf(raw.sort, BUILD_SORTS, d.sort);
+    o.dir = dir(raw.dir, d.dir);
   } else if (name === 'stats') {
     o.category = oneOf(raw.category, STAT_CATS, d.category);
   } else if (name === 'rankings') {

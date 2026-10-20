@@ -140,7 +140,7 @@ export function loadAndPlay(slot) {
     // save (fired, but past the carousel without a new job) back to the carousel
     var _ch = (G.coach && G.coach.history && G.coach.history.length) ? G.coach.history[G.coach.history.length - 1] : null;
     if (_ch && _ch.action === 'Fired' &&
-        (G.offseasonStep === 'turnover' || G.offseasonStep === 'retention' || G.offseasonStep === 'portal' || G.offseasonStep === 'signed' || G.offseasonStep === 'schedule' ||
+        (G.offseasonStep === 'turnover' || G.offseasonStep === 'retention' || G.offseasonStep === 'portal' || G.offseasonStep === 'build' || G.offseasonStep === 'signed' || G.offseasonStep === 'schedule' ||
          G.offseasonStep === 'recruiting' || G.offseasonStep === 'skillpoints')) {
       G.offseasonStep = 'carousel';
     }

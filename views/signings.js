@@ -4,9 +4,9 @@
 //  decision that involves you is logged:
 //    you     — signed with you
 //    other   — a player you pursued chose another school
-//    stayed  — a transfer you pursued went back to his old school
-//    left    — one of your players transferred out
-//    returns — one of your players in the portal came back
+//    left    — one of your players transferred out (school, or "A lower
+//              level" when nobody signed him: entrants never come back)
+//    stayed, returns — old saves only (entrants used to go back home)
 //  Shown as: a "Round results" panel after each round, a
 //  "Your incoming class" panel on the portal and recruiting screens,
 //  a signing day screen, and an "Offseason moves" recap on Home.
@@ -66,6 +66,15 @@ export function openSpots() {
   try { return Math.max(0, 15 - nextSeasonRoster().length); } catch (e) { return 15; }
 }
 
+// Players you're going after right now: recruits you target or hold points
+// on, plus transfers with an offer out. One per open spot, across both.
+export function pursuitsOut() {
+  var n = 0, tg = G.recruitTargets || [];
+  (G.recruits || []).forEach(function(r) { if (r.status === 'open' && (tg.indexOf(r.id) >= 0 || (r.points || 0) > 0)) n++; });
+  (G.portalEntrants || []).forEach(function(e) { if (e.fromTid !== G.tid && e.pickedBy === -1 && (e.offer || 0) > 0) n++; });
+  return n;
+}
+
 // ── Targets tab: everyone you pursued in one list ─────────
 // Signed (green), still deciding (the live rows with your offers), went
 // elsewhere (red). Replaces the separate offers / class / round results views.
@@ -78,28 +87,30 @@ function tgRow(it, cls, right) {
 function tgGroup(title, n, body) {
   return '<div class="tg-h">' + title + ' <span>' + n + '</span></div>' + body;
 }
+// kind: 'recruit', 'portal', or 'all' (Build your roster: both in one list)
 export function targetsHTML(kind, pendingHTML, nPending) {
-  var log = store().log.filter(function(x) { return x.kind === kind; });
-  var signed = kind === 'recruit'
-    ? (G.recruits || []).filter(function(r) { return r.signed === G.tid; }).map(function(r) {
-        var l = log.find(function(x) { return x.name === r.name && x.outcome === 'you'; });
-        return { kind: 'recruit', name: r.name, pos: r.pos, ovr: r.ovr, stars: r.stars, type: playerType(r), early: l ? l.early : false };
-      })
+  var log = store().log.filter(function(x) { return kind === 'all' || x.kind === kind; });
+  var signedR = (G.recruits || []).filter(function(r) { return r.signed === G.tid; }).map(function(r) {
+    var l = log.find(function(x) { return x.name === r.name && x.outcome === 'you'; });
+    return { kind: 'recruit', name: r.name, pos: r.pos, ovr: r.ovr, stars: r.stars, type: playerType(r), early: l ? l.early : false };
+  });
+  var signed = kind === 'all' ? signedR.concat(log.filter(function(x) { return x.kind === 'portal' && x.outcome === 'you'; }))
+    : kind === 'recruit' ? signedR
     : log.filter(function(x) { return x.outcome === 'you'; });
   var lost = log.filter(function(x) { return x.outcome === 'other' || x.outcome === 'stayed' || x.outcome === 'full'; });
-  var left = kind === 'portal' ? log.filter(function(x) { return x.outcome === 'left'; }) : [];
-  var back = kind === 'portal' ? log.filter(function(x) { return x.outcome === 'returns'; }) : [];
+  var left = kind !== 'recruit' ? log.filter(function(x) { return x.outcome === 'left'; }) : [];
+  var back = kind !== 'recruit' ? log.filter(function(x) { return x.outcome === 'returns'; }) : [];
   var open = openSpots();
   var h = '<div class="tg-sum"><b>' + open + '</b> open spot' + (open !== 1 ? 's' : '') + ' for next season · <b>' + nPending + '</b> still deciding'
     + (open > 0 && nPending >= open ? '<div class="tg-note">Every open spot has someone in the running. Drop one to go after someone else.</div>' : '')
     + (open === 0 ? '<div class="tg-note">Your roster is full for next season.</div>' : '')
     + '</div>';
   if (signed.length) h += tgGroup('Signed with you', signed.length, signed.map(function(it) { return tgRow(it, 'good', it.early ? 'Committed early' : 'Signed'); }).join(''));
-  h += tgGroup('Still deciding', nPending, nPending ? pendingHTML : '<div class="tg-none">' + (kind === 'portal' ? 'No offers out. Open a player on the Board to make one.' : 'Nobody targeted. Open a recruit on the Board to add him.') + '</div>');
+  h += tgGroup('Still deciding', nPending, nPending ? pendingHTML : '<div class="tg-none">' + (kind === 'all' ? 'Nobody yet. Open a player on High school or Transfers to make an offer.' : kind === 'portal' ? 'No offers out. Open a player on the Board to make one.' : 'Nobody targeted. Open a recruit on the Board to add him.') + '</div>');
   if (lost.length) h += tgGroup('Went elsewhere', lost.length, lost.map(function(it) {
     return tgRow(it, 'bad', it.outcome === 'full' ? 'Roster was full' : it.outcome === 'stayed' ? 'Stayed at ' + it.school : (it.school || 'Undecided'));
   }).join(''));
-  if (kind === 'recruit') {
+  if (kind === 'recruit') { // the old split flow: transfers signed earlier in the portal
     var tin = store().log.filter(function(x) { return x.kind === 'portal' && x.outcome === 'you'; });
     if (tin.length) h += tgGroup('Transfers signed in the portal', tin.length, tin.map(function(it) { return tgRow(it, 'good', 'Transfer'); }).join(''));
   }
@@ -225,19 +236,19 @@ export function classRankingsHTML() {
 
 // Signing day: the whole recruiting cycle's results in one place
 export function signingDayHTML() {
+  var tabs = function(on) {
+    return '<div class="fbar" style="margin:4px 0 10px;"><button class="fchip' + (on === 'class' ? ' on' : '') + '" data-sgtab="class">Your class</button>'
+      + '<button class="fchip' + (on === 'rank' ? ' on' : '') + '" data-sgtab="rank">Class rankings</button></div>';
+  };
   if (_sgTab === 'rank') {
-    return '<div class="sec-head">Signing day</div>'
-      + '<div class="fbar" style="margin:4px 0 10px;"><button class="fchip" data-sgtab="class">Your class</button><button class="fchip on" data-sgtab="rank">Class rankings</button></div>'
-      + classRankingsHTML()
+    return '<div class="sec-head">Decision day</div>' + tabs('rank') + classRankingsHTML()
       + '<button class="btn-big btn-full" style="margin-top:12px;" data-to-schedule>Next: non-conference schedule</button>';
   }
-  var s = store();
-  var recruitLog = s.log.filter(function(x) { return x.kind === 'recruit'; });
-  var h = '<div class="sec-head">Signing day</div>'
-    + '<div class="fbar" style="margin:4px 0 10px;"><button class="fchip on" data-sgtab="class">Your class</button><button class="fchip" data-sgtab="rank">Class rankings</button></div>'
-    + '<div class="sec-sub" style="margin-bottom:12px;">Every recruit has decided. Here is how your class came together.</div>';
-  h += '<div class="panel sg-panel"><div class="panel-h"><span>Recruiting results</span><small>All three phases</small></div><div class="panel-b">'
-    + (recruitLog.length ? groupsHTML(recruitLog) : '<div class="sg-none">You did not pursue any recruits this year.</div>') + '</div></div>';
+  var log = store().log;
+  var h = '<div class="sec-head">Decision day</div>' + tabs('class')
+    + '<div class="sec-sub" style="margin-bottom:12px;">Every transfer and recruit has decided. Here is how your class came together.</div>';
+  h += '<div class="panel sg-panel"><div class="panel-h"><span>Results</span><small>All three rounds</small></div><div class="panel-b">'
+    + (log.length ? groupsHTML(log) : '<div class="sg-none">You did not go after any transfers or recruits this year.</div>') + '</div></div>';
   h += classPanelHTML();
   h += '<button class="btn-big btn-full" style="margin-top:12px;" data-to-schedule>Next: non-conference schedule</button>';
   return h;

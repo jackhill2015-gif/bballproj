@@ -49,7 +49,9 @@ function autoPortal() {
     if (n >= 4 || spent >= nilCap || t.rost.length >= 15) break;
     const need = (posCount[e.pos] || 0) < 2;
     if (!need && (t.rost.length >= 13 || e.ovr < 78)) continue;
-    const cost = P.portalCost(e);
+    const fav = P.nilFor50(e);
+    if (!isFinite(fav)) continue;
+    const cost = Math.ceil(fav * 1.15 / P.PORTAL_OFFER_STEP) * P.PORTAL_OFFER_STEP; // a bit over even odds
     if (spent + cost > nilCap) continue;
     if (P.adjustOffer(e.pid, cost)) { spent += cost; n++; posCount[e.pos] = (posCount[e.pos] || 0) + 1; }
   }
