@@ -488,6 +488,11 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 /* ═══ DESKTOP: school title + tab row (replaces vertical sidebar) ═══ */
 #desk-head { display: none; }
 @media (min-width: 861px) {
+  /* Title + tab row sits above the content, so the body stacks instead of
+     the old sidebar-beside-content row; the Latest log moved to the scores strip */
+  #app-body { flex-direction: column; }
+  #app-body > main { width: 100%; min-width: 0; }
+  #main-nav #game-log-panel { display: none; }
   #main-nav {
     width: 100%;
     height: auto;
