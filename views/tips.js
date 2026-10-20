@@ -11,19 +11,14 @@ import { G } from '../state.js';
 import { getUiPrefs, setUiPrefs } from './ui-prefs.js';
 
 // One or two sentences each. Plain staff voice: say what the screen does.
+// (Home and Roster tips were cut in the de-AI pass: no banners there.)
 var TIPS = {
-  home: 'Sim game plays your next game instantly. Your next opponent is in the Next game panel.',
-  roster: 'Auto-manage keeps your best healthy players starting and resets minutes each week. Turn it off to set the lineup yourself.',
   offseason: 'The strip at the top tracks the offseason order. Departures, portal, recruiting and signing day happen in that order.',
   recruiting: 'Open spots are in the header. You can pursue one player per open spot, and your percentage is the real chance he signs on signing day.'
 };
 
 function tipHTML(key) {
   var text = TIPS[key];
-  // M6: the home tip references the Next game panel, which only exists in-season
-  if (key === 'home' && G && G.phase !== 'reg') {
-    text = 'Sim game plays your next game instantly. The offseason strip at the top tracks departures, portal, recruiting and signing day.';
-  }
   return '<div class="tip-card" data-tipcard="' + key + '">'
     + '<div class="tip-text">' + text + '</div>'
     + '<button class="btn-quiet tip-gotit" data-action="tip-dismiss" data-tip="' + key + '">Got it</button>'
@@ -36,11 +31,7 @@ export function injectTips(view) {
   var prefs;
   try { prefs = getUiPrefs('tips'); } catch (e) { return; }
   var keys = [], target = null, afterStrip = false;
-  if (view === 'dashboard' && prefs.home) {
-    keys = ['home']; target = 'dash-content';
-  } else if (view === 'roster' && prefs.roster) {
-    keys = ['roster']; target = 'roster-content';
-  } else if (view === 'offseason') {
+  if (view === 'offseason') {
     if (prefs.offseason) keys.push('offseason');
     if (prefs.recruiting && G && G.offseasonStep === 'recruiting') keys.push('recruiting');
     target = 'offseason-content'; afterStrip = true;
@@ -66,5 +57,5 @@ export function dismissTip(key) {
 }
 
 export function resetTips() {
-  setUiPrefs('tips', { home: true, roster: true, offseason: true, recruiting: true });
+  setUiPrefs('tips', { offseason: true, recruiting: true });
 }

@@ -510,6 +510,10 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
   #main-nav .nav-more-btn,
   #main-nav .more-theme { display: none; }
   #desk-head { display: block; padding: 18px 24px 0; }
+  /* The desk title names the school on desktop, so the color band drops
+     its repeated name there and keeps just the record line */
+  .dash-band h1 { display: none; }
+  .dash-band { padding: 14px 16px 12px; }
   #desk-school {
     font-family: var(--condensed);
     font-size: 42px;

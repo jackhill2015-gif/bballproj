@@ -12,7 +12,7 @@ import { DIFF_MOD } from '../constants.js';
 import { ge, clamp, getTOvr, fR, fmtScore, awardScore, winProb as sharedWinProb } from '../utils.js';
 import { pollRankMap, pollRank } from '../poll.js';
 import { TEAM_COLORS } from '../teamcolors.js';
-import { ensureGoals, progress, GOAL_REWARD } from '../goals.js';
+import { ensureGoals, progress } from '../goals.js';
 import { FACILITIES, FACILITY_MAX, myFacilities, upgradeCost } from '../facilities.js';
 import { STREAMS, BUCKETS, ledger, totals, committed } from '../finance.js';
 import { G } from '../state.js';
@@ -103,15 +103,19 @@ function renderSchoolCard() {
   var phase = { reg: 'regular season', conf_tourn: 'conference tournament', ncaa: 'NCAA tournament', offseason: 'offseason' }[G.phase] || '';
   var c = null;
   try { c = TEAM_COLORS[t.name]; } catch (e) {}
+  // Band uses a darkened shade of the school color: bright primaries glare
+  // at full strength, and white text reads on the shade in both themes
   var bandBg = c && c[0] ? c[0] : 'var(--blu-d)';
-  // Text color: white on dark colors, dark on light colors
   var bandFg = '#fff';
   try {
     var h = String(bandBg).replace('#', '');
     if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
-    var r = parseInt(h.slice(0, 2), 16), g = parseInt(h.slice(2, 4), 16), b = parseInt(h.slice(4, 6), 16);
-    var lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-    if (lum > 0.6) bandFg = '#1f2630';
+    if (/^[0-9a-fA-F]{6}$/.test(h)) {
+      var r = Math.round(parseInt(h.slice(0, 2), 16) * 0.5),
+          g = Math.round(parseInt(h.slice(2, 4), 16) * 0.5),
+          b = Math.round(parseInt(h.slice(4, 6), 16) * 0.5);
+      bandBg = 'rgb(' + r + ',' + g + ',' + b + ')';
+    }
   } catch (e) {}
   return '<div class="dash-band" style="background:' + bandBg + ';color:' + bandFg + ';">'
     + '<h1 class="condensed">' + t.name + '</h1>'
@@ -289,8 +293,8 @@ function renderGoals() {
     h += '<tr><td style="width:22px;color:' + (pr.done ? 'var(--grn2)' : 'var(--txt3)') + ';">' + (pr.done ? '✓' : '○') + '</td>'
       + '<td>' + g.text + '<div style="font-size:12px;color:var(--txt3);">' + pr.label + '</div></td></tr>';
   });
-  h += '</tbody></table><div style="font-size:12px;color:var(--txt3);padding:6px 10px 8px;">Each goal met: +' + GOAL_REWARD.skill + ' skill point and +' + GOAL_REWARD.nil + ' NIL. All three also raise school prestige.</div>';
-  return panel('Season goals', h, { flush: true, right: 'From the athletic director' });
+  h += '</tbody></table>';
+  return panel('Season goals', h, { flush: true });
 }
 
 function renderFinances() {

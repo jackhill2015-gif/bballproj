@@ -237,13 +237,19 @@ function depthRow(p, i) {
 // School-color header band (matches Home)
 function renderRosterBand(t) {
   var c = TEAM_COLORS[t.name];
+  // Darkened shade of the school color, same as Home: bright primaries
+  // glare at full strength, and white text reads on the shade in both themes
   var bandBg = c && c[0] ? c[0] : 'var(--blu-d)';
   var bandFg = '#fff';
   try {
     var hh = String(bandBg).replace('#', '');
     if (hh.length === 3) hh = hh[0] + hh[0] + hh[1] + hh[1] + hh[2] + hh[2];
-    var r = parseInt(hh.slice(0, 2), 16), g = parseInt(hh.slice(2, 4), 16), b = parseInt(hh.slice(4, 6), 16);
-    if ((0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.6) bandFg = '#1f2630';
+    if (/^[0-9a-fA-F]{6}$/.test(hh)) {
+      var r = Math.round(parseInt(hh.slice(0, 2), 16) * 0.5),
+          g = Math.round(parseInt(hh.slice(2, 4), 16) * 0.5),
+          b = Math.round(parseInt(hh.slice(4, 6), 16) * 0.5);
+      bandBg = 'rgb(' + r + ',' + g + ',' + b + ')';
+    }
   } catch (e) {}
   return '<div class="dash-band" style="background:' + bandBg + ';color:' + bandFg + ';">'
     + '<h1 class="condensed">' + t.name + '</h1>'

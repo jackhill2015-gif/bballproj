@@ -27,7 +27,7 @@ var DEFAULTS = {
   rankings: { tab: 'nat', conf: null },
   bracket: { region: null },
   theme: { mode: 'system' },
-  tips: { home: true, roster: true, offseason: true, recruiting: true }
+  tips: { offseason: true, recruiting: true }
 };
 
 function oneOf(v, list, dflt) { return list.indexOf(v) >= 0 ? v : dflt; }
@@ -66,7 +66,7 @@ function validateSection(name, raw) {
   } else if (name === 'theme') {
     o.mode = oneOf(raw.mode, ['system', 'light', 'dark'], d.mode);
   } else if (name === 'tips') {
-    ['home', 'roster', 'offseason', 'recruiting'].forEach(function(k) {
+    ['offseason', 'recruiting'].forEach(function(k) {
       o[k] = bool(raw[k], d[k]);
     });
   }

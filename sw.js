@@ -66,6 +66,7 @@ var APP_FILES = [
   "vendor/fonts/barlow-condensed-500.woff2",
   "vendor/fonts/barlow-condensed-600.woff2",
   "vendor/fonts/barlow-condensed-700.woff2",
+  "vendor/fonts/OFL.txt",
   "vendor/facesjs/generate.js",
   "vendor/facesjs/display.js",
   "vendor/facesjs/override.js",
