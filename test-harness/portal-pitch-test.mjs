@@ -259,7 +259,9 @@ let badRoster = 0, dupPortal = 0;
 G.teams.forEach(tm => {
   // Your roster counts next season's players: graduating seniors still sit on
   // it during the portal but don't take a spot (signings.openSpots)
-  const n = tm.id === G.tid ? tm.rost.filter(p => !(p.cls === 'SR' && !p.rs)).length : tm.rost.length;
+  // Same for CPU schools: their seniors leave at the rollover, and portal
+  // room is counted without them (signings.js), so count next season's players
+  const n = tm.rost.filter(p => !(p.cls === 'SR' && !p.rs)).length;
   if (n > 15) badRoster++;
   // Every entrant has decided by now; any flag left is a leak
   tm.rost.forEach(p => { if (p._portalPid && !(G.portalEntrants || []).some(e => e.pid === p._portalPid && e.pickedBy === -1)) dupPortal++; });

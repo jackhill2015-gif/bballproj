@@ -1012,7 +1012,10 @@ export function doOffseason() {
   // redshirt is used up for good.
   var _kind = new Map();
   t.rost.forEach(function(p) {
-    if (p.cls === 'SR' && !p.rs) return;
+    // Mark graduating seniors BEFORE anyone ages: juniors become seniors in
+    // this loop and must stay (the old check on cls === 'SR' after aging
+    // dropped every junior, transfers included)
+    if (p.cls === 'SR' && !p.rs) { p._grad = true; return; }
     _kind.set(p, developPlayer(p, G.coach.dev, practiceBonus(G.tid)));
     if (p.rs) {
       p.rs = false; p.rsUsed = true; p._rsKeep = true;
@@ -1035,7 +1038,7 @@ export function doOffseason() {
   };
 
   // Remove seniors (a senior who redshirted stays for one more year)
-  t.rost = t.rost.filter(function(p) { var keep = p.cls !== 'SR' || p._rsKeep; delete p._rsKeep; return keep; });
+  t.rost = t.rost.filter(function(p) { var keep = !p._grad; delete p._grad; delete p._rsKeep; return keep; });
 
   // Add commits (R6: class-size cap enforced)
   var CLASS_SIZE_CAP = CPU_CLASS_CAP;
